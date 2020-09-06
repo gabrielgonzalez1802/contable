@@ -21,6 +21,7 @@ public class Cliente {
 	private String nombre;
 	private String cedula;
 	private String rnc;
+	private String ncf;
 	private String direccion;
 	private String telefono;
 	
@@ -133,11 +134,19 @@ public class Cliente {
 		this.estado = estado;
 	}
 
+	public String getNcf() {
+		return ncf;
+	}
+
+	public void setNcf(String ncf) {
+		this.ncf = ncf;
+	}
+
 	@Override
 	public String toString() {
 		return "Cliente [id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", cedula=" + cedula + ", rnc=" + rnc
-				+ ", direccion=" + direccion + ", telefono=" + telefono + ", creado=" + creado + ", nombreEmpresa="
-				+ nombreEmpresa + ", direccionEmpresa=" + direccionEmpresa + ", telefonoEmpresa=" + telefonoEmpresa
-				+ ", estado=" + estado + "]";
+				+ ", ncf=" + ncf + ", direccion=" + direccion + ", telefono=" + telefono + ", creado=" + creado
+				+ ", nombreEmpresa=" + nombreEmpresa + ", direccionEmpresa=" + direccionEmpresa + ", telefonoEmpresa="
+				+ telefonoEmpresa + ", estado=" + estado + "]";
 	}
 }

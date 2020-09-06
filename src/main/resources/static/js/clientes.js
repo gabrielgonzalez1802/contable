@@ -1,6 +1,6 @@
 function addEventClient(){
 	
-	$("#clientes").click(function(e){
+	$("#prestamos").click(function(e){
 		e.preventDefault();
 		$("#contenido").load("/clientes/",function(data){
 			console.log("Lista de clientes");
@@ -98,7 +98,8 @@ function eliminarCliente(id){
 		  showCancelButton: true,
 		  confirmButtonColor: '#3085d6',
 		  cancelButtonColor: '#d33',
-		  confirmButtonText: 'Si, Eliminar!'
+		  confirmButtonText: 'Si, Eliminar!',
+		  cancelButtonText: 'Cancelar',
 		}).then((result) => {
 		  if (result.value) {
 		    Swal.fire({

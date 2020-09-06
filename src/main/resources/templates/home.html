@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<title>Atlantis Lite - Bootstrap 4 Admin Dashboard</title>
+	<title>Sistema Contable</title>
 	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
 <!-- 	<link rel="icon" href="../assets/img/icon.ico" type="image/x-icon"/> -->
 
@@ -28,6 +28,20 @@
 		}
 		.form-control {
 		    background-color: #caced2;
+		}
+		.card .card-body, .card-light .card-body {
+			padding: 1.25rem;
+			padding-top: 0px;
+		}
+		.card {
+  		  	min-height: 680px;
+		    overflow: auto;
+		    height: 680px;
+		    max-height: 680px;
+		}
+		.nav-pills.nav-secondary .nav-link.active {
+		    background: #007bff;
+		    border: 1px solid #007bff;
 		}
 	</style>
 </head>
@@ -69,21 +83,9 @@
 		<div class="main-panel">
 			<div class="content">
 				<div class="panel-header" style="background-color: #caced2;">
-					<div class="page-inner py-5">
-						<!--<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
-							<div>
-								<h2 class="text-white pb-2 fw-bold">Dashboard</h2>
-								<h5 class="text-white op-7 mb-2">Free Bootstrap 4 Admin Dashboard</h5>
-							</div>
-							<div class="ml-md-auto py-2 py-md-0">
-								<a href="#" class="btn btn-white btn-border btn-round mr-2">Manage</a>
-								<a href="#" class="btn btn-secondary btn-round">Add Customer</a>
-							</div>
-						</div>-->
-					</div>
+					<div class="page-inner py-4"></div>
 				</div>
 				<div class="page-inner mt--5">
-					
 					<div class="row">
 						<div class="col-md-12">
 							<div class="card" id="contenido">
@@ -107,7 +109,18 @@
 									</div>
 								</div>
 								<div class="card-body">
-									<div style="min-height: 375px">
+									<ul class="nav nav-pills nav-secondary" id="pills-tab" role="tablist">
+										<li class="nav-item submenu">
+											<a class="nav-link active show" id="pills-home-tab" data-toggle="pill" role="tab" aria-controls="pills-home" aria-selected="true">1</a>
+										</li>
+										<li class="nav-item submenu">
+											<a class="nav-link" id="pills-profile-tab" data-toggle="pill" role="tab" aria-controls="pills-profile" aria-selected="false">2</a>
+										</li>
+										<li class="nav-item submenu">
+											<a class="nav-link" id="pills-contact-tab" data-toggle="pill" role="tab" aria-controls="pills-contact" aria-selected="false">3</a>
+										</li>
+									</ul>
+									<div class="card-box">
 									</div>
 								</div>
 							</div>
