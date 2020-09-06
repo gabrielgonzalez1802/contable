@@ -26,9 +26,15 @@
 		.content{
 			background-color: #caced2;
 		}
+		.form-control {
+		    background-color: #caced2;
+		}
 	</style>
 </head>
 <body>
+<div id="grupoResponseCliente">
+	<input type="hidden" th:value="${responseCliente}" id="responseCliente">
+</div>
 	<div class="wrapper">
 		<div class="main-header">
 			<!-- Logo Header -->
@@ -80,7 +86,7 @@
 					
 					<div class="row">
 						<div class="col-md-12">
-							<div class="card">
+							<div class="card" id="contenido">
 								<div class="card-header">
 									<div class="card-head-row">
 										<div class="card-title">User Statistics</div>
@@ -101,10 +107,8 @@
 									</div>
 								</div>
 								<div class="card-body">
-									<div class="chart-container" style="min-height: 375px">
-										<canvas id="statisticsChart"></canvas>
+									<div style="min-height: 375px">
 									</div>
-									<div id="myChartLegend"></div>
 								</div>
 							</div>
 						</div>
@@ -129,9 +133,23 @@
 	<script th:src="@{/js/jquery.scrollbar.min.js}"></script>
 
 	<!-- Sweet Alert -->
-	<script th:src="@{/js/sweetalert.min.js}"></script>
-
+<!-- 	<script th:src="@{/js/sweetalert.min.js}"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+	
 	<!-- Atlantis JS -->
 	<script th:src="@{/js/atlantis.min.js}"></script>
+	
+	<!-- Datatables -->
+	<script th:src="@{/js/dataTables.min.js}"></script>
+	
+	<!-- customized --> 
+	<script th:src="@{/js/clientes.js}"></script>
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			addEventClient();
+		});
+	</script>
+
 </body>
 </html>

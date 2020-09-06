@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="form">
+	<div class="card-header">
+		<div class="card-head-row" style="border-bottom: solid black 1px;padding-bottom: 15px;">
+			<div class="card-title">
+				<h2>Informaci&oacute;n del Cliente</h2>
+				<span th:text="${response}" id="response"></span>
+			</div>
+			
+			<div class="card-tools">
+				<a href="#" id="listadoClientes" class="btn btn-primary btn-border btn-round btn-sm">
+					<span class="btn-label">
+						<i class="fas fa-users"></i>
+					</span>
+					Lista Clientes
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class="card-body">
+		<div style="min-height: 375px">
+			<form th:object="${cliente}" id="formClient" method="post">
+			<div class="row">
+				<div class="col-md-4">
+					 <div class="form-group">
+					 	<input type="hidden" th:field="*{id}">
+					    <label for="codigoCliente">Codigo</label>
+					    <input type="text" th:field="*{codigo}" class="form-control" placeholder="Codigo" id="codigoCliente">
+					  </div>
+				</div>
+				
+				<div class="col-md-8">
+				 	<div class="form-group">
+					  <label for="nombreCliente">Nombre</label>
+					   	<input type="text" class="form-control" th:field="*{nombre}" placeholder="Nombre" id="nombreCliente" required="required">
+					 </div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-4">
+					 <div class="form-group">
+					    <label for="cedulaCliente">Cedula</label>
+					    <input type="text" th:field="*{cedula}" class="form-control" placeholder="Cedula" id="cedulaCliente">
+					  </div>
+				</div>
+				
+				<div class="col-md-3">
+				 	<div class="form-group">
+					  <label for="rncCliente">RNC</label>
+					   	<input type="text" th:field="*{rnc}" class="form-control" id="rncCliente" placeholder="RNC">
+					 </div>
+				</div>
+				
+				<div class="col-md-5">
+				 	<div class="form-group">
+					  <label for="telefonoCliente">Telefono</label>
+					   	<input type="text" th:field="*{telefono}" class="form-control" id="telefonoCliente" placeholder="Telefono">
+					 </div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-12">
+					 <div class="form-group">
+					    <label for="cedulaCliente">Direcci&oacute;n</label>
+					    <textarea th:field="*{direccion}" rows="3" class="form-control"></textarea>
+					  </div>
+				</div>
+			</div>
+			
+			<hr style="background-color: black;">
+			
+			<h2>Informaci&oacute;n de la Empresa</h2>
+			
+			<br>
+			
+			<div class="row">
+				<div class="col-md-4">
+					 <div class="form-group">
+					    <label for="nombreEmpresaCliente">Nombre de la Empresa</label>
+					    <input type="text" th:field="*{nombreEmpresa}" class="form-control" placeholder="Nombre de la Empresa" id="nombreEmpresaCliente">
+					  </div>
+				</div>
+				
+				<div class="col-md-8">
+				 	<div class="form-group">
+					  <label for="telefonoEmpresaCliente">Telefono de la Empresa</label>
+					   	<input type="text" class="form-control" th:field="*{telefonoEmpresa}" placeholder="Nombre" id="telefonoEmpresaCliente">
+					 </div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-12">
+					 <div class="form-group">
+					    <label for="direccionEmpresaCliente">Direcci&oacute;n de la Empresa</label>
+					    <textarea th:field="*{direccionEmpresa}" id="direccionEmpresaCliente" rows="3" class="form-control"></textarea>
+					  </div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group pull-right">
+						<input type="submit" value="Guardar" class="btn btn-primary">
+					</div>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+</body>
+</html>

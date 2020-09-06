@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="listaCliente">
+	<div class="card-header">
+		<div class="card-head-row">
+			<div class="card-title">
+				Lista de Clientes 
+			</div>
+			<div class="card-tools">
+				<a href="#" id="addCustomer" class="btn btn-primary btn-border btn-round btn-sm">
+					<span class="btn-label">
+						<i class="fas fa-plus"></i>
+					</span>
+					Agregar
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class="card-body">
+		<div style="min-height: 375px">
+			<div class="table-responsive">
+				<table id="tabla" class="display table table-striped table-hover">
+				    <thead>
+				      <tr style="background-color: #212529;color:#fff;">
+				        <th>Codigo</th>
+				        <th>Nombre</th>
+				        <th>Cedula</th>
+				        <th>Telefono</th>
+				        <th>Acciones</th>
+				      </tr>
+				    </thead>
+				    <tbody>
+				      <tr th:each="cliente:${listaClientes}">
+				        <td th:text="${cliente.codigo}"></td>
+				        <td th:text="${cliente.nombre}"></td>
+				        <td th:text="${cliente.cedula}"></td>
+				        <td th:text="${cliente.telefono}"></td>
+				        <td>
+				            <a style="color: #fff;" th:onclick="'modificarCliente(\'' + ${cliente.id} + '\');'" class="btn btn-primary btn-sm" role="button" title="Editar el registro."><i class="fa fa-edit" aria-hidden="true"></i></a>
+				          	<a style="color: #fff;" th:onclick="'eliminarCliente(\'' + ${cliente.id} + '\');'" class="btn btn-danger btn-sm" role="button" title="Eliminar el registro."><i class="fa fa-trash" aria-hidden="true"></i></a>
+				        </td>
+				      </tr>
+				    </tbody>
+				  </table>
+			  </div>
+		</div>
+	</div>
+</div>	
+</body>
+</html>
