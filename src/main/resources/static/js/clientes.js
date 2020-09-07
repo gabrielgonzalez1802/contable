@@ -1,10 +1,18 @@
-function addEventClient(){
+function addEvents(){
+	
+	$("#navListaCliente").click(function(e){
+		e.preventDefault();
+		$("#contenido").load("/clientes/",function(data){
+			console.log("Lista de clientes");
+			addEvents();
+		});
+	});
 	
 	$("#prestamos").click(function(e){
 		e.preventDefault();
 		$("#contenido").load("/clientes/",function(data){
 			console.log("Lista de clientes");
-			addEventClient();
+			addEvents();
 		});
 	});
 	
@@ -12,15 +20,15 @@ function addEventClient(){
 		e.preventDefault();
 		$("#contenido").load("/clientes/agregar",function(data){
 			console.log("Agregar Cliente");
-			addEventClient();
+			addEvents();
 		});
 	});
-
+	
 	$("#listadoClientes").click(function(e){
 		e.preventDefault();
 		$("#contenido").load("/clientes/",function(data){
 			console.log("Lista de clientes");
-			addEventClient();
+			addEvents();
 		});
 	});
 
@@ -49,10 +57,36 @@ function addEventClient(){
 					}
 				$("#contenido").load("/clientes/",function(data){
 					console.log("Lista de clientes");
-					addEventClient();
+					addEvents();
 				});
 			});		
 	});
+	
+	$("#navListaCliente").click(function(e){
+		e.preventDefault();
+		$("#contenido").load("/clientes/",function(data){
+			console.log("Lista de clientes");
+			addEvents();
+		});
+	});
+	
+	/** Prestamos **/
+	$("#navListaPrestamo").click(function(e){
+		e.preventDefault();
+		$("#contenido").load("/prestamos/",function(data){
+			console.log("Lista de prestamos");
+			addEvents();
+		});
+	});
+	
+	$("#addPrestamo").click(function(e){
+		e.preventDefault();
+		$("#contenido").load("/prestamos/agregar",function(data){
+			console.log("Agregar Prestamo");
+			addEvents();
+		});
+	});
+	/** Fin Prestamos **/
 	
 	$('#tabla').DataTable({
 		"scrollY": "400px",
@@ -85,7 +119,7 @@ function addEventClient(){
 function modificarCliente(id){
 	$("#contenido").load("/clientes/modificar/"+id,function(data){
 		console.log("Modificar Cliente");
-		addEventClient();
+		addEvents();
 	});
 }
 
@@ -111,7 +145,7 @@ function eliminarCliente(id){
 		    
 			$("#contenido").load("/clientes/eliminar/"+id,function(data){
 				console.log("Eliminar Cliente");
-				addEventClient();
+				addEvents();
 			});
 		  }
 		})

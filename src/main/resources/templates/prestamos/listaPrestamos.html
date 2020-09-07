@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Sistema Contable</title>
+</head>
+<body>
+<div th:fragment="listaPrestamo">
+	<div class="card-header">
+		<div class="card-head-row">
+			<div class="card-title">
+				Lista de Prestamos
+			</div>
+			<div class="card-tools">
+				<a href="#" id="addPrestamo" class="btn btn-primary btn-border btn-round btn-sm">
+					<span class="btn-label">
+						<i class="fas fa-plus"></i>
+					</span>
+					Agregar
+				</a>
+			</div>
+		</div>
+		<ul class="nav nav-pills nav-secondary" id="pills-tab" role="tablist">
+			<li class="nav-item submenu">
+				<a class="nav-link" id="navListaCliente" data-toggle="pill" role="tab" aria-controls="pills-home" aria-selected="false">Clientes</a>
+			</li>
+			<li class="nav-item submenu">
+				<a class="nav-link active show" id="navListaPrestamo" data-toggle="pill" role="tab" aria-controls="pills-profile" aria-selected="true">Prestamos</a>
+			</li>
+		</ul>
+	</div>
+	
+	<div class="card-body">
+		<div style="min-height: 560px;max-height: 560px;overflow: auto;">
+			 <div class="container" style="margin-bottom: 5px;">
+             <div class="row">
+                  <div class="col-6 col-lg-3">
+                  		<label class="text-primary">Desde:&nbsp;</label>
+                  		<input class="border rounded form-control bucar_prestamo" id="desde" type="date">
+                  	</div>
+                   <div class="col-6 col-lg-3">
+                   		<label class="text-primary">Hasta:&nbsp;</label>
+                   		<input class="border rounded form-control bucar_prestamo" id="hasta" type="date">
+                  </div>
+            </div>
+            <hr>
+			<div class="table-responsive">
+				<table id="" class="display table table-striped table-hover">
+				    <thead>
+				      <tr style="background-color: #212529;color:#fff;">
+				        <th>Fecha</th>
+				        <th>Cliente</th>
+				        <th class="text-center">Pagos</th>
+				        <th class="text-center">Tasa</th>
+                        <th class="text-right">Monto</th>
+                        <th class="text-right">Capital</th>
+                        <th class="text-right">Balance</th>
+				        <th class="text-center"></th>
+				      </tr>
+				    </thead>
+				    <tbody>
+				      <tr th:each="prestamo:${listaPrestamos}">
+				        <td th:text="${prestamo.fecha}"></td>
+				        <td th:text="${prestamo.cliente.nombre}"></td>
+				        <td th:text="${prestamo.pagos}"></td>
+				        <td th:text="${prestamo.tasa}"></td>
+				        <td th:text="${prestamo.monto}"></td>
+				        <td></td>
+				        <td th:text="${prestamo.balance}"></td>
+				        <td>
+				        	<!--  opciones -->
+				        </td>
+				      </tr>
+				    </tbody>
+				  </table>
+			  </div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

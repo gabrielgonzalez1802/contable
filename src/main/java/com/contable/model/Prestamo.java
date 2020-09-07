@@ -28,9 +28,9 @@ public class Prestamo {
 	private String tipo;
 	private String tipo_prestamo;
 	
-	private Integer dias_gracia;
+	private Integer dias_gracia = 0;
 	private Double monto = 0.0;
-	private Integer pagos;
+	private Integer pagos = 0;
 	private Double tasa = 0.0;
 	
 	private Integer id_forma_pago; //Luego se llevara a instancia de la clase FormaPago
