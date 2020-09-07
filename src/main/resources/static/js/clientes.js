@@ -78,7 +78,7 @@ function addEvents(){
 			addEvents();
 		});
 	});
-	
+	 
 	$("#addPrestamo").click(function(e){
 		e.preventDefault();
 		$("#contenido").load("/prestamos/agregar",function(data){
