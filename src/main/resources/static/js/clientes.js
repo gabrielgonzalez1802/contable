@@ -92,7 +92,7 @@ function addEvents(){
 			var pagos=$("#pagos").val();
 			var tasa=$("#tasa").val();
 			
-		  if(monto && pagos && tasa){
+		  if(parseFloat(monto) > 0 && parseFloat(pagos) && parseFloat(tasa)){
 			  $.post("/prestamos/calculoCuota",$("#formulario_prestamo").serialize(),
 					function(data){
 						console.log("Calculo Cuota");
@@ -100,6 +100,10 @@ function addEvents(){
 						$("#valor_cuota").val($("#responseCuota").val());
 					    $("#valor_interes").val($("#responseInteres").val());   
 						$("#total_pagar").val($("#responseTotalPagar").val());
+						
+						if(parseFloat(tasa) > 0 && parseFloat(pagos) > 0 && parseFloat(tasa)){
+							amortizar();
+						}
 						addEvents();
 				});
 		  }
@@ -158,6 +162,15 @@ function modificarCliente(id){
 		console.log("Modificar Cliente");
 		addEvents();
 	});
+}
+
+function amortizar(){
+	 $.post("/prestamos/amortizar",$("#formulario_prestamo").serialize(),
+		function(data){
+			console.log("Amortizar");
+			$("#cuerpo_amortizacion").replaceWith(data);
+			addEvents();
+	 	});
 }
 
 function eliminarCliente(id){

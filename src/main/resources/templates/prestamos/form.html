@@ -215,6 +215,7 @@
 					</div>
 					<!--  Lista -->
 					<div class="col-md-6">
+					  <div id="cuerpo_amortizacion">
 						<div class="table-responsive">
 							<table class="display table table-striped table-hover">
 							    <thead>
@@ -227,16 +228,24 @@
 							      </tr>
 							    </thead>
 							    <tbody>
-							      <tr>
-							        <td></td>
-							        <td>0.00</td>
-							        <td>0.00</td>
-							        <td>0.00</td>
-							        <td>0.00</td>
-							      </tr>
+								  	 <tr th:each="detalle : ${detalles}">
+								    	<td th:text="${detalle.fecha}"></td>
+								       	<td th:text="${detalle.cuota}"></td>
+								       	<td th:text="${detalle.capital}"></td>
+								       	<td th:text="${detalle.interes}"></td>
+								       	<td th:text="${detalle.saldo}"></td>
+								 	 </tr>
+								 	 <tr>
+								 	 	<td></td>
+								 	 	<td th:text="${totalCuota}"></td>
+								 	 	<td th:text="${totalCapital}"></td>
+								 	 	<td th:text="${totalInteres}"></td>
+								 	 	<td th:text="${totalNeto}"></td>
+								 	 </tr>
 							    </tbody>
 							  </table>
 						  </div>
+					   </div> 
 					</div>
 				</div>
 			</div>
