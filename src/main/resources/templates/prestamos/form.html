@@ -74,7 +74,7 @@
 								<div class="col-md-4">
 									<div class="">
 										<label for="">Tipo</label>
-										 <select th:field="*{tipo}" id="tipo_prestamo" class="form-control" oninput="javascript:calCuota()" required="required">
+										 <select th:field="*{tipo}" id="tipo_prestamo" class="form-control" onchange="javascript:calCuota()" required="required">
 										 	<option value="1">Cuotas Fijas</option>
 										 	<option value="3">Cuotas Variables</option>
 										 	<option value="2">Interes Fijo</option>

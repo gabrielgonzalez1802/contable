@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
@@ -87,7 +88,7 @@ public class PrestamosController {
 		//Tipos
 		if(prestamo.getTipo().equals("1")) {
 			//Coutas fijas
-			interes = (prestamo.getMonto()*(prestamo.getTasa()/100)*(prestamo.getPagos()/fre))/prestamo.getPagos();
+			interes = (prestamo.getMonto()*(prestamo.getTasa()/100)*(prestamo.getPagos().doubleValue()/fre))/prestamo.getPagos();
 
 		    capital = prestamo.getMonto() / prestamo.getPagos();
 		    cuota =   capital + interes;
@@ -150,7 +151,7 @@ public class PrestamosController {
 		
 		Double f= (double) (prestamo.getPagos()/fre);
 		
-		Double tasa = ((100) * interes * prestamo.getPagos()) / (prestamo.getMonto() *(prestamo.getPagos()/fre)) ;
+		Double tasa = ((100) * interes * prestamo.getPagos()) / (prestamo.getMonto() *(prestamo.getPagos().doubleValue()/fre)) ;
 		
 		cuota = capital + interes;
 
@@ -163,7 +164,7 @@ public class PrestamosController {
 	}
 	
 	@PostMapping("/amortizar")
-	public String amortizar(Model model, @ModelAttribute("prestamo") Prestamo prestamo) {
+	public String amortizar(Model model, @ModelAttribute("prestamo") Prestamo prestamo) throws ParseException {
 		int fre = 0;
 		double total_cuota = 0;
 		double total_capital = 0;
@@ -348,61 +349,50 @@ public class PrestamosController {
 		return number;
 	}
 	
-	public String fecha_futuro(String fecha_pago, String forma_pago) {
+	public String fecha_futuro(String fecha_pago, String forma_pago) throws ParseException {
 		    String[] fechaTemp = null;
 		    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
 
-			if (Pattern.matches("/[0-9]{1,2}\\/[0-9]{1,2}\\/([0-9][0-9]){1,2}/", fecha_pago)){
-				fechaTemp = fecha_pago.split("/");
-		    }
-		    
-		    if (Pattern.matches("/[0-9]{1,2}-[0-9]{1,2}-([0-9][0-9]){1,2}/",fecha_pago)){
-		    	fechaTemp = fecha_pago.split("-");
-		    }
-		    
-		    if(fechaTemp==null) {
-		    	if(fecha_pago.contains("-")) {
-		    		String[] temporal = fecha_pago.split("-");
-		    		if(temporal.length == 3) {
-		    			String dia = temporal[0];
-		    			if(!dia.contains("0")) {
-			    			dia = "0"+dia;
-		    			}
-		    			String mes = temporal[1];
-		    			if(!mes.contains("0")) {
-		    				mes = "0"+mes;
-		    			}
-		    			String temp = dia + "-" + mes + "-" +temporal[2];
-		    			fechaTemp = temp.split("-");
-		    		}
+			if (fecha_pago.contains("-")) {
+				String[] temporal = fecha_pago.split("-");
+				if (temporal.length == 3) {
+					String dia = temporal[0];
+					if (!dia.contains("0")) {
+						dia = "0" + dia;
+					}
+					String mes = temporal[1];
+					if (!mes.contains("0")) {
+						mes = "0" + mes;
+					}
+					String temp = dia + "-" + mes + "-" + temporal[2];
+					fechaTemp = temp.split("-");
+				}
 
-		    	}else if(fecha_pago.contains("/")) {
+			} else if (fecha_pago.contains("/")) {
 
-		    		String[] temporal = fecha_pago.split("/");
-		    		if(temporal.length == 3) {
-		    			String dia = temporal[0];
-		    			if(!dia.contains("0")) {
-			    			dia = "0"+dia;
-		    			}
-		    			String mes = temporal[1];
-		    			if(!mes.contains("0")) {
-		    				mes = "0"+mes;
-		    			}
-		    			String temp = dia + "/" + mes + "/" +temporal[2];
-		    			fechaTemp = temp.split("/");
-		    		}
+				String[] temporal = fecha_pago.split("/");
+				if (temporal.length == 3) {
+					String dia = temporal[0];
+					if (!dia.contains("0")) {
+						dia = "0" + dia;
+					}
+					String mes = temporal[1];
+					if (!mes.contains("0")) {
+						mes = "0" + mes;
+					}
+					String temp = dia + "/" + mes + "/" + temporal[2];
+					fechaTemp = temp.split("/");
+				}
 
-		    	
-		    	}
-		    }
-		    
-		    Calendar calendar = Calendar.getInstance();
-		    calendar.set(Calendar.MONTH, Integer.parseInt(fechaTemp[1]));
-		    calendar.set(Calendar.YEAR, Integer.parseInt(fechaTemp[2]));
-		    calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(fechaTemp[0])+Integer.parseInt(forma_pago));
-		    
-		    String nuevaFecha = sdf.format(calendar.getTime());
-		return nuevaFecha;
+			}
+			
+		Date date =	sdf.parse(fechaTemp[0]+"/"+fechaTemp[1]+"/"+fechaTemp[2]);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.add(Calendar.DAY_OF_YEAR, Integer.parseInt(forma_pago));
+		Date newDate = calendar.getTime();
+		String fecha = sdf.format(newDate);
+		return fecha;
 	}
 
 	@InitBinder
