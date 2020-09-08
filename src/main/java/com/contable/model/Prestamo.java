@@ -33,7 +33,7 @@ public class Prestamo {
 	private Integer pagos = 0;
 	private Double tasa = 0.0;
 	
-	private Integer id_forma_pago; //Luego se llevara a instancia de la clase FormaPago
+	private String forma_pago;
 	
 	private Double valor_cuota = 0.0;
 	private Integer mora;
@@ -44,7 +44,7 @@ public class Prestamo {
 	private Double interes= 0.0;
 	
 	@Column(name = "total_a_pagar")
-	private Double totalPagar;
+	private Double totalPagar = 0.0;
 	
 	@Column(name = "ultimo_pago")
 	private Date ultimoPago;
@@ -130,15 +130,6 @@ public class Prestamo {
 	public void setTasa(Double tasa) {
 		this.tasa = tasa;
 	}
-
-	public Integer getId_forma_pago() {
-		return id_forma_pago;
-	}
-
-	public void setId_forma_pago(Integer id_forma_pago) {
-		this.id_forma_pago = id_forma_pago;
-	}
-
 	public Double getValor_cuota() {
 		return valor_cuota;
 	}
@@ -233,5 +224,13 @@ public class Prestamo {
 
 	public void setId_cuenta(Integer id_cuenta) {
 		this.id_cuenta = id_cuenta;
+	}
+
+	public String getForma_pago() {
+		return forma_pago;
+	}
+
+	public void setForma_pago(String forma_pago) {
+		this.forma_pago = forma_pago;
 	}
 }

@@ -35,13 +35,14 @@
 				<div class="row">
 					<!-- Formulario -->
 					<div class="col-md-6">
-						<form th:object="${prestamo}" id="formPrestamo" method="post">
+						<form th:object="${prestamo}" id="formulario_prestamo" method="post">
 							<div class="row">
 								<div class="col-md-5">
 									<div class="">
+									<input type="hidden" th:value="*{#dates.format(fecha, 'yyyy-MM-dd')}" id="fechaTemp">
 										<input type="hidden" th:field="*{id}"> <label
 											for="">Fecha</label> <input type="date"
-											th:field="*{fecha}" class="form-control" required="required">
+											th:value="*{#dates.format(fecha, 'yyyy-MM-dd')}" name="fecha" class="form-control" required="required">
 									</div>
 								</div>
 
@@ -60,7 +61,7 @@
 								<div class="col-md-4">
 									<div class="">
 										<label for="">Prestamo</label>
-										 <select th:field="*{tipo_prestamo}" class="form-control" required="required">
+										 <select th:field="*{tipo_prestamo}" id="" class="form-control" required="required">
 										 	<option value="personal">Personal</option>
 										 	<option value="hipotecatio">Hipotecario</option>
 										 	<option value="vehiculo">Vehiculo</option>
@@ -73,11 +74,11 @@
 								<div class="col-md-4">
 									<div class="">
 										<label for="">Tipo</label>
-										 <select th:field="*{tipo}" class="form-control" required="required">
-										 	<option value="cuotasFijas">Cuotas Fijas</option>
-										 	<option value="cuotasVariables">Cuotas Variables</option>
-										 	<option value="interesFijo">Interes Fijo</option>
-										 	<option value="interesVariable">Interes Variable</option>
+										 <select th:field="*{tipo}" id="tipo_prestamo" class="form-control cal_cuota" required="required">
+										 	<option value="1">Cuotas Fijas</option>
+										 	<option value="3">Cuotas Variables</option>
+										 	<option value="2">Interes Fijo</option>
+										 	<option value="4">Interes Variable</option>
 										 </select>
 									</div>
 								</div>
@@ -105,14 +106,20 @@
 								<div class="col-md-4">
 									<div class="">
 										 <label for="">Forma de Pago</label> 
-										 <input type="number" th:field="*{id_forma_pago}" class="form-control" min="0">
+										 <select th:field="*{forma_pago}" class="form-control" required="required">
+										 	<option value="1">Diario</option>
+										 	<option value="2">Interdiario</option>
+										 	<option value="7">Semanal</option>
+										 	<option value="15">Quincenal</option>
+										 	<option value="30">Mensual</option>
+										 </select>
 									</div>
 								</div>
 								
 								<div class="col-md-4">
 									<div class="">
 										 <label for="">Monto</label> 
-										 <input type="number" th:field="*{monto}" class="form-control" min="0" placeholder="Monto a prestar">
+										 <input type="number" th:field="*{monto}" class="form-control cal_cuota" id="monto" min="0" placeholder="Monto a prestar">
 									</div>
 								</div>
 							</div>
@@ -121,40 +128,54 @@
 								<div class="col-md-4">
 									<div class="">
 										 <label for="">Pagos</label> 
-										 <input type="number" th:field="*{pagos}" class="form-control" min="0">
+										 <input type="number" th:field="*{pagos}" class="form-control cal_cuota" id="pagos" min="0">
 									</div>
 								</div>
 								<div class="col-md-4">
 									<div class="">
 										 <label for="">Mora % dia</label> 
-										 <input type="number" th:field="*{mora}" class="form-control" min="0" placeholder="Monto a prestar">
+										 <input type="number" th:field="*{mora}" class="form-control" id="pago_mora" min="0" placeholder="Monto a prestar">
 									</div>
 								</div>
 								<div class="col-md-4">
 									<div class="">
 										 <label for="">Tasa Mensual</label> 
-										 <input type="number" th:field="*{tasa}" class="form-control" min="0" placeholder="Monto a prestar">
+										 <input type="number" th:field="*{tasa}" class="form-control cal_cuota" min="0" id="tasa" placeholder="Monto a prestar">
 									</div>
 								</div>
 							</div>
 							
+						<div id="calculosTasa">
+							<input type="hidden" th:value="${tasa}" id="responseTasa">
+							<input type="hidden" th:value="${interes}" id="responseTasaInteres">
+							<input type="hidden" th:value="${capital}" id="responseTasaCapital">
+							<input type="hidden" th:value="${total_pagar}" id="responseTasaTotalPagar">	
+						</div>		
+							
+						<div id="calculosCuota">
+							<input type="hidden" th:value="${cuota}" id="responseCuota">
+							<input type="hidden" th:value="${interes}" id="responseInteres">
+							<input type="hidden" th:value="${capital}" id="responseCapital">
+							<input type="hidden" th:value="${total_pagar}" id="responseTotalPagar">	
+						</div>	
+						
 							<div class="row">
 								<div class="col-md-4">
 									<div class="">
 										 <label for="">Valor Cuota</label> 
-										 <input type="number" th:field="*{valor_cuota}" class="form-control" min="0">
+										 <input type="number" th:field="*{valor_cuota}" id="valor_cuota" class="form-control cal_tasa" min="0">
 									</div>
 								</div>
 								<div class="col-md-4">
 									<div class="">
 										 <label for="">Interes</label> 
-										 <input type="number" th:field="*{interes}" class="form-control" min="0">
+										 <input type="number" th:field="*{interes}" id="valor_interes" class="form-control" disabled="disabled" min="0">
 									</div>
 								</div>
 								<div class="col-md-4">
 									<div class="">
 										 <label for="">Total a pagar</label> 
-										 <input type="number" th:field="*{totalPagar}" class="form-control" min="0">
+										 <input type="number" th:field="*{totalPagar}" id="total_pagar" disabled="disabled" class="form-control" min="0">
 									</div>
 								</div>
 							</div>

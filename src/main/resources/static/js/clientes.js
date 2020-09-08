@@ -86,6 +86,43 @@ function addEvents(){
 			addEvents();
 		});
 	});
+	
+	$(".cal_cuota").change(function(){			
+			var monto=$("#monto").val();
+			var pagos=$("#pagos").val();
+			var tasa=$("#tasa").val();
+			
+		  if(monto && pagos && tasa){
+			  $.post("/prestamos/calculoCuota",$("#formulario_prestamo").serialize(),
+					function(data){
+						console.log("Calculo Cuota");
+						$("#calculosCuota").replaceWith(data);
+						$("#valor_cuota").val($("#responseCuota").val());
+					    $("#valor_interes").val($("#responseInteres").val());   
+						$("#total_pagar").val($("#responseTotalPagar").val());
+						addEvents();
+				});
+		  }
+		});
+	
+	$(".cal_tasa").change(function(){
+			var monto=$("#monto").val();
+			var pagos=$("#pagos").val();
+			var cuota=$("#valor_cuota").val();
+			
+		if(monto && pagos && cuota){ 
+			  $.post("/prestamos/calculoTasa",$("#formulario_prestamo").serialize(),
+					function(data){
+						console.log("Calculo Tasa");
+						$("#calculosTasa").replaceWith(data);
+					    $("#valor_interes").val($("#responseTasaInteres").val()); 
+					    $("#tasa").val($("#responseTasa").val());
+						$("#total_pagar").val($("#responseTasaTotalPagar").val());
+						addEvents();
+				});
+		  }
+	});
+	
 	/** Fin Prestamos **/
 	
 	$('#tabla').DataTable({
