@@ -40,8 +40,7 @@ public class Prestamo {
 	private String observacion;
 	private Double balance = 0.0;
 	
-	@Column(name = "valor_interes")
-	private Double interes= 0.0;
+	private Double valor_interes= 0.0;
 	
 	@Column(name = "total_a_pagar")
 	private Double totalPagar = 0.0;
@@ -161,13 +160,13 @@ public class Prestamo {
 	public void setBalance(Double balance) {
 		this.balance = balance;
 	}
-
-	public Double getInteres() {
-		return interes;
+	
+	public Double getValor_interes() {
+		return valor_interes;
 	}
 
-	public void setInteres(Double interes) {
-		this.interes = interes;
+	public void setValor_interes(Double valor_interes) {
+		this.valor_interes = valor_interes;
 	}
 
 	public Double getTotalPagar() {

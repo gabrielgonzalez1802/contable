@@ -199,7 +199,7 @@ public class PrestamosController {
 				//Coutas Fijas
 				int x = 0;
 
-				double interes = (prestamo.getMonto() * (prestamo.getTasa() / 100) * (prestamo.getPagos() / fre))
+				double interes = (prestamo.getMonto() * (prestamo.getTasa() / 100) * (prestamo.getPagos().doubleValue() / fre))
 						/ prestamo.getPagos();
 
 				double capital = prestamo.getMonto() / prestamo.getPagos();
