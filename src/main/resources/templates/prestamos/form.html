@@ -74,7 +74,7 @@
 								<div class="col-md-4">
 									<div class="">
 										<label for="">Tipo</label>
-										 <select th:field="*{tipo}" id="tipo_prestamo" class="form-control cal_cuota" required="required">
+										 <select th:field="*{tipo}" id="tipo_prestamo" class="form-control" oninput="javascript:calCuota()" required="required">
 										 	<option value="1">Cuotas Fijas</option>
 										 	<option value="3">Cuotas Variables</option>
 										 	<option value="2">Interes Fijo</option>
@@ -119,7 +119,7 @@
 								<div class="col-md-4">
 									<div class="">
 										 <label for="">Monto</label> 
-										 <input type="number" th:field="*{monto}" class="form-control cal_cuota" id="monto" min="0" placeholder="Monto a prestar">
+										 <input type="number" th:field="*{monto}" class="form-control" oninput="javascript:calCuota()" id="monto" min="0" placeholder="Monto a prestar">
 									</div>
 								</div>
 							</div>
@@ -128,7 +128,7 @@
 								<div class="col-md-4">
 									<div class="">
 										 <label for="">Pagos</label> 
-										 <input type="number" th:field="*{pagos}" class="form-control cal_cuota" id="pagos" min="0">
+										 <input type="number" th:field="*{pagos}" class="form-control" oninput="javascript:calCuota()" id="pagos" min="0">
 									</div>
 								</div>
 								<div class="col-md-4">
@@ -140,7 +140,7 @@
 								<div class="col-md-4">
 									<div class="">
 										 <label for="">Tasa Mensual</label> 
-										 <input type="number" th:field="*{tasa}" class="form-control cal_cuota" min="0" id="tasa" placeholder="Monto a prestar">
+										 <input type="number" th:field="*{tasa}" class="form-control" oninput="javascript:calCuota()" min="0" id="tasa" placeholder="Monto a prestar">
 									</div>
 								</div>
 							</div>
@@ -163,7 +163,7 @@
 								<div class="col-md-4">
 									<div class="">
 										 <label for="">Valor Cuota</label> 
-										 <input type="number" th:field="*{valor_cuota}" id="valor_cuota" class="form-control cal_tasa" min="0">
+										 <input type="number" th:field="*{valor_cuota}" id="valor_cuota" oninput="javascript:calTasa()" class="form-control" min="0">
 									</div>
 								</div>
 								<div class="col-md-4">

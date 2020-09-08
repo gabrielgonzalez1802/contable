@@ -1,5 +1,5 @@
 function addEvents(){
-	
+
 	$("#navListaCliente").click(function(e){
 		e.preventDefault();
 		$("#contenido").load("/clientes/",function(data){
@@ -87,45 +87,44 @@ function addEvents(){
 		});
 	});
 	
-	$(".cal_cuota").change(function(){			
-			var monto=$("#monto").val();
-			var pagos=$("#pagos").val();
-			var tasa=$("#tasa").val();
-			
-		  if(parseFloat(monto) > 0 && parseFloat(pagos) && parseFloat(tasa)){
-			  $.post("/prestamos/calculoCuota",$("#formulario_prestamo").serialize(),
-					function(data){
-						console.log("Calculo Cuota");
-						$("#calculosCuota").replaceWith(data);
-						$("#valor_cuota").val($("#responseCuota").val());
-					    $("#valor_interes").val($("#responseInteres").val());   
-						$("#total_pagar").val($("#responseTotalPagar").val());
-						
-						if(parseFloat(tasa) > 0 && parseFloat(pagos) > 0 && parseFloat(tasa)){
-							amortizar();
-						}
-						addEvents();
-				});
-		  }
-		});
+//	$(".cal_cuota").change(function(){			
+//			var monto=$("#monto").val();
+//			var pagos=$("#pagos").val();
+//			var tasa=$("#tasa").val();
+//			
+//		  if(parseFloat(monto) > 0 && parseFloat(pagos) && parseFloat(tasa)){
+//			  $.post("/prestamos/calculoCuota",$("#formulario_prestamo").serialize(),
+//					function(data){
+//						console.log("Calculo Cuota");
+//						$("#calculosCuota").replaceWith(data);
+//						$("#valor_cuota").val($("#responseCuota").val());
+//					    $("#valor_interes").val($("#responseInteres").val());   
+//						$("#total_pagar").val($("#responseTotalPagar").val());
+//						
+//						if(parseFloat(tasa) > 0 && parseFloat(pagos) > 0 && parseFloat(tasa)){
+//							console.log("entre en amortizar");
+//							amortizar();
+//						}
+//				});
+//		  }
+//		});
 	
-	$(".cal_tasa").change(function(){
-			var monto=$("#monto").val();
-			var pagos=$("#pagos").val();
-			var cuota=$("#valor_cuota").val();
-			
-		if(monto && pagos && cuota){ 
-			  $.post("/prestamos/calculoTasa",$("#formulario_prestamo").serialize(),
-					function(data){
-						console.log("Calculo Tasa");
-						$("#calculosTasa").replaceWith(data);
-					    $("#valor_interes").val($("#responseTasaInteres").val()); 
-					    $("#tasa").val($("#responseTasa").val());
-						$("#total_pagar").val($("#responseTasaTotalPagar").val());
-						addEvents();
-				});
-		  }
-	});
+//	$(".cal_tasa").change(function(){
+//			var monto=$("#monto").val();
+//			var pagos=$("#pagos").val();
+//			var cuota=$("#valor_cuota").val();
+//			
+//		if(monto && pagos && cuota){ 
+//			  $.post("/prestamos/calculoTasa",$("#formulario_prestamo").serialize(),
+//					function(data){
+//						console.log("Calculo Tasa");
+//						$("#calculosTasa").replaceWith(data);
+//					    $("#valor_interes").val($("#responseTasaInteres").val()); 
+//					    $("#tasa").val($("#responseTasa").val());
+//						$("#total_pagar").val($("#responseTasaTotalPagar").val());
+//				});
+//		  }
+//	});
 	
 	/** Fin Prestamos **/
 	
@@ -171,6 +170,46 @@ function amortizar(){
 			$("#cuerpo_amortizacion").replaceWith(data);
 			addEvents();
 	 	});
+}
+
+function calCuota(){
+	var monto=$("#monto").val();
+	var pagos=$("#pagos").val();
+	var tasa=$("#tasa").val();
+	
+  if(parseFloat(monto) > 0 && parseFloat(pagos) && parseFloat(tasa)){
+	  $.post("/prestamos/calculoCuota",$("#formulario_prestamo").serialize(),
+			function(data){
+				console.log("Calculo Cuota");
+				$("#calculosCuota").replaceWith(data);
+				$("#valor_cuota").val($("#responseCuota").val());
+			    $("#valor_interes").val($("#responseInteres").val());   
+				$("#total_pagar").val($("#responseTotalPagar").val());
+				
+				if(parseFloat(tasa) > 0 && parseFloat(pagos) > 0 && parseFloat(tasa)){
+					console.log("entre en amortizar");
+					amortizar();
+				}
+		});
+  }
+}
+
+function calTasa(){
+	var monto=$("#monto").val();
+	var pagos=$("#pagos").val();
+	var cuota=$("#valor_cuota").val();
+	
+	if(monto && pagos && cuota){ 
+		  $.post("/prestamos/calculoTasa",$("#formulario_prestamo").serialize(),
+				function(data){
+					console.log("Calculo Tasa");
+					$("#calculosTasa").replaceWith(data);
+				    $("#valor_interes").val($("#responseTasaInteres").val()); 
+				    $("#tasa").val($("#responseTasa").val());
+					$("#total_pagar").val($("#responseTasaTotalPagar").val());
+					amortizar();
+			});
+	  }
 }
 
 function eliminarCliente(id){
