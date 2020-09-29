@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,14 +17,19 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.contable.model.Cliente;
 import com.contable.model.Usuario;
 import com.contable.service.IClientesService;
+import com.contable.util.Utileria;
 
 @Controller
 @RequestMapping("/clientes")
 public class ClientesController {
+	
+	@Value("${contable.ruta.imagenes}")
+	private String ruta;
 	
 	@Autowired
 	private IClientesService serviceClientes;
@@ -67,9 +75,11 @@ public class ClientesController {
 	} 
 	
 	@PostMapping("/guardar")
-	public String guardar(Model model, @ModelAttribute("cliente") Cliente cliente, HttpSession session) {
+	@ResponseBody
+	public ResponseEntity<String> guardar(Model model, @ModelAttribute("cliente") Cliente cliente, HttpSession session) {
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		String response = "INSERT";
+		
 		if(cliente.getId()!=null) {
 			response = "UPDATE";
 			Cliente originalCliente = serviceClientes.buscarPorId(cliente.getId());
@@ -77,14 +87,34 @@ public class ClientesController {
 			cliente.setUsuario(originalCliente.getUsuario());
 			cliente.setUsuario_modificado(usuario);
 			cliente.setCreado(originalCliente.getCreado());
+			cliente.setFotoFrontal(originalCliente.getFotoFrontal());
+			cliente.setFotoTrasera(originalCliente.getFotoTrasera());
 		}else {
 			cliente.setUsuario(usuario);
 		}
+		
+		//verificamos la imagen frontal
+		if (!cliente.getFrontal().isEmpty()) {
+			String nombreImagenFrente = Utileria.guardarArchivo(cliente.getFrontal(), ruta);
+			if (nombreImagenFrente != null){ // La imagen si se subio
+				// Procesamos la variable nombreImagen
+				cliente.setFotoFrontal(nombreImagenFrente);
+			}
+		}
+		
+		//verificamos la imagen trasera
+		if (!cliente.getTrasera().isEmpty()) {
+			String nombreImagenTrasera = Utileria.guardarArchivo(cliente.getTrasera(), ruta);
+			if (nombreImagenTrasera != null){ // La imagen si se subio
+				// Procesamos la variable nombreImagen
+				cliente.setFotoTrasera(nombreImagenTrasera);
+			}
+		}
 			
 		serviceClientes.guardar(cliente);
-		model.addAttribute("responseCliente", response);
-		model.addAttribute("cliente", cliente);
-		return "home :: #grupoResponseCliente";
+//		model.addAttribute("responseCliente", response);
+//		model.addAttribute("cliente", cliente);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
+
 }

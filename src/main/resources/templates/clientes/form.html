@@ -33,7 +33,7 @@
 	</div>
 	<div class="card-body">
 		<div style="min-height: 375px">
-			<form th:object="${cliente}" id="formClient" method="post">
+			<form th:object="${cliente}" id="formClient" method="post" enctype="multipart/form-data">
 			<div class="row">
 				<div class="col-md-3">
 					 <div class="form-group">
@@ -49,7 +49,7 @@
 				<div class="col-md-3">
 					 <div class="form-group">
 					    <label for="cedulaCliente">Numero</label>
-					    <input type="number" th:field="*{cedula}" class="form-control" placeholder="Cedula" id="cedulaCliente" required="required">
+					    <input type="text" maxlength="13" th:field="*{cedula}" class="form-control" placeholder="Cedula" id="cedulaCliente" required="required">
 					  </div>
 				</div>
 				
@@ -67,14 +67,14 @@
 				<div class="col-md-3">
 				 	<div class="form-group">
 					  <label for="telefonoCliente">Telefono</label>
-					   	<input type="text" th:field="*{telefono}" class="form-control" id="telefonoCliente" placeholder="Telefono">
+					   	<input type="text" maxlength="12" th:field="*{telefono}" class="form-control" id="telefonoCliente" placeholder="Telefono">
 					 </div>
 				</div>
 				
 				<div class="col-md-3">
 				 	<div class="form-group">
 					  <label for="telefonoCliente">Celular</label>
-					   	<input type="text" th:field="*{celular}" class="form-control" id="celularCliente" placeholder="Celular">
+					   	<input type="text" maxlength="12" th:field="*{celular}" class="form-control" id="celularCliente" placeholder="Celular">
 					 </div>
 				</div>
 				
@@ -90,6 +90,21 @@
 					  <label for="rncCliente">NCF</label>
 					   	<input type="text" th:field="*{ncf}" class="form-control" id="ncfCliente" placeholder="NCF">
 					 </div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-6">
+					 <div class="form-group">
+					    <label for="fotoFrente">Foto frontal</label>
+					    <input type="file" th:field="*{frontal}" class="form-control" id="fotoFrente">
+					  </div>
+				</div>
+				<div class="col-md-6">
+					 <div class="form-group">
+					    <label for="fotoTrasera">Foto posterior</label>
+					    <input type="file" th:field="*{trasera}" class="form-control" id="fotoTrasera">
+					  </div>
 				</div>
 			</div>
 			
@@ -113,7 +128,7 @@
 				<div class="col-md-8">
 				 	<div class="form-group">
 					  <label for="telefonoEmpresaCliente">Telefono de la Empresa</label>
-					   	<input type="text" class="form-control" th:field="*{telefonoEmpresa}" placeholder="Nombre" id="telefonoEmpresaCliente">
+					   	<input type="text" maxlength="12" class="form-control" th:field="*{telefonoEmpresa}" placeholder="Telefono de la Empresa" id="telefonoEmpresaCliente">
 					 </div>
 				</div>
 			</div>

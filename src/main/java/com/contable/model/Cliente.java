@@ -10,6 +10,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Table(name = "clientes")
@@ -27,6 +30,15 @@ public class Cliente {
 	private String direccion;
 	private String telefono;
 	private String celular;
+	
+	private String fotoFrontal;
+	private String fotoTrasera;
+	
+	@Transient
+	private MultipartFile frontal;
+	
+	@Transient
+	private MultipartFile trasera;
 	
 	@OneToOne
 	@JoinColumn(name = "usuario_eliminado")
@@ -207,13 +219,46 @@ public class Cliente {
 		this.usuario_modificado = usuario_modificado;
 	}
 
+	public String getFotoFrontal() {
+		return fotoFrontal;
+	}
+
+	public void setFotoFrontal(String fotoFrontal) {
+		this.fotoFrontal = fotoFrontal;
+	}
+
+	public String getFotoTrasera() {
+		return fotoTrasera;
+	}
+
+	public void setFotoTrasera(String fotoTrasera) {
+		this.fotoTrasera = fotoTrasera;
+	}
+
+	public MultipartFile getFrontal() {
+		return frontal;
+	}
+
+	public void setFrontal(MultipartFile frontal) {
+		this.frontal = frontal;
+	}
+
+	public MultipartFile getTrasera() {
+		return trasera;
+	}
+
+	public void setTrasera(MultipartFile trasera) {
+		this.trasera = trasera;
+	}
+
 	@Override
 	public String toString() {
 		return "Cliente [id=" + id + ", tipoDocumento=" + tipoDocumento + ", nombre=" + nombre + ", cedula=" + cedula
 				+ ", rnc=" + rnc + ", ncf=" + ncf + ", direccion=" + direccion + ", telefono=" + telefono + ", celular="
-				+ celular + ", usuarioEliminado=" + usuarioEliminado + ", usuario_modificado=" + usuario_modificado
-				+ ", modificado=" + modificado + ", creado=" + creado + ", eliminado=" + eliminado + ", nombreEmpresa="
-				+ nombreEmpresa + ", direccionEmpresa=" + direccionEmpresa + ", telefonoEmpresa=" + telefonoEmpresa
-				+ ", estado=" + estado + ", usuario=" + usuario + "]";
+				+ celular + ", fotoFrontal=" + fotoFrontal + ", fotoTrasera=" + fotoTrasera + ", usuarioEliminado="
+				+ usuarioEliminado + ", usuario_modificado=" + usuario_modificado + ", modificado=" + modificado
+				+ ", creado=" + creado + ", eliminado=" + eliminado + ", nombreEmpresa=" + nombreEmpresa
+				+ ", direccionEmpresa=" + direccionEmpresa + ", telefonoEmpresa=" + telefonoEmpresa + ", estado="
+				+ estado + ", usuario=" + usuario + "]";
 	}
 }
