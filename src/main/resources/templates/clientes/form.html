@@ -38,8 +38,18 @@
 				<div class="col-md-3">
 					 <div class="form-group">
 					 	<input type="hidden" th:field="*{id}">
-					    <label for="codigoCliente">Codigo</label>
-					    <input type="text" th:field="*{codigo}" class="form-control" placeholder="Codigo" id="codigoCliente" required="required">
+					    <label for="tipoDocumento">Tipo de identificacion</label>
+					   <select class ="form-control" th:field="*{tipoDocumento}">
+					  		<option value="Cedula">Cedula</option>
+					  		<option value="Pasaporte">Pasaporte</option>
+					   </select>
+					  </div>
+				</div>
+				
+				<div class="col-md-3">
+					 <div class="form-group">
+					    <label for="cedulaCliente">Numero</label>
+					    <input type="number" th:field="*{cedula}" class="form-control" placeholder="Cedula" id="cedulaCliente" required="required">
 					  </div>
 				</div>
 				
@@ -50,31 +60,32 @@
 					 </div>
 				</div>
 				
-				<div class="col-md-3">
-					 <div class="form-group">
-					    <label for="cedulaCliente">Cedula</label>
-					    <input type="text" th:field="*{cedula}" class="form-control" placeholder="Cedula" id="cedulaCliente" required="required">
-					  </div>
-				</div>
 			</div>
 			
 			<div class="row">
 			
-				<div class="col-md-4">
+				<div class="col-md-3">
 				 	<div class="form-group">
 					  <label for="telefonoCliente">Telefono</label>
 					   	<input type="text" th:field="*{telefono}" class="form-control" id="telefonoCliente" placeholder="Telefono">
 					 </div>
 				</div>
 				
-				<div class="col-md-4">
+				<div class="col-md-3">
+				 	<div class="form-group">
+					  <label for="telefonoCliente">Celular</label>
+					   	<input type="text" th:field="*{celular}" class="form-control" id="celularCliente" placeholder="Celular">
+					 </div>
+				</div>
+				
+				<div class="col-md-3">
 				 	<div class="form-group">
 					  <label for="rncCliente">RNC</label>
 					   	<input type="text" th:field="*{rnc}" class="form-control" id="rncCliente" placeholder="RNC">
 					 </div>
 				</div>
 				
-				<div class="col-md-4">
+				<div class="col-md-3">
 				 	<div class="form-group">
 					  <label for="rncCliente">NCF</label>
 					   	<input type="text" th:field="*{ncf}" class="form-control" id="ncfCliente" placeholder="NCF">

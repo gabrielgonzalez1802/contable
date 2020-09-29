@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -17,15 +19,26 @@ public class Cliente {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	private String codigo;
+	private String tipoDocumento;
 	private String nombre;
 	private String cedula;
 	private String rnc;
 	private String ncf;
 	private String direccion;
 	private String telefono;
+	private String celular;
 	
+	@OneToOne
+	@JoinColumn(name = "usuario_eliminado")
+	private Usuario usuarioEliminado;
+	
+	@OneToOne
+	@JoinColumn(name = "usuario_modificado")
+	private Usuario usuario_modificado;
+	
+	private Date modificado = new Date();
 	private Date creado = new Date();
+	private Date eliminado;
 	
 	@Column(name = "nombre_empresa")
 	private String nombreEmpresa;
@@ -37,6 +50,10 @@ public class Cliente {
 	private String telefonoEmpresa;
 	
 	private Integer estado = 1;
+	
+	@OneToOne
+	@JoinColumn(name = "id_usuario")
+	private Usuario usuario;
 
 	public Integer getId() {
 		return id;
@@ -44,14 +61,6 @@ public class Cliente {
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public String getCodigo() {
-		return codigo;
-	}
-
-	public void setCodigo(String codigo) {
-		this.codigo = codigo;
 	}
 
 	public String getNombre() {
@@ -142,11 +151,69 @@ public class Cliente {
 		this.ncf = ncf;
 	}
 
+	public String getTipoDocumento() {
+		return tipoDocumento;
+	}
+
+	public void setTipoDocumento(String tipoDocumento) {
+		this.tipoDocumento = tipoDocumento;
+	}
+	
+	public String getCelular() {
+		return celular;
+	}
+
+	public void setCelular(String celular) {
+		this.celular = celular;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
+	public Usuario getUsuarioEliminado() {
+		return usuarioEliminado;
+	}
+
+	public void setUsuarioEliminado(Usuario usuarioEliminado) {
+		this.usuarioEliminado = usuarioEliminado;
+	}
+
+	public Date getModificado() {
+		return modificado;
+	}
+
+	public void setModificado(Date modificado) {
+		this.modificado = modificado;
+	}
+
+	public Date getEliminado() {
+		return eliminado;
+	}
+
+	public void setEliminado(Date eliminado) {
+		this.eliminado = eliminado;
+	}
+
+	public Usuario getUsuario_modificado() {
+		return usuario_modificado;
+	}
+
+	public void setUsuario_modificado(Usuario usuario_modificado) {
+		this.usuario_modificado = usuario_modificado;
+	}
+
 	@Override
 	public String toString() {
-		return "Cliente [id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", cedula=" + cedula + ", rnc=" + rnc
-				+ ", ncf=" + ncf + ", direccion=" + direccion + ", telefono=" + telefono + ", creado=" + creado
-				+ ", nombreEmpresa=" + nombreEmpresa + ", direccionEmpresa=" + direccionEmpresa + ", telefonoEmpresa="
-				+ telefonoEmpresa + ", estado=" + estado + "]";
+		return "Cliente [id=" + id + ", tipoDocumento=" + tipoDocumento + ", nombre=" + nombre + ", cedula=" + cedula
+				+ ", rnc=" + rnc + ", ncf=" + ncf + ", direccion=" + direccion + ", telefono=" + telefono + ", celular="
+				+ celular + ", usuarioEliminado=" + usuarioEliminado + ", usuario_modificado=" + usuario_modificado
+				+ ", modificado=" + modificado + ", creado=" + creado + ", eliminado=" + eliminado + ", nombreEmpresa="
+				+ nombreEmpresa + ", direccionEmpresa=" + direccionEmpresa + ", telefonoEmpresa=" + telefonoEmpresa
+				+ ", estado=" + estado + ", usuario=" + usuario + "]";
 	}
 }

@@ -298,7 +298,7 @@ body {
 
 .logo-header {
   float: left;
-  width: 250px;
+  width: 160px;
   height: 62px;
   line-height: 60px;
   color: #333333;
@@ -382,7 +382,7 @@ body {
   top: 0;
   bottom: 0;
   left: 0;
-  width: 250px;
+  width: 160px;
   margin-top: 62px;
   display: block;
   z-index: 1000;
@@ -718,7 +718,7 @@ body {
 
 .main-panel {
   position: relative;
-  width: calc(100% - 250px);
+  width: calc(100% - 160px);
   height: 100vh;
   min-height: 100%;
   float: right;
@@ -967,9 +967,9 @@ body {
       .sidebar_minimize .sidebar .sidebar-wrapper .nav-section .sidebar-mini-icon {
         display: block; }
   .sidebar_minimize .sidebar:hover {
-    width: 250px; }
+    width: 160px; }
     .sidebar_minimize .sidebar:hover .sidebar-wrapper {
-      width: 250px; }
+      width: 160px; }
       .sidebar_minimize .sidebar:hover .sidebar-wrapper .user {
         padding-left: 15px;
         padding-right: 15px; }
@@ -994,7 +994,7 @@ body {
       .sidebar_minimize .sidebar:hover .sidebar-wrapper .nav-section .text-section {
         display: block; }
   .sidebar_minimize.sidebar_minimize_hover .logo-header {
-    width: 250px;
+    width: 160px;
     padding-left: 25px;
     padding-right: 25px;
     text-align: left; }
@@ -1005,7 +1005,7 @@ body {
       .sidebar_minimize.sidebar_minimize_hover .logo-header .logo img {
         display: inline-block !important; }
   .sidebar_minimize.sidebar_minimize_hover .main-panel {
-    width: calc(100% - 250px); }
+    width: calc(100% - 160px); }
 
   .sidebar_minimize_hover .logo-header .nav-toggle {
     right: 18px !important;

@@ -87,44 +87,29 @@ function addEvents(){
 		});
 	});
 	
-//	$(".cal_cuota").change(function(){			
-//			var monto=$("#monto").val();
-//			var pagos=$("#pagos").val();
-//			var tasa=$("#tasa").val();
-//			
-//		  if(parseFloat(monto) > 0 && parseFloat(pagos) && parseFloat(tasa)){
-//			  $.post("/prestamos/calculoCuota",$("#formulario_prestamo").serialize(),
-//					function(data){
-//						console.log("Calculo Cuota");
-//						$("#calculosCuota").replaceWith(data);
-//						$("#valor_cuota").val($("#responseCuota").val());
-//					    $("#valor_interes").val($("#responseInteres").val());   
-//						$("#total_pagar").val($("#responseTotalPagar").val());
-//						
-//						if(parseFloat(tasa) > 0 && parseFloat(pagos) > 0 && parseFloat(tasa)){
-//							console.log("entre en amortizar");
-//							amortizar();
-//						}
-//				});
-//		  }
-//		});
+	//Validaciones para el formulario de cliente
+	$("#tipoDocumento").change(function(e){
+		console.log("Tipo de documento");
+		if($("#tipoDocumento").val()=="Cedula"){
+			var cedula = document.getElementById("cedulaCliente");
+			cedula.type='number';
+		}else{
+			var cedula = document.getElementById("cedulaCliente");
+			cedula.type='text';
+		}
+	});
 	
-//	$(".cal_tasa").change(function(){
-//			var monto=$("#monto").val();
-//			var pagos=$("#pagos").val();
-//			var cuota=$("#valor_cuota").val();
-//			
-//		if(monto && pagos && cuota){ 
-//			  $.post("/prestamos/calculoTasa",$("#formulario_prestamo").serialize(),
-//					function(data){
-//						console.log("Calculo Tasa");
-//						$("#calculosTasa").replaceWith(data);
-//					    $("#valor_interes").val($("#responseTasaInteres").val()); 
-//					    $("#tasa").val($("#responseTasa").val());
-//						$("#total_pagar").val($("#responseTasaTotalPagar").val());
-//				});
-//		  }
-//	});
+	//Validacion para cedula
+	$('#cedulaCliente').on('input', function () { 
+		if($("#tipoDocumento").val()=="Cedula"){
+			//Solo numeros
+		    this.value = this.value.replace(/[^0-9]/g,'');
+		    var cant = $('#cedulaCliente').val().length;
+		    if(cant == 3){
+//		    	$('#cedulaCliente').val(this.value+"-");
+		    }
+		}
+	});
 	
 	/** Fin Prestamos **/
 	

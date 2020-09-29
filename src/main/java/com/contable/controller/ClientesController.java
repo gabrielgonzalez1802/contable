@@ -1,6 +1,10 @@
 package com.contable.controller;
 
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.contable.model.Cliente;
+import com.contable.model.Usuario;
 import com.contable.service.IClientesService;
 
 @Controller
@@ -23,7 +28,8 @@ public class ClientesController {
 	
 	@GetMapping("/")
 	public String getListaClientes(Model model) {
-		List<Cliente> listaClientes = serviceClientes.buscarTodos();
+		List<Cliente> listaClientes = serviceClientes.buscarTodos().
+				stream().filter(e -> e.getEstado() == 1).collect(Collectors.toList());
 		model.addAttribute("listaClientes", listaClientes);
 		return "clientes/listaClientes :: listaCliente";
 	}
@@ -47,19 +53,34 @@ public class ClientesController {
 	} 
 	
 	@GetMapping("/eliminar/{id}")
-	public String eliminarCliente(Model model, @PathVariable(name = "id") Integer id) {
-		serviceClientes.eliminar(id);
-		List<Cliente> listaClientes = serviceClientes.buscarTodos();
+	public String eliminarCliente(Model model, @PathVariable(name = "id") Integer id, HttpSession session) {
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		Cliente cliente = serviceClientes.buscarPorId(id);
+		cliente.setEliminado(new Date());
+		cliente.setEstado(0);
+		cliente.setUsuarioEliminado(usuario);
+		serviceClientes.guardar(cliente);
+		List<Cliente> listaClientes = serviceClientes.buscarTodos().
+				stream().filter(e -> e.getEstado() == 1).collect(Collectors.toList());
 		model.addAttribute("listaClientes", listaClientes);
 		return "clientes/listaClientes :: listaCliente";
 	} 
 	
 	@PostMapping("/guardar")
-	public String guardar(Model model, @ModelAttribute("cliente") Cliente cliente) {
+	public String guardar(Model model, @ModelAttribute("cliente") Cliente cliente, HttpSession session) {
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		String response = "INSERT";
 		if(cliente.getId()!=null) {
 			response = "UPDATE";
+			Cliente originalCliente = serviceClientes.buscarPorId(cliente.getId());
+			cliente.setModificado(new Date());
+			cliente.setUsuario(originalCliente.getUsuario());
+			cliente.setUsuario_modificado(usuario);
+			cliente.setCreado(originalCliente.getCreado());
+		}else {
+			cliente.setUsuario(usuario);
 		}
+			
 		serviceClientes.guardar(cliente);
 		model.addAttribute("responseCliente", response);
 		model.addAttribute("cliente", cliente);

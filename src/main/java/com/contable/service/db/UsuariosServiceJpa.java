@@ -54,4 +54,9 @@ public class UsuariosServiceJpa implements IUsuariosService{
 		}
 	}
 
+	@Override
+	public Usuario buscarPorUsername(String userName) {
+		return repo.findByUsername(userName);
+	}
+
 }
