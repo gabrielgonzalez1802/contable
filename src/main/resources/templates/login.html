@@ -1,162 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Iniciar Sesion</title>
-  <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
-  <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.min.css}">
-  <style>
-    :root {
-  --input-padding-x: 1.5rem;
-  --input-padding-y: 0.75rem;
-}
-
-.login,
-.image {
-  min-height: 100vh;
-}
-
-.bg-image {
-  background-image: url('https://cdn.pixabay.com/photo/2017/03/07/23/34/wallet-2125548__340.jpg');
-  background-size: cover;
-  background-position: center;
-}
-
-.login-heading {
-  font-weight: 300;
-}
-
-.btn-login {
-  font-size: 0.9rem;
-  letter-spacing: 0.05rem;
-  padding: 0.75rem 1rem;
-  border-radius: 2rem;
-}
-
-.form-label-group {
-  position: relative;
-  margin-bottom: 1rem;
-}
-
-.form-label-group>input,
-.form-label-group>label {
-  padding: var(--input-padding-y) var(--input-padding-x);
-  height: auto;
-  border-radius: 2rem;
-}
-
-.form-label-group>label {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: block;
-  width: 100%;
-  margin-bottom: 0;
-  /* Override default `<label>` margin */
-  line-height: 1.5;
-  color: #495057;
-  cursor: text;
-  /* Match the input under the label */
-  border: 1px solid transparent;
-  border-radius: .25rem;
-  transition: all .1s ease-in-out;
-}
-
-.form-label-group input::-webkit-input-placeholder {
-  color: transparent;
-}
-
-.form-label-group input:-ms-input-placeholder {
-  color: transparent;
-}
-
-.form-label-group input::-ms-input-placeholder {
-  color: transparent;
-}
-
-.form-label-group input::-moz-placeholder {
-  color: transparent;
-}
-
-.form-label-group input::placeholder {
-  color: transparent;
-}
-
-.form-label-group input:not(:placeholder-shown) {
-  padding-top: calc(var(--input-padding-y) + var(--input-padding-y) * (2 / 3));
-  padding-bottom: calc(var(--input-padding-y) / 3);
-}
-
-.form-label-group input:not(:placeholder-shown)~label {
-  padding-top: calc(var(--input-padding-y) / 3);
-  padding-bottom: calc(var(--input-padding-y) / 3);
-  font-size: 12px;
-  color: #777;
-}
-
-/* Fallback for Edge
--------------------------------------------------- */
-
-@supports (-ms-ime-align: auto) {
-  .form-label-group>label {
-    display: none;
-  }
-  .form-label-group input::-ms-input-placeholder {
-    color: #777;
-  }
-}
-
-/* Fallback for IE
--------------------------------------------------- */
-
-@media all and (-ms-high-contrast: none),
-(-ms-high-contrast: active) {
-  .form-label-group>label {
-    display: none;
-  }
-  .form-label-group input:-ms-input-placeholder {
-    color: #777;
-  }
-}
-
-
-</style>
-</head>
-<body>
-    <div class="container-fluid">
-  <div class="row no-gutter">
-    <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image"></div>
-    <div class="col-md-8 col-lg-6">
-      <div class="login d-flex align-items-center py-5">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-9 col-lg-8 mx-auto">
-              <h3 class="login-heading mb-4 text-center">Iniciar Sesion!</h3>
-              <form th:action="@{/login}" method="POST">
-                <div class="form-label-group">
-                  <input type="text" name="username" id="inputUsername" class="form-control" placeholder="Usuario" autocomplete="off" required autofocus>
-                  <label for="inputUsername">Usuario</label>
-                </div>
-
-                <div class="form-label-group">
-                  <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required>
-                  <label for="inputPassword">Password</label>
-                </div>
-
-              <!--  <div class="custom-control custom-checkbox mb-3">
-                  <input type="checkbox" class="custom-control-input" id="customCheck1">
-                  <label class="custom-control-label" for="customCheck1">Remember password</label>
-                </div> -->
-                <input type="submit" value="Ingresar" class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2">
-                <div class="text-right">
-                  <a class="small" href="#">Forgot password?</a></div>
-              </form>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Mi sistema</title>
+  </head>
+  <body>
+    <div class="container" style="padding-top: 13%;">
+      <div class="row justify-content-sm-center">
+        <div class="col-md-4 col-sm-4">
+          <div style="border-radius:50px; border-style: solid;border-color: gray;">
+            <form th:action="@{/login}" method="POST" class="form-signin" style="padding-top: 10%;padding-bottom: 10%;padding-left: 8%;padding-right:8%;">
+            <h1 style="text-align: center;padding-bottom: 2%;">Usuario:</h1>
+            
+            <div class="form-group has-search">
+              <span class="form-control-feedback">
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-person-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                </svg>
+              </span>
+              <input type="text" name="username" class="form-control" placeholder="Usuario" style="border-radius: 10px;">
             </div>
+            
+            <div class="form-group has-search">
+              <span class="form-control-feedback">
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-file-earmark-lock" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+                  <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+                  <path fill-rule="evenodd" d="M8 6a1 1 0 0 0-1 1v1h2V7a1 1 0 0 0-1-1zm2 2.076V7a2 2 0 1 0-4 0v1.076c-.54.166-1 .597-1 1.224v2.4c0 .816.781 1.3 1.5 1.3h3c.719 0 1.5-.484 1.5-1.3V9.3c0-.627-.46-1.058-1-1.224zM6.105 9.125C6.02 9.193 6 9.258 6 9.3v2.4c0 .042.02.107.105.175A.637.637 0 0 0 6.5 12h3a.64.64 0 0 0 .395-.125c.085-.068.105-.133.105-.175V9.3c0-.042-.02-.107-.105-.175A.637.637 0 0 0 9.5 9h-3a.637.637 0 0 0-.395.125z"/>
+                </svg>
+              </span>
+              <input type="password" name="password" class="form-control" placeholder="**********" style="border-radius: 10px;">
+            </div>
+            <input type="submit" value="Sign in" class="btn btn-success btn-block mb-1" style="border-radius: 10px;">
+          </form>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
-</body>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script th:src="@{/js/jquery-3.5.1.slim.min.js}" ></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}" ></script>
+  </body>
 </html>

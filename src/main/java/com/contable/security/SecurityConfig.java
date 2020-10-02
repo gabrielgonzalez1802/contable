@@ -35,6 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.antMatchers(
 			"/img/**",
 			"/bootstrap/**",
+			"/assets/**",
 //			"/fontawesom/**",
 			"/fragments/**",
 			"/js/**",

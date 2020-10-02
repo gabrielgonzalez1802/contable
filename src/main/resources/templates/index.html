@@ -1,0 +1,300 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="Keywords" content=""/>
+    <title> Mi sistema</title>
+    <link rel="icon" th:href="@{/img/cafe.png}" type="image/x-icon"/>
+<!--     <link th:href="@{/assets/css/icons.css}" rel="stylesheet"> -->
+    <link th:href="@{/assets/plugins/sidebar/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/mscrollbar/jquery.mCustomScrollbar.css}" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/assets/css/sidemenu.css}">
+    <link th:href="@{/assets/css/style.css}" rel="stylesheet">
+    <link th:href="@{/assets/css/style-dark.css}" rel="stylesheet">
+    <link th:href="@{/assets/css/skin-modes.css}" rel="stylesheet" />
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link th:href="@{/assets/css/animate.css}" rel="stylesheet">
+    
+    	<!-- Fonts and icons -->
+	<script th:src="@{/js/webfont.min.js}"></script>
+	<script>
+		WebFont.load({
+			google: {"families":["Lato:300,400,700,900"]},
+			custom: {"families":["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['/css/fonts.min.css']},
+			active: function() {
+				sessionStorage.fonts = true;
+			}
+		});
+	</script>
+    
+  </head>
+  <body class="main-body app sidebar-mini sidenav-toggled">
+    <div id="global-loader">
+      <img th:src="@{/assets/img/loader.svg}" class="loader-img" alt="Loader">
+    </div>
+    <div class="page">
+
+      <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+      <aside class="app-sidebar sidebar-scroll">
+        
+        <div class="main-sidebar-header active">
+          <a class="desktop-logo logo-light active" href="#">
+            <img th:src="@{/img/cafe.png}" class="main-logo" alt="logo"></a>
+          <a class="desktop-logo logo-dark active" href="#">
+            <img th:src="@{/img/cafe.png}" class="main-logo dark-theme" alt="logo"></a>
+          <a class="logo-icon mobile-logo icon-light active" href="#">
+            <img th:src="@{/img/cafe.png}" class="logo-icon" alt="logo"></a>
+          <a class="logo-icon mobile-logo icon-dark active" href="#">
+            <img th:src="@{/img/cafe.png}" class="logo-icon dark-theme" alt="logo"></a>
+          
+         
+        </div>
+
+        <div th:insert="../static/fragments/sidebar :: sidebar" class="main-sidemenu"></div>
+
+      </aside>
+
+      <div class="main-content app-content">
+        <div class="main-header sticky side-header nav nav-item">
+          <div class="container-fluid">
+            <div class="main-header-left ">
+              <div class="responsive-logo">
+                <a href="#"><img th:src="@{/img/cafe.png}" class="logo-1" alt="logo"></a>
+                <a href="#"><img th:src="@{/img/cafe.png}" class="dark-logo-1" alt="logo"></a>
+                <a href="#"><img th:src="@{/img/cafe.png}" class="logo-2" alt="logo"></a>
+                <a href="#"><img th:src="@{/img/cafe.png}" class="dark-logo-2" alt="logo"></a>
+              </div>
+              
+            </div>
+            <div class="main-header-right">
+              
+              <div class="nav nav-item  navbar-nav-right ml-auto">
+                <!-- <div class="nav-item ">
+                  
+                  <div class="app-sidebar__toggle" data-toggle="sidebar">
+                    <a class="open-toggle" href="#">
+                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-card-heading" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M14.5 3h-13a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+                        <path fill-rule="evenodd" d="M3 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/>
+                        <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-1z"/>
+                      </svg>
+                    </a>
+                    <a class="close-toggle" href="#">
+                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-card-heading" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M14.5 3h-13a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+                        <path fill-rule="evenodd" d="M3 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/>
+                        <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-1z"/>
+                      </svg>
+                    </a>
+                  </div>
+
+                </div> -->
+                <div class="app-sidebar__toggle" data-toggle="sidebar">
+                  <!-- <a class="open-toggle" href="#"><i class="header-icon fe fe-align-left"></i></a>
+                  <a class="close-toggle" href="#"><i class="header-icons fe fe-x"></i></a> -->
+                  <div class="dropdown main-header-message right-toggle">
+                    <a class="nav-link open-toggle" >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="header-icon-svgs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </a>
+                    <a class="nav-link close-toggle" >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="header-icon-svgs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </a>
+                  </div>
+                </div>
+
+                <div class="nav-item full-screen fullscreen-button">
+                  <a class="new nav-link full-screen-link" href="#">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="header-icon-svgs" 
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                   <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
+                   </path></svg></a>
+                </div>
+
+                <div class="dropdown main-profile-menu nav nav-item nav-link">
+                  <a class="profile-user d-flex" href=""><img alt="" th:src="@{/assets/img/faces/6.jpg}"></a>
+                  <div class="dropdown-menu">
+                    <div class="main-header-profile bg-primary p-3">
+                      <div class="d-flex wd-100p">
+                        <div class="main-img-user"><img alt="" th:src="@{/assets/img/faces/6.jpg}" class=""></div>
+                        <div class="ml-3 my-auto">
+                          <h6>Juan Carlos</h6><span>Usuario</span>
+                        </div>
+                      </div>
+                    </div>
+                    <a class="dropdown-item" href=""><i class="bx bx-user-circle"></i>Perfil</a>
+                    <a class="dropdown-item" href=""><i class="bx bx-slider-alt"></i> Cuenta</a>
+                    <a class="dropdown-item" th:href="@{/logout}"><i class="bx bx-log-out"></i> Salir</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-fluid">
+          
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card card-dashboard-map-one">
+				 <center><img th:src="@{/img/martinsa.PNG}" style="max-width: 80%;"></center> 
+				 
+				 <br><br>
+				 
+				 <div class="container"> 
+					 <div class="float-right"> 
+					  	<div style="text-align:center">
+						  <h1 style="color: #2EABD7;" class="tx-35 mb-1 tx-inverse tx-semibold mg-b-0">809-5829558</h1>
+						  <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">plaza barcelona</h2>
+						  <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">51000 Santiago de los caballeros,</h2>
+				          <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Republica Dominicana</h2>
+				      	</div>
+				      </div> 
+			      </div>
+              </div>
+              
+            </div>
+          </div>
+
+
+<!--           <div class="row"> -->
+<!--             <div class="col-md-8"> -->
+<!--               <div class="card"> -->
+<!--                 <div class="card-header pb-0"> -->
+<!--                   <div class="d-flex justify-content-between"> -->
+<!--                     <h4 class="card-title mg-b-0">CUOTA POR MES</h4> -->
+<!--                     <i class="mdi mdi-dots-horizontal text-gray"></i> -->
+<!--                   </div> -->
+<!--                   <p class="tx-12 tx-gray-500 mb-2">Generar reporte. <a href="">Click</a></p> -->
+<!--                 </div> -->
+<!--                 <div class="card-body"> -->
+<!--                   <div class="table-responsive"> -->
+<!--                     <table class="table mg-b-0 text-md-nowrap"> -->
+<!--                       <thead> -->
+<!--                         <tr> -->
+<!--                           <th>ID</th> -->
+<!--                           <th>Name</th> -->
+<!--                           <th>Position</th> -->
+<!--                           <th>Salary</th> -->
+<!--                         </tr> -->
+<!--                       </thead> -->
+<!--                       <tbody> -->
+<!--                         <tr> -->
+<!--                           <th scope="row">1</th> -->
+<!--                           <td>Joan Powell</td> -->
+<!--                           <td>Associate Developer</td> -->
+<!--                           <td>$450,870</td> -->
+<!--                         </tr> -->
+<!--                         <tr> -->
+<!--                           <th scope="row">2</th> -->
+<!--                           <td>Gavin Gibson</td> -->
+<!--                           <td>Account manager</td> -->
+<!--                           <td>$230,540</td> -->
+<!--                         </tr> -->
+<!--                         <tr> -->
+<!--                           <th scope="row">3</th> -->
+<!--                           <td>Julian Kerr</td> -->
+<!--                           <td>Senior Javascript Developer</td> -->
+<!--                           <td>$55,300</td> -->
+<!--                         </tr> -->
+<!--                         <tr> -->
+<!--                           <th scope="row">4</th> -->
+<!--                           <td>Cedric Kelly</td> -->
+<!--                           <td>Accountant</td> -->
+<!--                           <td>$234,100</td> -->
+<!--                         </tr> -->
+<!--                         <tr> -->
+<!--                           <th scope="row">5</th> -->
+<!--                           <td>Samantha May</td> -->
+<!--                           <td>Junior Technical Author</td> -->
+<!--                           <td>$43,198</td> -->
+<!--                         </tr> -->
+<!--                       </tbody> -->
+<!--                     </table> -->
+<!--                   </div> -->
+<!--                 </div> -->
+<!--               </div> -->
+<!--             </div> -->
+<!--             <div class="col-md-4"> -->
+              
+<!--               <div style="border-left-style:solid;height: 80%;"> -->
+
+<!--                 <ul class="list-group wd-md-100p users-list-group"> -->
+<!--                   <li class="list-group-item d-flex align-items-center" style="background-color: transparent;"> -->
+<!--                     <img alt="" class="mr-3 rounded-circle avatar-md" th:src="@{/img/cafe.png}"> -->
+<!--                     <div> -->
+<!--                       <h6 class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Abono</h6> -->
+<!--                       <span class="d-block tx-13 text-muted">Fecha</span> -->
+<!--                     </div> -->
+<!--                     <div class="float-left ml-auto"> -->
+<!--                       <h4>2,000.00</h4> -->
+<!--                       27/12/2020 -->
+<!--                     </div> -->
+<!--                   </li> -->
+
+<!--                   <li class="list-group-item d-flex align-items-center" style="background-color: transparent;"> -->
+<!--                     <img alt="" class="mr-3 rounded-circle avatar-md" th:src="@{/img/cafe.png}"> -->
+<!--                     <div> -->
+<!--                       <h6 class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Gastos legales</h6> -->
+<!--                       <span class="d-block tx-13 text-muted">Fecha</span> -->
+<!--                     </div> -->
+<!--                     <div class="float-left ml-auto"> -->
+<!--                       <h4>2,000.00</h4> -->
+<!--                       27/12/2020 -->
+<!--                     </div> -->
+<!--                   </li> -->
+
+<!--                   </ul> -->
+                    
+<!--                   <div style="text-align: center;"> -->
+<!--                     <a href="#" class="btn  btn-info"> -->
+<!--                         Nueva transaccion -->
+<!--                       </a> -->
+                      
+<!--                       <a href="#" class="btn btn-danger mr-2"> -->
+<!--                         Cancelar transaccion -->
+<!--                       </a> -->
+<!--                   </div> -->
+
+
+<!--               </div> -->
+<!--             </div> -->
+<!--           </div> -->
+
+        </div>
+      </div>
+
+	  <!--  Footer -->
+      <div class="main-footer ht-40"  th:insert="../static/fragments/footer :: pie-pagina"></div>
+      
+    </div>
+    <a href="#top" id="back-to-top"><i class="las la-angle-double-up"></i></a>
+   
+    <script th:src="@{/assets/plugins/jquery/jquery.min.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/plugins/ionicons/ionicons.js}"></script>
+    <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+<!--     <script th:src="@{/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js}"></script> -->
+<!--     <script th:src="@{/assets/plugins/perfect-scrollbar/p-scroll.js}"></script> -->
+    <script th:src="@{/assets/js/sticky.js}"></script>
+    <script th:src="@{/assets/js/eva-icons.min.js}"></script>
+    <script th:src="@{/assets/plugins/rating/jquery.rating-stars.js}"></script>
+    <script th:src="@{/assets/plugins/rating/jquery.barrating.js}"></script>
+    <script th:src="@{/assets/plugins/mscrollbar/jquery.mCustomScrollbar.concat.min.js}"></script>
+    <script th:src="@{/assets/plugins/side-menu/sidemenu.js}"></script>
+<!--     <script th:src="@{/assets/plugins/sidebar/sidebar.js}"></script> -->
+    <script th:src="@{/assets/plugins/sidebar/sidebar-custom.js}"></script>
+    <script th:src="@{/assets/js/custom.js}"></script>
+     <script>
+      
+      $( document ).ready(function() {
+        if ($("body").hasClass('sidebar-gone')){
+          $("body").removeClass("sidenav-toggled");
+        }
+      });
+
+    </script>
+  </body>
+</html>

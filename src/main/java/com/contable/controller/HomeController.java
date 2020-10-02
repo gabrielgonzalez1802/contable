@@ -27,7 +27,8 @@ public class HomeController {
 		usuario.setPassword(null);
 		//Agregamos el usuario a la sesion
 		session.setAttribute("usuario", usuario);
-		return "home";
+//		return "home";
+		return "index";
 	}
 	
 	@GetMapping("/login" )
