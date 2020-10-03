@@ -42,6 +42,11 @@ public class ClientesController {
 		return "clientes/listaClientes :: listaCliente";
 	}
 	
+	@GetMapping("/buscarCliente")
+	public String formBuscarCliente(Model model) {
+		return "clientes/buscarCliente :: buscarCliente";
+	}
+	
 	@GetMapping("/agregar")
 	public String formularioCliente(Model model) {
 		Cliente cliente = new Cliente();

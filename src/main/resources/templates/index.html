@@ -138,7 +138,7 @@
           
           <div class="row">
             <div class="col-md-12">
-              <div class="card card-dashboard-map-one">
+              <div class="card card-dashboard-map-one" id="contenido">
 				 <center><img th:src="@{/img/martinsa.PNG}" style="max-width: 80%;"></center> 
 				 
 				 <br><br>
@@ -287,12 +287,15 @@
 <!--     <script th:src="@{/assets/plugins/sidebar/sidebar.js}"></script> -->
     <script th:src="@{/assets/plugins/sidebar/sidebar-custom.js}"></script>
     <script th:src="@{/assets/js/custom.js}"></script>
+    <script th:src="@{/assets/js/custom.js}"></script>
+    <script th:src="@{/js/js.js}"></script>
      <script>
       
       $( document ).ready(function() {
         if ($("body").hasClass('sidebar-gone')){
           $("body").removeClass("sidenav-toggled");
         }
+        addEvents();
       });
 
     </script>
