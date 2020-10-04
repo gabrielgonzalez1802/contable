@@ -1,6 +1,6 @@
 function addEvents(){
 	
-	//Buscar cliente
+	//Prestamos
 	$("#prestamos").click(function(e){
 		e.preventDefault();
 		$("#contenido").load("/clientes/buscarCliente",function(data){
@@ -8,6 +8,33 @@ function addEvents(){
 			addEvents();
 		});
 	});
+	
+	//Buscar cliente
+	$("#btnBuscarCliente").click(function(e){
+		e.preventDefault();
+		var tipoDocumento = $("#selectTipoDocumento").val();
+		var item = $("#itemSearch").val();
+		$("#contenido").load("/clientes/getInfoCliente",
+			{
+				'tipoDocumento': tipoDocumento,
+				'item': item
+			},
+			function(data){
+			console.log("Buscar clientes");
+			addEvents();
+		});
+	});
+	
+	//Boton de agregar cliente
+	$("#agregarCliente").click(function(e){
+		e.preventDefault();
+		var idCliente = $("#idCliente").val();
+		$("#contenido").load("/clientes/agregar",function(data){
+			console.log("Formulario agregar clientes");
+			addEvents();
+		});
+	});
+	
 //
 //	$("#navListaCliente").click(function(e){
 //		e.preventDefault();

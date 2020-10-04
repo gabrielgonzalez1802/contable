@@ -29,6 +29,15 @@
 		});
 	</script>
     
+<style>
+#formularioCuerpo{
+	min-height: 200px;
+	overflow: auto;
+	height: 200px;
+	max-height: 200px;
+}
+</style>
+    
   </head>
   <body class="main-body app sidebar-mini sidenav-toggled">
     <div id="global-loader">
@@ -138,7 +147,7 @@
           
           <div class="row">
             <div class="col-md-12">
-              <div class="card card-dashboard-map-one" id="contenido">
+              <div class="card principal card-dashboard-map-one" id="contenido">
 				 <center><img th:src="@{/img/martinsa.PNG}" style="max-width: 80%;"></center> 
 				 
 				 <br><br>
@@ -286,7 +295,6 @@
     <script th:src="@{/assets/plugins/side-menu/sidemenu.js}"></script>
 <!--     <script th:src="@{/assets/plugins/sidebar/sidebar.js}"></script> -->
     <script th:src="@{/assets/plugins/sidebar/sidebar-custom.js}"></script>
-    <script th:src="@{/assets/js/custom.js}"></script>
     <script th:src="@{/assets/js/custom.js}"></script>
     <script th:src="@{/js/js.js}"></script>
      <script>

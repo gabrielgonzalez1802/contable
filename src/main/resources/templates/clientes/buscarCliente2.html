@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="buscarCliente">
+    <div class="row">
+        <div class="col-sm-6 mx-auto">
+        
+	        <div class="input-group mb-3">
+			   <input type="text" id="nombreCliente" required="required" class="form-control" placeholder="Nombre del cliente">
+				  <div class="input-group-append">
+				    <button class="btn btn-primary" type="button" id="button-addon2">Buscar</button>
+			   </div>
+			</div>
+        </div>
+    </div>
+
+		<div class="card-body">
+			<div class="table-responsive">
+				<table class="table mg-b-0 text-md-nowrap">
+					<thead>
+						<tr>
+							<th>Nombre</th>
+							<th>Cedula</th>
+							<th>
+<!-- 							th:href="@{/clientes/edit/{id} (id=${cliente.id})}" -->
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Juan Carlos</td>
+							<td>12345</td>
+							<td>
+								<a class="btn btn-primary btn-sm" role="button" 
+								title="Ver cliente"><i class="fa fa-search" aria-hidden="true"></i></a>
+							</td>
+						</tr>
+						<tr>
+							<td>Juan David</td>
+							<td>54321</td>
+							<td>
+								<a class="btn btn-primary btn-sm" role="button" 
+								title="Ver cliente"><i class="fa fa-search" aria-hidden="true"></i></a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+	</div>	
+</body>
+</html>

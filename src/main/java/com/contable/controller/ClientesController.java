@@ -1,6 +1,7 @@
 package com.contable.controller;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,11 +48,34 @@ public class ClientesController {
 		return "clientes/buscarCliente :: buscarCliente";
 	}
 	
+	@PostMapping("/getInfoCliente")
+	public String getInfoCliente(Model model, Integer tipoDocumento, String item) {
+		List<Cliente> clientes = new LinkedList<>();
+		Cliente cliente = new Cliente();
+		if(tipoDocumento == 1) {
+			clientes = serviceClientes.buscarPorCedula(item);
+		}else {
+			clientes = serviceClientes.buscarPorPasaporte(item);
+		}
+		
+		if(!clientes.isEmpty()) {
+			if(clientes.size()>1) {
+				return "clientes/buscarCliente :: buscarCliente";
+			}else {
+				cliente = clientes.get(0);
+				model.addAttribute("cliente", cliente);
+				return "clientes/infoCliente :: infoCliente";
+			}
+		}
+		
+		return "clientes/buscarCliente :: buscarCliente";
+	}
+	
 	@GetMapping("/agregar")
 	public String formularioCliente(Model model) {
 		Cliente cliente = new Cliente();
 		model.addAttribute("cliente", cliente);
-		return "clientes/form :: form";
+		return "clientes/formularioCliente :: formularioCliente";
 	}
 	
 	@GetMapping("/modificar/{id}")

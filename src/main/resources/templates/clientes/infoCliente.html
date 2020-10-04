@@ -5,27 +5,28 @@
 <title>Insert title here</title>
 </head>
 <body>
-<div th:fragment="buscarCliente">
+<div th:fragment="infoCliente">
                <!-- <label class="main-content-label">Titulo | Titulo del sistema</label> -->
-                   <div class="row">
-				        <div class="col-sm-6 mx-auto">
+<!--                    <div class="row"> -->
+<!-- 				        <div class="col-sm-6 mx-auto"> -->
 
-					        <div class="input-group mb-3">
-					           <select id="selectTipoDocumento" class="form-control">
-					           		<option value="1">Cedula</option>
-					           		<option value="2">Pasaporte</option>
-					           </select>
-					        	&nbsp;
-							   <input type="text" id="itemSearch" required="required" class="form-control" placeholder="">
-								  <div class="input-group-append">
-								    <button class="btn btn-primary" type="button" id="btnBuscarCliente">Buscar</button>
-							   </div>
-							</div>
-				        </div>
-				    </div>
-<!--                   <div style="background-color: #F3F3F2;width: 100%;padding: 8px;text-align: center;border-radius: 18px;"> -->
-<!--                     <h3>CLIENTE: ÁNGEL GABRIEL MARTINEZ</h3> -->
-<!--                   </div> -->
+<!-- 					        <div class="input-group mb-3"> -->
+<!-- 					           <select id="selectTipoDocumento" class="form-control"> -->
+<!-- 					           		<option value="1">Cedula</option> -->
+<!-- 					           		<option value="2">Pasaporte</option> -->
+<!-- 					           </select> -->
+<!-- 					        	&nbsp; -->
+<!-- 							   <input type="text" id="itemSearch" required="required" class="form-control" placeholder=""> -->
+<!-- 								  <div class="input-group-append"> -->
+<!-- 								    <button class="btn btn-primary" type="button" id="btnBuscarCliente">Buscar</button> -->
+<!-- 							   </div> -->
+<!-- 							</div> -->
+<!-- 				        </div> -->
+<!-- 				    </div> -->
+                  <div style="background-color: #F3F3F2;width: 100%;padding: 8px;text-align: center;border-radius: 18px;">
+                    <h3 th:text="${cliente.nombre}"></h3>
+                    <input type="hidden" id="idCliente" value="${cliente.id}">
+                  </div>
 
                 <h5 style="padding-top: 50px;">Agregar Cliente</h5>
                 

@@ -53,4 +53,14 @@ public class ClientesServiceJpa implements IClientesService{
 		repo.delete(cliente);
 	}
 
+	@Override
+	public List<Cliente> buscarPorCedula(String cedula) {
+		return repo.findByTipoDocumentoAndCedula("cedula", cedula);
+	}
+
+	@Override
+	public List<Cliente> buscarPorPasaporte(String pasaporte) {
+		return repo.findByTipoDocumentoAndCedula("pasaporte", pasaporte);
+	}
+
 }
