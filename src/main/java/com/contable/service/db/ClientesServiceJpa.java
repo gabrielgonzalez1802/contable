@@ -54,13 +54,18 @@ public class ClientesServiceJpa implements IClientesService{
 	}
 
 	@Override
-	public List<Cliente> buscarPorCedula(String cedula) {
+	public Cliente buscarPorCedula(String cedula) {
 		return repo.findByTipoDocumentoAndCedula("cedula", cedula);
 	}
 
 	@Override
-	public List<Cliente> buscarPorPasaporte(String pasaporte) {
-		return repo.findByTipoDocumentoAndCedula("pasaporte", pasaporte);
+	public Cliente buscarPorOtro(String otro) {
+		return repo.findByTipoDocumentoAndCedula("otro", otro);
+	}
+
+	@Override
+	public List<Cliente> buscarPorNombre(String nombre) {
+		return repo.findByNombreContaining(nombre);
 	}
 
 }

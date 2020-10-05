@@ -38,6 +38,8 @@ public class Cliente {
 	private String fotoFrontal;
 	private String fotoTrasera;
 	
+	private String nota;
+	
 	@Transient
 	private MultipartFile frontal;
 	
@@ -266,13 +268,22 @@ public class Cliente {
 	public void setDoctypeTemp(String doctypeTemp) {
 		this.doctypeTemp = doctypeTemp;
 	}
+	
+
+	public String getNota() {
+		return nota;
+	}
+
+	public void setNota(String nota) {
+		this.nota = nota;
+	}
 
 	@Override
 	public String toString() {
 		return "Cliente [id=" + id + ", tipoDocumento=" + tipoDocumento + ", doctypeTemp=" + doctypeTemp + ", nombre="
 				+ nombre + ", cedula=" + cedula + ", rnc=" + rnc + ", direccion=" + direccion + ", telefono=" + telefono
-				+ ", celular=" + celular + ", fotoFrontal=" + fotoFrontal + ", fotoTrasera=" + fotoTrasera
-				+ ", frontal=" + frontal + ", trasera=" + trasera + ", usuarioEliminado=" + usuarioEliminado
+				+ ", celular=" + celular + ", fotoFrontal=" + fotoFrontal + ", fotoTrasera=" + fotoTrasera + ", nota="
+				+ nota + ", frontal=" + frontal + ", trasera=" + trasera + ", usuarioEliminado=" + usuarioEliminado
 				+ ", usuario_modificado=" + usuario_modificado + ", modificado=" + modificado + ", creado=" + creado
 				+ ", eliminado=" + eliminado + ", comprobanteFiscal=" + comprobanteFiscal + ", nombreEmpresa="
 				+ nombreEmpresa + ", direccionEmpresa=" + direccionEmpresa + ", telefonoEmpresa=" + telefonoEmpresa

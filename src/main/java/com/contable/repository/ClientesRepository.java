@@ -8,5 +8,6 @@ import com.contable.model.Cliente;
 
 public interface ClientesRepository extends JpaRepository<Cliente, Integer> {
 	List<Cliente> findByEstado(Integer estado);
-	List<Cliente> findByTipoDocumentoAndCedula(String tipoDocumento, String cedula);
+	List<Cliente> findByNombreContaining(String nombre);
+	Cliente findByTipoDocumentoAndCedula(String tipoDocumento, String cedula);
 }

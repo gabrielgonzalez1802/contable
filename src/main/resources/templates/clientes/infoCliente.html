@@ -6,27 +6,10 @@
 </head>
 <body>
 <div th:fragment="infoCliente">
-               <!-- <label class="main-content-label">Titulo | Titulo del sistema</label> -->
-<!--                    <div class="row"> -->
-<!-- 				        <div class="col-sm-6 mx-auto"> -->
-
-<!-- 					        <div class="input-group mb-3"> -->
-<!-- 					           <select id="selectTipoDocumento" class="form-control"> -->
-<!-- 					           		<option value="1">Cedula</option> -->
-<!-- 					           		<option value="2">Pasaporte</option> -->
-<!-- 					           </select> -->
-<!-- 					        	&nbsp; -->
-<!-- 							   <input type="text" id="itemSearch" required="required" class="form-control" placeholder=""> -->
-<!-- 								  <div class="input-group-append"> -->
-<!-- 								    <button class="btn btn-primary" type="button" id="btnBuscarCliente">Buscar</button> -->
-<!-- 							   </div> -->
-<!-- 							</div> -->
-<!-- 				        </div> -->
-<!-- 				    </div> -->
-                  <div style="background-color: #F3F3F2;width: 100%;padding: 8px;text-align: center;border-radius: 18px;">
-                    <h3 th:text="${cliente.nombre} + ' ' + ${cliente.cedula} "></h3>
-                    <input type="hidden" id="idCliente" value="${cliente.id}">
-                  </div>
+               <div style="background-color: #F3F3F2;width: 100%;padding: 8px;text-align: center;border-radius: 18px;">
+                   <h3 th:text="${cliente.nombre} + ' ' + ${cliente.cedula} "></h3>
+                   <input type="hidden" id="idCliente" value="${cliente.id}">
+               </div>
 
                 <h5 style="padding-top: 50px;">Agregar Cliente</h5>
                 
@@ -36,30 +19,7 @@
                     <a href="#" class="btn btn-primary" id="agregarCliente"><b>+</b></a>
                   </div>
 
-                  <div class="col-md-3 col-sm-3">
-<!--                     <div class="card overflow-hidden sales-card bg-primary-gradient"> -->
-<!--                       <div class="pl-3 pt-3 pr-3 pb-2 pt-0"> -->
-<!--                         <div class=""> -->
-<!--                           <h6 class="mb-3 tx-12 text-white">Nuevo Prestamo</h6> -->
-<!--                         </div> -->
-<!--                         <div class="pb-0 mt-0"> -->
-<!--                           <div class="d-flex"> -->
-<!--                             <div class=""> -->
-<!--                               <h4 class="tx-20 font-weight-bold mb-1 text-white">$5,74.12</h4> -->
-<!--                               <p class="mb-0 tx-12 text-white op-7">Compared to last week</p> -->
-<!--                             </div> -->
-<!--                             <span class="float-right my-auto ml-auto"> -->
-<!--                               <i class="fas fa-arrow-circle-up text-white"></i> -->
-<!--                               <span class="text-white op-7"> +427</span> -->
-<!--                             </span> -->
-<!--                           </div> -->
-<!--                         </div> -->
-<!--                       </div> -->
-<!--                       <span id="compositeline" class="pt-1"> -->
-<!--                         <canvas width="298" height="30" style="display: inline-block; width: 298.25px; height: 30px; vertical-align: top;"></canvas> -->
-<!--                       </span> -->
-<!--                     </div> -->
-                  </div>
+                  <div class="col-md-3 col-sm-3"></div>
 
                   <div class="col-md-3 col-sm-3">
                     <div class="card overflow-hidden sales-card bg-primary-gradient">
@@ -107,6 +67,52 @@
                     </div>
                   </div>
                 </div>
+</div>	
+
+<div th:fragment="infoClienteLista">
+		<div class="card-header">
+		<div class="card-head-row">
+			<div class="card-title">
+				Lista de Clientes 
+			</div>
+			<div class="card-tools">
+				<a href="#" id="addCustomer" class="btn btn-primary btn-border btn-round btn-sm">
+					<span class="btn-label">
+						<i class="fas fa-plus"></i>
+					</span>
+					Agregar
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class="card-body" style="padding-top: 0px;">
+		<div style="min-height: 300px;max-height: 300px;overflow: auto;">
+			<div class="table-responsive">
+               <table id="tabla" class="table mg-b-0 text-md-nowrap">
+				    <thead>
+				      <tr>
+				        <th>Documento</th>
+				        <th>Numero</th>
+				        <th>Nombre</th>
+				        <th>Direccion</th>
+				        <th>Acciones</th>
+				      </tr>
+				    </thead>
+				    <tbody>
+				      <tr th:each="cliente:${clientes}">
+				        <td th:text="${cliente.tipoDocumento}"></td>
+				        <td th:text="${cliente.cedula}"></td>
+				        <td th:text="${cliente.nombre}"></td>
+				        <td th:text="${cliente.direccion}"></td>
+				        <td>
+				            <a style="color: #fff;cursor: pointer;" th:onclick="'seleccionarCliente(\'' + ${cliente.id} + '\');'" class="btn btn-success btn-sm" role="button" title="seleccionar cliente."><i class="fas fa-search" aria-hidden="true"></i></a>
+				        </td>
+				      </tr>
+				    </tbody>
+				  </table>
+			  </div>
+		</div>
+	</div>
 </div>	
 </body>
 </html>

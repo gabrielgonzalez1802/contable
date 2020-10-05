@@ -1,7 +1,6 @@
 package com.contable.controller;
 
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,9 +19,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
 import com.contable.model.ComprobanteFiscal;
 import com.contable.model.Usuario;
+import com.contable.service.ICarpetasService;
 import com.contable.service.IClientesService;
 import com.contable.service.IComprobantesFiscalesService;
 import com.contable.util.Utileria;
@@ -39,6 +40,9 @@ public class ClientesController {
 
 	@Autowired
 	private IComprobantesFiscalesService serviceComprobantesFiscales;
+	
+	@Autowired
+	private ICarpetasService serviceCarpetas;
 
 	@GetMapping("/")
 	public String getListaClientes(Model model) {
@@ -49,27 +53,97 @@ public class ClientesController {
 	}
 
 	@GetMapping("/buscarCliente")
-	public String formBuscarCliente(Model model) {
-		List<Cliente> clietes = serviceClientes.buscarTodos().stream().filter(c -> c.getEstado() == 1)
-				.collect(Collectors.toList());
-
-		for (Cliente cliente : clietes) {
-			cliente.setNombre(cliente.getNombre() + " - " + cliente.getCedula());
+	public String formBuscarCliente(Model model, HttpSession session) {
+//		List<Cliente> clientes = serviceClientes.buscarTodos().stream().filter(c -> c.getEstado() == 1)
+//				.collect(Collectors.toList());
+		
+		//Verificamos si tenemos la carpeta en sesion para seleccionarla
+		Integer idCarpeta = (Integer) session.getAttribute("carpeta");
+		if(idCarpeta!=null) {
+			model.addAttribute("carpeta", serviceCarpetas.buscarPorId(idCarpeta));
+		}else {
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
+//			for (Cliente cliente : clientes) {
+//				cliente.setNombre(cliente.getNombre() + " - " + cliente.getCedula());
+//			}
+			model.addAttribute("carpeta", carpetas.get(0));
 		}
-
-		model.addAttribute("clientes", clietes);
+		model.addAttribute("msg", "0");
+		return "clientes/buscarCliente :: buscarCliente";
+	}
+	
+	@GetMapping("/buscarClienteCarpetaPrincipal")
+	public String formBuscarClienteCarpetaPrincipal(Model model, HttpSession session) {
+		session.setAttribute("carpeta", null);
+		
+//		List<Cliente> clientes = serviceClientes.buscarTodos().stream().filter(c -> c.getEstado() == 1)
+//				.collect(Collectors.toList());
+		
+		List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
+//		for (Cliente cliente : clientes) {
+//			cliente.setNombre(cliente.getNombre() + " - " + cliente.getCedula());
+//		}
+		model.addAttribute("carpeta", carpetas.get(0));
+		model.addAttribute("msg", "0");
 		return "clientes/buscarCliente :: buscarCliente";
 	}
 
 	@PostMapping("/getInfoCliente")
-	public String getInfoCliente(Model model, Integer idCliente) {
+	public String getInfoCliente(Model model, Integer carpeta, String tipoDocumento, String item) {
 		Cliente cliente = new Cliente();
-		if (idCliente > 0) {
-			cliente = serviceClientes.buscarPorId(idCliente);
+		if (tipoDocumento.equals("cedula")) {
+			cliente = serviceClientes.buscarPorCedula(item);
+		}else if(tipoDocumento.equals("otro")){
+			cliente = serviceClientes.buscarPorOtro(item);
+		}else {
+			//busqueda por nombre
+			List<Cliente> clientes = serviceClientes.buscarPorNombre(item).stream().
+					filter(c -> c.getEstado() == 1).collect(Collectors.toList());
+			if(clientes.isEmpty()) {
+				cliente = null;
+			}else {
+				if(clientes.size()>1) {
+					model.addAttribute("clientes", clientes);
+					return "clientes/infoCliente :: infoClienteLista";
+				}else {
+					cliente = clientes.get(0);
+				}
+			}
+		}
+		
+		if(cliente == null) {
+			List<Cliente> clientes = serviceClientes.buscarTodos().stream().filter(c -> c.getEstado() == 1)
+					.collect(Collectors.toList());
+
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
+			
+			for (Cliente clienteTemp : clientes) {
+				clienteTemp.setNombre(clienteTemp.getNombre() + " - " + clienteTemp.getCedula());
+			}
+
+			model.addAttribute("msg", "No se encontro el cliente");
+			model.addAttribute("carpeta", carpetas.get(0));
+			
+			return "clientes/buscarCliente :: buscarCliente"; 
 		}
 
 		model.addAttribute("cliente", cliente);
 		return "clientes/infoCliente :: infoCliente";
+	}
+	
+	@GetMapping("/getInfoCliente/{id}")
+	public String getInfoCliente(Model model, @PathVariable("id") Integer id) {
+		Cliente cliente = serviceClientes.buscarPorId(id);
+		if(cliente != null) {
+			model.addAttribute("cliente", cliente);
+			return "clientes/infoCliente :: infoCliente";
+		}
+		
+		List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
+		model.addAttribute("msg", "No se encontro el cliente");
+		model.addAttribute("carpeta", carpetas.get(0));
+	
+		return "clientes/buscarCliente :: buscarCliente"; 
 	}
 
 	@GetMapping("/agregar")
@@ -112,7 +186,7 @@ public class ClientesController {
 			HttpSession session) {
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		String response = "INSERT";
-
+		
 		if (cliente.getId() != null) {
 			response = "UPDATE";
 			Cliente originalCliente = serviceClientes.buscarPorId(cliente.getId());
@@ -122,8 +196,14 @@ public class ClientesController {
 			cliente.setCreado(originalCliente.getCreado());
 			cliente.setFotoFrontal(originalCliente.getFotoFrontal());
 			cliente.setFotoTrasera(originalCliente.getFotoTrasera());
+			if(cliente.getComprobanteFiscal().getId() == 0) {
+				cliente.setComprobanteFiscal(null);
+			}
 		} else {
 			cliente.setUsuario(usuario);
+			if(cliente.getComprobanteFiscal().getId() == 0) {
+				cliente.setComprobanteFiscal(null);
+			}
 		}
 
 		// verificamos la imagen frontal

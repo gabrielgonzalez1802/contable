@@ -14,28 +14,197 @@ function addEvents(){
 	});
 	
 	//Buscar cliente
-	$("#btnBuscarCliente").click(function(e){
+	$("#buscarPorDocumento").on("keyup", function(e) {
 		e.preventDefault();
-		var idCliente = $("#clienteSeleccionado").val();
-		if(parseFloat(idCliente) > 0){
-			$("#contenido").load("/clientes/getInfoCliente",
+	     if(e.which == 13){
+	    	 var tipoDocumento = "";
+	    	 var carpeta = $("#carpetaId").val();
+	    	 var item = $("#buscarPorDocumento").val();
+		     if($("#cedula").is(':checked')){
+		    	 tipoDocumento = "cedula";
+		     }else if($("#otro").is(':checked')){
+		    	 tipoDocumento = "otro";
+		     }
+		     var longitud = item.length;
+		     if(longitud > 1){
+			     $("#contenido").load("/clientes/getInfoCliente",
 					{
-						'idCliente': idCliente
+					   	'carpeta': carpeta,
+					   	'tipoDocumento': tipoDocumento,
+						'item': item
 					},
-					function(data){
+				function(data){
 					console.log("Buscar clientes");
+					if($("#msg").val()== "No se encontro el cliente"){
+						 Swal.fire({
+								title : 'Alerta!',
+								text : 'No se encontro al cliente',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+					}
 					addEvents();
 				});
-		}else{
-			Swal.fire({
-				title : 'Alerta!',
-				text : 'Debe seleccionar un cliente',
-				position : 'top',
-				icon : 'warning',
-				confirmButtonText : 'Cool'
-			})
+		     }
+	     }
+	});
+	
+	$("input[name='tipoDocumentoBusqueda']").change(function(){
+		 if($("#cedula").is(':checked')){
+	    	 $('#buscarPorDocumento').attr('maxlength', 13);
+	     }else if($("#otro").is(':checked')){
+	    	 $('#buscarPorDocumento').attr('maxlength', 30);
+	     }
+		$('#buscarPorDocumento').val("");
+	});
+	
+	$("#buscarPorNombre").on("keyup", function(e) {
+		e.preventDefault();
+	     if(e.which == 13){
+	    	var item = $("#buscarPorNombre").val();
+	    	var carpeta = $("#carpetaId").val();
+	    	var longitud = item.length;
+		     if(longitud > 1){
+			     $("#contenido").load("/clientes/getInfoCliente",
+					{
+					   	'carpeta': carpeta,
+					   	'tipoDocumento': '',
+						'item': item
+					},
+				function(data){
+					console.log("Buscar clientes");
+					if($("#msg").val()== "No se encontro el cliente"){
+						 Swal.fire({
+								title : 'Alerta!',
+								text : 'No se encontro al cliente',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+					}
+					addEvents();
+				});
+		     }
+	     }
+	});
+	
+	//Validacion para cedula
+	$('#buscarPorDocumento').on('keyup', function(e) { 
+		if($("#cedula").is(':checked')){
+			var valor = $('#buscarPorDocumento').val();
+			var res = valor.match(/^[0-9-]+$/);
+			
+			if(res == null){
+				 $('#buscarPorDocumento').val(valor.substring(0, valor.length - 1));
+			}
+		}	
+	});
+	 
+	$('#buscarPorDocumento').on('keydown', function(e) { 
+		if($("#cedula").is(':checked')){
+			var valor = $('#buscarPorDocumento').val();
+			var res = valor.match(/^[0-9-]+$/);
+				
+			if(res == null){
+				 $('#buscarPorDocumento').val(valor.substring(0, valor.length - 1));
+			}else{
+				var keyCode = (window.event) ? e.which : e.keyCode;
+				// Si no preciona la tecla de borrar
+				if(keyCode !=8 && keyCode != 46){
+					   var cant = valor.length;
+					   if(cant == 3){
+					   	$('#buscarPorDocumento').val(valor+"-");
+					   }
+						   
+					  if(cant == 11){
+					   	$('#buscarPorDocumento').val(valor+"-");
+				 }
+				}
+			}
 		}
 	});
+	
+	$("#btnCarpeta").click(function(e){
+		e.preventDefault();
+		Swal.fire({
+			  title: 'Ingrese la carpeta',
+			  position: 'top',
+			  input: 'text',
+			  inputAttributes: {
+			    autocapitalize: 'off'
+			  },
+			  showCancelButton: true,
+			  confirmButtonText: 'Buscar',
+			  cancelButtonText: 'Cancelar',
+			  showLoaderOnConfirm: true,
+			  preConfirm: (carpeta) => {
+				  $.ajax({
+			            url: "/carpetas/buscar/"+carpeta,
+			            type: "GET",
+//			            data: "",
+//			            enctype: 'multipart/form-data',
+			            processData: false,
+			            contentType: false,
+			            cache: false,
+			            success: function (res) {
+				            if(res=="No tienes carpetas creadas"){
+								Swal.fire({
+									title : 'No tienes carpetas creadas!',
+//									text : 'No tienes carpetas creadas',
+									position : 'top',
+									icon : 'warning',
+									confirmButtonText : 'Cool'
+								})
+								$("#contenido").load("/clientes/buscarCliente",function(data){
+									console.log("Lista de clientes");
+									addEvents();
+								});
+							}else{
+								Swal.fire({
+									title : 'Muy bien!',
+									text : 'Carpeta Seleccionada',
+									position : 'top',
+									icon : 'success',
+									confirmButtonText : 'Cool'
+								})
+								e.preventDefault();
+								$("#contenido").load("/clientes/buscarCliente",function(data){
+									console.log("Lista de clientes");
+									addEvents();
+								});
+							}
+			            },
+			            error: function (err) {
+			                console.error(err);
+			                Swal.fire({
+								title : 'Error!',
+								text : 'No se pudo completar la operacion, intente mas tarde',
+								position : 'top',
+								icon : 'error',
+								confirmButtonText : 'Cool'
+							})
+			            }
+			        });
+			  },
+			  allowOutsideClick: () => !Swal.isLoading()
+			}).then((result) => {
+			  if (result.isConfirmed) {
+			    //Correcto
+			  }
+			})
+	});
+	
+	$("#btnExitCarpeta").click(function(e){
+		e.preventDefault();
+		$("#contenido").load("/clientes/buscarClienteCarpetaPrincipal",function(data){
+			console.log("Lista de clientes");
+			addEvents();
+		});
+	});	
+	
+	
+	//Fin Buscar Cliente
 	
 	//Buscar cancelCliente
 	$("#cancelCliente").click(function(e){
@@ -277,32 +446,49 @@ function addEvents(){
 
 //	/** Fin Prestamos **/
 
-	$('#tabla').DataTable({
-		"scrollY": "400px",
-		    "language": {
-		        "sProcessing":    "Procesando...",
-		        "sLengthMenu":    "Mostrar _MENU_ registros",
-		        "sZeroRecords":   "No se encontraron resultados",
-		        "sEmptyTable":    "Ningún dato disponible en esta tabla",
-		        "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-		        "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
-		        "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
-		        "sInfoPostFix":   "",
-		        "sSearch":        "Buscar:",
-		        "sUrl":           "",
-		        "sInfoThousands":  ",",
-		        "sLoadingRecords": "Cargando...",
-		        "oPaginate": {
-		            "sFirst":    "Primero",
-		            "sLast":    "Último",
-		            "sNext":    "Siguiente",
-		            "sPrevious": "Anterior"
-		        },
-		        "oAria": {
-		            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-		        }
-		    }
-	});
+//	$('#tabla').DataTable({
+//		"scrollY": "400px",
+//		    "language": {
+//		        "sProcessing":    "Procesando...",
+//		        "sLengthMenu":    "Mostrar _MENU_ registros",
+//		        "sZeroRecords":   "No se encontraron resultados",
+//		        "sEmptyTable":    "Ningún dato disponible en esta tabla",
+//		        "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+//		        "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+//		        "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+//		        "sInfoPostFix":   "",
+//		        "sSearch":        "Buscar:",
+//		        "sUrl":           "",
+//		        "sInfoThousands":  ",",
+//		        "sLoadingRecords": "Cargando...",
+//		        "oPaginate": {
+//		            "sFirst":    "Primero",
+//		            "sLast":    "Último",
+//		            "sNext":    "Siguiente",
+//		            "sPrevious": "Anterior"
+//		        },
+//		        "oAria": {
+//		            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+//		        }
+//		    }
+//	});
+}
+
+function seleccionarCliente(id){
+	 $("#contenido").load("/clientes/getInfoCliente/"+id,
+			function(data){
+				console.log("Buscar clientes");
+				if($("#msg").val()== "No se encontro el cliente"){
+					 Swal.fire({
+							title : 'Alerta!',
+							text : 'No se encontro al cliente',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+				}
+				addEvents();
+			});
 }
 
 function modificarCliente(id){
