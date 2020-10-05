@@ -150,6 +150,7 @@ public class ClientesController {
 	public String formularioCliente(Model model) {
 		Cliente cliente = new Cliente();
 		List<ComprobanteFiscal> comprobantesFiscales = serviceComprobantesFiscales.buscarTodos();
+		cliente.setDoctypeTemp("cedula");
 		model.addAttribute("cliente", cliente);
 		model.addAttribute("comprobantesFiscales", comprobantesFiscales);
 		return "clientes/formularioCliente :: formularioCliente";
