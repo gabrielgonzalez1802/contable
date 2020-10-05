@@ -235,7 +235,7 @@ function addEvents(){
         	 $('#cedulaCliente').attr('maxlength', 13);
          }else if($("#docPasaporte").is(':checked')){
         	 $('#cedulaCliente').attr('maxlength', 50);
-        	 $("#doctypeTemp").val("pasaporte");
+        	 $("#doctypeTemp").val("otro");
          }
      });
 	 
