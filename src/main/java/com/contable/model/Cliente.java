@@ -23,10 +23,14 @@ public class Cliente {
 	private Integer id;
 	
 	private String tipoDocumento;
+	
+	@Transient
+	private String doctypeTemp;
+	
 	private String nombre;
 	private String cedula;
 	private String rnc;
-	private String ncf;
+	
 	private String direccion;
 	private String telefono;
 	private String celular;
@@ -51,6 +55,10 @@ public class Cliente {
 	private Date modificado = new Date();
 	private Date creado = new Date();
 	private Date eliminado;
+	
+	@OneToOne
+	@JoinColumn(name = "comprobante_fiscal_id")
+	private ComprobanteFiscal comprobanteFiscal;
 	
 	@Column(name = "nombre_empresa")
 	private String nombreEmpresa;
@@ -155,14 +163,6 @@ public class Cliente {
 		this.estado = estado;
 	}
 
-	public String getNcf() {
-		return ncf;
-	}
-
-	public void setNcf(String ncf) {
-		this.ncf = ncf;
-	}
-
 	public String getTipoDocumento() {
 		return tipoDocumento;
 	}
@@ -251,14 +251,31 @@ public class Cliente {
 		this.trasera = trasera;
 	}
 
+	public ComprobanteFiscal getComprobanteFiscal() {
+		return comprobanteFiscal;
+	}
+
+	public void setComprobanteFiscal(ComprobanteFiscal comprobanteFiscal) {
+		this.comprobanteFiscal = comprobanteFiscal;
+	}
+
+	public String getDoctypeTemp() {
+		return doctypeTemp;
+	}
+
+	public void setDoctypeTemp(String doctypeTemp) {
+		this.doctypeTemp = doctypeTemp;
+	}
+
 	@Override
 	public String toString() {
-		return "Cliente [id=" + id + ", tipoDocumento=" + tipoDocumento + ", nombre=" + nombre + ", cedula=" + cedula
-				+ ", rnc=" + rnc + ", ncf=" + ncf + ", direccion=" + direccion + ", telefono=" + telefono + ", celular="
-				+ celular + ", fotoFrontal=" + fotoFrontal + ", fotoTrasera=" + fotoTrasera + ", usuarioEliminado="
-				+ usuarioEliminado + ", usuario_modificado=" + usuario_modificado + ", modificado=" + modificado
-				+ ", creado=" + creado + ", eliminado=" + eliminado + ", nombreEmpresa=" + nombreEmpresa
-				+ ", direccionEmpresa=" + direccionEmpresa + ", telefonoEmpresa=" + telefonoEmpresa + ", estado="
-				+ estado + ", usuario=" + usuario + "]";
+		return "Cliente [id=" + id + ", tipoDocumento=" + tipoDocumento + ", doctypeTemp=" + doctypeTemp + ", nombre="
+				+ nombre + ", cedula=" + cedula + ", rnc=" + rnc + ", direccion=" + direccion + ", telefono=" + telefono
+				+ ", celular=" + celular + ", fotoFrontal=" + fotoFrontal + ", fotoTrasera=" + fotoTrasera
+				+ ", frontal=" + frontal + ", trasera=" + trasera + ", usuarioEliminado=" + usuarioEliminado
+				+ ", usuario_modificado=" + usuario_modificado + ", modificado=" + modificado + ", creado=" + creado
+				+ ", eliminado=" + eliminado + ", comprobanteFiscal=" + comprobanteFiscal + ", nombreEmpresa="
+				+ nombreEmpresa + ", direccionEmpresa=" + direccionEmpresa + ", telefonoEmpresa=" + telefonoEmpresa
+				+ ", estado=" + estado + ", usuario=" + usuario + "]";
 	}
 }

@@ -1,5 +1,9 @@
 function addEvents(){
 	
+	var clienteSeleccionado = $("#clienteSeleccionado").select2({
+	    theme: 'bootstrap4',
+	});
+	
 	//Prestamos
 	$("#prestamos").click(function(e){
 		e.preventDefault();
@@ -12,15 +16,32 @@ function addEvents(){
 	//Buscar cliente
 	$("#btnBuscarCliente").click(function(e){
 		e.preventDefault();
-		var tipoDocumento = $("#selectTipoDocumento").val();
-		var item = $("#itemSearch").val();
-		$("#contenido").load("/clientes/getInfoCliente",
-			{
-				'tipoDocumento': tipoDocumento,
-				'item': item
-			},
-			function(data){
-			console.log("Buscar clientes");
+		var idCliente = $("#clienteSeleccionado").val();
+		if(parseFloat(idCliente) > 0){
+			$("#contenido").load("/clientes/getInfoCliente",
+					{
+						'idCliente': idCliente
+					},
+					function(data){
+					console.log("Buscar clientes");
+					addEvents();
+				});
+		}else{
+			Swal.fire({
+				title : 'Alerta!',
+				text : 'Debe seleccionar un cliente',
+				position : 'top',
+				icon : 'warning',
+				confirmButtonText : 'Cool'
+			})
+		}
+	});
+	
+	//Buscar cancelCliente
+	$("#cancelCliente").click(function(e){
+		e.preventDefault();
+		$("#contenido").load("/clientes/buscarCliente",function(data){
+			console.log("Lista de clientes");
 			addEvents();
 		});
 	});
@@ -34,6 +55,173 @@ function addEvents(){
 			addEvents();
 		});
 	});
+	
+	//Formulario de clientes
+	 $("input[name='tipoDocumento']").click(function(){
+		 $("#cedulaCliente").attr('disabled', false);
+		 $('#cedulaCliente').val("");
+         var tipoDocumento = $("input[name='tipoDocumento']:checked").val();
+         if($("#docCedula").is(':checked')) {
+        	 $("#doctypeTemp").val("cedula");
+        	 $('#cedulaCliente').attr('maxlength', 13);
+         }else if($("#docPasaporte").is(':checked')){
+        	 $('#cedulaCliente').attr('maxlength', 50);
+        	 $("#doctypeTemp").val("pasaporte");
+         }
+     });
+	 
+	//Validacion para cedula
+	$('#cedulaCliente').on('keyup', function(e) { 
+		if($("#docCedula").is(':checked')){
+			var valor = $('#cedulaCliente').val();
+			var res = valor.match(/^[0-9-]+$/);
+			
+			if(res == null){
+				 $('#cedulaCliente').val(valor.substring(0, valor.length - 1));
+			}
+		}	
+	});
+	 
+	$('#cedulaCliente').on('keydown', function(e) { 
+		if($("#docCedula").is(':checked')){
+			var valor = $('#cedulaCliente').val();
+			var res = valor.match(/^[0-9-]+$/);
+				
+			if(res == null){
+				 $('#cedulaCliente').val(valor.substring(0, valor.length - 1));
+			}else{
+				var keyCode = (window.event) ? e.which : e.keyCode;
+				// Si no preciona la tecla de borrar
+				if(keyCode !=8 && keyCode != 46){
+					   var cant = valor.length;
+					   if(cant == 3){
+					   	$('#cedulaCliente').val(valor+"-");
+					   }
+						   
+					  if(cant == 11){
+					   	$('#cedulaCliente').val(valor+"-");
+				 }
+				}
+			}
+		}
+	});
+	
+	//Validacion para telefono
+	$('#telefonoCliente').on('keydown', function(e) { 
+			var valor = $('#telefonoCliente').val();
+			var res = valor.match(/^[0-9-]+$/);
+			
+			if(res == null){
+				 $('#telefonoCliente').val(valor.substring(0, valor.length - 1));
+			}else{
+				var keyCode = (window.event) ? e.which : e.keyCode;
+				// Si no preciona la tecla de borrar
+				if(keyCode !=8 && keyCode != 46){
+					  var cant = valor.length;
+					  if(cant == 3){
+					   	$('#telefonoCliente').val(valor+"-");
+					  }
+					  					   
+					  if(cant == 7){
+					   	$('#telefonoCliente').val(valor+"-");
+					  }
+				}
+			}
+	});
+	
+	//Validacion para celular
+	$('#celularCliente').on('keydown', function(e) { 
+			var valor = $('#celularCliente').val();
+			var res = valor.match(/^[0-9-]+$/);
+			
+			if(res == null){
+				 $('#celularCliente').val(valor.substring(0, valor.length - 1));
+			}else{
+				var keyCode = (window.event) ? e.which : e.keyCode;
+				// Si no preciona la tecla de borrar
+				if(keyCode !=8 && keyCode != 46){
+					  var cant = valor.length;
+					  if(cant == 3){
+					   	$('#celularCliente').val(valor+"-");
+					  }
+					  					   
+					  if(cant == 7){
+					   	$('#celularCliente').val(valor+"-");
+					  }
+				}
+			}
+	});
+	
+	//Validacion para telefono empresa
+	$('#telefonoEmpresaCliente').on('keydown', function(e) { 
+			var valor = $('#telefonoEmpresaCliente').val();
+			var res = valor.match(/^[0-9-]+$/);
+			
+			if(res == null){
+				 $('#telefonoEmpresaCliente').val(valor.substring(0, valor.length - 1));
+			}else{
+				var keyCode = (window.event) ? e.which : e.keyCode;
+				// Si no preciona la tecla de borrar
+				if(keyCode !=8 && keyCode != 46){
+					  var cant = valor.length;
+					  if(cant == 3){
+					   	$('#telefonoEmpresaCliente').val(valor+"-");
+					  }
+					  					   
+					  if(cant == 7){
+					   	$('#telefonoEmpresaCliente').val(valor+"-");
+					  }
+				}
+			}
+	});
+	
+    $("#formClient").on("submit", function (e) {
+		e.preventDefault();
+	        $.ajax({
+	            url: "/clientes/guardar/",
+	            type: "POST",
+	            data: new FormData(this),
+	            enctype: 'multipart/form-data',
+	            processData: false,
+	            contentType: false,
+	            cache: false,
+	            success: function (res) {
+		            if(res=="INSERT"){
+						Swal.fire({
+							title : 'Muy bien!',
+							text : 'Registro guardado',
+							position : 'top',
+							icon : 'success',
+							confirmButtonText : 'Cool'
+						})
+					}else{
+						Swal.fire({
+							title : 'Muy bien!',
+							text : 'Registro Modificado',
+							position : 'top',
+							icon : 'success',
+							confirmButtonText : 'Cool'
+						})
+					}
+		               console.log(res);
+		               $("#contenido").load("/clientes/",function(data){
+		        		console.log("Lista de clientes");
+		        		addEvents();
+		        	});
+	            },
+	            error: function (err) {
+	                console.error(err);
+	                Swal.fire({
+						title : 'Error!',
+						text : 'No se pudo completar la operacion, intente mas tarde',
+						position : 'top',
+						icon : 'error',
+						confirmButtonText : 'Cool'
+					})
+	            }
+	        });
+	});
+	//Fin formulario de clientes
 	
 //
 //	$("#navListaCliente").click(function(e){
@@ -51,15 +239,8 @@ function addEvents(){
 //			addEvents();
 //		});
 //	});
-//	
-//	$("#addCustomer").click(function(e){
-//		e.preventDefault();
-//		$("#contenido").load("/clientes/agregar",function(data){
-//			console.log("Agregar Cliente");
-//			addEvents();
-//		});
-//	});
-//	
+
+
 //	$("#listadoClientes").click(function(e){
 //		e.preventDefault();
 //		$("#contenido").load("/clientes/",function(data){
@@ -67,54 +248,8 @@ function addEvents(){
 //			addEvents();
 //		});
 //	});
-//
-//    $("#formClient").on("submit", function (e) {
-//		e.preventDefault();
-//	        $.ajax({
-//	            url: "/clientes/guardar/",
-//	            type: "POST",
-//	            data: new FormData(this),
-//	            enctype: 'multipart/form-data',
-//	            processData: false,
-//	            contentType: false,
-//	            cache: false,
-//	            success: function (res) {
-//		            if(res=="INSERT"){
-//						Swal.fire({
-//							title : 'Muy bien!',
-//							text : 'Registro guardado',
-//							position : 'top',
-//							icon : 'success',
-//							confirmButtonText : 'Cool'
-//						})
-//					}else{
-//						Swal.fire({
-//							title : 'Muy bien!',
-//							text : 'Registro Modificado',
-//							position : 'top',
-//							icon : 'success',
-//							confirmButtonText : 'Cool'
-//						})
-//					}
-//		               console.log(res);
-//		               $("#contenido").load("/clientes/",function(data){
-//		        		console.log("Lista de clientes");
-//		        		addEvents();
-//		        	});
-//	            },
-//	            error: function (err) {
-//	                console.error(err);
-//	                Swal.fire({
-//						title : 'Error!',
-//						text : 'No se pudo completar la operacion, intente mas tarde',
-//						position : 'top',
-//						icon : 'error',
-//						confirmButtonText : 'Cool'
-//					})
-//	            }
-//	        });
-//	});
-//	
+
+
 //	$("#navListaCliente").click(function(e){
 //		e.preventDefault();
 //		$("#contenido").load("/clientes/",function(data){
@@ -139,140 +274,35 @@ function addEvents(){
 //			addEvents();
 //		});
 //	});
-//	
-//	//Validaciones para el formulario de cliente
-//	$("#tipoDocumento").change(function(e){
-//		console.log("Tipo de documento");
-//		$('#cedulaCliente').val("");
-//		if($("#tipoDocumento").val()=="Cedula"){
-//			$('#cedulaCliente').attr('maxlength', 13);
-//		}else{
-//			$('#cedulaCliente').attr('maxlength', 50);
-//		}
-//	});
-//	
-//	//Validacion para cedula
-//	$('#cedulaCliente').on('keydown', function(e) { 
-//		if($("#tipoDocumento").val()=="Cedula"){
-//			var valor = $('#cedulaCliente').val();
-//			var res = valor.match(/^[0-9-]+$/);
-//			
-//			if(res == null){
-//				 $('#cedulaCliente').val(valor.substring(0, valor.length - 1));
-//			}else{
-//				var keyCode = (window.event) ? e.which : e.keyCode;
-//				// Si no preciona la tecla de borrar
-//				if(keyCode !=8 && keyCode != 46){
-//					   var cant = valor.length;
-//					   if(cant == 3){
-//					   	$('#cedulaCliente').val(valor+"-");
-//					   }
-//					   
-//					  if(cant == 11){
-//					   	$('#cedulaCliente').val(valor+"-");
-//				 }
-//				}
-//			}
-//		}
-//	});
-//	
-//	//Validacion para telefono
-//	$('#telefonoCliente').on('keydown', function(e) { 
-//			var valor = $('#telefonoCliente').val();
-//			var res = valor.match(/^[0-9-]+$/);
-//			
-//			if(res == null){
-//				 $('#telefonoCliente').val(valor.substring(0, valor.length - 1));
-//			}else{
-//				var keyCode = (window.event) ? e.which : e.keyCode;
-//				// Si no preciona la tecla de borrar
-//				if(keyCode !=8 && keyCode != 46){
-//					  var cant = valor.length;
-//					  if(cant == 3){
-//					   	$('#telefonoCliente').val(valor+"-");
-//					  }
-//					  					   
-//					  if(cant == 7){
-//					   	$('#telefonoCliente').val(valor+"-");
-//					  }
-//				}
-//			}
-//	});
-//	
-//	//Validacion para celular
-//	$('#celularCliente').on('keydown', function(e) { 
-//			var valor = $('#celularCliente').val();
-//			var res = valor.match(/^[0-9-]+$/);
-//			
-//			if(res == null){
-//				 $('#celularCliente').val(valor.substring(0, valor.length - 1));
-//			}else{
-//				var keyCode = (window.event) ? e.which : e.keyCode;
-//				// Si no preciona la tecla de borrar
-//				if(keyCode !=8 && keyCode != 46){
-//					  var cant = valor.length;
-//					  if(cant == 3){
-//					   	$('#celularCliente').val(valor+"-");
-//					  }
-//					  					   
-//					  if(cant == 7){
-//					   	$('#celularCliente').val(valor+"-");
-//					  }
-//				}
-//			}
-//	});
-//	
-//	//Validacion para telefono empresa
-//	$('#telefonoEmpresaCliente').on('keydown', function(e) { 
-//			var valor = $('#telefonoEmpresaCliente').val();
-//			var res = valor.match(/^[0-9-]+$/);
-//			
-//			if(res == null){
-//				 $('#telefonoEmpresaCliente').val(valor.substring(0, valor.length - 1));
-//			}else{
-//				var keyCode = (window.event) ? e.which : e.keyCode;
-//				// Si no preciona la tecla de borrar
-//				if(keyCode !=8 && keyCode != 46){
-//					  var cant = valor.length;
-//					  if(cant == 3){
-//					   	$('#telefonoEmpresaCliente').val(valor+"-");
-//					  }
-//					  					   
-//					  if(cant == 7){
-//					   	$('#telefonoEmpresaCliente').val(valor+"-");
-//					  }
-//				}
-//			}
-//	});
-//	
+
 //	/** Fin Prestamos **/
-//	
-//	$('#tabla').DataTable({
-//		"scrollY": "400px",
-//		    "language": {
-//		        "sProcessing":    "Procesando...",
-//		        "sLengthMenu":    "Mostrar _MENU_ registros",
-//		        "sZeroRecords":   "No se encontraron resultados",
-//		        "sEmptyTable":    "Ningún dato disponible en esta tabla",
-//		        "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-//		        "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
-//		        "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
-//		        "sInfoPostFix":   "",
-//		        "sSearch":        "Buscar:",
-//		        "sUrl":           "",
-//		        "sInfoThousands":  ",",
-//		        "sLoadingRecords": "Cargando...",
-//		        "oPaginate": {
-//		            "sFirst":    "Primero",
-//		            "sLast":    "Último",
-//		            "sNext":    "Siguiente",
-//		            "sPrevious": "Anterior"
-//		        },
-//		        "oAria": {
-//		            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-//		        }
-//		    }
-//	});
+
+	$('#tabla').DataTable({
+		"scrollY": "400px",
+		    "language": {
+		        "sProcessing":    "Procesando...",
+		        "sLengthMenu":    "Mostrar _MENU_ registros",
+		        "sZeroRecords":   "No se encontraron resultados",
+		        "sEmptyTable":    "Ningún dato disponible en esta tabla",
+		        "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+		        "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+		        "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+		        "sInfoPostFix":   "",
+		        "sSearch":        "Buscar:",
+		        "sUrl":           "",
+		        "sInfoThousands":  ",",
+		        "sLoadingRecords": "Cargando...",
+		        "oPaginate": {
+		            "sFirst":    "Primero",
+		            "sLast":    "Último",
+		            "sNext":    "Siguiente",
+		            "sPrevious": "Anterior"
+		        },
+		        "oAria": {
+		            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+		        }
+		    }
+	});
 }
 
 function modificarCliente(id){

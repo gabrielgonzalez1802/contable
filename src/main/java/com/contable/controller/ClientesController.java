@@ -21,74 +21,77 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.contable.model.Cliente;
+import com.contable.model.ComprobanteFiscal;
 import com.contable.model.Usuario;
 import com.contable.service.IClientesService;
+import com.contable.service.IComprobantesFiscalesService;
 import com.contable.util.Utileria;
 
 @Controller
 @RequestMapping("/clientes")
 public class ClientesController {
-	
+
 	@Value("${contable.ruta.imagenes}")
 	private String ruta;
-	
+
 	@Autowired
 	private IClientesService serviceClientes;
-	
+
+	@Autowired
+	private IComprobantesFiscalesService serviceComprobantesFiscales;
+
 	@GetMapping("/")
 	public String getListaClientes(Model model) {
-		List<Cliente> listaClientes = serviceClientes.buscarTodos().
-				stream().filter(e -> e.getEstado() == 1).collect(Collectors.toList());
+		List<Cliente> listaClientes = serviceClientes.buscarTodos().stream().filter(e -> e.getEstado() == 1)
+				.collect(Collectors.toList());
 		model.addAttribute("listaClientes", listaClientes);
 		return "clientes/listaClientes :: listaCliente";
 	}
-	
+
 	@GetMapping("/buscarCliente")
 	public String formBuscarCliente(Model model) {
+		List<Cliente> clietes = serviceClientes.buscarTodos().stream().filter(c -> c.getEstado() == 1)
+				.collect(Collectors.toList());
+
+		for (Cliente cliente : clietes) {
+			cliente.setNombre(cliente.getNombre() + " - " + cliente.getCedula());
+		}
+
+		model.addAttribute("clientes", clietes);
 		return "clientes/buscarCliente :: buscarCliente";
 	}
-	
+
 	@PostMapping("/getInfoCliente")
-	public String getInfoCliente(Model model, Integer tipoDocumento, String item) {
-		List<Cliente> clientes = new LinkedList<>();
+	public String getInfoCliente(Model model, Integer idCliente) {
 		Cliente cliente = new Cliente();
-		if(tipoDocumento == 1) {
-			clientes = serviceClientes.buscarPorCedula(item);
-		}else {
-			clientes = serviceClientes.buscarPorPasaporte(item);
+		if (idCliente > 0) {
+			cliente = serviceClientes.buscarPorId(idCliente);
 		}
-		
-		if(!clientes.isEmpty()) {
-			if(clientes.size()>1) {
-				return "clientes/buscarCliente :: buscarCliente";
-			}else {
-				cliente = clientes.get(0);
-				model.addAttribute("cliente", cliente);
-				return "clientes/infoCliente :: infoCliente";
-			}
-		}
-		
-		return "clientes/buscarCliente :: buscarCliente";
+
+		model.addAttribute("cliente", cliente);
+		return "clientes/infoCliente :: infoCliente";
 	}
-	
+
 	@GetMapping("/agregar")
 	public String formularioCliente(Model model) {
 		Cliente cliente = new Cliente();
+		List<ComprobanteFiscal> comprobantesFiscales = serviceComprobantesFiscales.buscarTodos();
 		model.addAttribute("cliente", cliente);
+		model.addAttribute("comprobantesFiscales", comprobantesFiscales);
 		return "clientes/formularioCliente :: formularioCliente";
 	}
-	
+
 	@GetMapping("/modificar/{id}")
 	public String formularioModificarCliente(Model model, @PathVariable(name = "id") Integer id) {
 		Cliente cliente = serviceClientes.buscarPorId(id);
-		if(cliente!=null) {
+		if (cliente != null) {
 			model.addAttribute("cliente", cliente);
-		}else {
+		} else {
 			model.addAttribute("cliente", new Cliente());
 		}
 		return "clientes/form :: form";
-	} 
-	
+	}
+
 	@GetMapping("/eliminar/{id}")
 	public String eliminarCliente(Model model, @PathVariable(name = "id") Integer id, HttpSession session) {
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -97,19 +100,20 @@ public class ClientesController {
 		cliente.setEstado(0);
 		cliente.setUsuarioEliminado(usuario);
 		serviceClientes.guardar(cliente);
-		List<Cliente> listaClientes = serviceClientes.buscarTodos().
-				stream().filter(e -> e.getEstado() == 1).collect(Collectors.toList());
+		List<Cliente> listaClientes = serviceClientes.buscarTodos().stream().filter(e -> e.getEstado() == 1)
+				.collect(Collectors.toList());
 		model.addAttribute("listaClientes", listaClientes);
 		return "clientes/listaClientes :: listaCliente";
-	} 
-	
+	}
+
 	@PostMapping("/guardar")
 	@ResponseBody
-	public ResponseEntity<String> guardar(Model model, @ModelAttribute("cliente") Cliente cliente, HttpSession session) {
+	public ResponseEntity<String> guardar(Model model, @ModelAttribute("cliente") Cliente cliente,
+			HttpSession session) {
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		String response = "INSERT";
-		
-		if(cliente.getId()!=null) {
+
+		if (cliente.getId() != null) {
 			response = "UPDATE";
 			Cliente originalCliente = serviceClientes.buscarPorId(cliente.getId());
 			cliente.setModificado(new Date());
@@ -118,31 +122,31 @@ public class ClientesController {
 			cliente.setCreado(originalCliente.getCreado());
 			cliente.setFotoFrontal(originalCliente.getFotoFrontal());
 			cliente.setFotoTrasera(originalCliente.getFotoTrasera());
-		}else {
+		} else {
 			cliente.setUsuario(usuario);
 		}
-		
-		//verificamos la imagen frontal
+
+		// verificamos la imagen frontal
 		if (!cliente.getFrontal().isEmpty()) {
 			String nombreImagenFrente = Utileria.guardarArchivo(cliente.getFrontal(), ruta);
-			if (nombreImagenFrente != null){ // La imagen si se subio
+			if (nombreImagenFrente != null) { // La imagen si se subio
 				// Procesamos la variable nombreImagen
 				cliente.setFotoFrontal(nombreImagenFrente);
 			}
 		}
-		
-		//verificamos la imagen trasera
+
+		// verificamos la imagen trasera
 		if (!cliente.getTrasera().isEmpty()) {
 			String nombreImagenTrasera = Utileria.guardarArchivo(cliente.getTrasera(), ruta);
-			if (nombreImagenTrasera != null){ // La imagen si se subio
+			if (nombreImagenTrasera != null) { // La imagen si se subio
 				// Procesamos la variable nombreImagen
 				cliente.setFotoTrasera(nombreImagenTrasera);
 			}
 		}
-			
+
+		cliente.setTipoDocumento(cliente.getDoctypeTemp());
+
 		serviceClientes.guardar(cliente);
-//		model.addAttribute("responseCliente", response);
-//		model.addAttribute("cliente", cliente);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

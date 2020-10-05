@@ -24,7 +24,7 @@
 <!-- 				        </div> -->
 <!-- 				    </div> -->
                   <div style="background-color: #F3F3F2;width: 100%;padding: 8px;text-align: center;border-radius: 18px;">
-                    <h3 th:text="${cliente.nombre}"></h3>
+                    <h3 th:text="${cliente.nombre} + ' ' + ${cliente.cedula} "></h3>
                     <input type="hidden" id="idCliente" value="${cliente.id}">
                   </div>
 
