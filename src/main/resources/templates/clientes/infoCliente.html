@@ -239,6 +239,8 @@
 </div>	
 
 <div th:fragment="infoClienteLista">
+<input type="hidden" th:value="${carpeta.nombre}" class="form-control" id="carpeta" placeholder="Carpeta" disabled="disabled">
+<input type="hidden" th:value="${carpeta.id}" class="form-control" id="carpetaId" placeholder="Carpeta" disabled="disabled">
 		<div class="card-header">
 		<div class="card-head-row">
 			<div class="card-title">
