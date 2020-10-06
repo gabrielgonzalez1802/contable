@@ -6,23 +6,73 @@
 </head>
 <body>
 <div th:fragment="infoCliente">
-               <div style="background-color: #F3F3F2;width: 100%;padding: 8px;text-align: center;border-radius: 18px;">
-                   <h3 th:text="${cliente.nombre} + ' ' + ${cliente.cedula} "></h3>
-                   <input type="hidden" id="idCliente" value="${cliente.id}">
-               </div>
+       <div class="row">
+            <br>
+			<div class="col-md-12">
+					  <div class="form-row align-items-center">
+					    <div class="col-sm-2 my-1">
+					      <label class="sr-only" for="">carpeta</label>
+					      <div class="input-group">
+					        <div class="input-group-prepend">
+					        <button style="width: 100%;" class="btn btn-success" id="btnCarpeta">
+					        	<i class="fas fa-search"></i>
+					          </button>
+					        </div>
+					        <input type="hidden" th:value="${msg}" id="msg">
+					        <input type="hidden" th:value="${carpeta.id}" class="form-control" id="carpetaId" placeholder="Carpeta" disabled="disabled">
+					        <input type="text" th:value="${carpeta.nombre}" class="form-control" id="carpeta" placeholder="Carpeta" disabled="disabled">
+					     	<div th:if="${carpeta.principal != 1}" class="input-group-prepend">
+					        <button style="width: 100%;" class="btn btn-danger" id="btnExitCarpeta">
+					        	<i class="fas fa-times"></i>
+					          </button>
+					        </div>
+					      </div>
+					    </div>
+					    <div class="col-sm-2 my-1">
+					   	 <div class="form-check form-check-inline">
+					        <div class="custom-control custom-radio">
+							  <input type="radio" id="cedula" name="tipoDocumentoBusqueda" class="custom-control-input" checked="checked">
+							  <label class="custom-control-label" for="cedula">Ced.</label>
+							</div>
+						</div>	
+						<div class="form-check form-check-inline">
+							<div class="custom-control custom-radio">
+							  <input type="radio" id="otro" name="tipoDocumentoBusqueda" class="custom-control-input">
+							  <label class="custom-control-label" for="otro">Otro</label>
+							</div>
+					    </div>
+					    </div>
+					    <input type="hidden" th:value="${cliente.tipoDocumento}" id="tipoDocumentoAcct">
+					    <div class="col-sm-2 my-1">
+					       <input th:value="${cliente.cedula}" type="text" class="form-control" id="buscarPorDocumento" maxlength="13" placeholder="Documento">
+					    </div>
+					    <div class="col-sm-4 my-1">
+					    <div class="input-group">
+					       <input type="text" th:value="${cliente.nombre}" class="form-control" id="buscarPorNombre" placeholder="Nombre">
+					     	<div th:if="${cliente.nombre != null}" class="input-group-prepend">
+					        <button style="width: 100%;" class="btn btn-success" id="btnDetalleCliente">
+					        	<i class="far fa-eye"></i>
+					          </button>
+					        </div>
+					      </div>
+					    </div>
+					    
+					     <div class="col-sm-1 my-1">
+					    </div>
+					    
+					    <div class="col-sm-1 my-1 pull right">
+					    	 <button class="btn btn-primary btn-sm" type="button" id="agregarCliente">Agregar Cliente</button>
+					    </div>
+					  </div>
+			</div>
+		</div>
+		
+		<hr>
 
-                <h5 style="padding-top: 50px;">Agregar Cliente</h5>
-                
                 <div class="row">
-
-                  <div class="col-md-2 col-sm-2">
-                    <a href="#" class="btn btn-primary" id="agregarCliente"><b>+</b></a>
-                  </div>
-
-                  <div class="col-md-3 col-sm-3"></div>
-
-                  <div class="col-md-3 col-sm-3">
-                    <div class="card overflow-hidden sales-card bg-primary-gradient">
+				  <div class="col-md-8">
+				  	 <div class="col-md-4 col-sm-4">
+                      <div class="card overflow-hidden sales-card bg-primary-gradient">
                       <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
                         <div class="">
                           <h6 class="mb-3 tx-12 text-white">Nuevo Prestamo</h6>
@@ -40,9 +90,12 @@
                           </div>
                         </div>
                       </div>
-                      <span id="compositeline" class="pt-1"><canvas width="298" height="30" style="display: inline-block; width: 298.25px; height: 30px; vertical-align: top;"></canvas></span>
+                      <span id="" class="pt-1"><canvas width="298" height="30" style="display: inline-block; width: 298.25px; height: 30px; vertical-align: top;"></canvas></span>
                     </div>
                   </div>
+                  
+				 </div>
+
                   <div class="col-md-4 col-sm-4">
                     <div class="" style="border-left-style: solid;">
                       <div class="card-body">
@@ -67,6 +120,122 @@
                     </div>
                   </div>
                 </div>
+                
+          <!-- The Modal -->
+  <div class="modal" id="modalInfoCliente">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Detalles del cliente</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          	<div class="row">
+				<div class="col-md-3">
+					<input type="text" th:value="${cliente.tipoDocumento}" class="form-control" placeholder="Tipo Documento" id="infoCedulaTipoDocumento" disabled="disabled">
+				</div>
+				
+				<div class="col-md-3">
+					 <div class="form-group">
+					    <input type="text" th:value="${cliente.cedula}" class="form-control" placeholder="Documento" id="infoCedulaCliente" disabled="disabled">
+					  </div>
+				</div>
+				
+				<div class="col-md-6">
+				 	<div class="form-group">
+					   	<input type="text" th:value="${cliente.nombre}" class="form-control" placeholder="Nombre" id="infoNombreCliente" disabled="disabled">
+					 </div>
+				</div>
+				
+			</div>
+			
+			<div class="row">
+				<div class="col-md-3">
+				 	<div class="form-group">
+					   	<input type="text" th:value="${cliente.telefono}" class="form-control" id="infoTelefonoCliente" placeholder="Telefono" disabled="disabled">
+					 </div>
+				</div>
+				
+				<div class="col-md-3">
+				 	<div class="form-group">
+					   	<input type="text" th:value="${cliente.celular}" class="form-control" id="infoCelularCliente" placeholder="Celular" disabled="disabled">
+					 </div>
+				</div>
+				
+				<div class="col-md-3">
+				 	<div class="form-group">
+					   	<input type="text" th:value="${cliente.rnc}" class="form-control" id="rncCliente" placeholder="RNC" disabled="disabled">
+					 </div>
+				</div>
+				
+				<div class="col-md-3">
+				 	<div class="form-group">
+				 	  <input type="text" th:if="${cliente.comprobanteFiscal != null}" th:value="${cliente.comprobanteFiscal.nombre}" class="form-control" id="infoComprobanteFiscal" placeholder="Comprobante Fiscal" disabled="disabled">
+ 					  <input type="text" th:unless="${cliente.comprobanteFiscal != null}" value="" class="form-control" id="infoComprobanteFiscal" placeholder="Comprobante Fiscal" disabled="disabled">
+					</div>
+				</div>
+				
+			</div>
+			
+			<div class="row">
+				<div class="col-md-5">
+				 	<div class="form-group">
+					   	<input type="text" th:value="${cliente.nota}" class="form-control" id="infoNotaCliente" placeholder="Nota" disabled="disabled">
+					 </div>
+				</div>
+				<div class="col-md-7">
+					 <div class="form-group">
+					   <input type="text" th:value="${cliente.direccion}" class="form-control" id="infoDireccion" placeholder="Direccion" disabled="disabled">
+					  </div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-6">
+					 <img th:if="${cliente.fotoFrontal != null}" th:src="@{/logos/{img} (img=${cliente.fotoFrontal})}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="150" height="150">            
+					 <img th:unless="${cliente.fotoFrontal != null}" th:src="@{/img/no-image.png}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="150" height="150">            
+				</div>
+				<div class="col-md-6">
+					 <img th:if="${cliente.fotoTrasera != null}" th:src="@{/logos/{img} (img=${cliente.fotoTrasera})}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="150" height="150">            
+					 <img th:unless="${cliente.fotoTrasera != null}" th:src="@{/img/no-image.png}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="150" height="150">            
+				</div>
+			</div>
+												
+			<div class="row">
+				<div class="col-md-4">
+					 <div class="form-group">
+					    <input type="text" th:value="${cliente.nombreEmpresa}" class="form-control" placeholder="Nombre de la Empresa" id="infoNombreEmpresaCliente" disabled="disabled">
+					  </div>
+				</div>
+				
+				<div class="col-md-4">
+				 	<div class="form-group">
+					   	<input type="text" th:value="${cliente.telefonoEmpresa}" class="form-control" placeholder="Telefono de la Empresa" id="infoTelefonoEmpresaCliente" disabled="disabled">
+					 </div>
+				</div>
+				
+				<div class="col-md-4">
+					 <div class="form-group">
+					    <input type="text" th:value="${cliente.direccionEmpresa}" id="infoDireccionEmpresaCliente" class="form-control" placeholder="Direcci&oacute;n de la Empresa" disabled="disabled">
+					  </div>
+				</div>
+			</div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">Regresar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>        
+                
+                
 </div>	
 
 <div th:fragment="infoClienteLista">

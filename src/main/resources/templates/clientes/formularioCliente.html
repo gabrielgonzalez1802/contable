@@ -35,14 +35,12 @@
 				
 				<div class="col-md-3">
 					 <div class="form-group">
-<!-- 					    <label for="cedulaCliente">Numero</label> -->
 					    <input type="text" maxlength="13" th:field="*{cedula}" class="form-control" placeholder="Documento" id="cedulaCliente" required="required">
 					  </div>
 				</div>
 				
 				<div class="col-md-6">
 				 	<div class="form-group">
-<!-- 					  <label for="nombreCliente">Nombre</label> -->
 					   	<input type="text" class="form-control" th:field="*{nombre}" placeholder="Nombre" id="nombreCliente" required="required">
 					 </div>
 				</div>
@@ -53,28 +51,24 @@
 			
 				<div class="col-md-2">
 				 	<div class="form-group">
-<!-- 					  <label for="telefonoCliente">Telefono</label> -->
 					   	<input type="text" maxlength="12" th:field="*{telefono}" class="form-control" id="telefonoCliente" placeholder="Telefono" required="required">
 					 </div>
 				</div>
 				
 				<div class="col-md-2">
 				 	<div class="form-group">
-<!-- 					  <label for="telefonoCliente">Celular</label> -->
 					   	<input type="text" maxlength="12" th:field="*{celular}" class="form-control" id="celularCliente" placeholder="Celular">
 					 </div>
 				</div>
 				
 				<div class="col-md-2">
 				 	<div class="form-group">
-<!-- 					  <label for="rncCliente">RNC</label> -->
 					   	<input type="text" th:field="*{rnc}" class="form-control" id="rncCliente" placeholder="RNC">
 					 </div>
 				</div>
 				
 				<div class="col-md-2">
 				 	<div class="form-group">
-<!-- 					  <label for="rncCliente">NCF</label> -->
 					   	<select th:field="*{comprobanteFiscal.id}" id="ncfCliente" class="form-control">
 					   		<option value="0"></option>
 					   		<option th:each="comprobanteFiscal : ${comprobantesFiscales}"
@@ -85,7 +79,6 @@
 				
 				<div class="col-md-4">
 				 	<div class="form-group">
-<!-- 					  <label for="rncCliente">RNC</label> -->
 					   	<input type="text" th:field="*{nota}" class="form-control" id="notaCliente" placeholder="Nota">
 					 </div>
 				</div>
@@ -95,19 +88,16 @@
 			<div class="row">
 				<div class="col-md-3">
 					 <div class="form-group">
-<!-- 					    <label for="fotoFrente">Foto frontal</label> -->
 					    <input type="file" th:field="*{frontal}" class="form-control" id="fotoFrente">
 					  </div>
 				</div>
 				<div class="col-md-3">
 					 <div class="form-group">
-<!-- 					    <label for="fotoTrasera">Foto posterior</label> -->
 					    <input type="file" th:field="*{trasera}" class="form-control" id="fotoTrasera">
 					  </div>
 				</div>
 				<div class="col-md-6">
 					 <div class="form-group">
-<!-- 					    <label for="cedulaCliente">Direcci&oacute;n</label> -->
 					   <input type="text"  th:field="*{direccion}" class="form-control" id="direccion" placeholder="Direccion">
 					  </div>
 				</div>
@@ -116,21 +106,18 @@
 			<div class="row">
 				<div class="col-md-4">
 					 <div class="form-group">
-<!-- 					    <label for="nombreEmpresaCliente">Nombre de la Empresa</label> -->
 					    <input type="text" th:field="*{nombreEmpresa}" class="form-control" placeholder="Nombre de la Empresa" id="nombreEmpresaCliente">
 					  </div>
 				</div>
 				
 				<div class="col-md-4">
 				 	<div class="form-group">
-<!-- 					  <label for="telefonoEmpresaCliente">Telefono de la Empresa</label> -->
 					   	<input type="text" maxlength="12" class="form-control" th:field="*{telefonoEmpresa}" placeholder="Telefono de la Empresa" id="telefonoEmpresaCliente">
 					 </div>
 				</div>
 				
 				<div class="col-md-4">
 					 <div class="form-group">
-<!-- 					    <label for="direccionEmpresaCliente">Direcci&oacute;n de la Empresa</label> -->
 					    <input type="text" th:field="*{direccionEmpresa}" id="direccionEmpresaCliente" class="form-control" placeholder="Direcci&oacute;n de la Empresa">
 					  </div>
 				</div>

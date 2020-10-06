@@ -35,6 +35,13 @@ function addEvents(){
 					},
 				function(data){
 					console.log("Buscar clientes");
+					if($("#tipoDocumentoAcct").val() == 'cedula'){
+						$("#cedula").attr('checked', 'checked');
+						$("#otro").attr('checked', false);
+					}else{
+						$("#otro").attr('checked', 'checked');
+						$("#cedula").attr('checked', false);
+					}
 					if($("#msg").val()== "No se encontro el cliente"){
 						 Swal.fire({
 								title : 'Alerta!',
@@ -48,6 +55,10 @@ function addEvents(){
 				});
 		     }
 	     }
+	});
+	
+	$("#btnDetalleCliente").click(function(e){
+		$('#modalInfoCliente').modal('show')
 	});
 	
 	$("input[name='tipoDocumentoBusqueda']").change(function(){
@@ -74,6 +85,13 @@ function addEvents(){
 					},
 				function(data){
 					console.log("Buscar clientes");
+					if($("#tipoDocumentoAcct").val() == 'cedula'){
+						$("#cedula").attr('checked', 'checked');
+						$("#otro").attr('checked', false);
+					}else{
+						$("#otro").attr('checked', 'checked');
+						$("#cedula").attr('checked', false);
+					}	
 					if($("#msg").val()== "No se encontro el cliente"){
 						 Swal.fire({
 								title : 'Alerta!',

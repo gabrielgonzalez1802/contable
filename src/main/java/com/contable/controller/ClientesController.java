@@ -74,23 +74,19 @@ public class ClientesController {
 	
 	@GetMapping("/buscarClienteCarpetaPrincipal")
 	public String formBuscarClienteCarpetaPrincipal(Model model, HttpSession session) {
-		session.setAttribute("carpeta", null);
-		
-//		List<Cliente> clientes = serviceClientes.buscarTodos().stream().filter(c -> c.getEstado() == 1)
-//				.collect(Collectors.toList());
-		
 		List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
-//		for (Cliente cliente : clientes) {
-//			cliente.setNombre(cliente.getNombre() + " - " + cliente.getCedula());
-//		}
 		model.addAttribute("carpeta", carpetas.get(0));
+		session.setAttribute("carpeta", carpetas.get(0));
 		model.addAttribute("msg", "0");
 		return "clientes/buscarCliente :: buscarCliente";
 	}
 
 	@PostMapping("/getInfoCliente")
-	public String getInfoCliente(Model model, Integer carpeta, String tipoDocumento, String item) {
+	public String getInfoCliente(Model model, Integer carpeta, String tipoDocumento, String item, HttpSession session) {
 		Cliente cliente = new Cliente();
+		Integer idCarpeta = (Integer) session.getAttribute("carpeta");
+		Carpeta carpetaTemp = serviceCarpetas.buscarPorId(idCarpeta);
+		model.addAttribute("carpeta", carpetaTemp);
 		if (tipoDocumento.equals("cedula")) {
 			cliente = serviceClientes.buscarPorCedula(item);
 		}else if(tipoDocumento.equals("otro")){
@@ -114,15 +110,12 @@ public class ClientesController {
 		if(cliente == null) {
 			List<Cliente> clientes = serviceClientes.buscarTodos().stream().filter(c -> c.getEstado() == 1)
 					.collect(Collectors.toList());
-
-			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
-			
 			for (Cliente clienteTemp : clientes) {
 				clienteTemp.setNombre(clienteTemp.getNombre() + " - " + clienteTemp.getCedula());
 			}
 
 			model.addAttribute("msg", "No se encontro el cliente");
-			model.addAttribute("carpeta", carpetas.get(0));
+			model.addAttribute("carpeta",carpetaTemp);
 			
 			return "clientes/buscarCliente :: buscarCliente"; 
 		}
@@ -132,17 +125,16 @@ public class ClientesController {
 	}
 	
 	@GetMapping("/getInfoCliente/{id}")
-	public String getInfoCliente(Model model, @PathVariable("id") Integer id) {
+	public String getInfoCliente(Model model, @PathVariable("id") Integer id, HttpSession session) {
 		Cliente cliente = serviceClientes.buscarPorId(id);
+		Integer idCarpeta = (Integer) session.getAttribute("carpeta");
+		Carpeta carpeta = serviceCarpetas.buscarPorId(idCarpeta);
+		model.addAttribute("carpeta", carpeta);
 		if(cliente != null) {
 			model.addAttribute("cliente", cliente);
 			return "clientes/infoCliente :: infoCliente";
 		}
-		
-		List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
 		model.addAttribute("msg", "No se encontro el cliente");
-		model.addAttribute("carpeta", carpetas.get(0));
-	
 		return "clientes/buscarCliente :: buscarCliente"; 
 	}
 
