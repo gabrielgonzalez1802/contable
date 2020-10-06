@@ -77,22 +77,22 @@
 										 <select th:field="*{tipo}" id="tipo_prestamo" class="form-control" onchange="javascript:calCuota()" required="required">
 										 	<option value="1">Cuotas Fijas</option>
 										 	<option value="3">Cuotas Variables</option>
-										 	<option value="2">Interes Fijo</option>
-										 	<option value="4">Interes Variable</option>
+										 	<option value="2">Interes</option>
+<!-- 										 	<option value="4">Interes Variable</option> -->
 										 </select>
 									</div>
 								</div>
 								
-								<div class="col-md-4">
-									<div class="">
-										<label for="">Moneda</label>
-										 <select th:field="*{moneda}" class="form-control" required="required">
-										 	<option value="pesos">Pesos</option>
-										 	<option value="dolar">Dolar</option>
-										 	<option value="euro">Euro</option>
-										 </select>
-									</div>
-								</div>
+<!-- 								<div class="col-md-4"> -->
+<!-- 									<div class=""> -->
+<!-- 										<label for="">Moneda</label> -->
+<!-- 										 <select th:field="*{moneda}" class="form-control" required="required"> -->
+<!-- 										 	<option value="pesos">Pesos</option> -->
+<!-- <!-- 										 	<option value="dolar">Dolar</option> --> -->
+<!-- <!-- 										 	<option value="euro">Euro</option> --> -->
+<!-- 										 </select> -->
+<!-- 									</div> -->
+<!-- 								</div> -->
 							</div>
 							
 							<div class="row">
@@ -107,10 +107,10 @@
 									<div class="">
 										 <label for="">Forma de Pago</label> 
 										 <select th:field="*{forma_pago}" class="form-control" required="required">
-										 	<option value="1">Diario</option>
-										 	<option value="2">Interdiario</option>
-										 	<option value="7">Semanal</option>
-										 	<option value="15">Quincenal</option>
+<!-- 										 	<option value="1">Diario</option> -->
+<!-- 										 	<option value="2">Interdiario</option> -->
+<!-- 										 	<option value="7">Semanal</option> -->
+<!-- 										 	<option value="15">Quincenal</option> -->
 										 	<option value="30">Mensual</option>
 										 </select>
 									</div>
@@ -127,7 +127,7 @@
 							<div class="row">
 								<div class="col-md-4">
 									<div class="">
-										 <label for="">Pagos</label> 
+										 <label for="">Plazo</label> 
 										 <input type="number" th:field="*{pagos}" class="form-control" oninput="javascript:calCuota()" id="pagos" min="0">
 									</div>
 								</div>
@@ -187,12 +187,12 @@
 										 <input type="text" th:field="*{id_cuenta}" class="form-control" placeholder="Cuenta">
 									</div>
 								</div>
-								<div class="col-md-4">
-									<div class="">
-										 <label for="">Carpeta</label> 
-										 <input type="number" th:field="*{carpeta}" class="form-control" min="0">
-									</div>
-								</div>
+<!-- 								<div class="col-md-4"> -->
+<!-- 									<div class=""> -->
+<!-- 										 <label for="">Carpeta</label>  -->
+<!-- 										 <input type="number" th:field="*{carpeta}" class="form-control" min="0"> -->
+<!-- 									</div> -->
+<!-- 								</div> -->
 							</div>
 							
 							<div class="row">
