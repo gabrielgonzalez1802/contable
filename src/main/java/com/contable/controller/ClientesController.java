@@ -54,18 +54,15 @@ public class ClientesController {
 
 	@GetMapping("/buscarCliente")
 	public String formBuscarCliente(Model model, HttpSession session) {
-//		List<Cliente> clientes = serviceClientes.buscarTodos().stream().filter(c -> c.getEstado() == 1)
-//				.collect(Collectors.toList());
-		
 		//Verificamos si tenemos la carpeta en sesion para seleccionarla
+		if(session.getAttribute("carpeta")==null) {
+			session.setAttribute("carpeta", 1);
+		}
 		Integer idCarpeta = (Integer) session.getAttribute("carpeta");
 		if(idCarpeta!=null) {
 			model.addAttribute("carpeta", serviceCarpetas.buscarPorId(idCarpeta));
 		}else {
 			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
-//			for (Cliente cliente : clientes) {
-//				cliente.setNombre(cliente.getNombre() + " - " + cliente.getCedula());
-//			}
 			model.addAttribute("carpeta", carpetas.get(0));
 		}
 		model.addAttribute("msg", "0");

@@ -80,7 +80,7 @@ function addEvents(){
 			     $("#contenido").load("/clientes/getInfoCliente",
 					{
 					   	'carpeta': carpeta,
-					   	'tipoDocumento': '',
+					   	'tipoDocumento': '0',
 						'item': item
 					},
 				function(data){
