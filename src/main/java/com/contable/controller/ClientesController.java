@@ -64,6 +64,7 @@ public class ClientesController {
 		}else {
 			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
 			model.addAttribute("carpeta", carpetas.get(0));
+			session.setAttribute("carpeta", carpetas.get(0).getId());
 		}
 		model.addAttribute("msg", "0");
 		return "clientes/buscarCliente :: buscarCliente";
@@ -73,7 +74,7 @@ public class ClientesController {
 	public String formBuscarClienteCarpetaPrincipal(Model model, HttpSession session) {
 		List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
 		model.addAttribute("carpeta", carpetas.get(0));
-		session.setAttribute("carpeta", carpetas.get(0));
+		session.setAttribute("carpeta", carpetas.get(0).getId());
 		model.addAttribute("msg", "0");
 		return "clientes/buscarCliente :: buscarCliente";
 	}
@@ -83,6 +84,7 @@ public class ClientesController {
 		Cliente cliente = new Cliente();
 //		Integer idCarpeta = (Integer) session.getAttribute("carpeta");
 		Carpeta carpetaTemp = serviceCarpetas.buscarPorId(carpeta);
+		session.setAttribute("carpeta", carpetaTemp.getId());
 		model.addAttribute("carpeta", carpetaTemp);
 		if (tipoDocumento.equals("cedula")) {
 			cliente = serviceClientes.buscarPorCedula(item);
