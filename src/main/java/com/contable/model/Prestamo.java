@@ -54,9 +54,14 @@ public class Prestamo {
 	
 	private Integer estado;
 	private String moneda;
-	private Integer carpeta;
 	
-	private Integer id_cuenta; //Se llevara a objeto de la clase Cuenta
+	@OneToOne
+	@JoinColumn(name = "carpeta")
+	private Carpeta carpeta;
+	
+	@OneToOne
+	@JoinColumn(name = "id_cuenta")
+	private Cuenta cuenta; 
 
 	public Integer getId() {
 		return id;
@@ -209,27 +214,37 @@ public class Prestamo {
 		this.moneda = moneda;
 	}
 
-	public Integer getCarpeta() {
-		return carpeta;
-	}
-
-	public void setCarpeta(Integer carpeta) {
-		this.carpeta = carpeta;
-	}
-
-	public Integer getId_cuenta() {
-		return id_cuenta;
-	}
-
-	public void setId_cuenta(Integer id_cuenta) {
-		this.id_cuenta = id_cuenta;
-	}
-
 	public String getForma_pago() {
 		return forma_pago;
 	}
 
 	public void setForma_pago(String forma_pago) {
 		this.forma_pago = forma_pago;
+	}
+
+	public Carpeta getCarpeta() {
+		return carpeta;
+	}
+
+	public void setCarpeta(Carpeta carpeta) {
+		this.carpeta = carpeta;
+	}
+
+	public Cuenta getCuenta() {
+		return cuenta;
+	}
+
+	public void setCuenta(Cuenta cuenta) {
+		this.cuenta = cuenta;
+	}
+
+	@Override
+	public String toString() {
+		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", tipo=" + tipo
+				+ ", tipo_prestamo=" + tipo_prestamo + ", dias_gracia=" + dias_gracia + ", monto=" + monto + ", pagos="
+				+ pagos + ", tasa=" + tasa + ", forma_pago=" + forma_pago + ", valor_cuota=" + valor_cuota + ", mora="
+				+ mora + ", observacion=" + observacion + ", balance=" + balance + ", valor_interes=" + valor_interes
+				+ ", totalPagar=" + totalPagar + ", ultimoPago=" + ultimoPago + ", usuario=" + usuario + ", estado="
+				+ estado + ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta + "]";
 	}
 }

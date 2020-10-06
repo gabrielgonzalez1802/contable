@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -22,9 +24,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.contable.model.Amortizacion;
+import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
+import com.contable.model.Cuenta;
 import com.contable.model.Prestamo;
+import com.contable.service.ICarpetasService;
 import com.contable.service.IClientesService;
+import com.contable.service.ICuentasService;
 import com.contable.service.IPrestamosService;
 
 @Controller
@@ -37,6 +43,12 @@ public class PrestamosController {
 	@Autowired
 	private IClientesService serviceClientes;
 	
+	@Autowired
+	private ICuentasService serviceCuentas;
+	
+	@Autowired
+	private ICarpetasService serviceCarpetas;
+	
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	
 	@GetMapping("/")
@@ -45,11 +57,22 @@ public class PrestamosController {
 	}
 	
 	@GetMapping("/agregar")
-	public String agregarPrestamos(Model model) {
+	public String agregarPrestamos(Model model, HttpSession session) {
 		Prestamo prestamo = new Prestamo();
-		List<Cliente> clientes = serviceClientes.buscarPorEstado(1);
-		model.addAttribute("clientes", clientes);
-		model.addAttribute("prestamo", prestamo);
+		prestamo.setCuenta(new Cuenta());
+		if(session.getAttribute("cliente")!=null) {
+			if((Integer) session.getAttribute("cliente") > 0) {
+				Carpeta carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
+				List<Cuenta> cuentas = serviceCuentas.buscarPorCarpeta(carpeta);
+				
+				model.addAttribute("cuentas", cuentas);
+				model.addAttribute("prestamo", prestamo);
+				return "prestamos/form :: form";
+			}
+		}
+		model.addAttribute("msg", "NOCLIENTE");
+		model.addAttribute("cuentas", new LinkedList<Cuenta>());
+		model.addAttribute("prestamo",  new Prestamo());
 		return "prestamos/form :: form";
 	}
 	
@@ -338,7 +361,7 @@ public class PrestamosController {
 		model.addAttribute("totalCapital", total_capital >0 ? formato2d(total_capital) : total_capital);
 		model.addAttribute("totalInteres", total_interes >0 ? formato2d(total_interes) : total_interes);
 		model.addAttribute("totalNeto", total_neto >0 ? formato2d(total_neto) : total_neto);
-		return "prestamos/form :: #cuerpo_amortizacion";
+		return "index :: #cuerpo_amortizacion";
 	}
 	
 	public double formato2d(double number) {

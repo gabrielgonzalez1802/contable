@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
 import com.contable.model.Prestamo;
 import com.contable.repository.PrestamosRepository;
@@ -53,6 +54,11 @@ public class PrestamosServiceJpa implements IPrestamosService{
 		if(optional.isPresent()) {
 			repo.delete(optional.get());
 		}
+	}
+
+	@Override
+	public List<Prestamo> buscarPorCarpeta(Carpeta carpeta) {
+		return repo.findByCarpeta(carpeta);
 	}
 
 }

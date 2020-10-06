@@ -54,6 +54,8 @@ public class ClientesController {
 
 	@GetMapping("/buscarCliente")
 	public String formBuscarCliente(Model model, HttpSession session) {
+		//Dejamos el cliente vacio
+		session.setAttribute("cliente", 0);
 		//Verificamos si tenemos la carpeta en sesion para seleccionarla
 		if(session.getAttribute("carpeta")==null) {
 			session.setAttribute("carpeta", 1);
@@ -88,8 +90,14 @@ public class ClientesController {
 		model.addAttribute("carpeta", carpetaTemp);
 		if (tipoDocumento.equals("cedula")) {
 			cliente = serviceClientes.buscarPorCedula(item);
+			if(cliente != null) {
+				session.setAttribute("cliente", cliente.getId());
+			}
 		}else if(tipoDocumento.equals("otro")){
 			cliente = serviceClientes.buscarPorOtro(item);
+			if(cliente != null) {
+				session.setAttribute("cliente", cliente.getId());
+			}
 		}else {
 			//busqueda por nombre
 			List<Cliente> clientes = serviceClientes.buscarPorNombre(item).stream().
@@ -102,17 +110,21 @@ public class ClientesController {
 					return "clientes/infoCliente :: infoClienteLista";
 				}else {
 					cliente = clientes.get(0);
+					if(cliente != null) {
+						session.setAttribute("cliente", cliente.getId());
+					}
 				}
 			}
 		}
 		
 		if(cliente == null) {
+			session.setAttribute("cliente", 0);
 			List<Cliente> clientes = serviceClientes.buscarTodos().stream().filter(c -> c.getEstado() == 1)
 					.collect(Collectors.toList());
 			for (Cliente clienteTemp : clientes) {
 				clienteTemp.setNombre(clienteTemp.getNombre() + " - " + clienteTemp.getCedula());
 			}
-
+			
 			model.addAttribute("msg", "No se encontro el cliente");
 			model.addAttribute("carpeta",carpetaTemp);
 			
@@ -130,8 +142,11 @@ public class ClientesController {
 		Carpeta carpeta = serviceCarpetas.buscarPorId(idCarpeta);
 		model.addAttribute("carpeta", carpeta);
 		if(cliente != null) {
+			session.setAttribute("cliente", cliente.getId());
 			model.addAttribute("cliente", cliente);
 			return "clientes/infoCliente :: infoCliente";
+		}else {
+			session.setAttribute("cliente", 0);
 		}
 		model.addAttribute("msg", "No se encontro el cliente");
 		return "clientes/buscarCliente :: buscarCliente"; 

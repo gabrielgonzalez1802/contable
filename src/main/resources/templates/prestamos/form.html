@@ -6,142 +6,87 @@
 </head>
 <body>
 	<div th:fragment="form">
-		<div class="card-header">
-			<div class="card-head-row">
-				<div class="card-title">
-					<h2>Formulario Prestamo</h2>
-					<span th:text="${response}" id="response"></span>
-				</div>
-
-				<div class="card-tools">
-					<a href="#" id="listadoClientes"
-						class="btn btn-primary btn-border btn-round btn-sm"> <span
-						class="btn-label"> <i class="fas fa-users"></i>
-					</span> test
-					</a>
-				</div>
-			</div>
-			<ul class="nav nav-pills nav-secondary" id="pills-tab" role="tablist">
-				<li class="nav-item submenu"><a class="nav-link"
-					id="navListaCliente" data-toggle="pill" role="tab"
-					aria-selected="false">Clientes</a></li>
-				<li class="nav-item submenu"><a class="nav-link active show"
-					id="navListaPrestamo" data-toggle="pill" role="tab"
-					aria-selected="true">Prestamos</a></li>
-			</ul>
-		</div>
+<!-- 		<div class="card-header"> -->
+<!-- 			<div class="card-head-row"> -->
+<!-- 				<div class="card-title"> -->
+					
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+		<input type="hidden" th:value="${msg}" id="msg">
+		<h5>Formulario Prestamo</h5>
+        			<hr>
 		<div class="card-body">
 			<div style="min-height: 375px">
 				<div class="row">
 					<!-- Formulario -->
-					<div class="col-md-6">
+					<div class="col-md-12">
 						<form th:object="${prestamo}" id="formulario_prestamo" method="post">
 							<div class="row">
-								<div class="col-md-5">
+								<div class="col-md-3">
 									<div class="">
 									<input type="hidden" th:value="*{#dates.format(fecha, 'yyyy-MM-dd')}" id="fechaTemp">
-										<input type="hidden" th:field="*{id}"> <label
-											for="">Fecha</label> <input type="date"
-											th:value="*{#dates.format(fecha, 'yyyy-MM-dd')}" name="fecha" class="form-control" required="required">
+										<input type="hidden" th:field="*{id}"> 
+<!-- 										<label for="">Fecha</label>  --> 
+										<input type="date" th:value="*{#dates.format(fecha, 'yyyy-MM-dd')}" name="fecha" data-toggle="tooltip" title="Fecha" class="form-control" required="required">
 									</div>
 								</div>
-
-								<div class="col-md-7">
-									<div class="">
-										<label for="nombreCliente">Cliente</label>
-										 <select th:field="*{cliente.id}" class="form-control" required="required">
-										 	<option th:each="cliente : ${clientes}" th:value="${cliente.id}"
-										 			th:text="${cliente.nombre}"></option>
-										 </select>
-									</div>
-								</div>
-							</div>
-							
-							<div class="row">
-								<div class="col-md-4">
-									<div class="">
-										<label for="">Prestamo</label>
-										 <select th:field="*{tipo_prestamo}" id="" class="form-control" required="required">
+																
+								<div class="col-md-3">
+<!-- 										<label for="">Prestamo</label> -->
+										 <select th:field="*{tipo_prestamo}" id="" class="form-control" required="required" data-toggle="tooltip" title="Prestamo">
 										 	<option value="personal">Personal</option>
 										 	<option value="hipotecatio">Hipotecario</option>
 										 	<option value="vehiculo">Vehiculo</option>
 										 	<option value="garantia">Garantia</option>
 										 	<option value="otro">Otro</option>
 										 </select>
-									</div>
 								</div>
-
-								<div class="col-md-4">
-									<div class="">
-										<label for="">Tipo</label>
-										 <select th:field="*{tipo}" id="tipo_prestamo" class="form-control" onchange="javascript:calCuota()" required="required">
-										 	<option value="1">Cuotas Fijas</option>
-										 	<option value="3">Cuotas Variables</option>
-										 	<option value="2">Interes</option>
-<!-- 										 	<option value="4">Interes Variable</option> -->
+								
+								<div class="col-md-3">
+<!-- 									<label for="">Tipo</label> -->
+									 <select th:field="*{tipo}" id="tipo_prestamo" class="form-control" data-toggle="tooltip" title="Cuotas" onchange="javascript:calCuota()" required="required">
+										<option value="1">Cuotas Fijas</option>
+										 <option value="3">Cuotas Variables</option>
+										 <option value="2">Interes</option>
+									</select>
+								</div>
+								
+								<div class="col-md-3">
+<!-- 										 <label for="">Forma de Pago</label>  -->
+									 <select th:field="*{forma_pago}" class="form-control" required="required" data-toggle="tooltip" title="Forma de Pago">
+											<option value="30">Mensual</option>
+										 	<option value="1">Diario</option>
+										 	<option value="2">Interdiario</option>
+										 	<option value="7">Semanal</option>
+										 	<option value="15">Quincenal</option>
 										 </select>
-									</div>
 								</div>
 								
-<!-- 								<div class="col-md-4"> -->
-<!-- 									<div class=""> -->
-<!-- 										<label for="">Moneda</label> -->
-<!-- 										 <select th:field="*{moneda}" class="form-control" required="required"> -->
-<!-- 										 	<option value="pesos">Pesos</option> -->
-<!-- <!-- 										 	<option value="dolar">Dolar</option> --> -->
-<!-- <!-- 										 	<option value="euro">Euro</option> --> -->
-<!-- 										 </select> -->
-<!-- 									</div> -->
-<!-- 								</div> -->
-							</div>
+							</div>	
 							
-							<div class="row">
-								<div class="col-md-4">
-									<div class="">
-										 <label for="">Dias Gracias</label> 
-										 <input type="number" th:field="*{dias_gracia}" class="form-control" min="0">
-									</div>
-								</div>
+							<br>
 								
-								<div class="col-md-4">
-									<div class="">
-										 <label for="">Forma de Pago</label> 
-										 <select th:field="*{forma_pago}" class="form-control" required="required">
-<!-- 										 	<option value="1">Diario</option> -->
-<!-- 										 	<option value="2">Interdiario</option> -->
-<!-- 										 	<option value="7">Semanal</option> -->
-<!-- 										 	<option value="15">Quincenal</option> -->
-										 	<option value="30">Mensual</option>
-										 </select>
-									</div>
-								</div>
-								
-								<div class="col-md-4">
-									<div class="">
-										 <label for="">Monto</label> 
-										 <input type="number" th:field="*{monto}" class="form-control" oninput="javascript:calCuota()" id="monto" min="0" placeholder="Monto a prestar">
-									</div>
-								</div>
-							</div>
-							
 							<div class="row">
-								<div class="col-md-4">
-									<div class="">
-										 <label for="">Plazo</label> 
-										 <input type="number" th:field="*{pagos}" class="form-control" oninput="javascript:calCuota()" id="pagos" min="0">
-									</div>
+								<div class="col-md-3">
+<!-- 								<label for="">Monto</label>  -->
+									 <input type="number" th:field="*{monto}" class="form-control" oninput="javascript:calCuota()" id="monto" min="0" placeholder="Monto a prestar" data-toggle="tooltip" title="Monto a prestar">
 								</div>
-								<div class="col-md-4">
-									<div class="">
-										 <label for="">Mora % dia</label> 
-										 <input type="number" th:field="*{mora}" class="form-control" id="pago_mora" min="0" placeholder="Monto a prestar">
-									</div>
+								<div class="col-md-2">
+<!-- 								<label for="">Plazo</label>  -->
+									<input type="number" placeholder="Plazos" th:field="*{pagos}" class="form-control" oninput="javascript:calCuota()" id="pagos" min="0" data-toggle="tooltip" title="Plazo">
 								</div>
-								<div class="col-md-4">
-									<div class="">
-										 <label for="">Tasa Mensual</label> 
-										 <input type="number" th:field="*{tasa}" class="form-control" oninput="javascript:calCuota()" min="0" id="tasa" placeholder="Monto a prestar">
-									</div>
+								<div class="col-md-3">
+<!-- 								 <label for="">Tasa Mensual</label>  -->
+									<input type="number" th:field="*{tasa}" class="form-control" oninput="javascript:calCuota()" min="0" id="tasa" placeholder="Tasa" data-toggle="tooltip" title="Tasa">
+								</div>
+								<div class="col-md-2">
+<!-- 								<label for="">Mora % dia</label>  -->
+									 <input type="number" th:field="*{mora}" class="form-control" id="pago_mora" min="0" placeholder="Mora" data-toggle="tooltip" title="Mora">
+								</div>
+								<div class="col-md-2">
+<!-- 								 <label for="">Dias Gracias</label>  -->
+									 <input type="number" th:field="*{dias_gracia}" class="form-control" min="0" placeholder="Dias Gracia" data-toggle="tooltip" title="Dias de gracia">
 								</div>
 							</div>
 							
@@ -157,95 +102,55 @@
 							<input type="hidden" th:value="${interes}" id="responseInteres">
 							<input type="hidden" th:value="${capital}" id="responseCapital">
 							<input type="hidden" th:value="${total_pagar}" id="responseTotalPagar">	
-						</div>	
+						</div>
 						
-							<div class="row">
-								<div class="col-md-4">
-									<div class="">
-										 <label for="">Valor Cuota</label> 
-										 <input type="number" th:field="*{valor_cuota}" id="valor_cuota" oninput="javascript:calTasa()" class="form-control" min="0">
-									</div>
+						<br>
+													
+						<div class="row">
+								<div class="col-md-3">
+<!-- 								 <label for="">Valor Cuota</label>  -->
+									<input type="number" th:field="*{valor_cuota}" id="valor_cuota" oninput="javascript:calTasa()" class="form-control" min="0" data-toggle="tooltip" title="Valor Cuota">
 								</div>
-								<div class="col-md-4">
-									<div class="">
-										 <label for="">Interes</label> 
-										 <input type="number" th:field="*{valor_interes}" id="valor_interes" class="form-control" disabled="disabled" min="0">
-									</div>
+								<div class="col-md-3" data-toggle="tooltip" title="Valor Interes">
+<!-- 								 <label for="">Interes</label>  -->
+									 <input type="number" th:field="*{valor_interes}" id="valor_interes" class="form-control" disabled="disabled" min="0">
 								</div>
-								<div class="col-md-4">
-									<div class="">
-										 <label for="">Total a pagar</label> 
-										 <input type="number" th:field="*{totalPagar}" id="total_pagar" disabled="disabled" class="form-control" min="0">
-									</div>
+								<div class="col-md-3" data-toggle="tooltip" title="Total a Pagar">
+<!-- 										 <label for="">Total a pagar</label>  -->
+									 <input type="number" th:field="*{totalPagar}" id="total_pagar" disabled="disabled" class="form-control" min="0">
 								</div>
 							</div>
 							
-							<div class="row">
-								<div class="col-md-4">
-									<div class="">
-										 <label for="">Cuenta</label> 
-										 <input type="text" th:field="*{id_cuenta}" class="form-control" placeholder="Cuenta">
-									</div>
-								</div>
-<!-- 								<div class="col-md-4"> -->
-<!-- 									<div class=""> -->
-<!-- 										 <label for="">Carpeta</label>  -->
-<!-- 										 <input type="number" th:field="*{carpeta}" class="form-control" min="0"> -->
-<!-- 									</div> -->
-<!-- 								</div> -->
-							</div>
+							<br>
 							
 							<div class="row">
-								<div class="col-md-12">
-									<div class="">
-										 <label for="">Observacion</label> 
-										 <textarea th:field="*{observacion}" class="form-control" rows="1"></textarea>
-									</div>
+								<div class="col-md-4">
+									 <select th:field="*{cuenta.id}" id="id_cuenta" class="form-control" data-toggle="tooltip" title="Cuenta">
+									 	<option th:each="cuenta : ${cuentas}"
+									 			th:value="${cuenta.id}" th:text="${cuenta.banco}"></option>
+									 </select>
+								</div>
+								<div class="col-md-4">
+<!-- 									 <label for="">Observacion</label>  -->
+									 <input type="text" th:field="*{observacion}" class="form-control" placeholder="Observacion" data-toggle="tooltip" title="Observacion">
+								</div>
+								<div class="col-md-4">
+<!-- 									 <label for="">Gastos de cierre</label>  -->
+									 <input type="number" min="0" class="form-control" placeholder="Gastos Cierre" data-toggle="tooltip" title="Gastos Cierre">
 								</div>
 							</div>
-
+							
+							<br>
+							
 							<div class="row">
 								<div class="col-md-12">
 									<div class="form-group pull-right">
+										<button class="btn btn-danger" id="cancelarFormPrestamo">Cancelar</button>
 										<input type="submit" value="Guardar" class="btn btn-primary">
 									</div>
 								</div>
 							</div>
 						</form>
-					</div>
-					<!--  Lista -->
-					<div class="col-md-6">
-					  <div id="cuerpo_amortizacion">
-						<div class="table-responsive">
-							<table class="display table table-striped table-hover">
-							    <thead>
-							      <tr style="background-color: #212529;color:#fff;">
-							        <th>Fecha</th>
-							        <th>Cuota</th>
-							        <th>Capital</th>
-							        <th>Interes</th>
-							        <th>Saldo</th>
-							      </tr>
-							    </thead>
-							    <tbody>
-								  	 <tr th:each="detalle : ${detalles}">
-								    	<td th:text="${detalle.fecha}"></td>
-								       	<td th:text="${detalle.cuota}"></td>
-								       	<td th:text="${detalle.capital}"></td>
-								       	<td th:text="${detalle.interes}"></td>
-								       	<td th:text="${detalle.saldo}"></td>
-								 	 </tr>
-								 	 <tr>
-								 	 	<td></td>
-								 	 	<td th:text="${totalCuota}"></td>
-								 	 	<td th:text="${totalCapital}"></td>
-								 	 	<td th:text="${totalInteres}"></td>
-								 	 	<td th:text="${totalNeto}"></td>
-								 	 </tr>
-							    </tbody>
-							  </table>
-						  </div>
-					   </div> 
 					</div>
 				</div>
 			</div>

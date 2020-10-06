@@ -1,5 +1,7 @@
 function addEvents(){
 	
+    $('[data-toggle="tooltip"]').tooltip();
+	
 	var clienteSeleccionado = $("#clienteSeleccionado").select2({
 	    theme: 'bootstrap4',
 	});
@@ -418,24 +420,6 @@ function addEvents(){
 //			addEvents();
 //		});
 //	});
-//	
-//	$("#prestamos").click(function(e){
-//		e.preventDefault();
-//		$("#contenido").load("/clientes/",function(data){
-//			console.log("Lista de clientes");
-//			addEvents();
-//		});
-//	});
-
-
-//	$("#listadoClientes").click(function(e){
-//		e.preventDefault();
-//		$("#contenido").load("/clientes/",function(data){
-//			console.log("Lista de clientes");
-//			addEvents();
-//		});
-//	});
-
 
 //	$("#navListaCliente").click(function(e){
 //		e.preventDefault();
@@ -453,16 +437,41 @@ function addEvents(){
 //			addEvents();
 //		});
 //	});
-//	 
-//	$("#addPrestamo").click(function(e){
-//		e.preventDefault();
-//		$("#contenido").load("/prestamos/agregar",function(data){
-//			console.log("Agregar Prestamo");
-//			addEvents();
-//		});
-//	});
+    
+    /** Prestamos **/
+	$("#agregarPrestamo").click(function(e){
+		e.preventDefault();
+		$("#contenido").load("/prestamos/agregar",function(data){
+			console.log("Agregar Prestamo");
+			if($("#msg").val()=="NOCLIENTE"){
+				 Swal.fire({
+						title : 'Alerta!',
+						text : 'Debe seleccionar un cliente',
+						position : 'top',
+						icon : 'warning',
+						confirmButtonText : 'Cool'
+					})
+					setTimeout(function() {
+						$("#contenido").load("/clientes/buscarCliente",function(data){
+							console.log("Lista de clientes");
+							addEvents();
+						});	
+					}, 1000);
+			}
+			addEvents();
+		});
+	});
+	
+	$("#cancelarFormPrestamo").click(function(e){
+		e.preventDefault();
+			$("#contenido").load("/clientes/buscarCliente",function(data){
+					console.log("Lista de clientes");
+					addEvents();
+			});	
+			addEvents();
+	});
 
-//	/** Fin Prestamos **/
+	/** Fin Prestamos **/
 
 //	$('#tabla').DataTable({
 //		"scrollY": "400px",
