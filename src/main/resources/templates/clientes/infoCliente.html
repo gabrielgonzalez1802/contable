@@ -182,28 +182,33 @@
 			</div>
 			
 			<div class="row">
-				<div class="col-md-5">
+				<div class="col-md-12">
 				 	<div class="form-group">
 					   	<input type="text" th:value="${cliente.nota}" class="form-control" id="infoNotaCliente" placeholder="Nota" disabled="disabled">
 					 </div>
 				</div>
-				<div class="col-md-7">
-					 <div class="form-group">
-					   <input type="text" th:value="${cliente.direccion}" class="form-control" id="infoDireccion" placeholder="Direccion" disabled="disabled">
-					  </div>
-				</div>
 			</div>
 			
 			<div class="row">
-				<div class="col-md-6">
-					 <img th:if="${cliente.fotoFrontal != null}" th:src="@{/logos/{img} (img=${cliente.fotoFrontal})}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="150" height="150">            
-					 <img th:unless="${cliente.fotoFrontal != null}" th:src="@{/img/no-image.png}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="150" height="150">            
-				</div>
-				<div class="col-md-6">
-					 <img th:if="${cliente.fotoTrasera != null}" th:src="@{/logos/{img} (img=${cliente.fotoTrasera})}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="150" height="150">            
-					 <img th:unless="${cliente.fotoTrasera != null}" th:src="@{/img/no-image.png}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="150" height="150">            
+				<div class="col-md-12">
+				 	<div class="form-group">
+					    <input type="text" th:value="${cliente.direccion}" class="form-control" id="infoDireccion" placeholder="Direccion" disabled="disabled">
+					 </div>
 				</div>
 			</div>
+
+			<div class="row">
+				<div class="col-md-6">
+					 <img th:if="${cliente.fotoFrontal != null}" th:src="@{/logos/{img} (img=${cliente.fotoFrontal})}" class="rounded mx-auto d-block" alt="Generic placeholder image"  width="100%" height="150">            
+					 <img th:unless="${cliente.fotoFrontal != null}" th:src="@{/img/no-image.png}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="100%" height="150">            
+				</div>
+				<div class="col-md-6">
+					 <img th:if="${cliente.fotoTrasera != null}" th:src="@{/logos/{img} (img=${cliente.fotoTrasera})}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="100%" height="150">            
+					 <img th:unless="${cliente.fotoTrasera != null}" th:src="@{/img/no-image.png}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="100%" height="150">            
+				</div>
+			</div>
+			
+			<br>
 												
 			<div class="row">
 				<div class="col-md-4">
