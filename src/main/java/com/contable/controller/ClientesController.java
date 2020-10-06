@@ -81,8 +81,8 @@ public class ClientesController {
 	@PostMapping("/getInfoCliente")
 	public String getInfoCliente(Model model, Integer carpeta, String tipoDocumento, String item, HttpSession session) {
 		Cliente cliente = new Cliente();
-		Integer idCarpeta = (Integer) session.getAttribute("carpeta");
-		Carpeta carpetaTemp = serviceCarpetas.buscarPorId(idCarpeta);
+//		Integer idCarpeta = (Integer) session.getAttribute("carpeta");
+		Carpeta carpetaTemp = serviceCarpetas.buscarPorId(carpeta);
 		model.addAttribute("carpeta", carpetaTemp);
 		if (tipoDocumento.equals("cedula")) {
 			cliente = serviceClientes.buscarPorCedula(item);
