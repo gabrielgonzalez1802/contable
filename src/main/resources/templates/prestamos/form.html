@@ -6,35 +6,81 @@
 </head>
 <body>
 	<div th:fragment="form">
-<!-- 		<div class="card-header"> -->
-<!-- 			<div class="card-head-row"> -->
-<!-- 				<div class="card-title"> -->
-					
-<!-- 				</div> -->
-<!-- 			</div> -->
-<!-- 		</div> -->
-		<input type="hidden" th:value="${msg}" id="msg">
-		<h5>Formulario Prestamo</h5>
-        			<hr>
+		      <div class="row">
+            <br>
+			<div class="col-md-12" id="buscadorAgregarPrestamo">
+					<input type="hidden" th:value="${msg}" id="msg">
+					<input type="hidden" id="tipoDocumentoAcctPrestamo" th:value="${tipoDocumentoAcctPrestamo}">
+					  <div class="form-row align-items-center">
+					    <div class="col-sm-2 my-1">
+					      <label class="sr-only" for="">carpeta</label>
+					      <div class="input-group">
+					        <div class="input-group-prepend">
+					        <button style="width: 100%;" class="btn btn-success" id="btnCarpetaPrestamo">
+					        	<i class="fas fa-search"></i>
+					        </button>
+					        </div>
+					        <input type="hidden" th:value="${msg}" id="msg">
+					        <input type="hidden" th:value="${carpeta.id}" class="form-control" id="carpetaIdPrestamo" placeholder="Carpeta" disabled="disabled">
+					        <input type="text" th:value="${carpeta.nombre}" class="form-control" id="carpetaPrestamo" placeholder="Carpeta" disabled="disabled">
+					     	<div th:if="${carpeta.principal != 1}" class="input-group-prepend">
+					        <button style="width: 100%;" class="btn btn-danger" id="btnExitCarpetaPrestamo">
+					        	<i class="fas fa-times"></i>
+					          </button>
+					        </div>
+					      </div>
+					    </div>
+					    <div class="col-sm-2 my-1">
+					   	 <div class="form-check form-check-inline">
+					        <div class="custom-control custom-radio">
+							  <input type="radio" id="cedulaPrestamo" name="tipoDocumentoBusquedaPrestamo" class="custom-control-input">
+							  <label class="custom-control-label" for="cedulaPrestamo">Ced.</label>
+							</div>
+						</div>	
+						<div class="form-check form-check-inline">
+							<div class="custom-control custom-radio">
+							  <input type="radio" id="otroPrestamo" name="tipoDocumentoBusquedaPrestamo" class="custom-control-input">
+							  <label class="custom-control-label" for="otroPrestamo">Otro</label>
+							</div>
+					    </div>
+					    </div>
+					    <div class="col-sm-2 my-1">
+					       <input type="text" th:field="${cliente.cedula}" class="form-control" id="buscarPorDocumentoPrestamo" maxlength="13" placeholder="Documento">
+					    </div>
+					    <div class="col-sm-4 my-1">
+					       <input type="text" th:field="${cliente.nombre}" class="form-control" id="buscarPorNombrePrestamo" placeholder="Nombre">
+					    </div>
+					    
+					     <div class="col-sm-1 my-1">
+					    </div>
+					    
+					    <div class="col-sm-1 my-1 pull right">
+<!-- 					    	 <button class="btn btn-primary btn-sm" type="button" id="agregarCliente">Agregar Cliente</button> -->
+					    </div>
+					  </div>
+			</div>
+		</div>
+
+<!-- 		<hr> -->
+<!-- 		<h5>Formulario Prestamo</h5> -->
+        <hr>
 		<div class="card-body">
 			<div style="min-height: 375px">
 				<div class="row">
 					<!-- Formulario -->
 					<div class="col-md-12">
-						<form th:object="${prestamo}" id="formulario_prestamo" method="post">
+						<form th:object="${prestamo}" id="formulario_prestamo" method="post" autocomplete="off">
 							<div class="row">
 								<div class="col-md-3">
 									<div class="">
 									<input type="hidden" th:value="*{#dates.format(fecha, 'yyyy-MM-dd')}" id="fechaTemp">
 										<input type="hidden" th:field="*{id}"> 
-<!-- 										<label for="">Fecha</label>  --> 
-										<input type="date" th:value="*{#dates.format(fecha, 'yyyy-MM-dd')}" name="fecha" data-toggle="tooltip" title="Fecha" class="form-control" required="required">
+										<input type="date" th:value="*{#dates.format(fecha, 'yyyy-MM-dd')}" style="font-size: 15px;" name="fecha" data-toggle="tooltip" title="Fecha" class="form-control" required="required">
 									</div>
 								</div>
 																
 								<div class="col-md-3">
-<!-- 										<label for="">Prestamo</label> -->
-										 <select th:field="*{tipo_prestamo}" id="" class="form-control" required="required" data-toggle="tooltip" title="Prestamo">
+										 <select th:field="*{tipo_prestamo}" id="prestamo" class="form-control" style="font-size: 15px;" required="required" data-toggle="tooltip" title="Prestamo">
 										 	<option value="personal">Personal</option>
 										 	<option value="hipotecatio">Hipotecario</option>
 										 	<option value="vehiculo">Vehiculo</option>
@@ -44,8 +90,7 @@
 								</div>
 								
 								<div class="col-md-3">
-<!-- 									<label for="">Tipo</label> -->
-									 <select th:field="*{tipo}" id="tipo_prestamo" class="form-control" data-toggle="tooltip" title="Cuotas" onchange="javascript:calCuota()" required="required">
+									 <select th:field="*{tipo}" id="tipo_prestamo" class="form-control" style="font-size: 15px;" data-toggle="tooltip" title="Cuotas" onchange="javascript:calCuota()" required="required">
 										<option value="1">Cuotas Fijas</option>
 										 <option value="3">Cuotas Variables</option>
 										 <option value="2">Interes</option>
@@ -53,8 +98,7 @@
 								</div>
 								
 								<div class="col-md-3">
-<!-- 										 <label for="">Forma de Pago</label>  -->
-									 <select th:field="*{forma_pago}" class="form-control" required="required" data-toggle="tooltip" title="Forma de Pago">
+									 <select th:field="*{forma_pago}" class="form-control" style="font-size: 15px;" required="required" data-toggle="tooltip" title="Forma de Pago">
 											<option value="30">Mensual</option>
 										 	<option value="1">Diario</option>
 										 	<option value="2">Interdiario</option>
@@ -68,25 +112,20 @@
 							<br>
 								
 							<div class="row">
-								<div class="col-md-3">
-<!-- 								<label for="">Monto</label>  -->
-									 <input type="number" th:field="*{monto}" class="form-control" oninput="javascript:calCuota()" id="monto" min="0" placeholder="Monto a prestar" data-toggle="tooltip" title="Monto a prestar">
+								<div class="col-md-2">
+									 <input type="number" style="font-size: 15px;" th:field="*{monto}" class="form-control" oninput="javascript:calCuota()" id="monto" min="0" placeholder="Monto a prestar" data-toggle="tooltip" title="Monto a prestar">
+								</div>
+								<div class="col-md-1">
+									<input type="number" style="font-size: 15px;" placeholder="Plazos" th:field="*{pagos}" class="form-control" oninput="javascript:calCuota()" id="pagos" min="0" data-toggle="tooltip" title="Plazo">
 								</div>
 								<div class="col-md-2">
-<!-- 								<label for="">Plazo</label>  -->
-									<input type="number" placeholder="Plazos" th:field="*{pagos}" class="form-control" oninput="javascript:calCuota()" id="pagos" min="0" data-toggle="tooltip" title="Plazo">
-								</div>
-								<div class="col-md-3">
-<!-- 								 <label for="">Tasa Mensual</label>  -->
-									<input type="number" th:field="*{tasa}" class="form-control" oninput="javascript:calCuota()" min="0" id="tasa" placeholder="Tasa" data-toggle="tooltip" title="Tasa">
+									<input type="number" style="font-size: 15px;" th:field="*{tasa}" class="form-control" oninput="javascript:calCuota()" min="0" id="tasa" placeholder="Tasa" data-toggle="tooltip" title="Tasa">
 								</div>
 								<div class="col-md-2">
-<!-- 								<label for="">Mora % dia</label>  -->
-									 <input type="number" th:field="*{mora}" class="form-control" id="pago_mora" min="0" placeholder="Mora" data-toggle="tooltip" title="Mora">
+									 <input type="number" style="font-size: 15px;" th:field="*{mora}" class="form-control" id="pago_mora" min="0" placeholder="Mora" data-toggle="tooltip" title="Mora">
 								</div>
-								<div class="col-md-2">
-<!-- 								 <label for="">Dias Gracias</label>  -->
-									 <input type="number" th:field="*{dias_gracia}" class="form-control" min="0" placeholder="Dias Gracia" data-toggle="tooltip" title="Dias de gracia">
+								<div class="col-md-1">
+									 <input type="number" style="font-size: 15px;" th:field="*{dias_gracia}" class="form-control" min="0" placeholder="Dias Gracia" data-toggle="tooltip" title="Dias de gracia">
 								</div>
 							</div>
 							
@@ -108,16 +147,13 @@
 													
 						<div class="row">
 								<div class="col-md-3">
-<!-- 								 <label for="">Valor Cuota</label>  -->
-									<input type="number" th:field="*{valor_cuota}" id="valor_cuota" oninput="javascript:calTasa()" class="form-control" min="0" data-toggle="tooltip" title="Valor Cuota">
+									<input type="number" style="font-size: 15px;" th:field="*{valor_cuota}" id="valor_cuota" oninput="javascript:calTasa()" class="form-control" min="0" data-toggle="tooltip" title="Valor Cuota">
 								</div>
 								<div class="col-md-3" data-toggle="tooltip" title="Valor Interes">
-<!-- 								 <label for="">Interes</label>  -->
-									 <input type="number" th:field="*{valor_interes}" id="valor_interes" class="form-control" disabled="disabled" min="0">
+									 <input type="number" style="font-size: 15px;" th:field="*{valor_interes}" id="valor_interes" class="form-control" disabled="disabled" min="0">
 								</div>
 								<div class="col-md-3" data-toggle="tooltip" title="Total a Pagar">
-<!-- 										 <label for="">Total a pagar</label>  -->
-									 <input type="number" th:field="*{totalPagar}" id="total_pagar" disabled="disabled" class="form-control" min="0">
+									 <input type="number" style="font-size: 15px;" th:field="*{totalPagar}" id="total_pagar" disabled="disabled" class="form-control" min="0">
 								</div>
 							</div>
 							
@@ -126,17 +162,15 @@
 							<div class="row">
 								<div class="col-md-4">
 									 <select th:field="*{cuenta.id}" id="id_cuenta" class="form-control" data-toggle="tooltip" title="Cuenta">
-									 	<option th:each="cuenta : ${cuentas}"
+									 	<option style="font-size: 15px;" th:each="cuenta : ${cuentas}"
 									 			th:value="${cuenta.id}" th:text="${cuenta.banco}"></option>
 									 </select>
 								</div>
 								<div class="col-md-4">
-<!-- 									 <label for="">Observacion</label>  -->
-									 <input type="text" th:field="*{observacion}" class="form-control" placeholder="Observacion" data-toggle="tooltip" title="Observacion">
+									 <input type="text" style="font-size: 15px;" th:field="*{observacion}" class="form-control" placeholder="Observacion" data-toggle="tooltip" title="Observacion">
 								</div>
 								<div class="col-md-4">
-<!-- 									 <label for="">Gastos de cierre</label>  -->
-									 <input type="number" min="0" class="form-control" placeholder="Gastos Cierre" data-toggle="tooltip" title="Gastos Cierre">
+									 <input type="number" style="font-size: 15px;" min="0" class="form-control" placeholder="Gastos Cierre" data-toggle="tooltip" title="Gastos Cierre">
 								</div>
 							</div>
 							

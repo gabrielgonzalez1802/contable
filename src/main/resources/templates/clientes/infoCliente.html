@@ -9,6 +9,7 @@
        <div class="row">
             <br>
 			<div class="col-md-12">
+					  <input type="hidden" th:value="${cliente.tipoDocumento}" id="tipoDocumentoAcct">
 					  <div class="form-row align-items-center">
 					    <div class="col-sm-2 my-1">
 					      <label class="sr-only" for="">carpeta</label>
@@ -42,7 +43,6 @@
 							</div>
 					    </div>
 					    </div>
-					    <input type="hidden" th:value="${cliente.tipoDocumento}" id="tipoDocumentoAcct">
 					    <div class="col-sm-2 my-1">
 					       <input th:value="${cliente.cedula}" type="text" class="form-control" id="buscarPorDocumento" maxlength="13" placeholder="Documento">
 					    </div>

@@ -1,20 +1,43 @@
 function addEvents(){
 	
-    $('[data-toggle="tooltip"]').tooltip();
+/************************************************** Configuraciones Iniciales **********************************************/
 	
+    $('[data-toggle="tooltip"]').tooltip();
+
 	var clienteSeleccionado = $("#clienteSeleccionado").select2({
 	    theme: 'bootstrap4',
 	});
 	
-	//Prestamos
-	$("#prestamos").click(function(e){
-		e.preventDefault();
-		$("#contenido").load("/clientes/buscarCliente",function(data){
-			console.log("Lista de clientes");
-			addEvents();
-		});
-	});
+	//$('#tabla').DataTable({
+	//"scrollY": "400px",
+//	    "language": {
+//	        "sProcessing":    "Procesando...",
+//	        "sLengthMenu":    "Mostrar _MENU_ registros",
+//	        "sZeroRecords":   "No se encontraron resultados",
+//	        "sEmptyTable":    "Ningún dato disponible en esta tabla",
+//	        "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+//	        "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+//	        "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+//	        "sInfoPostFix":   "",
+//	        "sSearch":        "Buscar:",
+//	        "sUrl":           "",
+//	        "sInfoThousands":  ",",
+//	        "sLoadingRecords": "Cargando...",
+//	        "oPaginate": {
+//	            "sFirst":    "Primero",
+//	            "sLast":    "Último",
+//	            "sNext":    "Siguiente",
+//	            "sPrevious": "Anterior"
+//	        },
+//	        "oAria": {
+//	            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+//	        }
+//	    }
+	//});
 	
+/*********************************************** Fin Configuraciones Iniciales **********************************************/	
+
+/******************************************************* Clientes ***********************************************************/	
 	//Buscar cliente
 	$("#buscarPorDocumento").on("keyup", function(e) {
 		e.preventDefault();
@@ -52,6 +75,8 @@ function addEvents(){
 								icon : 'warning',
 								confirmButtonText : 'Cool'
 							})
+							$("#cedula").attr('checked', 'checked');
+							$("#otro").attr('checked', false);
 					}
 					addEvents();
 				});
@@ -222,10 +247,7 @@ function addEvents(){
 			addEvents();
 		});
 	});	
-	
-	
-	//Fin Buscar Cliente
-	
+		
 	//Buscar cancelCliente
 	$("#cancelCliente").click(function(e){
 		e.preventDefault();
@@ -410,36 +432,106 @@ function addEvents(){
 	            }
 	        });
 	});
-	//Fin formulario de clientes
-	
-//
-//	$("#navListaCliente").click(function(e){
-//		e.preventDefault();
-//		$("#contenido").load("/clientes/",function(data){
-//			console.log("Lista de clientes");
-//			addEvents();
-//		});
-//	});
 
-//	$("#navListaCliente").click(function(e){
-//		e.preventDefault();
-//		$("#contenido").load("/clientes/",function(data){
-//			console.log("Lista de clientes");
-//			addEvents();
-//		});
-//	});
-//	
-//	/** Prestamos **/
-//	$("#navListaPrestamo").click(function(e){
-//		e.preventDefault();
-//		$("#contenido").load("/prestamos/",function(data){
-//			console.log("Lista de prestamos");
-//			addEvents();
-//		});
-//	});
+/******************************************************* Fin Clientes ************************************************************/	
     
-    /** Prestamos **/
-	$("#agregarPrestamo").click(function(e){
+/******************************************************* Prestamos ***********************************************************/
+	$("#prestamos").click(function(e){
+		e.preventDefault();
+		$("#contenido").load("/clientes/buscarCliente",function(data){
+			console.log("Lista de clientes");
+			addEvents();
+		});
+	});
+	
+	$("#btnCarpetaPrestamo").click(function(e){
+		e.preventDefault();
+		Swal.fire({
+			  title: 'Ingrese la carpeta',
+			  position: 'top',
+			  input: 'text',
+			  inputAttributes: {
+			    autocapitalize: 'off'
+			  },
+			  showCancelButton: true,
+			  confirmButtonText: 'Buscar',
+			  cancelButtonText: 'Cancelar',
+			  showLoaderOnConfirm: true,
+			  preConfirm: (carpeta) => {
+				  $.ajax({
+			            url: "/carpetas/buscar/"+carpeta,
+			            type: "GET",
+			            processData: false,
+			            contentType: false,
+			            cache: false,
+			            success: function (res) {
+				            if(res=="No tienes carpetas creadas"){
+								Swal.fire({
+									title : 'No tienes carpetas creadas!',
+									position : 'top',
+									icon : 'warning',
+									confirmButtonText : 'Cool'
+								})
+
+							}else{
+								Swal.fire({
+									title : 'Muy bien!',
+									text : 'Carpeta Seleccionada',
+									position : 'top',
+									icon : 'success',
+									confirmButtonText : 'Cool'
+								})
+							}
+							$("#buscadorAgregarPrestamo").load("/prestamos/actualizarCarpeta",function(data){
+								console.log("Actualizar carpeta");
+								if($("#tipoDocumentoAcctPrestamo").val() == 'cedula'){
+									$("#cedulaPrestamo").attr('checked', 'checked');
+									$("#otroPrestamo").attr('checked', false);
+								}else{
+									$("#otroPrestamo").attr('checked', 'checked');
+									$("#cedulaPrestamo").attr('checked', false);
+								}
+								//Aqui recargar combo de cuentas
+								addEvents();
+							});
+			            },
+			            error: function (err) {
+			                console.error(err);
+			                Swal.fire({
+								title : 'Error!',
+								text : 'No se pudo completar la operacion, intente mas tarde',
+								position : 'top',
+								icon : 'error',
+								confirmButtonText : 'Cool'
+							})
+			            }
+			        });
+			  },
+			  allowOutsideClick: () => !Swal.isLoading()
+			}).then((result) => {
+			  if (result.isConfirmed) {
+			    //Correcto
+			  }
+			})
+	});
+    
+	$("#btnExitCarpetaPrestamo").click(function(e){
+		e.preventDefault();
+		$("#buscadorAgregarPrestamo").load("/prestamos/actualizarCarpetaPrincial",function(data){
+			console.log("Actualizar carpeta");
+			if($("#tipoDocumentoAcctPrestamo").val() == 'cedula'){
+				$("#cedulaPrestamo").attr('checked', 'checked');
+				$("#otroPrestamo").attr('checked', false);
+			}else{
+				$("#otroPrestamo").attr('checked', 'checked');
+				$("#cedulaPrestamo").attr('checked', false);
+			}
+			//Aqui recargar combo de cuentas
+			addEvents();
+		});
+	});	
+	
+    $("#agregarPrestamo").click(function(e){
 		e.preventDefault();
 		$("#contenido").load("/prestamos/agregar",function(data){
 			console.log("Agregar Prestamo");
@@ -457,6 +549,14 @@ function addEvents(){
 							addEvents();
 						});	
 					}, 1000);
+			}else{
+				if($("#tipoDocumentoAcctPrestamo").val() == 'cedula'){
+					$("#cedulaPrestamo").attr('checked', 'checked');
+					$("#otroPrestamo").attr('checked', false);
+				}else{
+					$("#otroPrestamo").attr('checked', 'checked');
+					$("#cedulaPrestamo").attr('checked', false);
+				}
 			}
 			addEvents();
 		});
@@ -470,36 +570,129 @@ function addEvents(){
 			});	
 			addEvents();
 	});
+	
+	$("input[name='tipoDocumentoBusquedaPrestamo']").change(function(){
+		 if($("#cedulaPrestamo").is(':checked')){
+	    	 $('#buscarPorDocumentoPrestamo').attr('maxlength', 13);
+	     }else if($("#otroPrestamo").is(':checked')){
+	    	 $('#buscarPorDocumentoPrestamo').attr('maxlength', 30);
+	     }
+		$('#buscarPorDocumentoPrestamo').val("");
+	});
+	
+	$('#buscarPorDocumentoPrestamo').on('keydown', function(e) { 
+		if($("#cedulaPrestamo").is(':checked')){
+			var valor = $('#buscarPorDocumentoPrestamo').val();
+			var res = valor.match(/^[0-9-]+$/);
+				
+			if(res == null){
+				 $('#buscarPorDocumentoPrestamo').val(valor.substring(0, valor.length - 1));
+			}else{
+				var keyCode = (window.event) ? e.which : e.keyCode;
+				// Si no preciona la tecla de borrar
+				if(keyCode !=8 && keyCode != 46){
+					   var cant = valor.length;
+					   if(cant == 3){
+					   	$('#buscarPorDocumentoPrestamo').val(valor+"-");
+					   }
+						   
+					  if(cant == 11){
+					   	$('#buscarPorDocumentoPrestamo').val(valor+"-");
+					  }
+				}
+			}
+		}
+	});
+	
+	$("#buscarPorDocumentoPrestamo").on("keyup", function(e) {
+		e.preventDefault();
+	     if(e.which == 13){
+	    	 var tipoDocumento = "";
+	    	 var carpeta = $("#carpetaIdPrestamo").val();
+	    	 var item = $("#buscarPorDocumentoPrestamo").val();
+		     if($("#cedulaPrestamo").is(':checked')){
+		    	 tipoDocumento = "cedula";
+		     }else if($("#otroPrestamo").is(':checked')){
+		    	 tipoDocumento = "otro";
+		     }
+		     var longitud = item.length;
+		     if(longitud > 1){
+			     $("#buscadorAgregarPrestamo").load("/prestamos/getInfoCliente",
+					{
+					   	'carpeta': carpeta,
+					   	'tipoDocumento': tipoDocumento,
+						'item': item
+					},
+				function(data){
+					console.log("Buscar clientes");
+					if($("#tipoDocumentoAcctPrestamo").val() == 'cedula'){
+						$("#cedulaPrestamo").attr('checked', 'checked');
+						$("#otroPrestamo").attr('checked', false);
+					}else{
+						$("#otroPrestamo").attr('checked', 'checked');
+						$("#cedulaPrestamo").attr('checked', false);
+					}
+					if($("#msg").val()== "No se encontro el cliente"){
+						 Swal.fire({
+								title : 'Alerta!',
+								text : 'No se encontro al cliente',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+							$("#cedulaPrestamo").attr('checked', 'checked');
+							$("#otroPrestamo").attr('checked', false);
+					}
+					addEvents();
+				});
+		     }
+	     }
+	});
+	
+	$("#buscarPorNombrePrestamo").on("keyup", function(e) {
+		e.preventDefault();
+	     if(e.which == 13){
+	    	var item = $("#buscarPorNombrePrestamo").val();
+	    	var carpeta = $("#carpetaIdPrestamo").val();
+	    	var longitud = item.length;
+		     if(longitud > 1){
+			     $("#buscadorAgregarPrestamo").load("/prestamos/getInfoCliente",
+					{
+					   	'carpeta': carpeta,
+					   	'tipoDocumento': '0',
+						'item': item
+					},
+				function(data){
+					console.log("Buscar clientes");
+					if($("#tipoDocumentoAcctPrestamo").val() == 'cedula'){
+						$("#cedulaPrestamo").attr('checked', 'checked');
+						$("#otroPrestamo").attr('checked', false);
+					}else{
+						$("#otroPrestamo").attr('checked', 'checked');
+						$("#cedulaPrestamo").attr('checked', false);
+					}	
+					if($("#msg").val()== "No se encontro el cliente"){
+						 Swal.fire({
+								title : 'Alerta!',
+								text : 'No se encontro al cliente',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+						$("#cedulaPrestamo").attr('checked', 'checked');
+						$("#otroPrestamo").attr('checked', false);	
+					}
+					addEvents();
+				});
+		     }
+	     }
+	});
 
-	/** Fin Prestamos **/
-
-//	$('#tabla').DataTable({
-//		"scrollY": "400px",
-//		    "language": {
-//		        "sProcessing":    "Procesando...",
-//		        "sLengthMenu":    "Mostrar _MENU_ registros",
-//		        "sZeroRecords":   "No se encontraron resultados",
-//		        "sEmptyTable":    "Ningún dato disponible en esta tabla",
-//		        "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-//		        "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
-//		        "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
-//		        "sInfoPostFix":   "",
-//		        "sSearch":        "Buscar:",
-//		        "sUrl":           "",
-//		        "sInfoThousands":  ",",
-//		        "sLoadingRecords": "Cargando...",
-//		        "oPaginate": {
-//		            "sFirst":    "Primero",
-//		            "sLast":    "Último",
-//		            "sNext":    "Siguiente",
-//		            "sPrevious": "Anterior"
-//		        },
-//		        "oAria": {
-//		            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-//		        }
-//		    }
-//	});
+/****************************************************** Fin Prestamos *******************************************************/
 }
+
+
+/****************************************************** Funciones ***********************************************************/
 
 function seleccionarCliente(id){
 	 $("#contenido").load("/clientes/getInfoCliente/"+id,
@@ -513,6 +706,14 @@ function seleccionarCliente(id){
 							icon : 'warning',
 							confirmButtonText : 'Cool'
 						})
+				}else{
+					if($("#tipoDocumentoAcct").val() == 'cedula'){
+						$("#cedula").attr('checked', 'checked');
+						$("#otro").attr('checked', false);
+					}else{
+						$("#otro").attr('checked', 'checked');
+						$("#cedula").attr('checked', false);
+					}
 				}
 				addEvents();
 			});
@@ -601,3 +802,5 @@ function eliminarCliente(id){
 		  }
 		})
 }
+
+/******************************************************* Fin Funciones ******************************************************/

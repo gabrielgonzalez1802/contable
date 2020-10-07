@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
@@ -59,21 +60,99 @@ public class PrestamosController {
 	@GetMapping("/agregar")
 	public String agregarPrestamos(Model model, HttpSession session) {
 		Prestamo prestamo = new Prestamo();
+		Cliente cliente = new Cliente();
 		prestamo.setCuenta(new Cuenta());
-		if(session.getAttribute("cliente")!=null) {
-			if((Integer) session.getAttribute("cliente") > 0) {
-				Carpeta carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
-				List<Cuenta> cuentas = serviceCuentas.buscarPorCarpeta(carpeta);
-				
-				model.addAttribute("cuentas", cuentas);
-				model.addAttribute("prestamo", prestamo);
-				return "prestamos/form :: form";
-			}
+		Carpeta carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
+		List<Cuenta> cuentas = serviceCuentas.buscarPorCarpeta(carpeta);
+		if((Integer)session.getAttribute("cliente")==0) {
+			model.addAttribute("prestamo",  new Prestamo());
+			model.addAttribute("cliente", cliente);
+			model.addAttribute("carpeta", carpeta);
+			model.addAttribute("cuentas", cuentas);
+			model.addAttribute("msg", "NOCLIENTE");
+			model.addAttribute("tipoDocumentoAcctPrestamo", "cedula");
+			return "prestamos/form :: form";
+		}else {
+			cliente = serviceClientes.buscarPorId((Integer) session.getAttribute("cliente"));
 		}
-		model.addAttribute("msg", "NOCLIENTE");
-		model.addAttribute("cuentas", new LinkedList<Cuenta>());
+		model.addAttribute("cliente", cliente);
+		model.addAttribute("carpeta", carpeta);
+		model.addAttribute("cuentas", cuentas);
+		model.addAttribute("tipoDocumentoAcctPrestamo", cliente.getTipoDocumento());
 		model.addAttribute("prestamo",  new Prestamo());
 		return "prestamos/form :: form";
+	}
+	
+	@GetMapping("/actualizarCarpeta")
+	public String actualizarCarpeta(Model model, HttpSession session) {
+		Carpeta carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
+		Cliente cliente = serviceClientes.buscarPorId((Integer) session.getAttribute("cliente"));
+		session.setAttribute("carpeta", carpeta.getId());
+		model.addAttribute("carpeta", carpeta);
+		model.addAttribute("cliente", cliente);
+		model.addAttribute("tipoDocumentoAcctPrestamo", cliente.getTipoDocumento());
+		return "prestamos/form :: #buscadorAgregarPrestamo";
+	}
+	
+	@GetMapping("/actualizarCarpetaPrincial")
+	public String actualizarCarpetaPrincial(Model model, HttpSession session) {
+		Carpeta carpeta = serviceCarpetas.buscarTipoCarpeta(1).get(0);
+		Cliente cliente = serviceClientes.buscarPorId((Integer) session.getAttribute("cliente"));
+		session.setAttribute("carpeta", carpeta.getId());
+		model.addAttribute("carpeta", carpeta);
+		model.addAttribute("cliente", cliente);
+		model.addAttribute("tipoDocumentoAcctPrestamo", cliente.getTipoDocumento());
+		return "prestamos/form :: #buscadorAgregarPrestamo";
+	}
+	
+	@PostMapping("/getInfoCliente")
+	public String getInfoCliente(Model model, Integer carpeta, String tipoDocumento, String item, HttpSession session) {
+		Cliente cliente = new Cliente();
+//		Integer idCarpeta = (Integer) session.getAttribute("carpeta");
+		Carpeta carpetaTemp = serviceCarpetas.buscarPorId(carpeta);
+		session.setAttribute("carpeta", carpetaTemp.getId());
+		model.addAttribute("carpeta", carpetaTemp);
+		if (tipoDocumento.equals("cedula")) {
+			cliente = serviceClientes.buscarPorCedula(item);
+			if(cliente != null) {
+				session.setAttribute("cliente", cliente.getId());
+			}
+		}else if(tipoDocumento.equals("otro")){
+			cliente = serviceClientes.buscarPorOtro(item);
+			if(cliente != null) {
+				session.setAttribute("cliente", cliente.getId());
+			}
+		}else {
+			//busqueda por nombre
+			List<Cliente> clientes = serviceClientes.buscarPorNombre(item).stream().
+					filter(c -> c.getEstado() == 1).collect(Collectors.toList());
+			if(clientes.isEmpty()) {
+				cliente = null;
+			}else {
+				if(clientes.size()>1) {
+					model.addAttribute("clientes", clientes);
+					return "clientes/infoCliente :: infoClienteLista";
+				}else {
+					cliente = clientes.get(0);
+					if(cliente != null) {
+						session.setAttribute("cliente", cliente.getId());
+					}
+				}
+			}
+		}
+		
+		if(cliente == null) {
+			session.setAttribute("cliente", 0);
+			model.addAttribute("cliente",new Cliente());
+			model.addAttribute("msg", "No se encontro el cliente");
+			model.addAttribute("carpeta",carpetaTemp);
+			return "prestamos/form :: #buscadorAgregarPrestamo"; 
+		}
+
+		model.addAttribute("carpeta",carpetaTemp);
+		model.addAttribute("cliente", cliente);
+		model.addAttribute("tipoDocumentoAcctPrestamo", cliente.getTipoDocumento());
+		return "prestamos/form :: #buscadorAgregarPrestamo";
 	}
 	
 	@PostMapping("/calculoCuota")

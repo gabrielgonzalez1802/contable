@@ -54,26 +54,56 @@
 	max-height: 400px;
 }
 
-#cuerpoTabla{
-	min-height: 420px;
-	overflow: auto;
-	height: 420px;
-	max-height: 420px;
+input {
+	font-size: 15px;
 }
 
-#contenidoTabla{
-	min-height: 400px;
-	overflow: auto;
-	height: 400px;
-	max-height: 400px;
+::-webkit-scrollbar {
+    width: 15px;
+    height: 15px
+}
+::-webkit-scrollbar-button {
+/*     background: #ccc */
+}
+::-webkit-scrollbar-track-piece {
+/*     background: #888 */
+}
+::-webkit-scrollbar-thumb {
+/*     background: #eee */
+}​ 
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 
-#formularioCuerpoTabla{
-	min-height: 400px;
-	overflow-y:hidden
-	height: 400px;
-	max-height: 400px;
-}
+/* #cuerpoTabla{ */
+/* 	min-height: 420px; */
+/* 	overflow: auto; */
+/* 	height: 420px; */
+/* 	max-height: 420px; */
+/* } */
+
+/* #contenidoTabla{ */
+/* 	min-height: 400px; */
+/* 	overflow: auto; */
+/* 	height: 400px; */
+/* 	max-height: 400px; */
+/* } */
+
+/* #formularioCuerpoTabla{ */
+/* 	min-height: 400px; */
+/* 	overflow-y:hidden */
+/* 	height: 400px; */
+/* 	max-height: 400px; */
+/* } */
 </style>
     
   </head>
@@ -183,7 +213,7 @@
 
         <div class="container-fluid">
           
-          <div class="row" id="cuerpo">
+          <div class="row" id="cuerpo" style="overflow-y:hidden">
             <div class="col-md-12">
               <div class="card principal card-dashboard-map-one" id="contenido">
 				 <center><img th:src="@{/img/martinsa.PNG}" style="max-width: 80%;"></center> 

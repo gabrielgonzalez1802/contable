@@ -119,18 +119,19 @@ public class ClientesController {
 		
 		if(cliente == null) {
 			session.setAttribute("cliente", 0);
-			List<Cliente> clientes = serviceClientes.buscarTodos().stream().filter(c -> c.getEstado() == 1)
-					.collect(Collectors.toList());
-			for (Cliente clienteTemp : clientes) {
-				clienteTemp.setNombre(clienteTemp.getNombre() + " - " + clienteTemp.getCedula());
-			}
-			
+//			List<Cliente> clientes = serviceClientes.buscarTodos().stream().filter(c -> c.getEstado() == 1)
+//					.collect(Collectors.toList());
+//			for (Cliente clienteTemp : clientes) {
+//				clienteTemp.setNombre(clienteTemp.getNombre() + " - " + clienteTemp.getCedula());
+//			}
+//			
+			model.addAttribute("tipoDocumentoAcct", "cedula");
 			model.addAttribute("msg", "No se encontro el cliente");
 			model.addAttribute("carpeta",carpetaTemp);
 			
 			return "clientes/buscarCliente :: buscarCliente"; 
 		}
-
+		model.addAttribute("tipoDocumentoAcct", cliente.getTipoDocumento());
 		model.addAttribute("cliente", cliente);
 		return "clientes/infoCliente :: infoCliente";
 	}
@@ -143,9 +144,11 @@ public class ClientesController {
 		model.addAttribute("carpeta", carpeta);
 		if(cliente != null) {
 			session.setAttribute("cliente", cliente.getId());
+			model.addAttribute("tipoDocumentoAcct", cliente.getTipoDocumento());
 			model.addAttribute("cliente", cliente);
 			return "clientes/infoCliente :: infoCliente";
 		}else {
+			model.addAttribute("tipoDocumentoAcct", "cedula");
 			session.setAttribute("cliente", 0);
 		}
 		model.addAttribute("msg", "No se encontro el cliente");
