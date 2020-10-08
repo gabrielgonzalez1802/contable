@@ -116,7 +116,7 @@
 								<div class="col-md-2">
 									 <input type="number" style="font-size: 15px;" th:field="*{monto}" class="form-control" oninput="javascript:calCuota()" id="monto" min="0" placeholder="Monto a prestar" data-toggle="tooltip" title="Monto a prestar">
 								</div>
-								<div class="col-md-1">
+								<div class="col-md-1" id="divPlazos">
 									<input type="number" style="font-size: 15px;" placeholder="Plazos" th:field="*{pagos}" class="form-control" oninput="javascript:calCuota()" id="pagos" min="0" data-toggle="tooltip" title="Plazo">
 								</div>
 								<div class="col-md-2">
@@ -147,7 +147,7 @@
 						<br>
 													
 						<div class="row">
-								<div class="col-md-3">
+								<div class="col-md-3" id="divValorCuota">
 									<input type="number" style="font-size: 15px;" th:field="*{valor_cuota}" step="0.01" id="valor_cuota" oninput="javascript:calTasa()" class="form-control" min="0" data-toggle="tooltip" title="Valor Cuota">
 								</div>
 								<div class="col-md-3" data-toggle="tooltip" title="Valor Interes">
@@ -170,8 +170,11 @@
 								<div class="col-md-4">
 									 <input type="text" style="font-size: 15px;" th:field="*{observacion}" class="form-control" placeholder="Observacion" data-toggle="tooltip" title="Observacion">
 								</div>
-								<div class="col-md-4">
+								<div class="col-md-2">
 									 <input type="number" style="font-size: 15px;" min="0" class="form-control" placeholder="Gastos Cierre" data-toggle="tooltip" title="Gastos Cierre">
+								</div>
+								<div class="col-md-2">
+									 <input type="number" style="font-size: 15px;" min="0" class="form-control" placeholder="Cantidad de pagos" data-toggle="tooltip" title="Cantidad de pagos">
 								</div>
 							</div>
 							

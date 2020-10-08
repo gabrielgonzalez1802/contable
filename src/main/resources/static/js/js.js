@@ -712,6 +712,16 @@ function addEvents(){
 	     }
 	});
 	
+	$("#tipo_prestamo").change(function(e){
+		if($("#tipo_prestamo").val() == 2){
+			$("#divValorCuota").hide();
+			$("#divPlazos").hide();
+		}else{
+			$("#divValorCuota").show();
+			$("#divPlazos").show();
+		}
+	});
+	
 	$("#guardarPrestamo").on("click", (function(e){
 		 e.preventDefault();
 		 e.stopImmediatePropagation();
@@ -740,7 +750,6 @@ function addEvents(){
 				});
 		});
 		return false;
-//		addEvents();
 		}
 	));
 
