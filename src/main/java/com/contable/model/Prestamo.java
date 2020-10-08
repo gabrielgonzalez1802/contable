@@ -52,9 +52,6 @@ public class Prestamo {
 	
 	private Double valor_interes= 0.0;
 	
-	@Column(name = "total_a_pagar")
-	private Double totalPagar = 0.0;
-	
 	@Column(name = "ultimo_pago")
 	private Date ultimoPago;
 	
@@ -184,14 +181,6 @@ public class Prestamo {
 		this.valor_interes = valor_interes;
 	}
 
-	public Double getTotalPagar() {
-		return totalPagar;
-	}
-
-	public void setTotalPagar(Double totalPagar) {
-		this.totalPagar = totalPagar;
-	}
-
 	public Date getUltimoPago() {
 		return ultimoPago;
 	}
@@ -279,7 +268,7 @@ public class Prestamo {
 				+ ", tipo_prestamo=" + tipo_prestamo + ", dias_gracia=" + dias_gracia + ", monto=" + monto + ", pagos="
 				+ pagos + ", tasa=" + tasa + ", forma_pago=" + forma_pago + ", valor_cuota=" + valor_cuota + ", mora="
 				+ mora + ", observacion=" + observacion + ", balance=" + balance + ", valor_interes=" + valor_interes
-				+ ", totalPagar=" + totalPagar + ", ultimoPago=" + ultimoPago + ", usuario=" + usuario + ", estado="
-				+ estado + ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta + "]";
+				+ ", ultimoPago=" + ultimoPago + ", usuario=" + usuario + ", estado=" + estado + ", moneda=" + moneda
+				+ ", carpeta=" + carpeta + ", cuenta=" + cuenta + "]";
 	}
 }

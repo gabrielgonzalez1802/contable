@@ -729,7 +729,7 @@ function addEvents(){
 		 var idClienteTemp = $("#idClientePrestamo").val();
 		 var idCarpetaTemp = $("#carpetaIdPrestamo").val();
 		 var idCuentaTemp =  $("#id_cuenta").val(); 
-		 alert("cliente: "+idClienteTemp+" - Carpeta: "+idCarpetaTemp);
+//		 alert("cliente: "+idClienteTemp+" - Carpeta: "+idCarpetaTemp);
 		 datos.push( {name:'idClienteTemp', value:idClienteTemp} );
 		 datos.push( {name:'idCarpetaTemp', value:idCarpetaTemp} );
 		 datos.push( {name:'idCuentaTemp', value:idCuentaTemp} ); 
