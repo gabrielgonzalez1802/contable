@@ -41,6 +41,7 @@ function addEvents(){
 	//Buscar cliente
 	$("#buscarPorDocumento").on("keyup", function(e) {
 		e.preventDefault();
+		e.stopImmediatePropagation();
 	     if(e.which == 13){
 	    	 var tipoDocumento = "";
 	    	 var carpeta = $("#carpetaId").val();
@@ -99,6 +100,7 @@ function addEvents(){
 	
 	$("#buscarPorNombre").on("keyup", function(e) {
 		e.preventDefault();
+		e.stopImmediatePropagation();
 	     if(e.which == 13){
 	    	var item = $("#buscarPorNombre").val();
 	    	var carpeta = $("#carpetaId").val();
@@ -172,6 +174,7 @@ function addEvents(){
 	
 	$("#btnCarpeta").click(function(e){
 		e.preventDefault();
+		e.stopImmediatePropagation();
 		Swal.fire({
 			  title: 'Ingrese la carpeta',
 			  position: 'top',
@@ -242,6 +245,7 @@ function addEvents(){
 	
 	$("#btnExitCarpeta").click(function(e){
 		e.preventDefault();
+		e.stopImmediatePropagation();
 		$("#contenido").load("/clientes/buscarClienteCarpetaPrincipal",function(data){
 			console.log("Lista de clientes");
 			addEvents();
@@ -251,6 +255,7 @@ function addEvents(){
 	//Buscar cancelCliente
 	$("#cancelCliente").click(function(e){
 		e.preventDefault();
+		e.stopImmediatePropagation();
 		$("#contenido").load("/clientes/buscarCliente",function(data){
 			console.log("Lista de clientes");
 			addEvents();
@@ -260,6 +265,7 @@ function addEvents(){
 	//Boton de agregar cliente
 	$("#agregarCliente").click(function(e){
 		e.preventDefault();
+		e.stopImmediatePropagation();
 		var idCliente = $("#idCliente").val();
 		$("#contenido").load("/clientes/agregar",function(data){
 			console.log("Formulario agregar clientes");
@@ -388,6 +394,7 @@ function addEvents(){
 	
     $("#formClient").on("submit", function (e) {
 		e.preventDefault();
+		e.stopImmediatePropagation();
 	        $.ajax({
 	            url: "/clientes/guardar/",
 	            type: "POST",
@@ -438,6 +445,7 @@ function addEvents(){
 /******************************************************* Prestamos ***********************************************************/
 	$("#prestamos").click(function(e){
 		e.preventDefault();
+		e.stopImmediatePropagation();
 		$("#contenido").load("/clientes/buscarCliente",function(data){
 			console.log("Lista de clientes");
 			addEvents();
@@ -446,6 +454,7 @@ function addEvents(){
 	
 	$("#btnCarpetaPrestamo").click(function(e){
 		e.preventDefault();
+		e.stopImmediatePropagation();
 		Swal.fire({
 			  title: 'Ingrese la carpeta',
 			  position: 'top',
@@ -491,8 +500,13 @@ function addEvents(){
 									$("#otroPrestamo").attr('checked', 'checked');
 									$("#cedulaPrestamo").attr('checked', false);
 								}
-								//Aqui recargar combo de cuentas
-								addEvents();
+								//Recargar combo de cuentas
+								var carpeta = $("#carpetaIdPrestamo").val();
+								$("#id_cuenta").load("/prestamos/actualizarCuentas/"+carpeta,function(data){
+									console.log("Actualizar cuenta");
+									addEvents();
+									return false;
+								});
 							});
 			            },
 			            error: function (err) {
@@ -517,6 +531,7 @@ function addEvents(){
     
 	$("#btnExitCarpetaPrestamo").click(function(e){
 		e.preventDefault();
+		e.stopImmediatePropagation();
 		$("#buscadorAgregarPrestamo").load("/prestamos/actualizarCarpetaPrincial",function(data){
 			console.log("Actualizar carpeta");
 			if($("#tipoDocumentoAcctPrestamo").val() == 'cedula'){
@@ -526,13 +541,19 @@ function addEvents(){
 				$("#otroPrestamo").attr('checked', 'checked');
 				$("#cedulaPrestamo").attr('checked', false);
 			}
-			//Aqui recargar combo de cuentas
-			addEvents();
+			//Recargar combo de cuentas
+			var carpeta = $("#carpetaIdPrestamo").val();
+			$("#id_cuenta").load("/prestamos/actualizarCuentas/"+carpeta,function(data){
+				console.log("Actualizar cuenta");
+				addEvents();
+				return false;
+			});
 		});
 	});	
 	
     $("#agregarPrestamo").click(function(e){
 		e.preventDefault();
+		e.stopImmediatePropagation();
 		$("#contenido").load("/prestamos/agregar",function(data){
 			console.log("Agregar Prestamo");
 			if($("#msg").val()=="NOCLIENTE"){
@@ -564,6 +585,7 @@ function addEvents(){
 	
 	$("#cancelarFormPrestamo").click(function(e){
 		e.preventDefault();
+		e.stopImmediatePropagation();
 			$("#contenido").load("/clientes/buscarCliente",function(data){
 					console.log("Lista de clientes");
 					addEvents();
@@ -606,6 +628,7 @@ function addEvents(){
 	
 	$("#buscarPorDocumentoPrestamo").on("keyup", function(e) {
 		e.preventDefault();
+		e.stopImmediatePropagation();
 	     if(e.which == 13){
 	    	 var tipoDocumento = "";
 	    	 var carpeta = $("#carpetaIdPrestamo").val();
@@ -651,6 +674,7 @@ function addEvents(){
 	
 	$("#buscarPorNombrePrestamo").on("keyup", function(e) {
 		e.preventDefault();
+		e.stopImmediatePropagation();
 	     if(e.which == 13){
 	    	var item = $("#buscarPorNombrePrestamo").val();
 	    	var carpeta = $("#carpetaIdPrestamo").val();
@@ -687,6 +711,38 @@ function addEvents(){
 		     }
 	     }
 	});
+	
+	$("#guardarPrestamo").on("click", (function(e){
+		 e.preventDefault();
+		 e.stopImmediatePropagation();
+		 var datos = $("#formulario_prestamo").serializeArray();
+		 var idClienteTemp = $("#idClientePrestamo").val();
+		 var idCarpetaTemp = $("#carpetaIdPrestamo").val();
+		 var idCuentaTemp =  $("#id_cuenta").val(); 
+		 alert("cliente: "+idClienteTemp+" - Carpeta: "+idCarpetaTemp);
+		 datos.push( {name:'idClienteTemp', value:idClienteTemp} );
+		 datos.push( {name:'idCarpetaTemp', value:idCarpetaTemp} );
+		 datos.push( {name:'idCuentaTemp', value:idCuentaTemp} ); 
+		 $.post("/prestamos/guardar", datos,
+			function(data){
+				console.log("Guardar Prestamo");
+				$("#cuerpo_amortizacion").replaceWith(data);
+				 Swal.fire({
+						title : 'Muy Bien!',
+						text : 'Se genero el prestamo',
+						position : 'top',
+						icon : 'success',
+						confirmButtonText : 'Cool'
+					})
+				$("#contenido").load("/clientes/buscarCliente",function(data){
+					console.log("Lista de clientes");
+					addEvents();
+				});
+		});
+		return false;
+//		addEvents();
+		}
+	));
 
 /****************************************************** Fin Prestamos *******************************************************/
 }

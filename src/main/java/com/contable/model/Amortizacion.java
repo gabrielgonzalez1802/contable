@@ -2,6 +2,7 @@ package com.contable.model;
 
 public class Amortizacion {
 	
+	private Integer numero = 0;
 	private String fecha;
 	private Double cuota;
 	private Double capital;
@@ -38,5 +39,15 @@ public class Amortizacion {
 	public void setSaldo(Double saldo) {
 		this.saldo = saldo;
 	}
-	
+	public Integer getNumero() {
+		return numero;
+	}
+	public void setNumero(Integer numero) {
+		this.numero = numero;
+	}
+	@Override
+	public String toString() {
+		return "Amortizacion [numero=" + numero + ", fecha=" + fecha + ", cuota=" + cuota + ", capital=" + capital
+				+ ", interes=" + interes + ", saldo=" + saldo + "]";
+	}
 }

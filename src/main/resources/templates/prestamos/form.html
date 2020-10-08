@@ -45,6 +45,7 @@
 					    </div>
 					    </div>
 					    <div class="col-sm-2 my-1">
+					    <input type="hidden" th:value="${cliente.id}" id="idClientePrestamo">
 					       <input type="text" th:field="${cliente.cedula}" class="form-control" id="buscarPorDocumentoPrestamo" maxlength="13" placeholder="Documento">
 					    </div>
 					    <div class="col-sm-4 my-1">
@@ -147,13 +148,13 @@
 													
 						<div class="row">
 								<div class="col-md-3">
-									<input type="number" style="font-size: 15px;" th:field="*{valor_cuota}" id="valor_cuota" oninput="javascript:calTasa()" class="form-control" min="0" data-toggle="tooltip" title="Valor Cuota">
+									<input type="number" style="font-size: 15px;" th:field="*{valor_cuota}" step="0.01" id="valor_cuota" oninput="javascript:calTasa()" class="form-control" min="0" data-toggle="tooltip" title="Valor Cuota">
 								</div>
 								<div class="col-md-3" data-toggle="tooltip" title="Valor Interes">
-									 <input type="number" style="font-size: 15px;" th:field="*{valor_interes}" id="valor_interes" class="form-control" disabled="disabled" min="0">
+									 <input type="number" style="font-size: 15px;" th:field="*{valor_interes}" id="valor_interes" class="form-control" min="0">
 								</div>
 								<div class="col-md-3" data-toggle="tooltip" title="Total a Pagar">
-									 <input type="number" style="font-size: 15px;" th:field="*{totalPagar}" id="total_pagar" disabled="disabled" class="form-control" min="0">
+									 <input type="number" style="font-size: 15px;" th:field="*{totalPagar}" id="total_pagar" class="form-control" min="0">
 								</div>
 							</div>
 							
@@ -161,7 +162,7 @@
 							
 							<div class="row">
 								<div class="col-md-4">
-									 <select th:field="*{cuenta.id}" id="id_cuenta" class="form-control" data-toggle="tooltip" title="Cuenta">
+									 <select id="id_cuenta" class="form-control" data-toggle="tooltip" title="Cuenta">
 									 	<option style="font-size: 15px;" th:each="cuenta : ${cuentas}"
 									 			th:value="${cuenta.id}" th:text="${cuenta.banco}"></option>
 									 </select>
@@ -180,7 +181,7 @@
 								<div class="col-md-12">
 									<div class="form-group pull-right">
 										<button class="btn btn-danger" id="cancelarFormPrestamo">Cancelar</button>
-										<input type="submit" value="Guardar" class="btn btn-primary">
+										<button id="guardarPrestamo" value="Guardar" class="btn btn-primary">Guardar</button>
 									</div>
 								</div>
 							</div>

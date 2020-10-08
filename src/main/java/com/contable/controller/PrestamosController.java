@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.IdClass;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,9 +31,12 @@ import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
 import com.contable.model.Cuenta;
 import com.contable.model.Prestamo;
+import com.contable.model.PrestamoDetalle;
+import com.contable.model.Usuario;
 import com.contable.service.ICarpetasService;
 import com.contable.service.IClientesService;
 import com.contable.service.ICuentasService;
+import com.contable.service.IPrestamosDetallesService;
 import com.contable.service.IPrestamosService;
 
 @Controller
@@ -40,6 +45,9 @@ public class PrestamosController {
 	
 	@Autowired
 	private IPrestamosService servicePrestamos;
+	
+	@Autowired
+	private IPrestamosDetallesService servicePrestamosDetalles;
 	
 	@Autowired
 	private IClientesService serviceClientes;
@@ -103,6 +111,14 @@ public class PrestamosController {
 		model.addAttribute("cliente", cliente);
 		model.addAttribute("tipoDocumentoAcctPrestamo", cliente.getTipoDocumento());
 		return "prestamos/form :: #buscadorAgregarPrestamo";
+	}
+	
+	@GetMapping("/actualizarCuentas/{id}")
+	public String actualizarCuentas(Model model, @PathVariable(name = "id") Integer idCarpeta) {
+		Carpeta carpeta = serviceCarpetas.buscarPorId(idCarpeta);
+		List<Cuenta> cuentas = serviceCuentas.buscarPorCarpeta(carpeta);
+		model.addAttribute("cuentas", cuentas);
+		return "prestamos/form :: #id_cuenta";
 	}
 	
 	@PostMapping("/getInfoCliente")
@@ -272,6 +288,7 @@ public class PrestamosController {
 		double total_neto = 0;
 
 		List<Amortizacion> detalles = new LinkedList<>();
+		
 
 		if (prestamo.getPagos() != 0) {
 
@@ -344,16 +361,15 @@ public class PrestamosController {
 					}
 
 //					System.out.println(cuota + " - " + capital + " - " + interes + " " + total_pagar);
-
+					x++;
 					Amortizacion amortizacion = new Amortizacion();
 					amortizacion.setFecha(fecha_pago);
 					amortizacion.setCuota(formato2d(cuota));
 					amortizacion.setCapital(formato2d(capital));
 					amortizacion.setInteres(formato2d(interes));
 					amortizacion.setSaldo(formato2d(total_pagar));
-
+					amortizacion.setNumero(x);
 					detalles.add(amortizacion);
-					x++;
 				}
 
 			} else if (prestamo.getTipo().equals("3")) {
@@ -433,6 +449,228 @@ public class PrestamosController {
 			amortizacion.setInteres(0.00);
 			amortizacion.setSaldo(0.00);
 			detalles.add(amortizacion);
+		}
+
+		model.addAttribute("detalles", detalles);
+		model.addAttribute("totalCuota", total_cuota >0 ? formato2d(total_cuota):total_cuota);
+		model.addAttribute("totalCapital", total_capital >0 ? formato2d(total_capital) : total_capital);
+		model.addAttribute("totalInteres", total_interes >0 ? formato2d(total_interes) : total_interes);
+		model.addAttribute("totalNeto", total_neto >0 ? formato2d(total_neto) : total_neto);
+		return "index :: #cuerpo_amortizacion";
+	}
+	
+	@PostMapping("/guardar")
+	public String guardar(HttpSession session, Model model, @ModelAttribute("prestamo") Prestamo prestamo) throws ParseException {
+		int fre = 0;
+		double total_cuota = 0;
+		double total_capital = 0;
+		double total_interes = 0;
+		double total_neto = 0;
+		
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		List<Amortizacion> detalles = new LinkedList<>();
+		
+
+		if (prestamo.getPagos() != 0) {
+
+			// Forma de pago
+			if (prestamo.getForma_pago().equals("1")) {
+				fre = 30;
+			} else if (prestamo.getForma_pago().equals("2")) {
+				fre = 15;
+			} else if (prestamo.getForma_pago().equals("7")) {
+				fre = 4;
+			} else if (prestamo.getForma_pago().equals("15")) {
+				fre = 2;
+			} else if (prestamo.getForma_pago().equals("30")) {
+				fre = 1;
+			}
+			
+			Date date = new Date();
+			ZoneId zoneId = ZoneId.systemDefault();
+			LocalDate fecha_pagoTemp = date.toInstant().atZone(zoneId)
+					.toLocalDate();
+			int mes = fecha_pagoTemp.getMonthValue();
+			int agno = fecha_pagoTemp.getYear();
+			String fecha_pago = fecha_pagoTemp.getDayOfMonth() + "-" + mes + "-" + agno;
+
+			if (prestamo.getTipo().equals("1")) {
+				//Coutas Fijas
+				int x = 0;
+
+				double interes = (prestamo.getMonto() * (prestamo.getTasa() / 100) * (prestamo.getPagos().doubleValue() / fre))
+						/ prestamo.getPagos();
+
+				double capital = prestamo.getMonto() / prestamo.getPagos();
+				double cuota = capital + interes;
+				double total_pagar = cuota * prestamo.getPagos();
+
+				for (int i = 1; i <= prestamo.getPagos(); i++) {
+
+					total_cuota += cuota;
+					total_capital += capital;
+					total_interes += interes;
+					total_pagar = total_pagar - (cuota);
+
+					if (prestamo.getForma_pago().equals("30")) {
+						// *************************************************** */
+
+						int dia = fecha_pagoTemp.getDayOfMonth();
+
+						mes++;
+
+						if (mes == 13) {
+							mes = 1;
+							agno++;
+						}
+
+						if (dia == 31 || (dia > 28 && mes == 2)) {
+
+							Calendar calendar = Calendar.getInstance();
+							calendar.set(Calendar.MONTH, mes);
+							calendar.set(Calendar.YEAR, agno);
+							calendar.set(Calendar.DAY_OF_MONTH, 1);
+
+							int ultimo_dia = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+							fecha_pago = ultimo_dia + "/" + mes + "/" + agno;
+						} else {
+							fecha_pago = dia + "/" + mes + "/" + agno;
+						}
+
+						// **************************************************** */
+					} else {
+						fecha_pago = fecha_futuro(fecha_pago, prestamo.getForma_pago());
+					}
+
+//					System.out.println(cuota + " - " + capital + " - " + interes + " " + total_pagar);
+					x++;
+					Amortizacion amortizacion = new Amortizacion();
+					amortizacion.setFecha(fecha_pago);
+					amortizacion.setCuota(formato2d(cuota));
+					amortizacion.setCapital(formato2d(capital));
+					amortizacion.setInteres(formato2d(interes));
+					amortizacion.setSaldo(formato2d(total_pagar));
+					amortizacion.setNumero(x);
+					detalles.add(amortizacion);
+				}
+
+			} else if (prestamo.getTipo().equals("3")) {
+				// Cuotas variables
+				double interes = prestamo.getTasa().doubleValue();
+				double cuota = prestamo.getMonto()
+						* (Math.pow((1 + (interes / 100)), prestamo.getPagos()) * (interes / 100))
+						/ (Math.pow((1 + (interes / 100)), prestamo.getPagos()) - 1);
+				
+				double capital = 0;
+				double total_pagar = 0;
+
+				for (int i = 1; i <= prestamo.getPagos(); i++) {
+
+					if (prestamo.getForma_pago().equals("30")) {
+
+						mes++;
+
+						if (mes == 13) {
+							mes = 1;
+							agno++;
+						}
+
+						int dia = fecha_pagoTemp.getDayOfMonth();
+
+						if (dia == 31 || (dia > 28 && mes == 2)) {
+
+							Calendar calendar = Calendar.getInstance();
+							calendar.set(Calendar.MONTH, mes);
+							calendar.set(Calendar.YEAR, agno);
+							calendar.set(Calendar.DAY_OF_MONTH, 1);
+
+							int ultimo_dia = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+							fecha_pago = ultimo_dia + "/" + mes + "/" + agno;
+						} else {
+							fecha_pago = dia + "/" + mes + "/" + agno;
+						}
+
+					} else {
+						fecha_pago = fecha_futuro(fecha_pago, prestamo.getForma_pago());
+					}
+					
+					if(i>1) {
+						double tempPorcent = prestamo.getTasa() / 100;
+						tempPorcent = tempPorcent * capital;
+						capital += tempPorcent;
+						interes = cuota - capital;
+						total_pagar = ((total_pagar - interes) - capital) + interes;
+
+					}else {
+						interes = prestamo.getMonto() * (interes / 100);
+						capital = cuota - interes;
+						total_pagar = prestamo.getMonto() - capital;
+					}
+
+					Amortizacion amortizacion = new Amortizacion();
+					amortizacion.setFecha(fecha_pago);
+					amortizacion.setCuota(formato2d(cuota));
+					amortizacion.setCapital(formato2d(capital));
+					amortizacion.setInteres(formato2d(interes));
+					amortizacion.setSaldo(formato2d(total_pagar));
+
+					detalles.add(amortizacion);
+
+					total_cuota += cuota;
+					total_capital += capital;
+					total_interes += interes;
+				}
+			}
+		}else {
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
+			Calendar calendar = Calendar.getInstance();
+			Amortizacion amortizacion = new Amortizacion();
+			amortizacion.setFecha(sdf.format(calendar.getTime()));
+			amortizacion.setCuota(0.00);
+			amortizacion.setCapital(0.00);
+			amortizacion.setInteres(0.00);
+			amortizacion.setSaldo(0.00);
+			detalles.add(amortizacion);
+		}
+		
+		//Guardamos el prestamo
+		Cliente cliente = serviceClientes.buscarPorId(prestamo.getIdClienteTemp());
+		Carpeta carpeta = serviceCarpetas.buscarPorId(prestamo.getIdCarpetaTemp());
+		
+		if(prestamo.getIdCuentaTemp()!=null) {
+			Cuenta cuenta = serviceCuentas.buscarPorId(prestamo.getIdCuentaTemp());
+			prestamo.setCuenta(cuenta);
+		}else {
+			prestamo.setCuenta(null);
+		}
+		
+		prestamo.setCliente(cliente);
+		prestamo.setCarpeta(carpeta);
+		prestamo.setUsuario(usuario);
+		prestamo.setBalance(total_neto >0 ? formato2d(total_neto) : total_neto);
+//		prestamo.setEstado(estado); //verificar
+		
+		servicePrestamos.guardar(prestamo);
+		
+		//Guardamos los detalles de la amortizacion en el prestamo
+		for (Amortizacion amortizacion : detalles) {
+			PrestamoDetalle prestamoDetalle = new PrestamoDetalle();
+			prestamoDetalle.setPrestamo(prestamo);
+			prestamoDetalle.setBalance(amortizacion.getSaldo());
+			prestamoDetalle.setCapital(amortizacion.getCapital());
+			prestamoDetalle.setNumero(amortizacion.getNumero());
+			prestamoDetalle.setCuota(amortizacion.getCuota());
+//			prestamoDetalle.setEstado(estado); //verificar
+//			prestamoDetalle.setFecha(amortizacion.getFecha());
+			prestamoDetalle.setFechaGenerada(new Date());
+//			prestamoDetalle.setFechaInteres(new Date());
+			prestamoDetalle.setGenerarInteres(amortizacion.getInteres()>0?1:0);
+			prestamoDetalle.setInteres(amortizacion.getInteres());
+//			prestamoDetalle.setMonto(amortizacion.getCuota());
+//			prestamoDetalle.setMora(amortizacion.getm);
+//			prestamoDetalle.setPago(pago);
+			servicePrestamosDetalles.guardar(prestamoDetalle);
 		}
 
 		model.addAttribute("detalles", detalles);

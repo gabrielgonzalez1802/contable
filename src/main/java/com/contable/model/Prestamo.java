@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "prestamos")
@@ -24,6 +25,15 @@ public class Prestamo {
 	@OneToOne
 	@JoinColumn(name = "id_cliente")
 	private Cliente cliente;
+	
+	@Transient
+	private Integer idClienteTemp = 0;
+	
+	@Transient
+	private Integer idCarpetaTemp = 0;
+	
+	@Transient
+	private Integer idCuentaTemp = 0;
 	
 	private String tipo;
 	private String tipo_prestamo;
@@ -238,9 +248,34 @@ public class Prestamo {
 		this.cuenta = cuenta;
 	}
 
+	public Integer getIdClienteTemp() {
+		return idClienteTemp;
+	}
+
+	public void setIdClienteTemp(Integer idClienteTemp) {
+		this.idClienteTemp = idClienteTemp;
+	}
+
+	public Integer getIdCarpetaTemp() {
+		return idCarpetaTemp;
+	}
+
+	public void setIdCarpetaTemp(Integer idCarpetaTemp) {
+		this.idCarpetaTemp = idCarpetaTemp;
+	}
+
+	public Integer getIdCuentaTemp() {
+		return idCuentaTemp;
+	}
+
+	public void setIdCuentaTemp(Integer idCuentaTemp) {
+		this.idCuentaTemp = idCuentaTemp;
+	}
+
 	@Override
 	public String toString() {
-		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", tipo=" + tipo
+		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", idClienteTemp=" + idClienteTemp
+				+ ", idCarpetaTemp=" + idCarpetaTemp + ", idCuentaTemp=" + idCuentaTemp + ", tipo=" + tipo
 				+ ", tipo_prestamo=" + tipo_prestamo + ", dias_gracia=" + dias_gracia + ", monto=" + monto + ", pagos="
 				+ pagos + ", tasa=" + tasa + ", forma_pago=" + forma_pago + ", valor_cuota=" + valor_cuota + ", mora="
 				+ mora + ", observacion=" + observacion + ", balance=" + balance + ", valor_interes=" + valor_interes

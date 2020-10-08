@@ -223,7 +223,7 @@ input {
 				 <div class="container"> 
 					 <div class="float-right"> 
 					  	<div style="text-align:center">
-						  <h1 style="color: #2EABD7;" class="tx-35 mb-1 tx-inverse tx-semibold mg-b-0">809-5829558</h1>
+						  <h1 style="color: #2EABD7;" class="tx-35 mb-1 tx-inverse tx-semibold mg-b-0">809-5829-558</h1>
 						  <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">plaza barcelona</h2>
 						  <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">51000 Santiago de los caballeros,</h2>
 				          <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Republica Dominicana</h2>
@@ -263,7 +263,7 @@ input {
 							 </thead>
 							<tbody>
 								 <tr th:each="detalle : ${detalles}">
-									 <td></td>
+									  <td th:text="${detalle.numero}"></td>
 									  <td th:text="${detalle.fecha}"></td>
 									  <td th:text="${detalle.cuota}"></td>
 									  <td th:text="${detalle.capital}"></td>
@@ -274,9 +274,12 @@ input {
 								 </tr>
 								  <tr>
 									 <td></td>
+									 <td></td>
 									 <td th:text="${totalCuota}"></td>
 									 <td th:text="${totalCapital}"></td>
 									 <td th:text="${totalInteres}"></td>
+									 <td></td>
+									 <td></td>
 									 <td th:text="${totalNeto}"></td>
 								 </tr>
 							</tbody>

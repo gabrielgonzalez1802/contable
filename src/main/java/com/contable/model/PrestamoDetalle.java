@@ -29,17 +29,19 @@ public class PrestamoDetalle {
 	private Double interes = 0.0;
 	
 	@Column(name = "no_cuota")
-	private Integer cuota;
+	private Integer numero;
+	
+	private Double cuota = 0.0;
 	
 	private Double balance;
 	private Integer pago;
 	private Double mora = 0.0;
 	
 	@Column(name = "fecha_generada")
-	private Double fechaGenerada;
+	private Date fechaGenerada;
 	
 	@Column(name = "fecha_interes")
-	private Double fechaInteres;
+	private Date fechaInteres;
 	
 	@Column(name = "generar_interes")
 	private Integer generarInteres = 0;
@@ -94,14 +96,6 @@ public class PrestamoDetalle {
 		this.interes = interes;
 	}
 
-	public Integer getCuota() {
-		return cuota;
-	}
-
-	public void setCuota(Integer cuota) {
-		this.cuota = cuota;
-	}
-
 	public Double getBalance() {
 		return balance;
 	}
@@ -126,19 +120,19 @@ public class PrestamoDetalle {
 		this.mora = mora;
 	}
 
-	public Double getFechaGenerada() {
+	public Date getFechaGenerada() {
 		return fechaGenerada;
 	}
 
-	public void setFechaGenerada(Double fechaGenerada) {
+	public void setFechaGenerada(Date fechaGenerada) {
 		this.fechaGenerada = fechaGenerada;
 	}
 
-	public Double getFechaInteres() {
+	public Date getFechaInteres() {
 		return fechaInteres;
 	}
 
-	public void setFechaInteres(Double fechaInteres) {
+	public void setFechaInteres(Date fechaInteres) {
 		this.fechaInteres = fechaInteres;
 	}
 
@@ -157,6 +151,28 @@ public class PrestamoDetalle {
 	public void setEstado(Integer estado) {
 		this.estado = estado;
 	}
-	
-	
+
+	public Integer getNumero() {
+		return numero;
+	}
+
+	public void setNumero(Integer numero) {
+		this.numero = numero;
+	}
+
+	public Double getCuota() {
+		return cuota;
+	}
+
+	public void setCuota(Double cuota) {
+		this.cuota = cuota;
+	}
+
+	@Override
+	public String toString() {
+		return "PrestamoDetalle [id=" + id + ", prestamo=" + prestamo + ", fecha=" + fecha + ", monto=" + monto
+				+ ", capital=" + capital + ", interes=" + interes + ", numero=" + numero + ", cuota=" + cuota
+				+ ", balance=" + balance + ", pago=" + pago + ", mora=" + mora + ", fechaGenerada=" + fechaGenerada
+				+ ", fechaInteres=" + fechaInteres + ", generarInteres=" + generarInteres + ", estado=" + estado + "]";
+	}
 }

@@ -10,4 +10,5 @@ public interface IPrestamosDetallesService {
 	List<PrestamoDetalle> buscarPorPrestamo(Prestamo prestamo);
 	void guardar(PrestamoDetalle prestamoDetalle);
 	void eliminar(Integer id);
+	void eliminar(List<PrestamoDetalle> prestamoDetalles);
 }

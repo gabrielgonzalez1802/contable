@@ -44,4 +44,9 @@ public class PrestamosDetallesService implements IPrestamosDetallesService{
 		}
 	}
 
+	@Override
+	public void eliminar(List<PrestamoDetalle> prestamoDetalles) {
+		repo.deleteAll(prestamoDetalles);
+	}
+
 }
