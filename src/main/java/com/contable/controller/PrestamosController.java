@@ -623,15 +623,20 @@ public class PrestamosController {
 				}
 			}
 		}else {
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
-			Calendar calendar = Calendar.getInstance();
-			Amortizacion amortizacion = new Amortizacion();
-			amortizacion.setFecha(sdf.format(calendar.getTime()));
-			amortizacion.setCuota(0.00);
-			amortizacion.setCapital(0.00);
-			amortizacion.setInteres(0.00);
-			amortizacion.setSaldo(0.00);
-			detalles.add(amortizacion);
+			if(prestamo.getTipo().equals("2")) {
+				//interes
+				total_neto = prestamo.getMonto();
+			}else {
+				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
+				Calendar calendar = Calendar.getInstance();
+				Amortizacion amortizacion = new Amortizacion();
+				amortizacion.setFecha(sdf.format(calendar.getTime()));
+				amortizacion.setCuota(0.00);
+				amortizacion.setCapital(0.00);
+				amortizacion.setInteres(0.00);
+				amortizacion.setSaldo(0.00);
+				detalles.add(amortizacion);
+			}
 		}
 		
 		//Guardamos el prestamo

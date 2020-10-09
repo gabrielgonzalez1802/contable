@@ -71,29 +71,55 @@
 
                 <div class="row">
 				  <div class="col-md-8">
-				  	 <div class="col-md-4 col-sm-4">
-                      <div class="card overflow-hidden sales-card bg-primary-gradient">
-                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
-                        <div class="">
-                          <h6 class="mb-3 tx-12 text-white">Nuevo Prestamo</h6>
-                        </div>
-                        <div class="pb-0 mt-0">
-                          <div class="d-flex">
-                            <div class="">
-                              <h4 class="tx-20 font-weight-bold mb-1 text-white"><a style="cursor: pointer;" id="agregarPrestamo"> + </a></h4>
-                              <p class="mb-0 tx-12 text-white op-7">&nbsp;</p>
-                            </div>
-                            <span class="float-right my-auto ml-auto">
-<!--                               <i class="fas fa-arrow-circle-up text-white"></i> -->
-                              <span class="text-white op-7"> &nbsp;</span>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <span id="" class="pt-1"><canvas width="298" height="30" style="display: inline-block; width: 298.25px; height: 30px; vertical-align: top;"></canvas></span>
-                    </div>
-                  </div>
-                  
+				  	<div class="col-md-12">
+				  		<div class="row">
+				  		   <div th:each="prestamo : ${prestamos}" class="col-md-4 col-sm-4">
+						      <div class="card overflow-hidden sales-card bg-primary-gradient">
+			                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
+			                        <div class="">
+			                          <h6 class="mb-3 tx-12 text-white">Prestamo</h6>
+			                        </div>
+			                        <div class="pb-0 mt-0">
+			                          <div class="d-flex">
+			                            <div class="">
+			                              <h4 class="tx-20 font-weight-bold mb-1 text-white"><a style="cursor: pointer;" id=""> + </a></h4>
+			                              <p class="mb-0 tx-12 text-white op-7">&nbsp;</p>
+			                            </div>
+			                            <span class="float-right my-auto ml-auto">
+			<!--                               <i class="fas fa-arrow-circle-up text-white"></i> -->
+			                              <span class="text-white op-7"> &nbsp;</span>
+			                            </span>
+			                          </div>
+			                        </div>
+			                      </div>
+			                      <span id="" class="pt-1"><canvas width="298" height="30" style="display: inline-block; width: 298.25px; height: 30px; vertical-align: top;"></canvas></span>
+			                    </div>
+						   </div>
+						    
+						    <div class="col-md-4 col-sm-4">
+						     <div class="card overflow-hidden sales-card bg-primary-gradient">
+			                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
+			                        <div class="">
+			                          <h6 class="mb-3 tx-12 text-white">Nuevo Prestamo</h6>
+			                        </div>
+			                        <div class="pb-0 mt-0">
+			                          <div class="d-flex">
+			                            <div class="">
+			                              <h4 class="tx-20 font-weight-bold mb-1 text-white"><a style="cursor: pointer;" id="agregarPrestamo"> + </a></h4>
+			                              <p class="mb-0 tx-12 text-white op-7">&nbsp;</p>
+			                            </div>
+			                            <span class="float-right my-auto ml-auto">
+			<!--                               <i class="fas fa-arrow-circle-up text-white"></i> -->
+			                              <span class="text-white op-7"> &nbsp;</span>
+			                            </span>
+			                          </div>
+			                        </div>
+			                      </div>
+			                      <span id="" class="pt-1"><canvas width="298" height="30" style="display: inline-block; width: 298.25px; height: 30px; vertical-align: top;"></canvas></span>
+			                    </div>
+						  </div>
+				  		</div>
+					 </div>
 				 </div>
 
                   <div class="col-md-4 col-sm-4">

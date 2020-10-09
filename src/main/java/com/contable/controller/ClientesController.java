@@ -22,10 +22,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
 import com.contable.model.ComprobanteFiscal;
+import com.contable.model.Prestamo;
 import com.contable.model.Usuario;
 import com.contable.service.ICarpetasService;
 import com.contable.service.IClientesService;
 import com.contable.service.IComprobantesFiscalesService;
+import com.contable.service.IPrestamosService;
 import com.contable.util.Utileria;
 
 @Controller
@@ -43,6 +45,9 @@ public class ClientesController {
 	
 	@Autowired
 	private ICarpetasService serviceCarpetas;
+	
+	@Autowired
+	private IPrestamosService servicePrestamos;
 
 	@GetMapping("/")
 	public String getListaClientes(Model model) {
@@ -131,7 +136,9 @@ public class ClientesController {
 			
 			return "clientes/buscarCliente :: buscarCliente"; 
 		}
+		List<Prestamo> prestamos = servicePrestamos.buscarPorClienteCarpetaPorFechaDesc(cliente, carpetaTemp);
 		model.addAttribute("tipoDocumentoAcct", cliente.getTipoDocumento());
+		model.addAttribute("prestamos", prestamos);
 		model.addAttribute("cliente", cliente);
 		return "clientes/infoCliente :: infoCliente";
 	}
@@ -143,9 +150,11 @@ public class ClientesController {
 		Carpeta carpeta = serviceCarpetas.buscarPorId(idCarpeta);
 		model.addAttribute("carpeta", carpeta);
 		if(cliente != null) {
+			List<Prestamo> prestamos = servicePrestamos.buscarPorClienteCarpetaPorFechaDesc(cliente, carpeta);
 			session.setAttribute("cliente", cliente.getId());
 			model.addAttribute("tipoDocumentoAcct", cliente.getTipoDocumento());
 			model.addAttribute("cliente", cliente);
+			model.addAttribute("prestamos", prestamos);
 			return "clientes/infoCliente :: infoCliente";
 		}else {
 			model.addAttribute("tipoDocumentoAcct", "cedula");

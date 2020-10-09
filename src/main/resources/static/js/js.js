@@ -805,21 +805,27 @@ function calCuota(){
 	var pagos=$("#pagos").val();
 	var tasa=$("#tasa").val();
 	
-  if(parseFloat(monto) > 0 && parseFloat(pagos) && parseFloat(tasa)){
-	  $.post("/prestamos/calculoCuota",$("#formulario_prestamo").serialize(),
-			function(data){
-				console.log("Calculo Cuota");
-				$("#calculosCuota").replaceWith(data);
-				$("#valor_cuota").val($("#responseCuota").val());
-			    $("#valor_interes").val($("#responseInteres").val());   
-				$("#total_pagar").val($("#responseTotalPagar").val());
-				
-				if(parseFloat(tasa) > 0 && parseFloat(pagos) > 0 && parseFloat(tasa)){
-					console.log("entre en amortizar");
-					amortizar();
-				}
-		});
-  }
+	//Interes
+	if($("#tipo_prestamo").val()==2){
+		var interes = monto * (parseFloat(tasa) / 100);
+		$("#valor_interes").val(interes);
+	}else{
+		  if(parseFloat(monto) > 0 && parseFloat(pagos) && parseFloat(tasa)){
+			  $.post("/prestamos/calculoCuota",$("#formulario_prestamo").serialize(),
+					function(data){
+						console.log("Calculo Cuota");
+						$("#calculosCuota").replaceWith(data);
+						$("#valor_cuota").val($("#responseCuota").val());
+					    $("#valor_interes").val($("#responseInteres").val());   
+						$("#total_pagar").val($("#responseTotalPagar").val());
+						
+						if(parseFloat(tasa) > 0 && parseFloat(pagos) > 0 && parseFloat(tasa)){
+							console.log("entre en amortizar");
+							amortizar();
+						}
+				});
+		  }
+	}
 }
 
 function calTasa(){
