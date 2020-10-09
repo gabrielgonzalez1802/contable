@@ -74,16 +74,18 @@
 				  	<div class="col-md-12">
 				  		<div class="row">
 				  		   <div th:each="prestamo : ${prestamos}" class="col-md-4 col-sm-4">
-						      <div class="card overflow-hidden sales-card bg-primary-gradient">
+						      <div class="card overflow-hidden sales-card bg-primary-gradient" style="height: 140px;">
 			                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
-			                        <div class="">
-			                          <h6 class="mb-3 tx-12 text-white">Prestamo</h6>
+			                      	<span class="mb-3 tx-15 text-white">Prestamo [[${prestamo.pagos}]] cuotas </span>
+			                        <div class="float-right my-auto ml-auto">
+			                          <i class="fas fa-search" style="color: #fff;" aria-hidden="true"></i>
 			                        </div>
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">
 			                            <div class="">
-			                              <h4 class="tx-20 font-weight-bold mb-1 text-white"><a style="cursor: pointer;" id=""> + </a></h4>
-			                              <p class="mb-0 tx-12 text-white op-7">&nbsp;</p>
+			                              <h4 class="tx-20 font-weight-bold mb-1 text-white"><a style="cursor: pointer;" id=""> RD$ [[${prestamo.monto}]] </a></h4>
+			                              <p class="mb-0 tx-12 text-white op-7">RD$ [[${prestamo.monto}]]</p>
+			                               <p class="mb-0 tx-12 text-white op-7">RD$ [[${prestamo.balance}]]</p>
 			                            </div>
 			                            <span class="float-right my-auto ml-auto">
 			<!--                               <i class="fas fa-arrow-circle-up text-white"></i> -->
@@ -97,7 +99,7 @@
 						   </div>
 						    
 						    <div class="col-md-4 col-sm-4">
-						     <div class="card overflow-hidden sales-card bg-primary-gradient">
+						     <div class="card overflow-hidden sales-card bg-primary-gradient" style="height: 140px;">
 			                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
 			                        <div class="">
 			                          <h6 class="mb-3 tx-12 text-white">Nuevo Prestamo</h6>
