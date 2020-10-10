@@ -42,6 +42,7 @@ public class Prestamo {
 	private Double monto = 0.0;
 	private Integer pagos = 0;
 	private Double tasa = 0.0;
+	private Integer codigo;
 	
 	private String forma_pago;
 	
@@ -260,15 +261,23 @@ public class Prestamo {
 	public void setIdCuentaTemp(Integer idCuentaTemp) {
 		this.idCuentaTemp = idCuentaTemp;
 	}
+	
+	public Integer getCodigo() {
+		return codigo;
+	}
+
+	public void setCodigo(Integer codigo) {
+		this.codigo = codigo;
+	}
 
 	@Override
 	public String toString() {
 		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", idClienteTemp=" + idClienteTemp
 				+ ", idCarpetaTemp=" + idCarpetaTemp + ", idCuentaTemp=" + idCuentaTemp + ", tipo=" + tipo
 				+ ", tipo_prestamo=" + tipo_prestamo + ", dias_gracia=" + dias_gracia + ", monto=" + monto + ", pagos="
-				+ pagos + ", tasa=" + tasa + ", forma_pago=" + forma_pago + ", valor_cuota=" + valor_cuota + ", mora="
-				+ mora + ", observacion=" + observacion + ", balance=" + balance + ", valor_interes=" + valor_interes
-				+ ", ultimoPago=" + ultimoPago + ", usuario=" + usuario + ", estado=" + estado + ", moneda=" + moneda
-				+ ", carpeta=" + carpeta + ", cuenta=" + cuenta + "]";
+				+ pagos + ", tasa=" + tasa + ", codigo=" + codigo + ", forma_pago=" + forma_pago + ", valor_cuota="
+				+ valor_cuota + ", mora=" + mora + ", observacion=" + observacion + ", balance=" + balance
+				+ ", valor_interes=" + valor_interes + ", ultimoPago=" + ultimoPago + ", usuario=" + usuario
+				+ ", estado=" + estado + ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta + "]";
 	}
 }

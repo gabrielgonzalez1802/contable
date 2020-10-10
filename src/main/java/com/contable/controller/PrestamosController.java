@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.IdClass;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -643,6 +642,15 @@ public class PrestamosController {
 		Cliente cliente = serviceClientes.buscarPorId(prestamo.getIdClienteTemp());
 		Carpeta carpeta = serviceCarpetas.buscarPorId(prestamo.getIdCarpetaTemp());
 		
+		int codigo = 1;
+		
+		//Buscamos la lista de prestamos asociados a la carpeta
+		List<Prestamo> prestamos = servicePrestamos.buscarPorCarpeta(carpeta);
+		if(!prestamos.isEmpty()) {
+			Prestamo tempPrestamo = prestamos.get(prestamos.size()-1);
+			codigo = tempPrestamo.getCodigo()+1;
+		}
+		
 		if(prestamo.getIdCuentaTemp()!=null) {
 			Cuenta cuenta = serviceCuentas.buscarPorId(prestamo.getIdCuentaTemp());
 			prestamo.setCuenta(cuenta);
@@ -655,7 +663,8 @@ public class PrestamosController {
 		prestamo.setUsuario(usuario);
 		prestamo.setBalance(total_neto >0 ? formato2d(total_neto) : total_neto);
 //		prestamo.setEstado(estado); //verificar
-		
+		prestamo.setCodigo(codigo);
+		prestamo.setFecha(new Date());
 		servicePrestamos.guardar(prestamo);
 		
 		//Guardamos los detalles de la amortizacion en el prestamo

@@ -84,12 +84,13 @@
 			                          <div class="d-flex">
 			                            <div class="">
 			                              <h4 class="tx-20 font-weight-bold mb-1 text-white"><a style="cursor: pointer;" id=""> RD$ [[${prestamo.monto}]] </a></h4>
-			                              <p class="mb-0 tx-12 text-white op-7">RD$ [[${prestamo.monto}]]</p>
+			                               <p class="mb-0 tx-12 text-white op-7">No. [[${prestamo.codigo}]]</p>
+			                               <p class="mb-0 tx-12 text-white op-7">RD$ [[${prestamo.monto}]]</p>
 			                               <p class="mb-0 tx-12 text-white op-7">RD$ [[${prestamo.balance}]]</p>
 			                            </div>
 			                            <span class="float-right my-auto ml-auto">
-			<!--                               <i class="fas fa-arrow-circle-up text-white"></i> -->
-			                              <span class="text-white op-7"> &nbsp;</span>
+<!-- 			                              <i class="fas fa-arrow-circle-up text-white"></i> -->
+			                              <span class="text-white op-7" style="font-size: 10px;" th:text="${#dates.format(prestamo.fecha, 'yyyy-MM-dd')}"></span>
 			                            </span>
 			                          </div>
 			                        </div>
