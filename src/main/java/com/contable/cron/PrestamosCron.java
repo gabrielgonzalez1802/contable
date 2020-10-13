@@ -20,7 +20,7 @@ public class PrestamosCron {
 	@Autowired
 	private IPrestamosDetallesService servicePrestamosDetalles;
 
-	@Scheduled(cron = "0 51 07 * * *")
+	@Scheduled(cron = "0 11 08 * * *")
 	public void calculoVencimientoCuota() throws ParseException {
 		//Buscamos los detalles vencidos de los prestamos 
 		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorEstado(2);
@@ -46,7 +46,7 @@ public class PrestamosCron {
 		}
 	}
 	
-	@Scheduled(cron = "0 50 07 * * *")
+	@Scheduled(cron = "0 10 08 * * *")
 	public void diasVencidos() throws ParseException {
 		//Buscamos los detalles pendientes de los prestamos 
 		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorEstado(0);
