@@ -73,6 +73,11 @@ public class Prestamo {
 	@OneToOne
 	@JoinColumn(name = "id_cuenta")
 	private Cuenta cuenta; 
+	
+	private Double total_cuota = 0.0;
+	private Double total_capital = 0.0;
+	private Double total_interes = 0.0;
+	private Double total_neto = 0.0;
 
 	public Integer getId() {
 		return id;
@@ -281,6 +286,38 @@ public class Prestamo {
 		this.fechaTemp = fechaTemp;
 	}
 
+	public Double getTotal_cuota() {
+		return total_cuota;
+	}
+
+	public void setTotal_cuota(Double total_cuota) {
+		this.total_cuota = total_cuota;
+	}
+
+	public Double getTotal_capital() {
+		return total_capital;
+	}
+
+	public void setTotal_capital(Double total_capital) {
+		this.total_capital = total_capital;
+	}
+
+	public Double getTotal_interes() {
+		return total_interes;
+	}
+
+	public void setTotal_interes(Double total_interes) {
+		this.total_interes = total_interes;
+	}
+
+	public Double getTotal_neto() {
+		return total_neto;
+	}
+
+	public void setTotal_neto(Double total_neto) {
+		this.total_neto = total_neto;
+	}
+
 	@Override
 	public String toString() {
 		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", idClienteTemp=" + idClienteTemp
@@ -289,7 +326,8 @@ public class Prestamo {
 				+ monto + ", pagos=" + pagos + ", tasa=" + tasa + ", codigo=" + codigo + ", forma_pago=" + forma_pago
 				+ ", valor_cuota=" + valor_cuota + ", mora=" + mora + ", observacion=" + observacion + ", balance="
 				+ balance + ", valor_interes=" + valor_interes + ", ultimoPago=" + ultimoPago + ", usuario=" + usuario
-				+ ", estado=" + estado + ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta + "]";
+				+ ", estado=" + estado + ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta
+				+ ", total_cuota=" + total_cuota + ", total_capital=" + total_capital + ", total_interes="
+				+ total_interes + ", total_neto=" + total_neto + "]";
 	}
-	
 }

@@ -667,6 +667,10 @@ public class PrestamosController {
 //		prestamo.setEstado(estado); //verificar
 		prestamo.setCodigo(codigo);
 		prestamo.setFecha(new Date());
+		prestamo.setTotal_cuota(total_cuota >0 ? formato2d(total_cuota):total_cuota);
+		prestamo.setTotal_capital(total_capital >0 ? formato2d(total_capital) : total_capital);
+		prestamo.setTotal_interes(total_interes >0 ? formato2d(total_interes) : total_interes);
+		prestamo.setTotal_neto(total_neto >0 ? formato2d(total_neto) : total_neto);
 		servicePrestamos.guardar(prestamo);
 		
 		//Guardamos los detalles de la amortizacion en el prestamo
@@ -715,10 +719,10 @@ public class PrestamosController {
 			detalles.add(amortizacion);
 		}
 		model.addAttribute("detalles", detalles);
-		model.addAttribute("totalCuota", 0);
-		model.addAttribute("totalCapital", 0);
-		model.addAttribute("totalInteres", 0);
-		model.addAttribute("totalNeto", 0);
+		model.addAttribute("totalCuota", prestamo.getTotal_cuota());
+		model.addAttribute("totalCapital", prestamo.getTotal_capital());
+		model.addAttribute("totalInteres", prestamo.getTotal_interes());
+		model.addAttribute("totalNeto", prestamo.getTotal_neto());
 		return "index :: #cuerpo_amortizacion";
 	}
 	
