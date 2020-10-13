@@ -3,11 +3,11 @@ function addEvents(){
 /************************************************** Configuraciones Iniciales **********************************************/
 	
     $('[data-toggle="tooltip"]').tooltip();
-
+    
 	var clienteSeleccionado = $("#clienteSeleccionado").select2({
 	    theme: 'bootstrap4',
 	});
-	
+		
 	//$('#tabla').DataTable({
 	//"scrollY": "400px",
 //	    "language": {
@@ -447,6 +447,7 @@ function addEvents(){
 		e.preventDefault();
 		e.stopImmediatePropagation();
 		$("#contenido").load("/clientes/buscarCliente",function(data){
+			ocultarDetalleAmortizacion();
 			console.log("Lista de clientes");
 			addEvents();
 		});
@@ -554,6 +555,8 @@ function addEvents(){
     $("#agregarPrestamo").click(function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
+		//Ocultamos la seccion de detalle de amortizacion
+		ocultarDetalleAmortizacion();
 		$("#contenido").load("/prestamos/agregar",function(data){
 			console.log("Agregar Prestamo");
 			if($("#msg").val()=="NOCLIENTE"){
@@ -879,4 +882,21 @@ function eliminarCliente(id){
 		})
 }
 
+function cargarDetallePrestamo(id){
+	 $.get("/prestamos/detalleAmortizacion/"+id,
+		function(data){
+			console.log("Detalle Amortizacion");
+			mostrarDetalleAmortizacion();
+			$("#cuerpo_amortizacion").replaceWith(data);
+			addEvents();
+	 	});
+}
+
+function mostrarDetalleAmortizacion(){
+	$("#cuerpoTabla").show();
+}
+
+function ocultarDetalleAmortizacion(){
+	$("#cuerpoTabla").hide();
+}
 /******************************************************* Fin Funciones ******************************************************/

@@ -268,7 +268,7 @@ input {
 									  <td th:text="${detalle.cuota}"></td>
 									  <td th:text="${detalle.capital}"></td>
 									  <td th:text="${detalle.interes}"></td>
-									  <td></td>
+									  <td th:text="${detalle.mora}"></td>
 									  <td></td>
 									  <td th:text="${detalle.saldo}"></td>
 								 </tr>
@@ -367,6 +367,7 @@ input {
         if ($("body").hasClass('sidebar-gone')){
           $("body").removeClass("sidenav-toggled");
         }
+        ocultarDetalleAmortizacion();
         addEvents();
       });
 

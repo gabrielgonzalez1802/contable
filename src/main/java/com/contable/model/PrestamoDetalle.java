@@ -48,6 +48,8 @@ public class PrestamoDetalle {
 	@Column(name = "generar_interes")
 	private Integer generarInteres = 0;
 	
+	private Double interes_mora = 0.0;
+	
 	private Integer estado = 0;
 
 	public Integer getId() {
@@ -170,11 +172,20 @@ public class PrestamoDetalle {
 		this.cuota = cuota;
 	}
 
+	public Double getInteres_mora() {
+		return interes_mora;
+	}
+
+	public void setInteres_mora(Double interes_mora) {
+		this.interes_mora = interes_mora;
+	}
+
 	@Override
 	public String toString() {
 		return "PrestamoDetalle [id=" + id + ", prestamo=" + prestamo + ", fecha=" + fecha + ", monto=" + monto
 				+ ", capital=" + capital + ", interes=" + interes + ", numero=" + numero + ", cuota=" + cuota
 				+ ", balance=" + balance + ", pago=" + pago + ", mora=" + mora + ", fechaGenerada=" + fechaGenerada
-				+ ", fechaInteres=" + fechaInteres + ", generarInteres=" + generarInteres + ", estado=" + estado + "]";
+				+ ", fechaInteres=" + fechaInteres + ", generarInteres=" + generarInteres + ", interes_mora="
+				+ interes_mora + ", estado=" + estado + "]";
 	}
 }

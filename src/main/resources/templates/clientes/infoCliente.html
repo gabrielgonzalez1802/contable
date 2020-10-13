@@ -78,7 +78,7 @@
 			                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
 			                      	<span class="mb-3 tx-15 text-white">Prestamo [[${prestamo.pagos}]] cuotas </span>
 			                        <div class="float-right my-auto ml-auto">
-			                          <i class="fas fa-search" style="color: #fff;" aria-hidden="true"></i>
+			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true" th:onclick="'cargarDetallePrestamo(\'' + ${prestamo.id} + '\');'"></i>
 			                        </div>
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">

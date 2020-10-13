@@ -50,12 +50,12 @@ public class Prestamo {
 	private String forma_pago;
 	
 	private Double valor_cuota = 0.0;
-	private Integer mora;
+	private Double mora;
 	private String observacion;
 	private Double balance = 0.0;
 	
 	private Double valor_interes= 0.0;
-	
+		
 	@Column(name = "ultimo_pago")
 	private Date ultimoPago;
 	
@@ -153,11 +153,11 @@ public class Prestamo {
 		this.valor_cuota = valor_cuota;
 	}
 
-	public Integer getMora() {
+	public Double getMora() {
 		return mora;
 	}
 
-	public void setMora(Integer mora) {
+	public void setMora(Double mora) {
 		this.mora = mora;
 	}
 
@@ -291,4 +291,5 @@ public class Prestamo {
 				+ balance + ", valor_interes=" + valor_interes + ", ultimoPago=" + ultimoPago + ", usuario=" + usuario
 				+ ", estado=" + estado + ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta + "]";
 	}
+	
 }

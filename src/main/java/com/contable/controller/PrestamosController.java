@@ -682,6 +682,7 @@ public class PrestamosController {
 //			prestamoDetalle.setFechaInteres(new Date());
 			prestamoDetalle.setGenerarInteres(amortizacion.getInteres()>0?1:0);
 			prestamoDetalle.setInteres(amortizacion.getInteres());
+			prestamoDetalle.setInteres_mora(prestamo.getMora());
 //			prestamoDetalle.setMonto(amortizacion.getCuota());
 //			prestamoDetalle.setMora(amortizacion.getm);
 			prestamoDetalle.setPago(0);
@@ -693,6 +694,31 @@ public class PrestamosController {
 		model.addAttribute("totalCapital", total_capital >0 ? formato2d(total_capital) : total_capital);
 		model.addAttribute("totalInteres", total_interes >0 ? formato2d(total_interes) : total_interes);
 		model.addAttribute("totalNeto", total_neto >0 ? formato2d(total_neto) : total_neto);
+		return "index :: #cuerpo_amortizacion";
+	}
+	
+	@GetMapping("/detalleAmortizacion/{id}")
+	public String detalleAmortizacion(Model model, @PathVariable(name = "id") Integer id) {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
+		Prestamo prestamo = servicePrestamos.buscarPorId(id);
+		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
+		List<Amortizacion> detalles = new LinkedList<>();
+		for (PrestamoDetalle prestamoDetalle : prestamoDetalles) {
+			Amortizacion amortizacion = new Amortizacion();
+			amortizacion.setFecha(sdf.format(prestamoDetalle.getFechaGenerada()));
+			amortizacion.setCuota(prestamoDetalle.getCuota());
+			amortizacion.setCapital(prestamoDetalle.getCapital());
+			amortizacion.setInteres(prestamoDetalle.getInteres());
+			amortizacion.setSaldo(prestamoDetalle.getBalance());
+			amortizacion.setNumero(prestamoDetalle.getNumero());
+			amortizacion.setMora(prestamoDetalle.getMora());
+			detalles.add(amortizacion);
+		}
+		model.addAttribute("detalles", detalles);
+		model.addAttribute("totalCuota", 0);
+		model.addAttribute("totalCapital", 0);
+		model.addAttribute("totalInteres", 0);
+		model.addAttribute("totalNeto", 0);
 		return "index :: #cuerpo_amortizacion";
 	}
 	
