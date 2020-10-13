@@ -49,4 +49,9 @@ public class PrestamosDetallesService implements IPrestamosDetallesService{
 		repo.deleteAll(prestamoDetalles);
 	}
 
+	@Override
+	public List<PrestamoDetalle> buscarPorEstado(Integer estado) {
+		return repo.findByEstado(estado);
+	}
+
 }

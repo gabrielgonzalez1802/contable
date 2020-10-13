@@ -729,10 +729,12 @@ function addEvents(){
 		 var idClienteTemp = $("#idClientePrestamo").val();
 		 var idCarpetaTemp = $("#carpetaIdPrestamo").val();
 		 var idCuentaTemp =  $("#id_cuenta").val(); 
+		 var fecha = $("#fecha").val();
 //		 alert("cliente: "+idClienteTemp+" - Carpeta: "+idCarpetaTemp);
 		 datos.push( {name:'idClienteTemp', value:idClienteTemp} );
 		 datos.push( {name:'idCarpetaTemp', value:idCarpetaTemp} );
 		 datos.push( {name:'idCuentaTemp', value:idCuentaTemp} ); 
+		 datos.push( {name:'fechaTemp', value:fecha} );
 		 $.post("/prestamos/guardar", datos,
 			function(data){
 				console.log("Guardar Prestamo");
@@ -792,7 +794,10 @@ function modificarCliente(id){
 }
 
 function amortizar(){
-	 $.post("/prestamos/amortizar",$("#formulario_prestamo").serialize(),
+	 var datos = $("#formulario_prestamo").serializeArray();
+	 var fecha = $("#fecha").val();
+	 datos.push( {name:'fechaTemp', value:fecha} );
+	 $.post("/prestamos/amortizar",datos,
 		function(data){
 			console.log("Amortizar");
 			$("#cuerpo_amortizacion").replaceWith(data);

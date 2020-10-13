@@ -285,9 +285,9 @@ public class PrestamosController {
 		double total_capital = 0;
 		double total_interes = 0;
 		double total_neto = 0;
-
-		List<Amortizacion> detalles = new LinkedList<>();
+		SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 		
+		List<Amortizacion> detalles = new LinkedList<>();
 
 		if (prestamo.getPagos() != 0) {
 
@@ -304,7 +304,7 @@ public class PrestamosController {
 				fre = 1;
 			}
 			
-			Date date = new Date();
+			Date date = formato.parse(prestamo.getFechaTemp());
 			LocalDate fecha_pagoTemp = date.toInstant().atZone(ZoneId.systemDefault().systemDefault())
 					.toLocalDate();
 			int mes = fecha_pagoTemp.getMonthValue();
@@ -467,7 +467,9 @@ public class PrestamosController {
 		double total_neto = 0;
 		
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
-
+		SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat formato2 = new SimpleDateFormat("dd/MM/yyyy");
+		
 		List<Amortizacion> detalles = new LinkedList<>();
 		
 
@@ -486,7 +488,7 @@ public class PrestamosController {
 				fre = 1;
 			}
 			
-			Date date = new Date();
+			Date date = formato.parse(prestamo.getFechaTemp());
 			ZoneId zoneId = ZoneId.systemDefault();
 			LocalDate fecha_pagoTemp = date.toInstant().atZone(zoneId)
 					.toLocalDate();
@@ -675,15 +677,14 @@ public class PrestamosController {
 			prestamoDetalle.setCapital(amortizacion.getCapital());
 			prestamoDetalle.setNumero(amortizacion.getNumero());
 			prestamoDetalle.setCuota(amortizacion.getCuota());
-//			prestamoDetalle.setEstado(estado); //verificar
-//			prestamoDetalle.setFecha(amortizacion.getFecha());
-			prestamoDetalle.setFechaGenerada(new Date());
+			prestamoDetalle.setFecha(new Date());
+			prestamoDetalle.setFechaGenerada(formato2.parse(amortizacion.getFecha()));
 //			prestamoDetalle.setFechaInteres(new Date());
 			prestamoDetalle.setGenerarInteres(amortizacion.getInteres()>0?1:0);
 			prestamoDetalle.setInteres(amortizacion.getInteres());
 //			prestamoDetalle.setMonto(amortizacion.getCuota());
 //			prestamoDetalle.setMora(amortizacion.getm);
-//			prestamoDetalle.setPago(pago);
+			prestamoDetalle.setPago(0);
 			servicePrestamosDetalles.guardar(prestamoDetalle);
 		}
 

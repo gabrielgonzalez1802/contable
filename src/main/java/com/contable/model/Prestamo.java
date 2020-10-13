@@ -35,6 +35,9 @@ public class Prestamo {
 	@Transient
 	private Integer idCuentaTemp = 0;
 	
+	@Transient
+	private String fechaTemp;
+	
 	private String tipo;
 	private String tipo_prestamo;
 	
@@ -270,14 +273,22 @@ public class Prestamo {
 		this.codigo = codigo;
 	}
 
+	public String getFechaTemp() {
+		return fechaTemp;
+	}
+
+	public void setFechaTemp(String fechaTemp) {
+		this.fechaTemp = fechaTemp;
+	}
+
 	@Override
 	public String toString() {
 		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", idClienteTemp=" + idClienteTemp
-				+ ", idCarpetaTemp=" + idCarpetaTemp + ", idCuentaTemp=" + idCuentaTemp + ", tipo=" + tipo
-				+ ", tipo_prestamo=" + tipo_prestamo + ", dias_gracia=" + dias_gracia + ", monto=" + monto + ", pagos="
-				+ pagos + ", tasa=" + tasa + ", codigo=" + codigo + ", forma_pago=" + forma_pago + ", valor_cuota="
-				+ valor_cuota + ", mora=" + mora + ", observacion=" + observacion + ", balance=" + balance
-				+ ", valor_interes=" + valor_interes + ", ultimoPago=" + ultimoPago + ", usuario=" + usuario
+				+ ", idCarpetaTemp=" + idCarpetaTemp + ", idCuentaTemp=" + idCuentaTemp + ", fechaTemp=" + fechaTemp
+				+ ", tipo=" + tipo + ", tipo_prestamo=" + tipo_prestamo + ", dias_gracia=" + dias_gracia + ", monto="
+				+ monto + ", pagos=" + pagos + ", tasa=" + tasa + ", codigo=" + codigo + ", forma_pago=" + forma_pago
+				+ ", valor_cuota=" + valor_cuota + ", mora=" + mora + ", observacion=" + observacion + ", balance="
+				+ balance + ", valor_interes=" + valor_interes + ", ultimoPago=" + ultimoPago + ", usuario=" + usuario
 				+ ", estado=" + estado + ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta + "]";
 	}
 }

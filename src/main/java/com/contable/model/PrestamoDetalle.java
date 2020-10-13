@@ -23,7 +23,9 @@ public class PrestamoDetalle {
 	@JoinColumn(name = "id_prestamo")
 	private Prestamo prestamo;
 	
+	@Column(name = "fecha_creado")
 	private Date fecha;
+	
 	private Double monto = 0.0;
 	private Double capital = 0.0;
 	private Double interes = 0.0;
