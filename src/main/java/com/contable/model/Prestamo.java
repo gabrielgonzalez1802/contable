@@ -78,6 +78,9 @@ public class Prestamo {
 	private Double total_capital = 0.0;
 	private Double total_interes = 0.0;
 	private Double total_neto = 0.0;
+	private Double gastos_cierre = 0.0;
+	
+	private Integer cantidad_pagos = 0;
 
 	public Integer getId() {
 		return id;
@@ -318,6 +321,22 @@ public class Prestamo {
 		this.total_neto = total_neto;
 	}
 
+	public Double getGastos_cierre() {
+		return gastos_cierre;
+	}
+
+	public void setGastos_cierre(Double gastos_cierre) {
+		this.gastos_cierre = gastos_cierre;
+	}
+
+	public Integer getCantidad_pagos() {
+		return cantidad_pagos;
+	}
+
+	public void setCantidad_pagos(Integer cantidad_pagos) {
+		this.cantidad_pagos = cantidad_pagos;
+	}
+
 	@Override
 	public String toString() {
 		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", idClienteTemp=" + idClienteTemp
@@ -328,6 +347,7 @@ public class Prestamo {
 				+ balance + ", valor_interes=" + valor_interes + ", ultimoPago=" + ultimoPago + ", usuario=" + usuario
 				+ ", estado=" + estado + ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta
 				+ ", total_cuota=" + total_cuota + ", total_capital=" + total_capital + ", total_interes="
-				+ total_interes + ", total_neto=" + total_neto + "]";
+				+ total_interes + ", total_neto=" + total_neto + ", gastos_cierre=" + gastos_cierre
+				+ ", cantidad_pagos=" + cantidad_pagos + "]";
 	}
 }

@@ -51,6 +51,10 @@ public class PrestamoDetalle {
 	private Double interes_mora = 0.0;
 	
 	private Integer estado = 0;
+	
+	private Integer dias_atraso = 0;
+	
+	private String estado_cuota;
 
 	public Integer getId() {
 		return id;
@@ -180,12 +184,29 @@ public class PrestamoDetalle {
 		this.interes_mora = interes_mora;
 	}
 
+	public Integer getDias_atraso() {
+		return dias_atraso;
+	}
+
+	public void setDias_atraso(Integer dias_atraso) {
+		this.dias_atraso = dias_atraso;
+	}
+
+	public String getEstado_cuota() {
+		return estado_cuota;
+	}
+
+	public void setEstado_cuota(String estado_cuota) {
+		this.estado_cuota = estado_cuota;
+	}
+
 	@Override
 	public String toString() {
 		return "PrestamoDetalle [id=" + id + ", prestamo=" + prestamo + ", fecha=" + fecha + ", monto=" + monto
 				+ ", capital=" + capital + ", interes=" + interes + ", numero=" + numero + ", cuota=" + cuota
 				+ ", balance=" + balance + ", pago=" + pago + ", mora=" + mora + ", fechaGenerada=" + fechaGenerada
 				+ ", fechaInteres=" + fechaInteres + ", generarInteres=" + generarInteres + ", interes_mora="
-				+ interes_mora + ", estado=" + estado + "]";
+				+ interes_mora + ", estado=" + estado + ", dias_atraso=" + dias_atraso + ", estado_cuota="
+				+ estado_cuota + "]";
 	}
 }

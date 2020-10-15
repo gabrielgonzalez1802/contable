@@ -733,29 +733,41 @@ function addEvents(){
 		 var idCarpetaTemp = $("#carpetaIdPrestamo").val();
 		 var idCuentaTemp =  $("#id_cuenta").val(); 
 		 var fecha = $("#fecha").val();
-//		 alert("cliente: "+idClienteTemp+" - Carpeta: "+idCarpetaTemp);
-		 datos.push( {name:'idClienteTemp', value:idClienteTemp} );
-		 datos.push( {name:'idCarpetaTemp', value:idCarpetaTemp} );
-		 datos.push( {name:'idCuentaTemp', value:idCuentaTemp} ); 
-		 datos.push( {name:'fechaTemp', value:fecha} );
-		 $.post("/prestamos/guardar", datos,
-			function(data){
-				console.log("Guardar Prestamo");
-				$("#cuerpo_amortizacion").replaceWith(data);
-				 Swal.fire({
-						title : 'Muy Bien!',
-						text : 'Se genero el prestamo',
-						position : 'top',
-						icon : 'success',
-						confirmButtonText : 'Cool'
-					})
-				$("#contenido").load("/clientes/buscarCliente",function(data){
-					console.log("Lista de clientes");
-					addEvents();
-				});
-		});
-		return false;
-		}
+		 var cantidad_pagos = $("#cantidad_pagos").val();
+		 var pagos = $("#pagos").val();
+		 
+		 if(parseFloat(cantidad_pagos) > parseFloat(pagos)){
+			 Swal.fire({
+					title : 'Advertencia!',
+					text : 'La cantidad de pagos no puede ser mayor al plazo',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+		 }else{
+			 datos.push( {name:'idClienteTemp', value:idClienteTemp} );
+			 datos.push( {name:'idCarpetaTemp', value:idCarpetaTemp} );
+			 datos.push( {name:'idCuentaTemp', value:idCuentaTemp} ); 
+			 datos.push( {name:'fechaTemp', value:fecha} );
+			 $.post("/prestamos/guardar", datos,
+				function(data){
+					console.log("Guardar Prestamo");
+					$("#cuerpo_amortizacion").replaceWith(data);
+					 Swal.fire({
+							title : 'Muy Bien!',
+							text : 'Se genero el prestamo',
+							position : 'top',
+							icon : 'success',
+							confirmButtonText : 'Cool'
+						})
+					$("#contenido").load("/clientes/buscarCliente",function(data){
+						console.log("Lista de clientes");
+						addEvents();
+					});
+			});
+			return false;
+			}
+		 }
 	));
 
 /****************************************************** Fin Prestamos *******************************************************/

@@ -223,7 +223,7 @@ input {
 				 <div class="container"> 
 					 <div class="float-right"> 
 					  	<div style="text-align:center">
-						  <h1 style="color: #2EABD7;" class="tx-35 mb-1 tx-inverse tx-semibold mg-b-0">809-5829-558</h1>
+						  <h1 style="color: #2EABD7;" class="tx-35 mb-1 tx-inverse tx-semibold mg-b-0">809-582-9558</h1>
 						  <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">plaza barcelona</h2>
 						  <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">51000 Santiago de los caballeros,</h2>
 				          <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Republica Dominicana</h2>
@@ -236,7 +236,7 @@ input {
           </div>
 
           <div class="row" id="cuerpoTabla">
-            <div class="col-md-8">
+            <div class="col-md-12">
               <div class="card" id="contenidoTabla">
                 <div class="card-header pb-0">
                   <div class="d-flex justify-content-between">
@@ -259,6 +259,8 @@ input {
 								    <th>Mora</th>
 								    <th>Abono</th>
 								    <th>Balance</th>
+								    <th>Dias Atraso</th>
+								    <th>Estado Cuota</th>
 								 </tr>
 							 </thead>
 							<tbody>
@@ -271,6 +273,8 @@ input {
 									  <td th:text="${detalle.mora}"></td>
 									  <td></td>
 									  <td th:text="${detalle.saldo}"></td>
+									  <td th:text="${detalle.atraso}"></td>
+									  <td th:text="${detalle.estado}"></td>
 								 </tr>
 								  <tr>
 									 <td></td>
@@ -281,6 +285,8 @@ input {
 									 <td></td>
 									 <td></td>
 									 <td th:text="${totalNeto}"></td>
+									 <td></td>
+									 <td></td>
 								 </tr>
 							</tbody>
 						 </table>
@@ -289,50 +295,50 @@ input {
                 </div>
               </div>
             </div>
-            <div class="col-md-4">
+<!--             <div class="col-md-4"> -->
               
-              <div style="border-left-style:solid;height: 80%;">
+<!--               <div style="border-left-style:solid;height: 80%;"> -->
 
-                <ul class="list-group wd-md-100p users-list-group">
-                  <li class="list-group-item d-flex align-items-center" style="background-color: transparent;">
-                    <img alt="" class="mr-3 rounded-circle avatar-md" th:src="@{/img/cafe.png}">
-                    <div>
-                      <h6 class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Abono</h6>
-                      <span class="d-block tx-13 text-muted">Fecha</span>
-                    </div>
-                    <div class="float-left ml-auto">
-                      <h4>2,000.00</h4>
-                      27/12/2020
-                    </div>
-                  </li>
+<!--                 <ul class="list-group wd-md-100p users-list-group"> -->
+<!--                   <li class="list-group-item d-flex align-items-center" style="background-color: transparent;"> -->
+<!--                     <img alt="" class="mr-3 rounded-circle avatar-md" th:src="@{/img/cafe.png}"> -->
+<!--                     <div> -->
+<!--                       <h6 class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Abono</h6> -->
+<!--                       <span class="d-block tx-13 text-muted">Fecha</span> -->
+<!--                     </div> -->
+<!--                     <div class="float-left ml-auto"> -->
+<!--                       <h4>2,000.00</h4> -->
+<!--                       27/12/2020 -->
+<!--                     </div> -->
+<!--                   </li> -->
 
-                  <li class="list-group-item d-flex align-items-center" style="background-color: transparent;">
-                    <img alt="" class="mr-3 rounded-circle avatar-md" th:src="@{/img/cafe.png}">
-                    <div>
-                      <h6 class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Gastos legales</h6>
-                      <span class="d-block tx-13 text-muted">Fecha</span>
-                    </div>
-                    <div class="float-left ml-auto">
-                      <h4>2,000.00</h4>
-                      27/12/2020
-                    </div>
-                  </li>
+<!--                   <li class="list-group-item d-flex align-items-center" style="background-color: transparent;"> -->
+<!--                     <img alt="" class="mr-3 rounded-circle avatar-md" th:src="@{/img/cafe.png}"> -->
+<!--                     <div> -->
+<!--                       <h6 class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Gastos legales</h6> -->
+<!--                       <span class="d-block tx-13 text-muted">Fecha</span> -->
+<!--                     </div> -->
+<!--                     <div class="float-left ml-auto"> -->
+<!--                       <h4>2,000.00</h4> -->
+<!--                       27/12/2020 -->
+<!--                     </div> -->
+<!--                   </li> -->
 
-                  </ul>
+<!--                   </ul> -->
                     
-                  <div style="text-align: center;">
-                    <a href="#" class="btn  btn-info">
-                        Nueva transaccion
-                      </a>
+<!--                   <div style="text-align: center;"> -->
+<!--                     <a href="#" class="btn  btn-info"> -->
+<!--                         Nueva transaccion -->
+<!--                       </a> -->
                       
-                      <a href="#" class="btn btn-danger mr-2">
-                        Cancelar transaccion
-                      </a>
-                  </div>
+<!--                       <a href="#" class="btn btn-danger mr-2"> -->
+<!--                         Cancelar transaccion -->
+<!--                       </a> -->
+<!--                   </div> -->
 
 
-              </div>
-            </div>
+<!--               </div> -->
+<!--             </div> -->
           </div>
         </div>
       </div>

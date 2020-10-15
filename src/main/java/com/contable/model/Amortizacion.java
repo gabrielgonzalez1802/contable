@@ -9,6 +9,8 @@ public class Amortizacion {
 	private Double interes;
 	private Double saldo;
 	private Double mora;
+	private Integer atraso = 0;
+	private String estado;
 	
 	public String getFecha() {
 		return fecha;
@@ -52,10 +54,23 @@ public class Amortizacion {
 	public void setMora(Double mora) {
 		this.mora = mora;
 	}
+	public Integer getAtraso() {
+		return atraso;
+	}
+	public void setAtraso(Integer atraso) {
+		this.atraso = atraso;
+	}
+	public String getEstado() {
+		return estado;
+	}
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+	
 	@Override
 	public String toString() {
 		return "Amortizacion [numero=" + numero + ", fecha=" + fecha + ", cuota=" + cuota + ", capital=" + capital
-				+ ", interes=" + interes + ", saldo=" + saldo + ", mora=" + mora + "]";
+				+ ", interes=" + interes + ", saldo=" + saldo + ", mora=" + mora + ", atraso=" + atraso + ", estado="
+				+ estado + "]";
 	}
-	
 }

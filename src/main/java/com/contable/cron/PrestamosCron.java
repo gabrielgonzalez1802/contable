@@ -20,7 +20,7 @@ public class PrestamosCron {
 	@Autowired
 	private IPrestamosDetallesService servicePrestamosDetalles;
 
-	@Scheduled(cron = "0 51 08 * * *")
+	@Scheduled(cron = "0 32 22 * * *")
 	public void calculoVencimientoCuota() throws ParseException {
 		//Buscamos los detalles vencidos de los prestamos 
 		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorEstado(2);
@@ -39,13 +39,19 @@ public class PrestamosCron {
 					//Calculamos los dias vencidos despues de los dias de gracia
 					Double mora = ((prestamoDetalle.getCuota() * (prestamoDetalle.getInteres_mora()/100) ) / 30.00) * vencidos;
 					prestamoDetalle.setMora(formato2d(mora));
+					prestamoDetalle.setDias_atraso((int) vencidos);
+					if(vencidos < 90) {
+						prestamoDetalle.setEstado_cuota("Atraso");
+					}else {
+						prestamoDetalle.setEstado_cuota("Legal");
+					}
 					servicePrestamosDetalles.guardar(prestamoDetalle);
 				}
 			}
 		}
 	}
 	
-	@Scheduled(cron = "0 50 08 * * *")
+	@Scheduled(cron = "0 31 22 * * *")
 	public void diasVencidos() throws ParseException {
 		//Buscamos los detalles pendientes de los prestamos 
 		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorEstado(0);

@@ -30,11 +30,13 @@ import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
 import com.contable.model.Cuenta;
 import com.contable.model.Prestamo;
+import com.contable.model.PrestamoAdicional;
 import com.contable.model.PrestamoDetalle;
 import com.contable.model.Usuario;
 import com.contable.service.ICarpetasService;
 import com.contable.service.IClientesService;
 import com.contable.service.ICuentasService;
+import com.contable.service.IPrestamosAdicionalesService;
 import com.contable.service.IPrestamosDetallesService;
 import com.contable.service.IPrestamosService;
 
@@ -56,6 +58,9 @@ public class PrestamosController {
 	
 	@Autowired
 	private ICarpetasService serviceCarpetas;
+	
+	@Autowired
+	private IPrestamosAdicionalesService servicePrestamosAdicionales;
 	
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	
@@ -683,6 +688,7 @@ public class PrestamosController {
 			prestamoDetalle.setCuota(amortizacion.getCuota());
 			prestamoDetalle.setFecha(new Date());
 			prestamoDetalle.setFechaGenerada(formato2.parse(amortizacion.getFecha()));
+			prestamoDetalle.setEstado_cuota("Normal");
 //			prestamoDetalle.setFechaInteres(new Date());
 			prestamoDetalle.setGenerarInteres(amortizacion.getInteres()>0?1:0);
 			prestamoDetalle.setInteres(amortizacion.getInteres());
@@ -691,6 +697,21 @@ public class PrestamosController {
 //			prestamoDetalle.setMora(amortizacion.getm);
 			prestamoDetalle.setPago(0);
 			servicePrestamosDetalles.guardar(prestamoDetalle);
+		}
+		
+		if(prestamo.getCantidad_pagos() > 0) {
+			double adicionales = prestamo.getGastos_cierre() / prestamo.getCantidad_pagos();
+			List<PrestamoDetalle> prestamosDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
+			
+			for (int i = 0; i < prestamo.getCantidad_pagos(); i++) {
+				PrestamoAdicional prestamoAdicional = new PrestamoAdicional();
+				prestamoAdicional.setMonto(adicionales);
+				prestamoAdicional.setFecha(new Date());
+				prestamoAdicional.setMotivo("Gastos Cierre");
+				prestamoAdicional.setPrestamo(prestamo);
+				prestamoAdicional.setPrestamoDetalle(prestamosDetalles.get(i));
+				servicePrestamosAdicionales.guardar(prestamoAdicional);
+			}
 		}
 
 		model.addAttribute("detalles", detalles);
@@ -716,6 +737,8 @@ public class PrestamosController {
 			amortizacion.setSaldo(prestamoDetalle.getBalance());
 			amortizacion.setNumero(prestamoDetalle.getNumero());
 			amortizacion.setMora(prestamoDetalle.getMora());
+			amortizacion.setEstado(prestamoDetalle.getEstado_cuota());
+			amortizacion.setAtraso(prestamoDetalle.getDias_atraso());
 			detalles.add(amortizacion);
 		}
 		model.addAttribute("detalles", detalles);
