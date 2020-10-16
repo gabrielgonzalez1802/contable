@@ -42,6 +42,7 @@ function addEvents(){
 	$("#buscarPorDocumento").on("keyup", function(e) {
 		e.preventDefault();
 		e.stopImmediatePropagation();
+		ocultarDetalleAmortizacion();
 	     if(e.which == 13){
 	    	 var tipoDocumento = "";
 	    	 var carpeta = $("#carpetaId").val();
@@ -101,6 +102,7 @@ function addEvents(){
 	$("#buscarPorNombre").on("keyup", function(e) {
 		e.preventDefault();
 		e.stopImmediatePropagation();
+		ocultarDetalleAmortizacion();
 	     if(e.which == 13){
 	    	var item = $("#buscarPorNombre").val();
 	    	var carpeta = $("#carpetaId").val();
@@ -206,6 +208,7 @@ function addEvents(){
 								})
 								$("#contenido").load("/clientes/buscarCliente",function(data){
 									console.log("Lista de clientes");
+									ocultarDetalleAmortizacion();
 									addEvents();
 								});
 							}else{
@@ -219,6 +222,7 @@ function addEvents(){
 								e.preventDefault();
 								$("#contenido").load("/clientes/buscarCliente",function(data){
 									console.log("Lista de clientes");
+									ocultarDetalleAmortizacion();
 									addEvents();
 								});
 							}
@@ -248,6 +252,7 @@ function addEvents(){
 		e.stopImmediatePropagation();
 		$("#contenido").load("/clientes/buscarClienteCarpetaPrincipal",function(data){
 			console.log("Lista de clientes");
+			ocultarDetalleAmortizacion();
 			addEvents();
 		});
 	});	
@@ -258,6 +263,7 @@ function addEvents(){
 		e.stopImmediatePropagation();
 		$("#contenido").load("/clientes/buscarCliente",function(data){
 			console.log("Lista de clientes");
+			ocultarDetalleAmortizacion();
 			addEvents();
 		});
 	});
@@ -269,6 +275,7 @@ function addEvents(){
 		var idCliente = $("#idCliente").val();
 		$("#contenido").load("/clientes/agregar",function(data){
 			console.log("Formulario agregar clientes");
+			ocultarDetalleAmortizacion();
 			addEvents();
 		});
 	});
@@ -556,7 +563,7 @@ function addEvents(){
 		e.preventDefault();
 		e.stopImmediatePropagation();
 		//Ocultamos la seccion de detalle de amortizacion
-		ocultarDetalleAmortizacion();
+		mostrarDetalleAmortizacion();
 		$("#contenido").load("/prestamos/agregar",function(data){
 			console.log("Agregar Prestamo");
 			if($("#msg").val()=="NOCLIENTE"){
@@ -717,9 +724,11 @@ function addEvents(){
 	
 	$("#tipo_prestamo").change(function(e){
 		if($("#tipo_prestamo").val() == 2){
+			ocultarDetalleAmortizacion();
 			$("#divValorCuota").hide();
 			$("#divPlazos").hide();
 		}else{
+			mostrarDetalleAmortizacion();
 			$("#divValorCuota").show();
 			$("#divPlazos").show();
 		}
@@ -735,8 +744,9 @@ function addEvents(){
 		 var fecha = $("#fecha").val();
 		 var cantidad_pagos = $("#cantidad_pagos").val();
 		 var pagos = $("#pagos").val();
+		 var tipoPrestamo = $("#tipo_prestamo").val();
 		 
-		 if(parseFloat(cantidad_pagos) > parseFloat(pagos)){
+		 if(tipoPrestamo != 2 && (parseFloat(cantidad_pagos) > parseFloat(pagos))){
 			 Swal.fire({
 					title : 'Advertencia!',
 					text : 'La cantidad de pagos no puede ser mayor al plazo',
@@ -762,6 +772,7 @@ function addEvents(){
 						})
 					$("#contenido").load("/clientes/buscarCliente",function(data){
 						console.log("Lista de clientes");
+						ocultarDetalleAmortizacion();
 						addEvents();
 					});
 			});

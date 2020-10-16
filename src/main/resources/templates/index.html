@@ -58,6 +58,11 @@ input {
 	font-size: 15px;
 }
 
+.badge-warning {
+    color: #ffffff;
+    background-color: #fb750b;
+}
+
 ::-webkit-scrollbar {
     width: 15px;
     height: 15px
@@ -274,7 +279,10 @@ input {
 									  <td></td>
 									  <td th:text="${detalle.saldo}"></td>
 									  <td th:text="${detalle.atraso}"></td>
-									  <td th:text="${detalle.estado}"></td>
+									  <td th:if="${detalle.estado == 'Normal'}"><span class="badge badge-primary" th:text="${detalle.estado}"></span></td>
+									  <td th:if="${detalle.estado == 'Atraso'}"><span class="badge badge-warning" th:text="${detalle.estado}"></span></td>
+									  <td th:if="${detalle.estado == 'Legal'}"><span class="badge badge-Danger" th:text="${detalle.estado}"></span></td>
+									  <td th:if="${detalle.estado == null}"><span class="badge badge-Danger"></span></td>
 								 </tr>
 								  <tr>
 									 <td></td>

@@ -11,14 +11,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.contable.model.Prestamo;
 import com.contable.model.PrestamoDetalle;
+import com.contable.model.PrestamoInteresDetalle;
 import com.contable.service.IPrestamosDetallesService;
+import com.contable.service.IPrestamosInteresesDetallesService;
+import com.contable.service.IPrestamosService;
 
 @Component
 public class PrestamosCron {
 
 	@Autowired
 	private IPrestamosDetallesService servicePrestamosDetalles;
+	
+	@Autowired
+	private IPrestamosInteresesDetallesService servicePrestamosInteresesDetalles;
+	
+	@Autowired
+	private IPrestamosService servicePrestamos;
 
 	@Scheduled(cron = "0 56 12 * * *")
 	public void calculoVencimientoCuota() throws ParseException {
@@ -68,6 +78,35 @@ public class PrestamosCron {
 		}
 	}
 	
+	@Scheduled(cron = "0 13 09 * * *")
+	public void generarPrestamoInteresDetalle() throws ParseException {
+		List<Prestamo> prestamosInteres = servicePrestamos.buscarPorTipo("2");
+		for (Prestamo prestamo : prestamosInteres) {
+			//verificamos la fecha del prestamo
+			LocalDateTime fecha = convertToLocalDateTimeViaInstant(prestamo.getFecha());
+			LocalDateTime fechaAcct =  LocalDateTime.now();
+			double vencidos = diasVencidos(fecha, fechaAcct);	
+			//Se le suma 1 dia ya que se cuenta el mismo dia de vencimiento
+			vencidos+=1;
+			for (int i = 0; i < vencidos; i++) {
+				//Verificamos si tiene registro, sino tiene se genera
+				LocalDateTime fechaTemp =  convertToLocalDateTimeViaInstant(prestamo.getFecha()).plusDays(i);
+				Date tempDate = convertToDateViaInstant(fechaTemp);
+				List<PrestamoInteresDetalle> temp = servicePrestamosInteresesDetalles.
+						buscarPorPrestamoFecha(prestamo, tempDate);
+				if(temp.isEmpty()) {
+					Double interes = (prestamo.getBalance() * (prestamo.getTasa()/100.00) / 30);
+					PrestamoInteresDetalle prestamoInteresDetalle = new PrestamoInteresDetalle();
+					prestamoInteresDetalle.setCapital(prestamo.getBalance());
+					prestamoInteresDetalle.setFecha(tempDate);
+					prestamoInteresDetalle.setInteres(interes);
+					prestamoInteresDetalle.setPrestamo(prestamo);
+					servicePrestamosInteresesDetalles.guardar(prestamoInteresDetalle);
+				}
+			}
+		}
+	}
+	
 	public double diasVencidos(LocalDateTime fecha1, LocalDateTime fecha2) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
          String fecha1Temp = fecha1.getDayOfMonth()+"/"+fecha1.getMonthValue()+"/"+fecha1.getYear();
@@ -82,6 +121,12 @@ public class PrestamosCron {
 	    return dateToConvert.toInstant()
 	      .atZone(ZoneId.systemDefault())
 	      .toLocalDateTime();
+	}
+	
+	public Date convertToDateViaInstant(LocalDateTime dateToConvert) {
+	    return java.util.Date
+	      .from(dateToConvert.atZone(ZoneId.systemDefault())
+	      .toInstant());
 	}
 	
 	public double formato2d(double number) {

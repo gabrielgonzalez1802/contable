@@ -471,10 +471,11 @@ public class PrestamosController {
 		double total_interes = 0;
 		double total_neto = 0;
 		
+		
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat formato2 = new SimpleDateFormat("dd/MM/yyyy");
-		
+				
 		List<Amortizacion> detalles = new LinkedList<>();
 		
 
@@ -665,55 +666,62 @@ public class PrestamosController {
 			prestamo.setCuenta(null);
 		}
 		
+		double capital = total_capital >0 ? formato2d(total_capital) : total_capital;
+				
 		prestamo.setCliente(cliente);
 		prestamo.setCarpeta(carpeta);
 		prestamo.setUsuario(usuario);
 		prestamo.setBalance(total_neto >0 ? formato2d(total_neto) : total_neto);
 //		prestamo.setEstado(estado); //verificar
 		prestamo.setCodigo(codigo);
-		prestamo.setFecha(new Date());
+		prestamo.setFecha(formato.parse(prestamo.getFechaTemp()));
 		prestamo.setTotal_cuota(total_cuota >0 ? formato2d(total_cuota):total_cuota);
-		prestamo.setTotal_capital(total_capital >0 ? formato2d(total_capital) : total_capital);
+		prestamo.setTotal_capital(!prestamo.getTipo().equals("2")?capital:prestamo.getMonto());
 		prestamo.setTotal_interes(total_interes >0 ? formato2d(total_interes) : total_interes);
 		prestamo.setTotal_neto(total_neto >0 ? formato2d(total_neto) : total_neto);
 		servicePrestamos.guardar(prestamo);
 		
 		//Guardamos los detalles de la amortizacion en el prestamo
-		for (Amortizacion amortizacion : detalles) {
-			PrestamoDetalle prestamoDetalle = new PrestamoDetalle();
-			prestamoDetalle.setPrestamo(prestamo);
-			prestamoDetalle.setBalance(amortizacion.getSaldo());
-			prestamoDetalle.setCapital(amortizacion.getCapital());
-			prestamoDetalle.setNumero(amortizacion.getNumero());
-			prestamoDetalle.setCuota(amortizacion.getCuota());
-			prestamoDetalle.setFecha(new Date());
-			prestamoDetalle.setFechaGenerada(formato2.parse(amortizacion.getFecha()));
-			prestamoDetalle.setEstado_cuota("Normal");
-//			prestamoDetalle.setFechaInteres(new Date());
-			prestamoDetalle.setGenerarInteres(amortizacion.getInteres()>0?1:0);
-			prestamoDetalle.setInteres(amortizacion.getInteres());
-			prestamoDetalle.setInteres_mora(prestamo.getMora());
-//			prestamoDetalle.setMonto(amortizacion.getCuota());
-//			prestamoDetalle.setMora(amortizacion.getm);
-			prestamoDetalle.setPago(0);
-			servicePrestamosDetalles.guardar(prestamoDetalle);
+		if(!prestamo.getTipo().equals("2")) {
+			for (Amortizacion amortizacion : detalles) {
+				PrestamoDetalle prestamoDetalle = new PrestamoDetalle();
+				prestamoDetalle.setPrestamo(prestamo);
+				prestamoDetalle.setBalance(amortizacion.getSaldo());
+				prestamoDetalle.setCapital(amortizacion.getCapital());
+				prestamoDetalle.setNumero(amortizacion.getNumero());
+				prestamoDetalle.setCuota(amortizacion.getCuota());
+				prestamoDetalle.setFecha(new Date());
+				prestamoDetalle.setFechaGenerada(formato2.parse(amortizacion.getFecha()));
+				prestamoDetalle.setEstado_cuota("Normal");
+//				prestamoDetalle.setFechaInteres(new Date());
+				prestamoDetalle.setGenerarInteres(amortizacion.getInteres()>0?1:0);
+				prestamoDetalle.setInteres(amortizacion.getInteres());
+				prestamoDetalle.setInteres_mora(prestamo.getMora());
+//				prestamoDetalle.setMonto(amortizacion.getCuota());
+//				prestamoDetalle.setMora(amortizacion.getm);
+				prestamoDetalle.setPago(0);
+				servicePrestamosDetalles.guardar(prestamoDetalle);
+			}
+			
+			if(prestamo.getCantidad_pagos() > 0) {
+				double adicionales = prestamo.getGastos_cierre() / prestamo.getCantidad_pagos();
+				List<PrestamoDetalle> prestamosDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
+				
+				for (int i = 0; i < prestamo.getCantidad_pagos(); i++) {
+					PrestamoAdicional prestamoAdicional = new PrestamoAdicional();
+					prestamoAdicional.setMonto(adicionales);
+					prestamoAdicional.setFecha(new Date());
+					prestamoAdicional.setMotivo("Gastos Cierre");
+					prestamoAdicional.setPrestamo(prestamo);
+					prestamoAdicional.setPrestamoDetalle(prestamosDetalles.get(i));
+					servicePrestamosAdicionales.guardar(prestamoAdicional);
+				}
+			}
+		}else {
+			//Interes
+			
 		}
 		
-		if(prestamo.getCantidad_pagos() > 0) {
-			double adicionales = prestamo.getGastos_cierre() / prestamo.getCantidad_pagos();
-			List<PrestamoDetalle> prestamosDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
-			
-			for (int i = 0; i < prestamo.getCantidad_pagos(); i++) {
-				PrestamoAdicional prestamoAdicional = new PrestamoAdicional();
-				prestamoAdicional.setMonto(adicionales);
-				prestamoAdicional.setFecha(new Date());
-				prestamoAdicional.setMotivo("Gastos Cierre");
-				prestamoAdicional.setPrestamo(prestamo);
-				prestamoAdicional.setPrestamoDetalle(prestamosDetalles.get(i));
-				servicePrestamosAdicionales.guardar(prestamoAdicional);
-			}
-		}
-
 		model.addAttribute("detalles", detalles);
 		model.addAttribute("totalCuota", total_cuota >0 ? formato2d(total_cuota):total_cuota);
 		model.addAttribute("totalCapital", total_capital >0 ? formato2d(total_capital) : total_capital);
