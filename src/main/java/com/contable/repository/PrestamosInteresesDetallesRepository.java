@@ -11,4 +11,6 @@ import com.contable.model.PrestamoInteresDetalle;
 public interface PrestamosInteresesDetallesRepository extends JpaRepository<PrestamoInteresDetalle, Integer> {
 	List<PrestamoInteresDetalle> findByPrestamo(Prestamo prestamo);
 	List<PrestamoInteresDetalle> findByPrestamoAndFecha(Prestamo prestamo, Date fecha);
+	List<PrestamoInteresDetalle> findByEstadoPagoAndEstado(Integer estadoPago, Integer estado);
+	List<PrestamoInteresDetalle> findByEstado(Integer estado);
 }

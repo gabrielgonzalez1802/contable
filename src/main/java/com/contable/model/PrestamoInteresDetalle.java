@@ -20,16 +20,35 @@ public class PrestamoInteresDetalle {
 	private Integer id;
 	
 	private Date fecha;
+	
+	@Column(name = "fecha_vencimiento")
+	private Date vencimiento;
+	
 	private Double capital = 0.0;
 	
 	@Column(name = "interes_generado")
 	private Double interes = 0.0;
 	
+	@Column(name = "mora_generada")
+	private Double mora = 0.0;
+	
+	@Column(name = "monto_pagado")
+	private Double pagado = 0.0;
+	
+	private Double balance = 0.0;
+	
 	private Integer estado = 0;
+	
+	@Column(name = "pagado")
+	private Integer estadoPago = 0;
+	
+	private Double tasa = 0.0;
 	
 	@OneToOne
 	@JoinColumn(name = "id_prestamo")
 	private Prestamo prestamo;
+	
+	private Integer dias_atraso = 0;
 
 	public Integer getId() {
 		return id;
@@ -79,9 +98,67 @@ public class PrestamoInteresDetalle {
 		this.prestamo = prestamo;
 	}
 
+	public Date getVencimiento() {
+		return vencimiento;
+	}
+
+	public void setVencimiento(Date vencimiento) {
+		this.vencimiento = vencimiento;
+	}
+
+	public Double getMora() {
+		return mora;
+	}
+
+	public void setMora(Double mora) {
+		this.mora = mora;
+	}
+
+	public Double getPagado() {
+		return pagado;
+	}
+
+	public void setPagado(Double pagado) {
+		this.pagado = pagado;
+	}
+
+	public Double getBalance() {
+		return balance;
+	}
+
+	public void setBalance(Double balance) {
+		this.balance = balance;
+	}
+
+	public Integer getEstadoPago() {
+		return estadoPago;
+	}
+
+	public void setEstadoPago(Integer estadoPago) {
+		this.estadoPago = estadoPago;
+	}
+
+	public Double getTasa() {
+		return tasa;
+	}
+
+	public void setTasa(Double tasa) {
+		this.tasa = tasa;
+	}
+
+	public Integer getDias_atraso() {
+		return dias_atraso;
+	}
+
+	public void setDias_atraso(Integer dias_atraso) {
+		this.dias_atraso = dias_atraso;
+	}
+
 	@Override
 	public String toString() {
-		return "PrestamoInteresDetalle [id=" + id + ", fecha=" + fecha + ", capital=" + capital + ", interes=" + interes
-				+ ", estado=" + estado + ", prestamo=" + prestamo + "]";
+		return "PrestamoInteresDetalle [id=" + id + ", fecha=" + fecha + ", vencimiento=" + vencimiento + ", capital="
+				+ capital + ", interes=" + interes + ", mora=" + mora + ", pagado=" + pagado + ", balance=" + balance
+				+ ", estado=" + estado + ", estadoPago=" + estadoPago + ", tasa=" + tasa + ", prestamo=" + prestamo
+				+ ", dias_atraso=" + dias_atraso + "]";
 	}
 }

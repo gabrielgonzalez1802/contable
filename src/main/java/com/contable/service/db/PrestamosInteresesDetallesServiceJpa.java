@@ -47,4 +47,14 @@ public class PrestamosInteresesDetallesServiceJpa implements IPrestamosIntereses
 		return repo.findByPrestamoAndFecha(prestamo, fecha);
 	}
 
+	@Override
+	public List<PrestamoInteresDetalle> buscarPorEstadoPagoYEstado(Integer estadoPago, Integer estado) {
+		return repo.findByEstadoPagoAndEstado(estadoPago, estado);
+	}
+
+	@Override
+	public List<PrestamoInteresDetalle> buscarPorEstado(Integer estado) {
+		return repo.findByEstado(estado);
+	}
+
 }

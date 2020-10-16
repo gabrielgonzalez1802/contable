@@ -29,6 +29,10 @@ public class PrestamosCron {
 	
 	@Autowired
 	private IPrestamosService servicePrestamos;
+	
+	private final Integer NORMAL = 0;
+	private final Integer PAGADO = 1;
+	private final Integer VENCIDO = 2;
 
 	@Scheduled(cron = "0 56 12 * * *")
 	public void calculoVencimientoCuota() throws ParseException {
@@ -106,6 +110,55 @@ public class PrestamosCron {
 			}
 		}
 	}
+	
+	@Scheduled(cron = "0 46 18 * * *")
+	public void calculosPrestamosInteres() throws ParseException {
+//		List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorEstadoPagoYEstado(NORMAL, VENCIDO);
+		List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorEstado(NORMAL);
+		LocalDateTime dateAcct =  LocalDateTime.now();
+		LocalDateTime fechaVenciminto = null;
+		for (PrestamoInteresDetalle prestamoInteresDetalle : prestamoInteresDetalles) {
+			if(prestamoInteresDetalle.getVencimiento() == null) {
+				//Calculamos la Fecha de vencimiento del interes
+				LocalDateTime fecha = convertToLocalDateTimeViaInstant(prestamoInteresDetalle.getFecha());
+				fechaVenciminto = fecha.plusDays(30 + prestamoInteresDetalle.getPrestamo().getDias_gracia());
+				Date vencimiento = convertToDateViaInstant(fechaVenciminto);	
+				prestamoInteresDetalle.setVencimiento(vencimiento);
+				servicePrestamosInteresesDetalles.guardar(prestamoInteresDetalle);
+			}else {
+				fechaVenciminto = convertToLocalDateTimeViaInstant(prestamoInteresDetalle.getVencimiento());
+			}
+			
+			//Verificamos si esta vencido
+			if(dateAcct.isAfter(fechaVenciminto) || dateAcct.isEqual(fechaVenciminto)) {
+				//valor_cuota x valor_interes_mora divido/30 x dias_vencidos
+				double vencidos = diasVencidos(fechaVenciminto, dateAcct);
+				//Se le suma 1 dia ya que se cuenta el mismo dia de vencimiento
+				vencidos+=1;
+				//Calculamos los dias vencidos despues de los dias de gracia
+				
+				prestamoInteresDetalle.setDias_atraso((int) vencidos);
+				
+				if(vencidos>0) {
+					Double mora = ((prestamoInteresDetalle.getInteres() * (prestamoInteresDetalle.getPrestamo().getMora()/100) ) / 30.00) * vencidos;
+					prestamoInteresDetalle.setMora(mora);
+					prestamoInteresDetalle.setEstado(VENCIDO);
+				}
+
+				servicePrestamosInteresesDetalles.guardar(prestamoInteresDetalle);
+			}
+		}
+	}
+	
+//	@Scheduled(cron = "0 28 18 * * *")
+//	public void diasVencidosPrestamosInteres() throws ParseException {
+//		LocalDateTime dateAcct =  LocalDateTime.now();
+//		LocalDateTime fechaVenciminto = null;
+//		List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorEstado(NORMAL);
+//		for (PrestamoInteresDetalle prestamoInteresDetalle : prestamoInteresDetalles) {
+//			
+//		}
+//	}
 	
 	public double diasVencidos(LocalDateTime fecha1, LocalDateTime fecha2) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");

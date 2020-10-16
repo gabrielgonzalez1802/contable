@@ -32,12 +32,14 @@ import com.contable.model.Cuenta;
 import com.contable.model.Prestamo;
 import com.contable.model.PrestamoAdicional;
 import com.contable.model.PrestamoDetalle;
+import com.contable.model.PrestamoInteresDetalle;
 import com.contable.model.Usuario;
 import com.contable.service.ICarpetasService;
 import com.contable.service.IClientesService;
 import com.contable.service.ICuentasService;
 import com.contable.service.IPrestamosAdicionalesService;
 import com.contable.service.IPrestamosDetallesService;
+import com.contable.service.IPrestamosInteresesDetallesService;
 import com.contable.service.IPrestamosService;
 
 @Controller
@@ -61,6 +63,9 @@ public class PrestamosController {
 	
 	@Autowired
 	private IPrestamosAdicionalesService servicePrestamosAdicionales;
+	
+	@Autowired
+	private IPrestamosInteresesDetallesService servicePrestamosInteresesDetalles;
 	
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	
@@ -734,21 +739,52 @@ public class PrestamosController {
 	public String detalleAmortizacion(Model model, @PathVariable(name = "id") Integer id) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
 		Prestamo prestamo = servicePrestamos.buscarPorId(id);
-		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
 		List<Amortizacion> detalles = new LinkedList<>();
-		for (PrestamoDetalle prestamoDetalle : prestamoDetalles) {
-			Amortizacion amortizacion = new Amortizacion();
-			amortizacion.setFecha(sdf.format(prestamoDetalle.getFechaGenerada()));
-			amortizacion.setCuota(prestamoDetalle.getCuota());
-			amortizacion.setCapital(prestamoDetalle.getCapital());
-			amortizacion.setInteres(prestamoDetalle.getInteres());
-			amortizacion.setSaldo(prestamoDetalle.getBalance());
-			amortizacion.setNumero(prestamoDetalle.getNumero());
-			amortizacion.setMora(prestamoDetalle.getMora());
-			amortizacion.setEstado(prestamoDetalle.getEstado_cuota());
-			amortizacion.setAtraso(prestamoDetalle.getDias_atraso());
-			detalles.add(amortizacion);
+		List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorPrestamo(prestamo);
+		
+		if(prestamo.getTipo().equals("2")) {
+			//Interes
+			int count = 0;
+			if(!prestamoInteresDetalles.isEmpty()) {
+				for (PrestamoInteresDetalle prestamoInteresDetalle : prestamoInteresDetalles) {
+					count++;
+					String estado = "Normal";
+					if(prestamoInteresDetalle.getEstado()==2) {
+						estado = "Atraso";
+					}
+					Amortizacion amortizacion = new Amortizacion();
+					amortizacion.setNumero(count);
+					amortizacion.setFecha(sdf.format(prestamoInteresDetalle.getVencimiento()));
+					amortizacion.setCuota(prestamoInteresDetalle.getMora());
+					amortizacion.setCapital(prestamoInteresDetalle.getCapital());
+					amortizacion.setInteres(prestamoInteresDetalle.getInteres());
+//					amortizacion.setSaldo(prestamoDetalle.getBalance());
+//					amortizacion.setNumero(prestamoDetalle.getNumero());
+					amortizacion.setMora(prestamoInteresDetalle.getMora());
+					amortizacion.setEstado(estado);
+					amortizacion.setAtraso(prestamoInteresDetalle.getDias_atraso());
+					detalles.add(amortizacion);
+				}
+			}
+		}else {
+			//Cuotas
+			List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
+			detalles = new LinkedList<>();
+			for (PrestamoDetalle prestamoDetalle : prestamoDetalles) {
+				Amortizacion amortizacion = new Amortizacion();
+				amortizacion.setFecha(sdf.format(prestamoDetalle.getFechaGenerada()));
+				amortizacion.setCuota(prestamoDetalle.getCuota());
+				amortizacion.setCapital(prestamoDetalle.getCapital());
+				amortizacion.setInteres(prestamoDetalle.getInteres());
+				amortizacion.setSaldo(prestamoDetalle.getBalance());
+				amortizacion.setNumero(prestamoDetalle.getNumero());
+				amortizacion.setMora(prestamoDetalle.getMora());
+				amortizacion.setEstado(prestamoDetalle.getEstado_cuota());
+				amortizacion.setAtraso(prestamoDetalle.getDias_atraso());
+				detalles.add(amortizacion);
+			}
 		}
+		
 		model.addAttribute("detalles", detalles);
 		model.addAttribute("totalCuota", prestamo.getTotal_cuota());
 		model.addAttribute("totalCapital", prestamo.getTotal_capital());
