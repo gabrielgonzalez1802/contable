@@ -34,7 +34,7 @@ public class PrestamosCron {
 	private final Integer PAGADO = 1;
 	private final Integer VENCIDO = 2;
 
-	@Scheduled(cron = "0 56 12 * * *")
+	@Scheduled(cron = "0 58 20 * * *")
 	public void calculoVencimientoCuota() throws ParseException {
 		//Buscamos los detalles vencidos de los prestamos 
 		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorEstado(2);
@@ -47,9 +47,9 @@ public class PrestamosCron {
 				LocalDateTime fechaAcct =  LocalDateTime.now();
 				if(fechaAcct.isAfter(fechaMax) || fechaAcct.isEqual(fechaMax)) {
 					//valor_cuota x valor_interes_mora divido/30 x dias_vencidos
-					double vencidos = diasVencidos(fechaMax, fechaAcct);
+					double vencidos = diasVencidos(fecha, fechaAcct);
 					//Se le suma 1 dia ya que se cuenta el mismo dia de vencimiento
-					vencidos+=1;
+//					vencidos+=1;
 					//Calculamos los dias vencidos despues de los dias de gracia
 					Double mora = ((prestamoDetalle.getCuota() * (prestamoDetalle.getInteres_mora()/100) ) / 30.00) * vencidos;
 					prestamoDetalle.setMora(formato2d(mora));
@@ -65,7 +65,7 @@ public class PrestamosCron {
 		}
 	}
 	
-	@Scheduled(cron = "0 55 12 * * *")
+	@Scheduled(cron = "0 14 20 * * *")
 	public void diasVencidos() throws ParseException {
 		//Buscamos los detalles pendientes de los prestamos 
 		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorEstado(0);
