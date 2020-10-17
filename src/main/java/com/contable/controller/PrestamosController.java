@@ -754,7 +754,7 @@ public class PrestamosController {
 					}
 					Amortizacion amortizacion = new Amortizacion();
 					amortizacion.setNumero(count);
-					amortizacion.setFecha(sdf.format(prestamoInteresDetalle.getVencimiento()));
+					amortizacion.setFecha(sdf.format(prestamoInteresDetalle.getFecha_cuota()));
 					amortizacion.setCuota(prestamoInteresDetalle.getMora());
 					amortizacion.setCapital(prestamoInteresDetalle.getCapital());
 					amortizacion.setInteres(prestamoInteresDetalle.getInteres());

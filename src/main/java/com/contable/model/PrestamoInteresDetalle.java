@@ -21,6 +21,8 @@ public class PrestamoInteresDetalle {
 	
 	private Date fecha;
 	
+	private Date fecha_cuota;
+	
 	@Column(name = "fecha_vencimiento")
 	private Date vencimiento;
 	
@@ -154,11 +156,25 @@ public class PrestamoInteresDetalle {
 		this.dias_atraso = dias_atraso;
 	}
 
+	public Date getFecha_cuota() {
+		return fecha_cuota;
+	}
+
+	public void setFecha_cuota(Date fecha_cuota) {
+		this.fecha_cuota = fecha_cuota;
+	}
+
 	@Override
 	public String toString() {
-		return "PrestamoInteresDetalle [id=" + id + ", fecha=" + fecha + ", vencimiento=" + vencimiento + ", capital="
-				+ capital + ", interes=" + interes + ", mora=" + mora + ", pagado=" + pagado + ", balance=" + balance
-				+ ", estado=" + estado + ", estadoPago=" + estadoPago + ", tasa=" + tasa + ", prestamo=" + prestamo
-				+ ", dias_atraso=" + dias_atraso + "]";
+		return "PrestamoInteresDetalle [id=" + id + ", fecha=" + fecha + ", fecha_cuota=" + fecha_cuota
+				+ ", vencimiento=" + vencimiento + ", capital=" + capital + ", interes=" + interes + ", mora=" + mora
+				+ ", pagado=" + pagado + ", balance=" + balance + ", estado=" + estado + ", estadoPago=" + estadoPago
+				+ ", tasa=" + tasa + ", prestamo=" + prestamo + ", dias_atraso=" + dias_atraso + ", getId()=" + getId()
+				+ ", getFecha()=" + getFecha() + ", getCapital()=" + getCapital() + ", getInteres()=" + getInteres()
+				+ ", getEstado()=" + getEstado() + ", getPrestamo()=" + getPrestamo() + ", getVencimiento()="
+				+ getVencimiento() + ", getMora()=" + getMora() + ", getPagado()=" + getPagado() + ", getBalance()="
+				+ getBalance() + ", getEstadoPago()=" + getEstadoPago() + ", getTasa()=" + getTasa()
+				+ ", getDias_atraso()=" + getDias_atraso() + ", getFecha_cuota()=" + getFecha_cuota() + ", getClass()="
+				+ getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
 	}
 }
