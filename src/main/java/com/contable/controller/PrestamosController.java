@@ -86,6 +86,11 @@ public class PrestamosController {
 		prestamo.setCuenta(new Cuenta());
 		Carpeta carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
 		List<Cuenta> cuentas = serviceCuentas.buscarPorCarpeta(carpeta);
+		if(!cuentas.isEmpty()) {
+			for (Cuenta cuenta : cuentas) {
+				cuenta.setBanco(cuenta.getBanco()+" - "+formato2d(cuenta.getMonto()));
+			}
+		}
 		if((Integer)session.getAttribute("cliente")==0) {
 			model.addAttribute("prestamo",  new Prestamo());
 			model.addAttribute("cliente", cliente);
@@ -474,13 +479,14 @@ public class PrestamosController {
 	}
 	
 	@PostMapping("/guardar")
-	public String guardar(HttpSession session, Model model, @ModelAttribute("prestamo") Prestamo prestamo) throws ParseException {
+	@ResponseBody
+	public ResponseEntity<String> guardar(HttpSession session, Model model, @ModelAttribute("prestamo") Prestamo prestamo) throws ParseException {
 		int fre = 0;
 		double total_cuota = 0;
 		double total_capital = 0;
 		double total_interes = 0;
 		double total_neto = 0;
-		
+		Integer response = 0;
 		
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
@@ -672,6 +678,10 @@ public class PrestamosController {
 		if(prestamo.getIdCuentaTemp()!=null) {
 			Cuenta cuenta = serviceCuentas.buscarPorId(prestamo.getIdCuentaTemp());
 			prestamo.setCuenta(cuenta);
+			if((cuenta.getMonto()-prestamo.getMonto()) < 0) {
+				response = 0;
+				return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+			}
 		}else {
 			prestamo.setCuenta(null);
 		}
@@ -748,12 +758,16 @@ public class PrestamosController {
 			}
 		}
 		
-		model.addAttribute("detalles", detalles);
-		model.addAttribute("totalCuota", total_cuota >0 ? formato2d(total_cuota):total_cuota);
-		model.addAttribute("totalCapital", total_capital >0 ? formato2d(total_capital) : total_capital);
-		model.addAttribute("totalInteres", total_interes >0 ? formato2d(total_interes) : total_interes);
-		model.addAttribute("totalNeto", total_neto >0 ? formato2d(total_neto) : total_neto);
-		return "index :: #cuerpo_amortizacion";
+		if(prestamo.getId()!=null) {
+			if(prestamo.getCuenta()!=null) {
+				Cuenta cuenta = prestamo.getCuenta();
+				cuenta.setMonto(cuenta.getMonto()-prestamo.getMonto());
+				serviceCuentas.guardar(cuenta);
+			}
+			response = 1;
+		}
+		
+		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/detalleAmortizacion/{id}")

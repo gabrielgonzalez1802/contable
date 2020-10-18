@@ -762,19 +762,31 @@ function addEvents(){
 			 $.post("/prestamos/guardar", datos,
 				function(data){
 					console.log("Guardar Prestamo");
-					$("#cuerpo_amortizacion").replaceWith(data);
-					 Swal.fire({
-							title : 'Muy Bien!',
-							text : 'Se genero el prestamo',
-							position : 'top',
-							icon : 'success',
-							confirmButtonText : 'Cool'
-						})
-					$("#contenido").load("/clientes/buscarCliente",function(data){
-						console.log("Lista de clientes");
-						ocultarDetalleAmortizacion();
-						addEvents();
-					});
+					if(data == "0"){
+						 Swal.fire({
+								title : 'Advertencia!',
+								text : 'No se genero el prestamo, El monto en el banco no puede ser menor al prestamo',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+					}else{
+						if(data == "0"){
+							 Swal.fire({
+									title : 'Muy Bien!',
+									text : 'Se genero el prestamo',
+									position : 'top',
+									icon : 'success',
+									confirmButtonText : 'Cool'
+								})
+								$("#contenido").load("/clientes/buscarCliente",function(data){
+									console.log("Lista de clientes");
+									ocultarDetalleAmortizacion();
+									addEvents();
+								});	
+						}
+					}
+
 			});
 			return false;
 			}

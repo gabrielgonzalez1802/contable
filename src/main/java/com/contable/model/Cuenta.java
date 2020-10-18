@@ -22,6 +22,8 @@ public class Cuenta {
 	@OneToOne
 	@JoinColumn(name = "id_carpeta")
 	private Carpeta carpeta;
+	
+	private Double monto = 0.0;
 
 	public Integer getId() {
 		return id;
@@ -55,11 +57,17 @@ public class Cuenta {
 		this.carpeta = carpeta;
 	}
 
+	public Double getMonto() {
+		return monto;
+	}
+
+	public void setMonto(Double monto) {
+		this.monto = monto;
+	}
+
 	@Override
 	public String toString() {
-		return "Cuenta [id=" + id + ", banco=" + banco + ", numero=" + numero + ", carpeta=" + carpeta + ", getId()="
-				+ getId() + ", getBanco()=" + getBanco() + ", getNumero()=" + getNumero() + ", getCarpeta()="
-				+ getCarpeta() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
-				+ super.toString() + "]";
+		return "Cuenta [id=" + id + ", banco=" + banco + ", numero=" + numero + ", carpeta=" + carpeta + ", monto="
+				+ monto + "]";
 	}
 }
