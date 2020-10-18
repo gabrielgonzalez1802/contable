@@ -3,6 +3,7 @@ package com.contable.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,6 +15,9 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.contable.model.Amortizacion;
 import com.contable.model.Carpeta;
@@ -719,12 +724,28 @@ public class PrestamosController {
 					prestamoAdicional.setMotivo("Gastos Cierre");
 					prestamoAdicional.setPrestamo(prestamo);
 					prestamoAdicional.setPrestamoDetalle(prestamosDetalles.get(i));
+					prestamoAdicional.setUsuario(usuario);
 					servicePrestamosAdicionales.guardar(prestamoAdicional);
 				}
 			}
 		}else {
 			//Interes
-			
+			if(prestamo.getCantidad_pagos() > 0) {
+				double adicionales = prestamo.getGastos_cierre() / prestamo.getCantidad_pagos();
+				for (int i = 0; i < prestamo.getCantidad_pagos(); i++) {
+					LocalDateTime fechaAcct =  LocalDateTime.now();
+					LocalDateTime fechaVenciminto = fechaAcct.plusMonths(1);
+					Date vencimiento = convertToDateViaInstant(fechaVenciminto);
+					PrestamoAdicional prestamoAdicional = new PrestamoAdicional();
+					prestamoAdicional.setMonto(adicionales);
+					prestamoAdicional.setFecha(prestamo.getFecha());
+					prestamoAdicional.setMotivo("Gastos Cierre");
+					prestamoAdicional.setPrestamo(prestamo);
+					prestamoAdicional.setUsuario(usuario);
+					prestamoAdicional.setFecha_vencimiento(vencimiento);
+					servicePrestamosAdicionales.guardar(prestamoAdicional);
+				}
+			}
 		}
 		
 		model.addAttribute("detalles", detalles);
@@ -843,6 +864,55 @@ public class PrestamosController {
 		Date newDate = calendar.getTime();
 		String fecha = sdf.format(newDate);
 		return fecha;
+	}
+	
+	@GetMapping("/cuotasNoPagadas/{id}")
+	public String cargarCuotasNoPagadas(Model model, @PathVariable("id") Integer id) {
+		Prestamo prestamo = servicePrestamos.buscarPorId(id);
+		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo).stream().filter(p -> p.getPago() == 0).collect(Collectors.toList());
+		if(!prestamoDetalles.isEmpty()) {
+//			for (PrestamoDetalle prestamoDetalle : prestamoDetalles) {
+//				prestamoDetalle.
+//			}
+		}
+		model.addAttribute("prestamoDetalles", prestamoDetalles);
+		return "clientes/infoCliente :: #selectCuotaCargo";
+	}
+	
+	@PostMapping("/guardarCargoCuota/")
+	@ResponseBody
+	public ResponseEntity<String> guardarCargoCuota(Model model, HttpSession session,
+			Integer idPrestamo, String motivo, 
+			Double monto,  Integer cuota) {
+		Prestamo prestamo = servicePrestamos.buscarPorId(idPrestamo);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		PrestamoAdicional prestamoAdicional = new PrestamoAdicional();
+		PrestamoDetalle prestamoDetalle;
+		Integer response = 0;
+		if(cuota>0) {
+			prestamoDetalle = servicePrestamosDetalles.buscarPorId(cuota);
+			prestamoAdicional.setPrestamoDetalle(prestamoDetalle);
+		}
+		LocalDateTime fechaAcct =  LocalDateTime.now();
+		LocalDateTime fechaVenciminto = fechaAcct.plusMonths(1);
+		Date vencimiento = convertToDateViaInstant(fechaVenciminto);
+		prestamoAdicional.setFecha(new Date());
+		prestamoAdicional.setFecha_vencimiento(vencimiento);
+		prestamoAdicional.setMonto(monto);
+		prestamoAdicional.setMotivo(motivo);
+		prestamoAdicional.setPrestamo(prestamo);
+		prestamoAdicional.setUsuario(usuario);
+		servicePrestamosAdicionales.guardar(prestamoAdicional);
+		if(prestamoAdicional.getId()!=null) {
+			response = 1;
+		}
+		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+	}
+
+	public Date convertToDateViaInstant(LocalDateTime dateToConvert) {
+	    return java.util.Date
+	      .from(dateToConvert.atZone(ZoneId.systemDefault())
+	      .toInstant());
 	}
 
 	@InitBinder

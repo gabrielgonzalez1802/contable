@@ -87,7 +87,7 @@ function addEvents(){
 	});
 	
 	$("#btnDetalleCliente").click(function(e){
-		$('#modalInfoCliente').modal('show')
+		$('#modalInfoCliente').modal('show');
 	});
 	
 	$("input[name='tipoDocumentoBusqueda']").change(function(){
@@ -780,6 +780,60 @@ function addEvents(){
 			}
 		 }
 	));
+	
+	$("#aplicarCargos").click(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var idPrestamo = $("#prestamoAcct").val();
+		 $.get("/prestamos/cuotasNoPagadas/"+idPrestamo,
+			function(data){
+			console.log("Cargar cuotas no pagadas");
+			$("#selectCuotaCargo").replaceWith(data);
+			$("#modalAplicarCargosCuotas").modal('show');
+		});
+	});
+	
+	$("#agregarCargoCuota").click(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var idPrestamo = $("#prestamoAcct").val();
+		var motivo = $("#motivoCargoCuota").val();
+		var monto = $("#montoCargoCuota").val();
+		var cuota = $("#selectCuotaCargo").val();
+		if(!cuota){
+			cuota = 0;
+		}
+		
+		 $.post("/prestamos/guardarCargoCuota/",{
+			 "idPrestamo":idPrestamo,
+			 "motivo":motivo,
+			 "monto":monto,
+			 "cuota":cuota
+		 },function(data){
+				console.log("Guardado de cargo");
+				if(data == "1"){
+					 Swal.fire({
+							title : 'Muy bien!',
+							text : 'Se ha guardado el cargo',
+							position : 'top',
+							icon : 'success',
+							confirmButtonText : 'Cool'
+						})
+				}else{
+					 Swal.fire({
+							title : 'Alerta!',
+							text : 'No se guardo el cargo',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+				}
+				$("#motivoCargoCuota").val("");
+				$("#montoCargoCuota").val("");
+				$("#modalAplicarCargosCuotas").modal('hide');
+				addEvents();
+		 });
+	});
 
 /****************************************************** Fin Prestamos *******************************************************/
 }
@@ -911,6 +965,8 @@ function cargarDetallePrestamo(id){
 			console.log("Detalle Amortizacion");
 			mostrarDetalleAmortizacion();
 			$("#cuerpo_amortizacion").replaceWith(data);
+			$("#prestamoAcct").val(id);
+			$("#botonesAccionPrestamo").show();
 			addEvents();
 	 	});
 }
