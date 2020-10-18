@@ -31,10 +31,10 @@ public class PrestamosCron {
 	private IPrestamosService servicePrestamos;
 	
 	private final Integer NORMAL = 0;
-	private final Integer PAGADO = 1;
+//	private final Integer PAGADO = 1;
 	private final Integer VENCIDO = 2;
 
-	@Scheduled(cron = "0 16 21 * * *")
+	@Scheduled(cron = "0 52 09 * * *")
 	public void calculoVencimientoCuota() throws ParseException {
 		//Buscamos los detalles vencidos de los prestamos 
 		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorEstado(2);
@@ -63,7 +63,7 @@ public class PrestamosCron {
 		}
 	}
 	
-	@Scheduled(cron = "0 15 21 * * *")
+	@Scheduled(cron = "0 51 09 * * *")
 	public void diasVencidos() throws ParseException {
 		//Buscamos los detalles pendientes de los prestamos 
 		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorEstado(0);
@@ -80,7 +80,7 @@ public class PrestamosCron {
 		}
 	}
 	
-	@Scheduled(cron = "0 07 23 * * *")
+	@Scheduled(cron = "0 50 09 * * *")
 	public void generarPrestamoInteresDetalle() throws ParseException {
 		List<Prestamo> prestamosInteres = servicePrestamos.buscarPorTipo("2");
 		for (Prestamo prestamo : prestamosInteres) {
@@ -126,18 +126,18 @@ public class PrestamosCron {
 		}
 	}
 	
-	@Scheduled(cron = "0 08 23 * * *")
+	@Scheduled(cron = "0 55 09 * * *")
 	public void calculosPrestamosInteres() throws ParseException {
 //		List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorEstadoPagoYEstado(NORMAL, VENCIDO);
 		List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorEstado(NORMAL);
 		LocalDateTime dateAcct =  LocalDateTime.now();
 		LocalDateTime fechaVenciminto = null;
-		Date fechaCuota = null;
+//		Date fechaCuota = null;
 		Date fecha = null;
 		for (PrestamoInteresDetalle prestamoInteresDetalle : prestamoInteresDetalles) {
 
 			fechaVenciminto = convertToLocalDateTimeViaInstant(prestamoInteresDetalle.getVencimiento());
-			fechaCuota = prestamoInteresDetalle.getFecha_cuota();
+//			fechaCuota = prestamoInteresDetalle.getFecha_cuota();
 			fecha = prestamoInteresDetalle.getFecha();
 			
 			//Verificamos si esta vencido
