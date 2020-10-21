@@ -37,4 +37,9 @@ public class PrestamosAdicionalesServiceJpa implements IPrestamosAdicionalesServ
 		repo.delete(prestamoAdicional);
 	}
 
+	@Override
+	public List<PrestamoAdicional> buscarPorPrestamoEstado(Prestamo prestamo, Integer estado) {
+		return repo.findByPrestamoAndEstado(prestamo, estado);
+	}
+
 }

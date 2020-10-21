@@ -38,6 +38,9 @@ public class PrestamoDetalle {
 	private Double balance;
 	private Integer pago;
 	private Double mora = 0.0;
+	private Double mora_pagada = 0.0;
+	private Double interes_pagado = 0.0;
+	private Double capital_pagado = 0.0;
 	
 	@Column(name = "fecha_generada")
 	private Date fechaGenerada;
@@ -200,13 +203,38 @@ public class PrestamoDetalle {
 		this.estado_cuota = estado_cuota;
 	}
 
+	public Double getMora_pagada() {
+		return mora_pagada;
+	}
+
+	public void setMora_pagada(Double mora_pagada) {
+		this.mora_pagada = mora_pagada;
+	}
+
+	public Double getInteres_pagado() {
+		return interes_pagado;
+	}
+
+	public void setInteres_pagado(Double interes_pagado) {
+		this.interes_pagado = interes_pagado;
+	}
+
+	public Double getCapital_pagado() {
+		return capital_pagado;
+	}
+
+	public void setCapital_pagado(Double capital_pagado) {
+		this.capital_pagado = capital_pagado;
+	}
+
 	@Override
 	public String toString() {
 		return "PrestamoDetalle [id=" + id + ", prestamo=" + prestamo + ", fecha=" + fecha + ", monto=" + monto
 				+ ", capital=" + capital + ", interes=" + interes + ", numero=" + numero + ", cuota=" + cuota
-				+ ", balance=" + balance + ", pago=" + pago + ", mora=" + mora + ", fechaGenerada=" + fechaGenerada
-				+ ", fechaInteres=" + fechaInteres + ", generarInteres=" + generarInteres + ", interes_mora="
-				+ interes_mora + ", estado=" + estado + ", dias_atraso=" + dias_atraso + ", estado_cuota="
-				+ estado_cuota + "]";
+				+ ", balance=" + balance + ", pago=" + pago + ", mora=" + mora + ", mora_pagada=" + mora_pagada
+				+ ", interes_pagado=" + interes_pagado + ", capital_pagado=" + capital_pagado + ", fechaGenerada="
+				+ fechaGenerada + ", fechaInteres=" + fechaInteres + ", generarInteres=" + generarInteres
+				+ ", interes_mora=" + interes_mora + ", estado=" + estado + ", dias_atraso=" + dias_atraso
+				+ ", estado_cuota=" + estado_cuota + "]";
 	}
 }

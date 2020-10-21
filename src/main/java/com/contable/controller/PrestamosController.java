@@ -680,7 +680,7 @@ public class PrestamosController {
 			prestamo.setCuenta(cuenta);
 			if((cuenta.getMonto()-prestamo.getMonto()) < 0) {
 				response = 0;
-				return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+//				return new ResponseEntity<>(response.toString(), HttpStatus.OK);
 			}
 		}else {
 			prestamo.setCuenta(null);
@@ -770,16 +770,22 @@ public class PrestamosController {
 		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
 	}
 	
-	@GetMapping("/detalleAmortizacion/{id}")
-	public String detalleAmortizacion(Model model, @PathVariable(name = "id") Integer id) {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
+	@GetMapping("/totalesGenerales/{id}")
+	public String totalesGeneralesPrestamo(Model model, @PathVariable(name = "id") Integer id) {
 		Prestamo prestamo = servicePrestamos.buscarPorId(id);
-		List<Amortizacion> detalles = new LinkedList<>();
-		List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorPrestamo(prestamo);
-		
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
+		double totalCargo = 0;
+		double totalCuota = 0;
+		double totalBalance = 0;
+		double totalMora = 0;
 		if(prestamo.getTipo().equals("2")) {
-			//Interes
+			//interes
+			List<Amortizacion> detalles = new LinkedList<>();
+			List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorPrestamo(prestamo);
+			List<PrestamoAdicional> cargosAdicionales = servicePrestamosAdicionales.buscarPorPrestamo(prestamo);
 			int count = 0;
+			double mora = 0;
+			double interes = 0;
 			if(!prestamoInteresDetalles.isEmpty()) {
 				for (PrestamoInteresDetalle prestamoInteresDetalle : prestamoInteresDetalles) {
 					count++;
@@ -790,7 +796,7 @@ public class PrestamosController {
 					Amortizacion amortizacion = new Amortizacion();
 					amortizacion.setNumero(count);
 					amortizacion.setFecha(sdf.format(prestamoInteresDetalle.getFecha_cuota()));
-					amortizacion.setCuota(prestamoInteresDetalle.getMora());
+//					amortizacion.setCuota();
 					amortizacion.setCapital(prestamoInteresDetalle.getCapital());
 					amortizacion.setInteres(prestamoInteresDetalle.getInteres());
 //					amortizacion.setSaldo(prestamoDetalle.getBalance());
@@ -799,7 +805,88 @@ public class PrestamosController {
 					amortizacion.setEstado(estado);
 					amortizacion.setAtraso(prestamoInteresDetalle.getDias_atraso());
 					detalles.add(amortizacion);
+					mora+=prestamoInteresDetalle.getMora();
+					interes+=prestamoInteresDetalle.getInteres();
+					
+					if(prestamoInteresDetalle.getDias_atraso()>0) {
+						totalCuota+=prestamoInteresDetalle.getInteres()+prestamoInteresDetalle.getCapital();
+					}
+					
+					totalMora+=prestamoInteresDetalle.getMora();
 				}
+				if(!cargosAdicionales.isEmpty()) {
+					for (PrestamoAdicional prestamoAdicional : cargosAdicionales) {
+						totalCargo+=prestamoAdicional.getMonto();
+					}
+				}
+				detalles.get(0).setCuota(formato2d(mora+interes));
+			}
+		
+		}else {
+			//cuotas vencidas
+			List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorPrestamoEstado(prestamo, 2);
+			if(!prestamoDetalles.isEmpty()) {
+				for (PrestamoDetalle prestamoDetalle : prestamoDetalles) {
+//					totalCuota += prestamoDetalle.getBalance();
+					totalCuota += prestamoDetalle.getInteres()+prestamoDetalle.getCapital();
+					//Verificamos los cargos
+					List<PrestamoAdicional> cargosAdicionales = servicePrestamosAdicionales.buscarPorPrestamoDetalle(prestamoDetalle);
+					if(!cargosAdicionales.isEmpty()) {
+						for (PrestamoAdicional cargoAdicional : cargosAdicionales) {
+							totalCargo+=cargoAdicional.getMonto();
+						}
+					}
+					totalMora+=prestamoDetalle.getMora();
+				}
+			}
+		}
+		//Calculo del balance: suma de balances vencidos + cargos + las moras.
+		totalBalance = totalCuota+totalCargo+totalMora;
+		model.addAttribute("totalBalance", formato2d(totalBalance));
+		model.addAttribute("totalCuota", formato2d(totalCuota));
+		model.addAttribute("totalCargo", formato2d(totalCargo));
+		model.addAttribute("totalMora", formato2d(totalMora));
+		return "clientes/infoCliente :: #totalesGeneralesPrestamo";
+	}
+	
+	@GetMapping("/detalleAmortizacion/{id}")
+	public String detalleAmortizacion(Model model, @PathVariable(name = "id") Integer id) {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
+		Prestamo prestamo = servicePrestamos.buscarPorId(id);
+		List<Amortizacion> detalles = new LinkedList<>();
+		List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorPrestamo(prestamo);
+		
+		if(prestamo.getTipo().equals("2")) {
+			//Interes
+			int count = 0;
+			double mora = 0;
+			double interes = 0;
+			double capital = 0;
+			if(!prestamoInteresDetalles.isEmpty()) {
+				for (PrestamoInteresDetalle prestamoInteresDetalle : prestamoInteresDetalles) {
+					count++;
+					String estado = "Normal";
+					if(prestamoInteresDetalle.getEstado()==2) {
+						estado = "Atraso";
+					}
+					Amortizacion amortizacion = new Amortizacion();
+					amortizacion.setNumero(count);
+					amortizacion.setFecha(sdf.format(prestamoInteresDetalle.getFecha_cuota()));
+//					amortizacion.setCuota();
+					capital = prestamoInteresDetalle.getCapital();
+//					amortizacion.setCapital(prestamoInteresDetalle.getCapital());
+					amortizacion.setInteres(prestamoInteresDetalle.getInteres());
+//					amortizacion.setSaldo(prestamoDetalle.getBalance());
+//					amortizacion.setNumero(prestamoDetalle.getNumero());
+					amortizacion.setMora(prestamoInteresDetalle.getMora());
+					amortizacion.setEstado(estado);
+					amortizacion.setAtraso(prestamoInteresDetalle.getDias_atraso());
+					detalles.add(amortizacion);
+					mora+=prestamoInteresDetalle.getMora();
+					interes+=prestamoInteresDetalle.getInteres();
+				}
+				detalles.get(0).setCuota(formato2d(mora+interes));
+				detalles.get(0).setCapital(formato2d(capital));
 			}
 		}else {
 			//Cuotas
@@ -921,6 +1008,182 @@ public class PrestamosController {
 			response = 1;
 		}
 		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+	}
+	
+	@PostMapping("/guardarAbonoCuota/")
+	@ResponseBody
+	public ResponseEntity<String> guardarAbonoCuota(Model model, HttpSession session,
+			Integer idPrestamo, Double monto, Integer tipoCuota) {
+		Prestamo prestamo = servicePrestamos.buscarPorId(idPrestamo);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		List<Amortizacion> detalles = new LinkedList<>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
+		double disponible = monto;
+		double totalMora = 0;
+		
+		if(tipoCuota == 1) {
+			if(prestamo.getTipo().equals("2")) {
+				List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorPrestamo(prestamo);
+
+				//Pagamos los cargos
+				List<PrestamoAdicional> prestamosAdicionales = servicePrestamosAdicionales.buscarPorPrestamoEstado(prestamo, 0);
+				if(!prestamosAdicionales.isEmpty()) {
+					for (PrestamoAdicional prestamoAdicional : prestamosAdicionales) {
+						if(prestamoAdicional.getFecha_vencimiento()!=null && 
+								prestamoAdicional.getFecha_vencimiento().before(new Date()) ||
+								prestamoAdicional.getFecha_vencimiento().equals(new Date())) {
+							if(disponible+prestamoAdicional.getMonto_pagado()>=prestamoAdicional.getMonto()) {
+								prestamoAdicional.setMonto_pagado(prestamoAdicional.getMonto());
+								prestamoAdicional.setEstado(1);
+								disponible-=prestamoAdicional.getMonto_pagado();
+							}else {
+								prestamoAdicional.setMonto_pagado(prestamoAdicional.getMonto_pagado()+disponible);
+								disponible=0;
+							}
+							servicePrestamosAdicionales.guardar(prestamoAdicional);
+						}
+					}
+				}
+				
+				//Pagamos las moras
+				if(disponible>0) {
+					List<PrestamoInteresDetalle> detallesTemp = prestamoInteresDetalles.stream().filter(d -> d.getMora() > 0).collect(Collectors.toList());
+					if(!detallesTemp.isEmpty()) {
+						for (PrestamoInteresDetalle prestamoInteresDetalle : detallesTemp) {
+							if(disponible+prestamoInteresDetalle.getMora_pagada()>=prestamoInteresDetalle.getMora()) {
+								prestamoInteresDetalle.setMora_pagada(prestamoInteresDetalle.getMora());
+								disponible-=prestamoInteresDetalle.getMora_pagada();
+							}else {
+								prestamoInteresDetalle.setMora_pagada(prestamoInteresDetalle.getMora_pagada()+disponible);
+								disponible=0;
+							}
+							servicePrestamosInteresesDetalles.guardar(prestamoInteresDetalle);
+						}
+					}
+				}
+				
+				//Pagamos el interes
+				if(disponible>0) {
+					List<PrestamoInteresDetalle> detallesTemp = prestamoInteresDetalles.stream().filter(d -> d.getEstado() == 2).collect(Collectors.toList());
+					if(!detallesTemp.isEmpty()) {
+						for (PrestamoInteresDetalle prestamoInteresDetalleTemp : detallesTemp) {
+							if(disponible+prestamoInteresDetalleTemp.getInteres_pagado()>=prestamoInteresDetalleTemp.getInteres()) {
+								prestamoInteresDetalleTemp.setInteres_pagado(prestamoInteresDetalleTemp.getInteres());
+								disponible-=prestamoInteresDetalleTemp.getInteres_pagado();
+							}else {
+								prestamoInteresDetalleTemp.setInteres_pagado(prestamoInteresDetalleTemp.getInteres_pagado()+disponible);
+								disponible=0;
+							}
+							servicePrestamosInteresesDetalles.guardar(prestamoInteresDetalleTemp);
+						}
+					}
+				}
+				
+				//Pagamos el capital
+				if(disponible>0) {
+					int count = 0;
+					double capitalPagado = 0;
+					for (PrestamoInteresDetalle prestamoInteresDetalle : prestamoInteresDetalles) {
+						count++;
+						if(count == 1) {
+							if(disponible+prestamoInteresDetalle.getCapital_pagado()>=prestamoInteresDetalle.getCapital()) {
+								prestamoInteresDetalle.setCapital_pagado(prestamoInteresDetalle.getCapital());
+								disponible-=prestamoInteresDetalle.getCapital_pagado();
+							}else {
+								prestamoInteresDetalle.setCapital_pagado(prestamoInteresDetalle.getCapital_pagado()+disponible);
+								disponible=0;
+							}
+							capitalPagado = prestamoInteresDetalle.getCapital_pagado();
+							servicePrestamosInteresesDetalles.guardar(prestamoInteresDetalle);
+							continue;
+						}
+		
+						prestamoInteresDetalle.setCapital_pagado(capitalPagado);
+						servicePrestamosInteresesDetalles.guardar(prestamoInteresDetalle);
+					}
+				}
+				
+			}else {
+				//Cuotas
+				List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorPrestamoEstado(prestamo, 2);
+
+				//Pagamos los cargos
+				List<PrestamoAdicional> prestamosAdicionales = servicePrestamosAdicionales.buscarPorPrestamoEstado(prestamo, 0);
+				if(!prestamosAdicionales.isEmpty()) {
+					for (PrestamoAdicional prestamoAdicional : prestamosAdicionales) {
+						if (disponible + prestamoAdicional.getMonto_pagado() >= prestamoAdicional.getMonto()) {
+							prestamoAdicional.setMonto_pagado(prestamoAdicional.getMonto());
+							prestamoAdicional.setEstado(1);
+							disponible -= prestamoAdicional.getMonto_pagado();
+						} else {
+							prestamoAdicional.setMonto_pagado(prestamoAdicional.getMonto_pagado() + disponible);
+							disponible = 0;
+						}
+						servicePrestamosAdicionales.guardar(prestamoAdicional);
+					}
+				}
+				
+				//Pagamos las moras
+				if(disponible>0) {
+					List<PrestamoDetalle> prestamoDetallesMora = prestamoDetalles.stream().filter(d -> d.getMora() > 0).collect(Collectors.toList());
+					if(!prestamoDetalles.isEmpty()) {
+						for (PrestamoDetalle prestamoDetalle : prestamoDetallesMora) {
+							if(disponible+prestamoDetalle.getMora_pagada()>=prestamoDetalle.getMora()) {
+								prestamoDetalle.setMora_pagada(prestamoDetalle.getMora());
+								disponible-=prestamoDetalle.getMora_pagada();
+							}else {
+								prestamoDetalle.setMora_pagada(prestamoDetalle.getMora_pagada()+disponible);
+								disponible=0;
+							}
+							servicePrestamosDetalles.guardar(prestamoDetalle);
+						}
+					}
+				}
+				
+				//Pagamos el interes
+				if(disponible>0) {
+					List<PrestamoDetalle> detallesTemp = prestamoDetalles.stream().filter(d -> d.getEstado() == 2).collect(Collectors.toList());
+					if(!detallesTemp.isEmpty()) {
+						for (PrestamoDetalle prestamoDetalleTemp : detallesTemp) {
+							if(disponible+prestamoDetalleTemp.getInteres_pagado()>=prestamoDetalleTemp.getInteres()) {
+								prestamoDetalleTemp.setInteres_pagado(prestamoDetalleTemp.getInteres());
+								disponible-=prestamoDetalleTemp.getInteres_pagado();
+							}else {
+								prestamoDetalleTemp.setInteres_pagado(prestamoDetalleTemp.getInteres_pagado()+disponible);
+								disponible=0;
+							}
+							servicePrestamosDetalles.guardar(prestamoDetalleTemp);
+						}
+					}
+				}
+				
+				//Pagamos el capital
+				if(disponible>0) {
+					int count = 0;
+					double capitalPagado = 0;
+					for (PrestamoDetalle prestamoDetalle : prestamoDetalles) {
+						count++;
+						if(count == 1) {
+							if(disponible+prestamoDetalle.getCapital_pagado()>=prestamoDetalle.getCapital()) {
+								prestamoDetalle.setCapital_pagado(prestamoDetalle.getCapital());
+								disponible-=prestamoDetalle.getCapital_pagado();
+							}else {
+								prestamoDetalle.setCapital_pagado(prestamoDetalle.getCapital_pagado()+disponible);
+								disponible=0;
+							}
+							capitalPagado = prestamoDetalle.getCapital_pagado();
+							servicePrestamosDetalles.guardar(prestamoDetalle);
+							continue;
+						}
+		
+						prestamoDetalle.setCapital_pagado(capitalPagado);
+						servicePrestamosDetalles.guardar(prestamoDetalle);
+					}
+				}
+			}
+		}
+		
+		return new ResponseEntity<>("1", HttpStatus.OK);
 	}
 
 	public Date convertToDateViaInstant(LocalDateTime dateToConvert) {

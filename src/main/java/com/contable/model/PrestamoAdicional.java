@@ -32,6 +32,10 @@ public class PrestamoAdicional {
 	
 	private Double monto = 0.0;
 	
+	private Integer estado = 0;
+	
+	private Double monto_pagado = 0.0;
+	
 	@OneToOne
 	@JoinColumn(name = "id_usuario")
 	private Usuario usuario;
@@ -84,10 +88,22 @@ public class PrestamoAdicional {
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
 	}
+	public Integer getEstado() {
+		return estado;
+	}
+	public void setEstado(Integer estado) {
+		this.estado = estado;
+	}
+	public Double getMonto_pagado() {
+		return monto_pagado;
+	}
+	public void setMonto_pagado(Double monto_pagado) {
+		this.monto_pagado = monto_pagado;
+	}
 	@Override
 	public String toString() {
 		return "PrestamoAdicional [id=" + id + ", prestamo=" + prestamo + ", prestamoDetalle=" + prestamoDetalle
 				+ ", motivo=" + motivo + ", fecha=" + fecha + ", fecha_vencimiento=" + fecha_vencimiento + ", monto="
-				+ monto + ", usuario=" + usuario + "]";
+				+ monto + ", estado=" + estado + ", monto_pagado=" + monto_pagado + ", usuario=" + usuario + "]";
 	}
 }

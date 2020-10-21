@@ -9,6 +9,7 @@ import com.contable.model.PrestamoDetalle;
 public interface IPrestamosAdicionalesService {
 	List<PrestamoAdicional> buscarPorPrestamo(Prestamo prestamo);
 	List<PrestamoAdicional> buscarPorPrestamoDetalle(PrestamoDetalle prestamoDetalle);
+	List<PrestamoAdicional> buscarPorPrestamoEstado(Prestamo prestamo, Integer estado);
 	void guardar(PrestamoAdicional prestamoAdicional);
 	void eliminar(PrestamoAdicional prestamoAdicional);
 }
