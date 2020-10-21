@@ -80,7 +80,7 @@ public class PrestamosCron {
 		}
 	}
 	
-	@Scheduled(cron = "0 05 14 * * *")
+	@Scheduled(cron = "0 07 16 * * *")
 	public void generarPrestamoInteresDetalle() throws ParseException {
 		List<Prestamo> prestamosInteres = servicePrestamos.buscarPorTipo("2");
 		for (Prestamo prestamo : prestamosInteres) {
@@ -126,7 +126,7 @@ public class PrestamosCron {
 		}
 	}
 	
-	@Scheduled(cron = "0 04 14 * * *")
+	@Scheduled(cron = "0 06 16 * * *")
 	public void calculosPrestamosInteres() throws ParseException {
 //		List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorEstadoPagoYEstado(NORMAL, VENCIDO);
 		List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorEstado(NORMAL);
