@@ -81,6 +81,7 @@
 			                        <div class="float-right my-auto ml-auto">
 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true" th:onclick="'cargarDetallePrestamo(\'' + ${prestamo.id} + '\');'"></i>
 			                        </div>
+			                        <input type="hidden" id="tipoPrestamoAcct" th:value="${prestamo.tipo}">
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">
 			                            <div class="">
@@ -353,9 +354,17 @@
 				<div class="col-md-4">
 					<select id="selectCuotaCargo" class="form-control">
 						<option th:each="prestamoDetalle : ${prestamoDetalles}"
-								th:value="${prestamoDetalle.id}" th:text="'Cuota ' + ${prestamoDetalle.numero} + ' - ' + ${#dates.format(prestamoDetalle.fechaGenerada, 'dd/MM/yyyy')}">
+								th:value="${prestamoDetalle.id}" th:text="'Cuota ' + ${prestamoDetalle.numero} + ' - ' + ${#dates.format(prestamoDetalle.fecha, 'dd/MM/yyyy')}">
 						</option>
 					</select>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-12">
+					 <div class="form-group">
+					    <input type="text" class="form-control" placeholder="Nota" id="notaCargoCuota">
+					  </div>
 				</div>
 			</div>
 
@@ -382,7 +391,7 @@
 				Lista de Clientes 
 			</div>
 			<div class="card-tools">
-				<a href="#" id="addCustomer" class="btn btn-primary btn-border btn-round btn-sm">
+				<a href="#" id="agregarCliente" class="btn btn-primary btn-border btn-round btn-sm">
 					<span class="btn-label">
 						<i class="fas fa-plus"></i>
 					</span>

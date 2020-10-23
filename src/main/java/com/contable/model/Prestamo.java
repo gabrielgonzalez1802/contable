@@ -59,6 +59,8 @@ public class Prestamo {
 	@Column(name = "ultimo_pago")
 	private Date ultimoPago;
 	
+	private Date fecha_cron;
+	
 	@OneToOne
 	@JoinColumn(name = "id_usuario")
 	private Usuario usuario;
@@ -81,6 +83,9 @@ public class Prestamo {
 	private Double gastos_cierre = 0.0;
 	
 	private Integer cantidad_pagos = 0;
+	
+	@Column(name = "capital_pagado")
+	private Double capitalPagado = 0.0;
 
 	public Integer getId() {
 		return id;
@@ -337,6 +342,22 @@ public class Prestamo {
 		this.cantidad_pagos = cantidad_pagos;
 	}
 
+	public Date getFecha_cron() {
+		return fecha_cron;
+	}
+
+	public void setFecha_cron(Date fecha_cron) {
+		this.fecha_cron = fecha_cron;
+	}
+
+	public Double getCapitalPagado() {
+		return capitalPagado;
+	}
+
+	public void setCapitalPagado(Double capitalPagado) {
+		this.capitalPagado = capitalPagado;
+	}
+
 	@Override
 	public String toString() {
 		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", idClienteTemp=" + idClienteTemp
@@ -344,10 +365,10 @@ public class Prestamo {
 				+ ", tipo=" + tipo + ", tipo_prestamo=" + tipo_prestamo + ", dias_gracia=" + dias_gracia + ", monto="
 				+ monto + ", pagos=" + pagos + ", tasa=" + tasa + ", codigo=" + codigo + ", forma_pago=" + forma_pago
 				+ ", valor_cuota=" + valor_cuota + ", mora=" + mora + ", observacion=" + observacion + ", balance="
-				+ balance + ", valor_interes=" + valor_interes + ", ultimoPago=" + ultimoPago + ", usuario=" + usuario
-				+ ", estado=" + estado + ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta
-				+ ", total_cuota=" + total_cuota + ", total_capital=" + total_capital + ", total_interes="
-				+ total_interes + ", total_neto=" + total_neto + ", gastos_cierre=" + gastos_cierre
-				+ ", cantidad_pagos=" + cantidad_pagos + "]";
+				+ balance + ", valor_interes=" + valor_interes + ", ultimoPago=" + ultimoPago + ", fecha_cron="
+				+ fecha_cron + ", usuario=" + usuario + ", estado=" + estado + ", moneda=" + moneda + ", carpeta="
+				+ carpeta + ", cuenta=" + cuenta + ", total_cuota=" + total_cuota + ", total_capital=" + total_capital
+				+ ", total_interes=" + total_interes + ", total_neto=" + total_neto + ", gastos_cierre=" + gastos_cierre
+				+ ", cantidad_pagos=" + cantidad_pagos + ", capitalPagado=" + capitalPagado + "]";
 	}
 }

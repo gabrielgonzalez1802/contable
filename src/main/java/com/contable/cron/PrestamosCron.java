@@ -34,7 +34,7 @@ public class PrestamosCron {
 //	private final Integer PAGADO = 1;
 	private final Integer VENCIDO = 2;
 
-	@Scheduled(cron = "0 19 16 * * *")
+	@Scheduled(cron = "0 29 12 * * *")
 	public void calculoVencimientoCuota() throws ParseException {
 		//Buscamos los detalles vencidos de los prestamos 
 		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorEstado(2);
@@ -63,7 +63,7 @@ public class PrestamosCron {
 		}
 	}
 	
-	@Scheduled(cron = "0 18 16 * * *")
+	@Scheduled(cron = "0 28 12 * * *")
 	public void diasVencidos() throws ParseException {
 		//Buscamos los detalles pendientes de los prestamos 
 		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorEstado(0);
@@ -80,76 +80,71 @@ public class PrestamosCron {
 		}
 	}
 	
-	@Scheduled(cron = "0 21 16 * * *")
+	@Scheduled(cron = "0 30 12 * * *")
 	public void generarPrestamoInteresDetalle() throws ParseException {
-		List<Prestamo> prestamosInteres = servicePrestamos.buscarPorTipo("2");
-		for (Prestamo prestamo : prestamosInteres) {
-			//verificamos la fecha del prestamo
-			LocalDateTime fecha = convertToLocalDateTimeViaInstant(prestamo.getFecha());
-			LocalDateTime fechaAcct =  LocalDateTime.now();
-			LocalDateTime fechaVenciminto;
-			double vencidos = diasVencidos(fecha, fechaAcct);	
-			//Se le suma 1 dia ya que se cuenta el mismo dia de vencimiento
-			vencidos+=1;
-			for (int i = 0; i < vencidos; i++) {
-				//Verificamos si tiene registro, sino tiene se genera
-				LocalDateTime fechaTemp =  convertToLocalDateTimeViaInstant(prestamo.getFecha()).plusDays(i);
-				Date tempDate = convertToDateViaInstant(fechaTemp);
-				List<PrestamoInteresDetalle> temp = servicePrestamosInteresesDetalles.
-						buscarPorPrestamoFecha(prestamo, tempDate);
-				if(temp.isEmpty()) {
-					Double interes = (prestamo.getBalance() * (prestamo.getTasa()/100.00) / 30);
-					PrestamoInteresDetalle prestamoInteresDetalle = new PrestamoInteresDetalle();
-					prestamoInteresDetalle.setCapital(prestamo.getBalance());
-					prestamoInteresDetalle.setFecha(tempDate);
-					prestamoInteresDetalle.setInteres(interes);
-					prestamoInteresDetalle.setPrestamo(prestamo);
-										
-					if(prestamoInteresDetalle.getVencimiento() == null) {
-						//Calculamos la Fecha de vencimiento del interes
-						fecha = convertToLocalDateTimeViaInstant(prestamoInteresDetalle.getFecha());
-						fechaVenciminto = fecha.plusMonths(1);
-						fechaVenciminto = fechaVenciminto.plusDays(prestamoInteresDetalle.getPrestamo().getDias_gracia());	
-						Date fechaCuota = convertToDateViaInstant(fecha.plusMonths(1));
-						fechaVenciminto = fecha.plusMonths(1).plusDays(prestamoInteresDetalle.getPrestamo().getDias_gracia());	
+		List<Prestamo> prestamos = servicePrestamos.buscarPorEstado(NORMAL);
+		LocalDateTime dateAcct =  LocalDateTime.now();
+		LocalDateTime fechaCron = null;
+
+		for (Prestamo prestamo : prestamos) {
+			int count = 0;
+			prestamo = servicePrestamos.buscarPorId(prestamo.getId());
+			if(prestamo.getEstado()!=1) {
+				fechaCron = convertToLocalDateTimeViaInstant(prestamo.getFecha_cron());
+				while (fechaCron.isBefore(dateAcct)) {
+					fechaCron = convertToLocalDateTimeViaInstant(prestamo.getFecha_cron());
+					if (fechaCron.isBefore(dateAcct)) {
+						double monto = prestamo.getBalance() * (prestamo.getTasa() / 100);
+						PrestamoInteresDetalle prestamoInteresDetalle = new PrestamoInteresDetalle();
+						count++;
+						
+						prestamoInteresDetalle.setInteres(monto);
+						prestamoInteresDetalle.setTasa(prestamo.getMora());
+
+						LocalDateTime fechaCuotaTemp = convertToLocalDateTimeViaInstant(prestamo.getFecha_cron())
+								.plusMonths(1).minusDays(prestamo.getDias_gracia());
+						Date fechaCuota = convertToDateViaInstant(fechaCuotaTemp);
+
 						prestamoInteresDetalle.setFecha_cuota(fechaCuota);
-						Date vencimiento = convertToDateViaInstant(fechaVenciminto);	
-						prestamoInteresDetalle.setVencimiento(vencimiento);
+						prestamoInteresDetalle.setFecha(new Date());
+
+						LocalDateTime fechaVencimientoTemp = convertToLocalDateTimeViaInstant(prestamo.getFecha_cron())
+								.plusMonths(1);
+						Date fechaVencimiento = convertToDateViaInstant(fechaVencimientoTemp);
+
+						prestamoInteresDetalle.setVencimiento(fechaVencimiento);
+						prestamoInteresDetalle.setPrestamo(prestamo);
+						prestamoInteresDetalle.setNumero_cuota(count);
+						
 						servicePrestamosInteresesDetalles.guardar(prestamoInteresDetalle);
-					}else {
-						fechaVenciminto = convertToLocalDateTimeViaInstant(prestamoInteresDetalle.getVencimiento());
+
+						// Actualizamos la fecha cron del prestamo a 1 mes
+						LocalDateTime fechaCronPrestamoTemp = convertToLocalDateTimeViaInstant(prestamo.getFecha_cron())
+								.plusMonths(1);
+						Date fechaCronPrestamo = convertToDateViaInstant(fechaCronPrestamoTemp);
+						prestamo.setFecha_cron(fechaCronPrestamo);
+						servicePrestamos.guardar(prestamo);
 					}
-					
-					servicePrestamosInteresesDetalles.guardar(prestamoInteresDetalle);
 				}
 			}
 		}
-	}
-	
-	@Scheduled(cron = "0 20 16 * * *")
-	public void calculosPrestamosInteres() throws ParseException {
-//		List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorEstadoPagoYEstado(NORMAL, VENCIDO);
+		
 		List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorEstado(NORMAL);
-		LocalDateTime dateAcct =  LocalDateTime.now();
-		LocalDateTime fechaVenciminto = null;
-//		Date fechaCuota = null;
-		Date fecha = null;
+		
 		for (PrestamoInteresDetalle prestamoInteresDetalle : prestamoInteresDetalles) {
-
-			fechaVenciminto = convertToLocalDateTimeViaInstant(prestamoInteresDetalle.getVencimiento());
-//			fechaCuota = prestamoInteresDetalle.getFecha_cuota();
-			fecha = prestamoInteresDetalle.getFecha();
+			fechaCron = convertToLocalDateTimeViaInstant(prestamoInteresDetalle.getPrestamo().getFecha_cron());
+			Date fecha = prestamoInteresDetalle.getFecha_cuota();
 			
-			//Verificamos si esta vencido
-			if(dateAcct.isAfter(fechaVenciminto) || dateAcct.isEqual(fechaVenciminto)) {
-				//valor_cuota x valor_interes_mora divido/30 x dias_vencidos
-//				LocalDateTime fechaCuotaTenp = convertToLocalDateTimeViaInstant(fechaCuota);
-//				double vencidos = diasVencidos(fechaCuotaTenp, dateAcct);
-				
+			if(fechaCron.isAfter(dateAcct)) {
+
 				LocalDateTime fechaTemp = convertToLocalDateTimeViaInstant(fecha);
 				double vencidos = diasVencidos(fechaTemp, dateAcct);
 				
 				//Calculamos los dias vencidos despues de los dias de gracia
+				if(vencidos<0.0) {
+					vencidos = 0;
+				}
+				
 				prestamoInteresDetalle.setDias_atraso((int) vencidos);
 				
 				if(vencidos>0) {

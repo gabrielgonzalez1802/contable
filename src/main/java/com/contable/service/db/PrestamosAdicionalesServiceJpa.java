@@ -1,6 +1,7 @@
 package com.contable.service.db;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,19 @@ public class PrestamosAdicionalesServiceJpa implements IPrestamosAdicionalesServ
 	@Override
 	public List<PrestamoAdicional> buscarPorPrestamoEstado(Prestamo prestamo, Integer estado) {
 		return repo.findByPrestamoAndEstado(prestamo, estado);
+	}
+	@Override
+	public List<PrestamoAdicional> buscarPorPrestamoNumeroCuota(Prestamo prestamo, Integer numeroCuota) {
+		return repo.findByPrestamoAndNumeroCuota(prestamo, numeroCuota);
+	}
+
+	@Override
+	public PrestamoAdicional buscarPorId(Integer id) {
+		Optional<PrestamoAdicional> optional = repo.findById(id);
+		if(optional.isPresent()) {
+			return optional.get();
+		}
+		return null;
 	}
 
 }

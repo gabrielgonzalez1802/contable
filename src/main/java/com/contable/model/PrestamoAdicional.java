@@ -2,6 +2,7 @@ package com.contable.model;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,7 +35,12 @@ public class PrestamoAdicional {
 	
 	private Integer estado = 0;
 	
+	@Column(name = "numero_cuota")
+	private Integer numeroCuota = 0;
+	
 	private Double monto_pagado = 0.0;
+	
+	private String nota;
 	
 	@OneToOne
 	@JoinColumn(name = "id_usuario")
@@ -100,10 +106,23 @@ public class PrestamoAdicional {
 	public void setMonto_pagado(Double monto_pagado) {
 		this.monto_pagado = monto_pagado;
 	}
+	public Integer getNumeroCuota() {
+		return numeroCuota;
+	}
+	public void setNumeroCuota(Integer numeroCuota) {
+		this.numeroCuota = numeroCuota;
+	}
+	public String getNota() {
+		return nota;
+	}
+	public void setNota(String nota) {
+		this.nota = nota;
+	}
 	@Override
 	public String toString() {
 		return "PrestamoAdicional [id=" + id + ", prestamo=" + prestamo + ", prestamoDetalle=" + prestamoDetalle
 				+ ", motivo=" + motivo + ", fecha=" + fecha + ", fecha_vencimiento=" + fecha_vencimiento + ", monto="
-				+ monto + ", estado=" + estado + ", monto_pagado=" + monto_pagado + ", usuario=" + usuario + "]";
+				+ monto + ", estado=" + estado + ", numeroCuota=" + numeroCuota + ", monto_pagado=" + monto_pagado
+				+ ", nota=" + nota + ", usuario=" + usuario + "]";
 	}
 }

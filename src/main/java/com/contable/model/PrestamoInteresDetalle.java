@@ -40,6 +40,7 @@ public class PrestamoInteresDetalle {
 	private Double balance = 0.0;
 	
 	private Integer estado = 0;
+	private Integer numero_cuota;
 	
 	@Column(name = "pagado")
 	private Integer estadoPago = 0;
@@ -55,7 +56,7 @@ public class PrestamoInteresDetalle {
 	private Double mora_pagada = 0.0;
 	private Double interes_pagado = 0.0;
 	private Double capital_pagado = 0.0;
-
+	
 	public Integer getId() {
 		return id;
 	}
@@ -192,12 +193,21 @@ public class PrestamoInteresDetalle {
 		this.capital_pagado = capital_pagado;
 	}
 
+	public Integer getNumero_cuota() {
+		return numero_cuota;
+	}
+
+	public void setNumero_cuota(Integer numero_cuota) {
+		this.numero_cuota = numero_cuota;
+	}
+
 	@Override
 	public String toString() {
 		return "PrestamoInteresDetalle [id=" + id + ", fecha=" + fecha + ", fecha_cuota=" + fecha_cuota
 				+ ", vencimiento=" + vencimiento + ", capital=" + capital + ", interes=" + interes + ", mora=" + mora
-				+ ", pagado=" + pagado + ", balance=" + balance + ", estado=" + estado + ", estadoPago=" + estadoPago
-				+ ", tasa=" + tasa + ", prestamo=" + prestamo + ", dias_atraso=" + dias_atraso + ", mora_pagada="
-				+ mora_pagada + ", interes_pagado=" + interes_pagado + ", capital_pagado=" + capital_pagado + "]";
+				+ ", pagado=" + pagado + ", balance=" + balance + ", estado=" + estado + ", numero_cuota="
+				+ numero_cuota + ", estadoPago=" + estadoPago + ", tasa=" + tasa + ", prestamo=" + prestamo
+				+ ", dias_atraso=" + dias_atraso + ", mora_pagada=" + mora_pagada + ", interes_pagado=" + interes_pagado
+				+ ", capital_pagado=" + capital_pagado + "]";
 	}
 }

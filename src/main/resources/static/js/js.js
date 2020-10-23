@@ -799,6 +799,7 @@ function addEvents(){
 		var motivo = $("#motivoCargoCuota").val();
 		var monto = $("#montoCargoCuota").val();
 		var cuota = $("#selectCuotaCargo").val();
+		var nota = $("#notaCargoCuota").val();
 		if(!cuota){
 			cuota = 0;
 		}
@@ -807,7 +808,8 @@ function addEvents(){
 			 "idPrestamo":idPrestamo,
 			 "motivo":motivo,
 			 "monto":monto,
-			 "cuota":cuota
+			 "cuota":cuota,
+			 "nota":nota
 		 },function(data){
 				console.log("Guardado de cargo");
 				if(data == "1"){
@@ -846,34 +848,47 @@ function addEvents(){
 		var idPrestamo = $("#prestamoAcct").val();
 		var monto = $("#montoAbonoCuota").val();
 		var tipoCuota = $("#selectTipoCuotaAbono").val();
+		var balancePendiente = parseFloat($("#capitalPendienteTemp").val());
 		
-		 $.post("/prestamos/guardarAbonoCuota/",{
-			 "idPrestamo":idPrestamo,
-			 "monto":monto,
-			 "tipoCuota":tipoCuota
-		 },function(data){
-				console.log("Guardado de cargo");
-				if(data == "1"){
-					 Swal.fire({
-							title : 'Muy bien!',
-							text : 'Se ha guardado el abono',
-							position : 'top',
-							icon : 'success',
-							confirmButtonText : 'Cool'
-						})
-				}else{
-					 Swal.fire({
-							title : 'Alerta!',
-							text : 'No se guardo el abono',
-							position : 'top',
-							icon : 'warning',
-							confirmButtonText : 'Cool'
-						})
-				}
-				$("#montoAbonoCuota").val("");
-				$("#modalRecibirAbonoCuotas").modal('hide');
-				addEvents();
-		 });
+		if(monto>balancePendiente){
+			$("#modalRecibirAbonoCuotas").modal('hide');
+			Swal.fire({
+				title : 'Alerta!',
+				text : 'El monto a pagar no puede ser mayor que el balance pendiente',
+				position : 'top',
+				icon : 'warning',
+				confirmButtonText : 'Cool'
+			})
+		}else{
+			 $.post("/prestamos/guardarAbonoCuota/",{
+				 "idPrestamo":idPrestamo,
+				 "monto":monto,
+				 "tipoCuota":tipoCuota
+			 },function(data){
+					console.log("Guardado de cargo");
+					if(data == "1"){
+						 Swal.fire({
+								title : 'Muy bien!',
+								text : 'Se ha guardado el abono',
+								position : 'top',
+								icon : 'success',
+								confirmButtonText : 'Cool'
+							})
+					}else{
+						 Swal.fire({
+								title : 'Alerta!',
+								text : 'No se guardo el abono',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+					}
+					$("#montoAbonoCuota").val("");
+					$("#modalRecibirAbonoCuotas").modal('hide');
+					addEvents();
+			 });
+		}
+		
 	});
 
 /****************************************************** Fin Prestamos *******************************************************/
@@ -1010,6 +1025,20 @@ function cargarDetallePrestamo(id){
 			//Cargar totales generales del prestamo
 			$("#totalesGeneralesPrestamo").load("/prestamos/totalesGenerales/"+id,function(data){
 				console.log("Carga de totales del prestamo");
+				if($("#tipoPrestamoAcct").val()=='2'){
+					//Interes
+					$("#thMontoCuota").hide();
+					$("#thMontoCapital").hide();
+					$("#thInteresGenerado").text("Int/Gen");
+					$("#thInteres").text("Int/Hoy");
+					$("#thInteresGenerado").show();
+				}else{
+					//Cuotas
+					$("#thMontoCuota").show();
+					$("#thMontoCapital").show();
+					$("#thInteres").text("Interes");
+					$("#thInteresGenerado").hide();
+				}
 				addEvents();
 			});
 			$("#botonesAccionPrestamo").show();

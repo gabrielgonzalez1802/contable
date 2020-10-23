@@ -241,27 +241,35 @@ input {
           </div>
 
           <div class="row" id="cuerpoTabla">
-            <div class="col-md-12">
+            <div class="col-md-12" id="cuerpo_amortizacion">
               <div class="card" id="contenidoTabla">
                 <div class="card-header pb-0">
                   <div class="d-flex justify-content-between">
-                    <h4 class="card-title mg-b-0">CUOTA POR MES</h4>
+                    <span class="card-title mg-b-0">
+                    <span class="tx-15" th:text="${datosCliente}"> Nombre del cliente</span> 
+                    <span class="tx-15" style="margin-left:20px;" th:text="${numeroPrestamo}">Numero Prestamo</span>
+                    <span class="tx-15" style="margin-left:20px;" th:text="${montoPrestamo}">Monto Prestamo</span>
+                    <span class="tx-15" style="margin-left:20px;" th:text="${capitalPendiente}">Capital Pendiente</span>
+                    <input type="hidden" id="capitalPendienteTemp" th:value="${capitalPendienteTemp}">
+                    </span>
                     <i class="mdi mdi-dots-horizontal text-gray"></i>
                   </div>
                   <p class="tx-12 tx-gray-500 mb-2">Generar reporte. <a href="">Click</a></p>
                 </div>
                 <div class="card-body">
-                  <div id="cuerpo_amortizacion">
+                  <div >
 	                  <div class="table-responsive">
 	                    <table class="table mg-b-0 text-md-nowrap">
 							<thead>
 								<tr>
 								   <th>Cuota</th>
 								   <th>Fecha</th>
-								    <th>Monto Cuota</th>
-								    <th>Capital</th>
-								    <th>Interes</th>
+								    <th id="thMontoCuota">Monto Cuota</th>
+								    <th id="thMontoCapital">Capital</th>
+								    <th id="thInteresGenerado">Interes Generado</th>
+								    <th id="thInteres">Interes</th>
 								    <th>Mora</th>
+								    <th>Cargo</th>
 								    <th>Abono</th>
 								    <th>Balance</th>
 								    <th>Dias Atraso</th>
@@ -272,12 +280,16 @@ input {
 								 <tr th:each="detalle : ${detalles}">
 									  <td th:text="${detalle.numero}"></td>
 									  <td th:text="${detalle.fecha}"></td>
-									  <td th:text="${detalle.cuota}"></td>
-									  <td th:text="${detalle.capital}"></td>
+									  <td th:if="${detalle.tipo != 2}" th:text="${detalle.cuota}"></td>
+<!-- 									  <td th:unless="${detalle.tipo != 2}"></td> -->
+									  <td th:if="${detalle.tipo != 2}" th:text="${detalle.capital}"></td>
 									  <td th:text="${detalle.interes}"></td>
+									  <td th:if="${detalle.tipo == 2}" th:text="${detalle.interesXhoy}"></td>
 									  <td th:text="${detalle.mora}"></td>
-									  <td></td>
-									  <td th:text="${detalle.saldo}"></td>
+									  <td th:text="${detalle.cargo}"></td>
+									  <td th:text="${detalle.abono}"></td>
+									  <td th:if="${detalle.tipo == 2}" th:text="${detalle.balance}"></td>
+									  <td th:unless="${detalle.tipo == 2}" th:text="${detalle.saldo}"></td>
 									  <td th:text="${detalle.atraso}"></td>
 									  <td th:if="${detalle.estado == 'Normal'}"><span class="badge badge-primary" th:text="${detalle.estado}"></span></td>
 									  <td th:if="${detalle.estado == 'Saldo'}"><span class="badge badge-success" th:text="${detalle.estado}"></span></td>
@@ -288,12 +300,12 @@ input {
 								  <tr>
 									 <td></td>
 									 <td></td>
-									 <td th:text="${totalCuota}"></td>
-									 <td th:text="${totalCapital}"></td>
-									 <td th:text="${totalInteres}"></td>
+									 <td th:text="${sumaInteresGen}"></td>
 									 <td></td>
-									 <td></td>
-									 <td th:text="${totalNeto}"></td>
+									 <td th:text="${sumaMora}"></td>
+									 <td th:text="${sumaCargo}"></td>
+									 <td th:text="${sumaAbono}"></td>
+									 <td th:text="${sumaBalance}"></td>
 									 <td></td>
 									 <td></td>
 								 </tr>

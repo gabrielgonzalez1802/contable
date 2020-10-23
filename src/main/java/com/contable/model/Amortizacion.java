@@ -11,6 +11,11 @@ public class Amortizacion {
 	private Double mora;
 	private Integer atraso = 0;
 	private String estado;
+	private Integer tipo = 0;
+	private Double cargo;
+	private Double interesXhoy;
+	private Double balance;
+	private Double abono;
 	
 	public String getFecha() {
 		return fecha;
@@ -66,11 +71,41 @@ public class Amortizacion {
 	public void setEstado(String estado) {
 		this.estado = estado;
 	}
-	
+	public Integer getTipo() {
+		return tipo;
+	}
+	public void setTipo(Integer tipo) {
+		this.tipo = tipo;
+	}
+	public Double getCargo() {
+		return cargo;
+	}
+	public void setCargo(Double cargo) {
+		this.cargo = cargo;
+	}
+	public Double getInteresXhoy() {
+		return interesXhoy;
+	}
+	public void setInteresXhoy(Double interesXhoy) {
+		this.interesXhoy = interesXhoy;
+	}
+	public Double getBalance() {
+		return balance;
+	}
+	public void setBalance(Double balance) {
+		this.balance = balance;
+	}
+	public Double getAbono() {
+		return abono;
+	}
+	public void setAbono(Double abono) {
+		this.abono = abono;
+	}
 	@Override
 	public String toString() {
 		return "Amortizacion [numero=" + numero + ", fecha=" + fecha + ", cuota=" + cuota + ", capital=" + capital
 				+ ", interes=" + interes + ", saldo=" + saldo + ", mora=" + mora + ", atraso=" + atraso + ", estado="
-				+ estado + "]";
+				+ estado + ", tipo=" + tipo + ", cargo=" + cargo + ", interesXhoy=" + interesXhoy + ", balance="
+				+ balance + ", abono=" + abono + "]";
 	}
 }

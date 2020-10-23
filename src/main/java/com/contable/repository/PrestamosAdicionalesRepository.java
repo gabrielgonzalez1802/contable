@@ -12,4 +12,6 @@ public interface PrestamosAdicionalesRepository extends JpaRepository<PrestamoAd
 	List<PrestamoAdicional> findByPrestamo(Prestamo prestamo);
 	List<PrestamoAdicional> findByPrestamoDetalle(PrestamoDetalle prestamoDetalle);
 	List<PrestamoAdicional> findByPrestamoAndEstado(Prestamo prestamo, Integer estado);
+	List<PrestamoAdicional> findByPrestamoAndNumeroCuota(Prestamo prestamo, Integer numeroCuota);
+	
 }
