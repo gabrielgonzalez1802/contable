@@ -6,6 +6,7 @@ public class PrestamoDetalleMixto {
 	private Integer id;
 	private Integer numero;
 	private Date fecha;
+	private String item;
 	
 	public Integer getId() {
 		return id;
@@ -25,8 +26,10 @@ public class PrestamoDetalleMixto {
 	public void setFecha(Date fecha) {
 		this.fecha = fecha;
 	}
-	@Override
-	public String toString() {
-		return "PrestamoDetalleMixto [id=" + id + ", numero=" + numero + ", fecha=" + fecha + "]";
+	public String getItem() {
+		return item;
+	}
+	public void setItem(String item) {
+		this.item = item;
 	}
 }

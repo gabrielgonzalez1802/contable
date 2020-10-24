@@ -323,7 +323,54 @@
         
       </div>
     </div>
-  </div>     
+  </div>    
+  
+     <!-- Modal Descuentos -->
+  <div class="modal" id="modalDescuentos">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Aplicar Descuento</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          	<div class="row">
+				<div class="col-md-4">
+					 <div class="form-group">
+					    <input type="number" class="form-control" placeholder="Monto" id="montoDescuento">
+					  </div>
+				</div>
+				
+				<div class="col-md-4">
+					<select id="tipoDescuento" class="form-control">
+						<option value="1">Mora</option>
+						<option value="2">Adicionales</option>
+					</select>
+				</div>
+				
+				<div class="col-md-4">
+					<select id="selectCuotasMora" class="form-control">
+						<option th:each="prestamoDetalle : ${prestamoDetalles}"
+								th:value="${prestamoDetalle.id}" th:text="${prestamoDetalle.item}">
+						</option>
+					</select>
+				</div>
+			</div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">Regresar</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="agregaDescuento">Agregar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>  
   
    <!-- Modal Aplicar Cargos -->
   <div class="modal" id="modalAplicarCargosCuotas">

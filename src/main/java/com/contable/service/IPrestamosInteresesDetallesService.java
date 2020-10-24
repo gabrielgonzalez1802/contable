@@ -9,6 +9,7 @@ import com.contable.model.PrestamoInteresDetalle;
 public interface IPrestamosInteresesDetallesService {
 	PrestamoInteresDetalle buscarPorId(Integer id);
 	List<PrestamoInteresDetalle> buscarPorPrestamo(Prestamo prestamo);
+	List<PrestamoInteresDetalle> buscarPorPrestamoEstadoPago(Prestamo prestamo, Integer pagado);
 	List<PrestamoInteresDetalle> buscarPorPrestamoFecha(Prestamo prestamo, Date fecha);
 	List<PrestamoInteresDetalle> buscarPorEstadoPagoYEstado(Integer estadoPago, Integer estado);
 	List<PrestamoInteresDetalle> buscarPorEstado(Integer estado);

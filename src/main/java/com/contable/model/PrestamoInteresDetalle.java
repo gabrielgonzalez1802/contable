@@ -57,6 +57,8 @@ public class PrestamoInteresDetalle {
 	private Double interes_pagado = 0.0;
 	private Double capital_pagado = 0.0;
 	
+	private Double descuento_mora = 0.0;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -201,6 +203,14 @@ public class PrestamoInteresDetalle {
 		this.numero_cuota = numero_cuota;
 	}
 
+	public Double getDescuento_mora() {
+		return descuento_mora;
+	}
+
+	public void setDescuento_mora(Double descuento_mora) {
+		this.descuento_mora = descuento_mora;
+	}
+
 	@Override
 	public String toString() {
 		return "PrestamoInteresDetalle [id=" + id + ", fecha=" + fecha + ", fecha_cuota=" + fecha_cuota
@@ -208,6 +218,6 @@ public class PrestamoInteresDetalle {
 				+ ", pagado=" + pagado + ", balance=" + balance + ", estado=" + estado + ", numero_cuota="
 				+ numero_cuota + ", estadoPago=" + estadoPago + ", tasa=" + tasa + ", prestamo=" + prestamo
 				+ ", dias_atraso=" + dias_atraso + ", mora_pagada=" + mora_pagada + ", interes_pagado=" + interes_pagado
-				+ ", capital_pagado=" + capital_pagado + "]";
+				+ ", capital_pagado=" + capital_pagado + ", descuento_mora=" + descuento_mora + "]";
 	}
 }

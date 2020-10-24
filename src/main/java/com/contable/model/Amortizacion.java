@@ -17,6 +17,7 @@ public class Amortizacion {
 	private Double interesXhoy;
 	private Double balance;
 	private Double abono;
+	private Double descuento;
 	
 	public String getFecha() {
 		return fecha;
@@ -108,11 +109,17 @@ public class Amortizacion {
 	public void setId(Integer id) {
 		this.id = id;
 	}
+	public Double getDescuento() {
+		return descuento;
+	}
+	public void setDescuento(Double descuento) {
+		this.descuento = descuento;
+	}
 	@Override
 	public String toString() {
 		return "Amortizacion [id=" + id + ", numero=" + numero + ", fecha=" + fecha + ", cuota=" + cuota + ", capital="
 				+ capital + ", interes=" + interes + ", saldo=" + saldo + ", mora=" + mora + ", atraso=" + atraso
 				+ ", estado=" + estado + ", tipo=" + tipo + ", cargo=" + cargo + ", interesXhoy=" + interesXhoy
-				+ ", balance=" + balance + ", abono=" + abono + "]";
+				+ ", balance=" + balance + ", abono=" + abono + ", descuento=" + descuento + "]";
 	}
 }

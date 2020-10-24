@@ -792,6 +792,100 @@ function addEvents(){
 		});
 	});
 	
+	$("#descuentos").click(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var idPrestamo = $("#prestamoAcct").val();
+		var tipoDescuento = $("#tipoDescuento").val();
+		 $.get("/prestamos/cuotasNoPagadasDescuentos/"+idPrestamo+"/"+tipoDescuento,
+			function(data){
+			console.log("Cargar cuotas no pagadas");
+			$("#selectCuotasMora").replaceWith(data);
+			$("#modalDescuentos").modal('show');
+		});
+	});
+	
+	$("#tipoDescuento").change(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var idPrestamo = $("#prestamoAcct").val();
+		var tipoDescuento = $("#tipoDescuento").val();
+		 $.get("/prestamos/cuotasNoPagadasDescuentos/"+idPrestamo+"/"+tipoDescuento,
+			function(data){
+			$("#selectCuotasMora").replaceWith(data);
+		});
+	});
+	
+	$("#agregaDescuento").click(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var idPrestamo = $("#prestamoAcct").val();
+		var montoDescuento = $("#montoDescuento").val();
+		var tipoDescuento = $("#tipoDescuento").val();
+		var cuota = $("#selectCuotasMora").val();
+		
+		if(!cuota){
+			$("#modalDescuentos").modal('hide');
+			Swal.fire({
+				title : 'Alerta!',
+				text : 'No hay datos para aplicar el descuento',
+				position : 'top',
+				icon : 'warning',
+				confirmButtonText : 'Cool'
+			})
+		}else{	
+			//Validamos que el descuento no sea mayor que el monto generado
+			 $.post("/prestamos/validarDescuento/",
+			 {
+				 "idPrestamo":idPrestamo,
+				 "monto":montoDescuento,
+				 "tipo":tipoDescuento,
+				 "cuota":cuota
+			 },function(data){
+				 if(data == 1){
+					 $.post("/prestamos/guardarDescuento/",{
+						 "idPrestamo":idPrestamo,
+						 "monto":montoDescuento,
+						 "tipo":tipoDescuento,
+						 "cuota":cuota
+					 },function(data){
+							console.log("Guardado de descuento");
+							if(data == "1"){
+								 Swal.fire({
+										title : 'Muy bien!',
+										text : 'Se ha guardado el descuento',
+										position : 'top',
+										icon : 'success',
+										confirmButtonText : 'Cool'
+									})
+							}else{
+								 Swal.fire({
+										title : 'Alerta!',
+										text : 'No se guardo el descuento',
+										position : 'top',
+										icon : 'warning',
+										confirmButtonText : 'Cool'
+									})
+							}
+							$("#montoDescuento").val("");
+							$("#modalDescuentos").modal('hide');
+							addEvents();
+							cargarDetallePrestamo(idPrestamo);
+					 });	
+				 }else{
+					 $("#modalDescuentos").modal('hide');
+					 Swal.fire({
+							title : 'Alerta!',
+							text : 'El descuento no puede ser mayor al balance',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+					})
+				 }
+			});
+		}
+	});
+	
 	$("#agregarCargoCuota").click(function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
@@ -1051,6 +1145,13 @@ function cargarDetalleCargo(idPrestamoInteresDetalle){
 	$("#tablaCargos").load("/prestamos/detallesCargos/"+idPrestamoInteresDetalle,function(data){
 		console.log("Detalles de los cargos");
 		$("#modalDetalleCargos").modal("show");
+	});
+}
+
+function cargarDetalleMora(idPrestamoInteresDetalle){
+	$("#tablaMoras").load("/prestamos/detallesMoras/"+idPrestamoInteresDetalle,function(data){
+		console.log("Detalles de las moras");
+		$("#modalDetalleMoras").modal("show");
 	});
 }
 

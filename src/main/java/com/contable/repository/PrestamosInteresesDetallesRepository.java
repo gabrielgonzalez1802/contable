@@ -13,4 +13,6 @@ public interface PrestamosInteresesDetallesRepository extends JpaRepository<Pres
 	List<PrestamoInteresDetalle> findByPrestamoAndFecha(Prestamo prestamo, Date fecha);
 	List<PrestamoInteresDetalle> findByEstadoPagoAndEstado(Integer estadoPago, Integer estado);
 	List<PrestamoInteresDetalle> findByEstado(Integer estado);
+	List<PrestamoInteresDetalle> findByPrestamoAndEstadoPago(Prestamo prestamo, Integer pagado);
+	
 }
