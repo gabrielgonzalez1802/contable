@@ -2,6 +2,7 @@ package com.contable.model;
 
 public class Amortizacion {
 	
+	private Integer id;
 	private Integer numero = 0;
 	private String fecha;
 	private Double cuota;
@@ -101,11 +102,17 @@ public class Amortizacion {
 	public void setAbono(Double abono) {
 		this.abono = abono;
 	}
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
 	@Override
 	public String toString() {
-		return "Amortizacion [numero=" + numero + ", fecha=" + fecha + ", cuota=" + cuota + ", capital=" + capital
-				+ ", interes=" + interes + ", saldo=" + saldo + ", mora=" + mora + ", atraso=" + atraso + ", estado="
-				+ estado + ", tipo=" + tipo + ", cargo=" + cargo + ", interesXhoy=" + interesXhoy + ", balance="
-				+ balance + ", abono=" + abono + "]";
+		return "Amortizacion [id=" + id + ", numero=" + numero + ", fecha=" + fecha + ", cuota=" + cuota + ", capital="
+				+ capital + ", interes=" + interes + ", saldo=" + saldo + ", mora=" + mora + ", atraso=" + atraso
+				+ ", estado=" + estado + ", tipo=" + tipo + ", cargo=" + cargo + ", interesXhoy=" + interesXhoy
+				+ ", balance=" + balance + ", abono=" + abono + "]";
 	}
 }

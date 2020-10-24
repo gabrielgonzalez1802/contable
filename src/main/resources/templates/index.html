@@ -239,6 +239,57 @@ input {
               
             </div>
           </div>
+          
+ <!-- Modal Detalle Cargo -->         
+  <div class="modal" id="modalDetalleCargos">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Detalle del Cargo</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          	<div class="row">
+				<div class="col-md-12">
+					<div class="table-responsive" id="tablaCargos">
+	                    <table class="table mg-b-0 text-md-nowrap">
+							<thead>
+								<tr>
+								   <th>Fecha</th>
+								   <th>Monto</th>
+								   <th>Pagado</th>
+								   <th>Motivo</th>
+								   <th>Nota</th>
+								 </tr>
+							 </thead>
+							<tbody>
+								 <tr th:each="cargo : ${cargos}">
+									  <td th:text="${#dates.format(cargo.fecha, 'dd/MM/yyyy')}">Fecha</td>	
+									  <td th:text="${cargo.monto}">Monto</td>	
+									  <td th:text="${cargo.monto_pagado}">Pagado</td>	
+									  <td th:text="${cargo.motivo}">Motivo</td>	
+									  <td th:text="${cargo.nota}">Nota</td>		
+								 </tr>
+							</tbody>
+						 </table>
+	                  </div>
+				</div>
+			</div>
+
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">Regresar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div> 
 
           <div class="row" id="cuerpoTabla">
             <div class="col-md-12" id="cuerpo_amortizacion">
@@ -286,7 +337,7 @@ input {
 									  <td th:text="${detalle.interes}"></td>
 									  <td th:if="${detalle.tipo == 2}" th:text="${detalle.interesXhoy}"></td>
 									  <td th:text="${detalle.mora}"></td>
-									  <td th:text="${detalle.cargo}"></td>
+									  <td th:text="${detalle.cargo}" style="cursor: pointer;" th:onclick="'cargarDetalleCargo(\'' + ${detalle.id} + '\');'"></td>
 									  <td th:text="${detalle.abono}"></td>
 									  <td th:if="${detalle.tipo == 2}" th:text="${detalle.balance}"></td>
 									  <td th:unless="${detalle.tipo == 2}" th:text="${detalle.saldo}"></td>

@@ -80,7 +80,7 @@ public class PrestamosCron {
 		}
 	}
 	
-	@Scheduled(cron = "0 30 14 * * *")
+	@Scheduled(cron = "0 11 08 * * *")
 	public void generarPrestamoInteresDetalle() throws ParseException {
 		List<Prestamo> prestamos = servicePrestamos.buscarPorEstado(NORMAL);
 		LocalDateTime dateAcct =  LocalDateTime.now();

@@ -833,6 +833,7 @@ function addEvents(){
 				$("#montoCargoCuota").val("");
 				$("#modalAplicarCargosCuotas").modal('hide');
 				addEvents();
+				cargarDetallePrestamo(idPrestamo);
 		 });
 	});
 	
@@ -886,6 +887,7 @@ function addEvents(){
 					$("#montoAbonoCuota").val("");
 					$("#modalRecibirAbonoCuotas").modal('hide');
 					addEvents();
+					cargarDetallePrestamo(idPrestamo);
 			 });
 		}
 		
@@ -1043,6 +1045,13 @@ function cargarDetallePrestamo(id){
 			});
 			$("#botonesAccionPrestamo").show();
 	 	});
+}
+
+function cargarDetalleCargo(idPrestamoInteresDetalle){
+	$("#tablaCargos").load("/prestamos/detallesCargos/"+idPrestamoInteresDetalle,function(data){
+		console.log("Detalles de los cargos");
+		$("#modalDetalleCargos").modal("show");
+	});
 }
 
 function mostrarDetalleAmortizacion(){
