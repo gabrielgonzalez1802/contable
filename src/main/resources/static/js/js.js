@@ -934,6 +934,12 @@ function addEvents(){
 	$("#recibirAbono").click(function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
+		var tipoPrestamoAcct = $("#tipoPrestamoAcct").val();
+		if(tipoPrestamoAcct == 2){
+			$("#optionCuotasCapital").hide();
+		}else{
+			$("#optionCuotasCapital").show();
+		}
 		$("#modalRecibirAbonoCuotas").modal('show');
 	});
 	
@@ -1118,9 +1124,6 @@ function cargarDetallePrestamo(id){
 			mostrarDetalleAmortizacion();
 			$("#cuerpo_amortizacion").replaceWith(data);
 			$("#prestamoAcct").val(id);
-			//Cargar totales generales del prestamo
-			$("#totalesGeneralesPrestamo").load("/prestamos/totalesGenerales/"+id,function(data){
-				console.log("Carga de totales del prestamo");
 				if($("#tipoPrestamoAcct").val()=='2'){
 					//Interes
 					$("#thMontoCuota").hide();
@@ -1136,9 +1139,37 @@ function cargarDetallePrestamo(id){
 					$("#thInteresGenerado").hide();
 				}
 				addEvents();
-			});
 			$("#botonesAccionPrestamo").show();
 	 	});
+}
+
+function checkCuota(idDetalle){
+	var idPrestamo = $("#prestamoAcct").val();
+	var tipoCuota = $("#selectTipoCuotaAbono").val();
+	var selected = '';    
+    $('.checkCuota').each(function(){
+        if (this.checked) {
+            selected += $(this).val()+', ';
+        }
+    }); 
+
+    if (selected == '') {
+    	$("#totalMora").text("");
+    	$("#totalCargo").text("");
+    	$("#totalDescuento").text("");
+    	$("#totalBalance").text("");
+    }else{
+    	//Cargar precios totales
+		 $.post("/prestamos/totalesCuotas/",{
+			 "idPrestamo":idPrestamo,
+			 "cuotas":selected,
+			 "tipoCuota":tipoCuota
+		 },function(data){
+				console.log("Montos totales Cutotas");
+				$("#totalesGeneralesPrestamo").replaceWith(data);
+				addEvents();
+		 });
+    }
 }
 
 function cargarDetalleCargo(idPrestamoInteresDetalle){

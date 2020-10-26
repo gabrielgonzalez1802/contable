@@ -362,6 +362,7 @@ input {
 	                    <table class="table mg-b-0 text-md-nowrap">
 							<thead>
 								<tr>
+								   <th></th>
 								   <th>Cuota</th>
 								   <th>Fecha</th>
 								    <th id="thMontoCuota">Monto Cuota</th>
@@ -379,6 +380,7 @@ input {
 							 </thead>
 							<tbody>
 								 <tr th:each="detalle : ${detalles}">
+								 	  <td class="text-center"> <input type="checkbox" class="checkCuota" th:value="${detalle.id}" th:id="c + ${detalle.id}" name="c + ${detalle.id}" style="cursor: pointer;" aria-hidden="true" th:oninput="'checkCuota(\'' + ${detalle.id} + '\');'"> </td>
 									  <td th:text="${detalle.numero}"></td>
 									  <td th:text="${detalle.fecha}"></td>
 									  <td th:if="${detalle.tipo != 2}" th:text="${detalle.cuota}"></td>
@@ -400,6 +402,7 @@ input {
 									  <td th:if="${detalle.estado == null}"><span class="badge badge-Danger"></span></td>
 								 </tr>
 								  <tr>
+								     <td></td>
 									 <td></td>
 									 <td></td>
 									 <td th:text="${sumaInteresGen}"></td>

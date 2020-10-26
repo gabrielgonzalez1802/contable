@@ -777,94 +777,6 @@ public class PrestamosController {
 		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
 	}
 	
-	@GetMapping("/totalesGenerales/{id}")
-	public String totalesGeneralesPrestamo(Model model, @PathVariable(name = "id") Integer id) {
-		Prestamo prestamo = servicePrestamos.buscarPorId(id);
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
-		double totalCargo = 0;
-		double totalCuota = 0;
-		double totalBalance = 0;
-		double totalMora = 0;
-		if(prestamo.getTipo().equals("2")) {
-			//interes
-			List<Amortizacion> detalles = new LinkedList<>();
-			List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorPrestamo(prestamo);
-			List<PrestamoAdicional> cargosAdicionales = servicePrestamosAdicionales.buscarPorPrestamo(prestamo);
-			int count = 0;
-			double mora = 0;
-			double interes = 0;
-			if(!prestamoInteresDetalles.isEmpty()) {
-				for (PrestamoInteresDetalle prestamoInteresDetalle : prestamoInteresDetalles) {
-					count++;
-					String estado = "Normal";
-					if(prestamoInteresDetalle.getEstado()==2) {
-						estado = "Atraso";
-					}
-					Amortizacion amortizacion = new Amortizacion();
-					amortizacion.setNumero(count);
-					amortizacion.setFecha(sdf.format(prestamoInteresDetalle.getFecha_cuota()));
-//					amortizacion.setCuota();
-					amortizacion.setCapital(prestamoInteresDetalle.getCapital());
-					amortizacion.setInteres(prestamoInteresDetalle.getInteres());
-//					amortizacion.setSaldo(prestamoDetalle.getBalance());
-//					amortizacion.setNumero(prestamoDetalle.getNumero());
-					amortizacion.setMora(prestamoInteresDetalle.getMora());
-					amortizacion.setEstado(estado);
-					amortizacion.setAtraso(prestamoInteresDetalle.getDias_atraso());
-					detalles.add(amortizacion);
-					mora+=prestamoInteresDetalle.getMora();
-					interes+=prestamoInteresDetalle.getInteres();
-					
-//					if(prestamoInteresDetalle.getDias_atraso()>0) {
-//					}
-					totalCuota+=prestamoInteresDetalle.getInteres();
-					totalCuota-=prestamoInteresDetalle.getInteres_pagado();
-					
-					totalMora+=prestamoInteresDetalle.getMora();
-					totalMora-=prestamoInteresDetalle.getMora_pagada();
-					
-//					totalMora-=prestamoInteresDetalle.getDescuento_mora();
-				}
-				
-				double descuentoAdicional = 0;
-				
-				if(!cargosAdicionales.isEmpty()) {
-					for (PrestamoAdicional prestamoAdicional : cargosAdicionales) {
-						totalCargo+=prestamoAdicional.getMonto();
-						totalCargo-=prestamoAdicional.getMonto_pagado();
-						descuentoAdicional+=prestamoAdicional.getDescuento_adicionales();
-					}
-				}
-				detalles.get(0).setCuota(formato2d(mora+interes));
-//				totalMora-=descuentoAdicional;
-			}
-		}else {
-			//cuotas vencidas
-			List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorPrestamoEstado(prestamo, 2);
-			if(!prestamoDetalles.isEmpty()) {
-				for (PrestamoDetalle prestamoDetalle : prestamoDetalles) {
-//					totalCuota += prestamoDetalle.getBalance();
-					totalCuota += prestamoDetalle.getInteres()+prestamoDetalle.getCapital();
-					//Verificamos los cargos
-					List<PrestamoAdicional> cargosAdicionales = servicePrestamosAdicionales.buscarPorPrestamoDetalle(prestamoDetalle);
-					if(!cargosAdicionales.isEmpty()) {
-						for (PrestamoAdicional cargoAdicional : cargosAdicionales) {
-							totalCargo+=cargoAdicional.getMonto();
-						}
-					}
-					totalMora+=prestamoDetalle.getMora();
-				}
-			}
-		}
-		//Calculo del balance: suma de balances vencidos + cargos + las moras.
-		totalBalance = totalCuota+totalCargo+totalMora;
-		model.addAttribute("totalBalance", formato2d(totalBalance));
-		model.addAttribute("totalCuota", formato2d(totalCuota));
-		model.addAttribute("totalCargo", formato2d(totalCargo));
-		model.addAttribute("totalMora", formato2d(totalMora));
-		return "clientes/infoCliente :: #totalesGeneralesPrestamo";
-	}
-	
 	@GetMapping("/detalleAmortizacion/{id}")
 	public String detalleAmortizacion(Model model, @PathVariable(name = "id") Integer id, HttpSession session) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
@@ -1034,6 +946,122 @@ public class PrestamosController {
 		return "index :: #tablaCargos";
 	}
 	
+	@PostMapping("/totalesCuotas/")
+	public String totalesCuotas(Model model, HttpSession session,
+			Integer idPrestamo, Integer tipoCuota, String cuotas) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
+		Prestamo prestamo = servicePrestamos.buscarPorId(idPrestamo);
+		List<Amortizacion> detalles = new LinkedList<>();
+		cuotas = cuotas.replace(" ", "");
+		cuotas = cuotas.substring(0, cuotas.length()-1);
+		String[] cuotasArray = cuotas.split(",");
+		double capital = 0;
+		double sumaMora = 0;
+		double cargo = 0;
+		double sumaAbono = 0;
+		double sumaBalance = 0;
+		double sumaDescuento = 0;
+		double sumaCargo = 0;
+		
+		if(tipoCuota == 1) {
+			//Interes
+			if(cuotasArray.length>0) {
+				for (String id : cuotasArray) {
+					PrestamoInteresDetalle prestamoInteresDetalle = servicePrestamosInteresesDetalles.buscarPorId(Integer.parseInt(id));
+					
+						String estado = "Normal";
+						if(prestamoInteresDetalle.getEstado()==2) {
+							estado = "Atraso";
+						}else if(prestamoInteresDetalle.getEstado()==1) {
+							estado = "Saldo";
+						}
+						
+						double cargoPagadoTemp = 0;
+						
+						Amortizacion amortizacion = new Amortizacion();
+						
+						double descuentoAdicionales = 0;
+						double descuentoCargo = 0;
+						
+						List<PrestamoAdicional> adicionales = servicePrestamosAdicionales.buscarPorPrestamoNumeroCuota(prestamoInteresDetalle.getPrestamo(), prestamoInteresDetalle.getNumero_cuota());
+						if(!adicionales.isEmpty()) {
+							double cargoAdicional = 0;
+							for (PrestamoAdicional adicionalTemp : adicionales) {
+								cargoAdicional+=adicionalTemp.getMonto()-adicionalTemp.getMonto_pagado();
+								cargoPagadoTemp+=adicionalTemp.getMonto_pagado();
+								descuentoAdicionales+=adicionalTemp.getDescuento_adicionales();
+							}
+							amortizacion.setCargo(cargoAdicional);
+							descuentoCargo = amortizacion.getCargo()-descuentoAdicionales;
+							amortizacion.setCargo(cargoAdicional-descuentoAdicionales);
+						}
+						
+						LocalDateTime fechaTemp = convertToLocalDateTimeViaInstant(prestamoInteresDetalle.getFecha_cuota()).minusMonths(1);
+						LocalDateTime dateAcct = LocalDateTime.now();
+						int vencidos = (int)diasVencidos(fechaTemp, dateAcct);
+						double interesXHoy = prestamoInteresDetalle.getInteres()/30.00*vencidos;
+						
+						if(interesXHoy>=prestamoInteresDetalle.getInteres()) {
+							interesXHoy = prestamoInteresDetalle.getInteres()-prestamoInteresDetalle.getInteres_pagado();
+						}
+						
+						double balance = (prestamoInteresDetalle.getInteres()-prestamoInteresDetalle.getInteres_pagado())+(prestamoInteresDetalle.getMora()-prestamoInteresDetalle.getMora_pagada()-prestamoInteresDetalle.getDescuento_mora())+(amortizacion.getCargo()==null?0:descuentoCargo);
+						double abono = prestamoInteresDetalle.getInteres_pagado()+prestamoInteresDetalle.getMora_pagada()+cargoPagadoTemp;
+						
+						amortizacion.setBalance(formato2d(balance));
+						amortizacion.setAbono(formato2d(abono));
+						amortizacion.setInteresXhoy(balance==0?0:formato2d(interesXHoy));
+						amortizacion.setNumero(prestamoInteresDetalle.getNumero_cuota());
+						amortizacion.setFecha(sdf.format(prestamoInteresDetalle.getFecha_cuota()));
+						capital = prestamoInteresDetalle.getCapital();
+						capital-= prestamoInteresDetalle.getCapital_pagado();
+						amortizacion.setInteres(formato2d(prestamoInteresDetalle.getInteres()-prestamoInteresDetalle.getInteres_pagado()));
+						amortizacion.setTipo(2);
+						
+						double mora = prestamoInteresDetalle.getMora()-prestamoInteresDetalle.getMora_pagada()-prestamoInteresDetalle.getDescuento_mora();
+
+						amortizacion.setMora(formato2d(mora));
+						amortizacion.setEstado(estado);
+						amortizacion.setAtraso(prestamoInteresDetalle.getDias_atraso());
+						
+						double descuentoAdicional = 0;
+						
+						List<PrestamoAdicional> adicionalTemp = servicePrestamosAdicionales
+								.buscarPorPrestamoNumeroCuota(prestamo, prestamoInteresDetalle.getNumero_cuota());
+						for (PrestamoAdicional adicional : adicionalTemp) {
+							descuentoAdicional += adicional.getDescuento_adicionales();
+						}
+
+						amortizacion.setDescuento(prestamoInteresDetalle.getDescuento_mora()+descuentoAdicional);
+						
+						amortizacion.setId(prestamoInteresDetalle.getId());
+						detalles.add(amortizacion);
+						mora+=prestamoInteresDetalle.getMora();
+						Double interes = prestamoInteresDetalle.getInteres();
+						
+//						Double sumaInteresGen = amortizacion.getInteres();
+						sumaDescuento += amortizacion.getDescuento();
+						sumaMora += amortizacion.getMora();
+						sumaAbono += amortizacion.getAbono();
+						sumaBalance += amortizacion.getBalance();
+						sumaCargo += amortizacion.getCargo();
+											
+					detalles.get(0).setCuota(formato2d(mora+interes));
+					detalles.get(0).setCapital(formato2d(capital));
+				}
+			}
+		}else {
+			//Cuota
+		}
+		
+		model.addAttribute("totalDescuento", sumaDescuento);
+		model.addAttribute("totalMora", sumaMora);
+		model.addAttribute("totalCargo", sumaCargo);
+		model.addAttribute("totalBalance", sumaBalance);
+		
+		return "clientes/infoCliente :: #totalesGeneralesPrestamo";
+	}
+	
 	@GetMapping("/detallesMoras/{id}")
 	public String detallesMoras(Model model, @PathVariable("id") Integer id) {
 		PrestamoInteresDetalle prestamoInteresDetalle = servicePrestamosInteresesDetalles.buscarPorId(id);
@@ -1078,11 +1106,21 @@ public class PrestamosController {
 					}
 				}
 			}else {
-				PrestamoDetalleMixto prestamoDetalleMixto = new PrestamoDetalleMixto();
-				prestamoDetalleMixto.setId(1);
-				prestamoDetalleMixto.setNumero(1);
-				prestamoDetalleMixto.setFecha(new Date());
-				prestamosDetallesMixto.add(prestamoDetalleMixto);
+				List<PrestamoInteresDetalle> prestamoDetallesInteresTemp = servicePrestamosInteresesDetalles.buscarPorPrestamo(prestamo);
+				if(prestamoDetallesInteresTemp.isEmpty()) {
+					PrestamoDetalleMixto prestamoDetalleMixto = new PrestamoDetalleMixto();
+					prestamoDetalleMixto.setId(1);
+					prestamoDetalleMixto.setNumero(1);
+					prestamoDetalleMixto.setFecha(new Date());
+					prestamosDetallesMixto.add(prestamoDetalleMixto);
+				}else {
+					PrestamoInteresDetalle detalleTemp = prestamoDetallesInteresTemp.get(prestamoDetallesInteresTemp.size()-1);
+					PrestamoDetalleMixto prestamoDetalleMixto = new PrestamoDetalleMixto();
+					prestamoDetalleMixto.setId(detalleTemp.getNumero_cuota()+1);
+					prestamoDetalleMixto.setNumero(detalleTemp.getNumero_cuota()+1);
+					prestamoDetalleMixto.setFecha(new Date());
+					prestamosDetallesMixto.add(prestamoDetalleMixto);
+				}
 			}
 		}else {
 			//cuotas
