@@ -1220,9 +1220,17 @@ function cargarDetalleMora(idPrestamoInteresDetalle){
 	});
 }
 
+function cargarDetalleCapital(idPrestamoInteresDetalle){
+	var idPrestamo = $("#prestamoAcct").val();
+	$("#capitalInfo").load("/prestamos/detallesCapitales/"+idPrestamoInteresDetalle+"/"+idPrestamo,function(data){
+		console.log("Detalles de los capitales");
+		$("#modalDetalleCapitales").modal("show");
+	});
+}
+
 function cargarDetalleInteres(idPrestamoInteresDetalle){
 	var idPrestamo = $("#prestamoAcct").val();
-	$("#tablaIntereses").load("/prestamos/detallesIntereses/"+idPrestamoInteresDetalle+"/"+idPrestamo,function(data){
+	$("#interesInfo").load("/prestamos/detallesIntereses/"+idPrestamoInteresDetalle+"/"+idPrestamo,function(data){
 		console.log("Detalles de los Intereses");
 		$("#modalDetalleIntereses").modal("show");
 	});

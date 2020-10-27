@@ -35,6 +35,7 @@ import com.contable.model.Amortizacion;
 import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
 import com.contable.model.Cuenta;
+import com.contable.model.DetalleMultiPrestamo;
 import com.contable.model.MoraDetalle;
 import com.contable.model.Prestamo;
 import com.contable.model.PrestamoAdicional;
@@ -986,31 +987,53 @@ public class PrestamosController {
 	
 	@GetMapping("/detallesCargos/{id}/{prestamoId}")
 	public String detallesCargos(Model model, @PathVariable("id") Integer id, @PathVariable("prestamoId") Integer prestamoId) {
-		List<PrestamoAdicional> adicionales = new LinkedList<>();
+		List<DetalleMultiPrestamo> adicionales = new LinkedList<>();
 		Prestamo prestamo = servicePrestamos.buscarPorId(prestamoId);
 		
 		if(prestamo.getTipo().equals("2")) {
 			//Interes
 			PrestamoInteresDetalle prestamoInteresDetalle = servicePrestamosInteresesDetalles.buscarPorId(id);
 			if(prestamoInteresDetalle != null) {
-				adicionales = servicePrestamosAdicionales.
+				List<PrestamoAdicional> prestamosAdicionales = servicePrestamosAdicionales.
 						buscarPorPrestamoNumeroCuota(prestamoInteresDetalle.getPrestamo(), prestamoInteresDetalle.getNumero_cuota());
 
-				if(adicionales.isEmpty()) {
-					adicionales = servicePrestamosAdicionales.
+				if(prestamosAdicionales.isEmpty()) {
+					prestamosAdicionales = servicePrestamosAdicionales.
 							buscarPorPrestamo(prestamoInteresDetalle.getPrestamo());
+				}
+				
+				for (PrestamoAdicional prestamoAdicional : prestamosAdicionales) {
+					DetalleMultiPrestamo multiPrestamo = new DetalleMultiPrestamo();
+					multiPrestamo.setFecha(prestamoAdicional.getFecha());
+					multiPrestamo.setMonto(prestamoAdicional.getMonto());
+					multiPrestamo.setDescuento_adicionales(prestamoAdicional.getDescuento_adicionales());
+					multiPrestamo.setMonto_pagado(prestamoAdicional.getMonto_pagado());
+					multiPrestamo.setMotivo(prestamoAdicional.getMotivo());
+					multiPrestamo.setNota(prestamoAdicional.getNota());
+					adicionales.add(multiPrestamo);
 				}
 			}
 		}else {
 			//Cuotas
 			PrestamoDetalle prestamoDetalle = servicePrestamosDetalles.buscarPorId(id);
 			if(prestamoDetalle != null) {
-				adicionales = servicePrestamosAdicionales.
+				List<PrestamoAdicional> adicionalesCuotas = servicePrestamosAdicionales.
 						buscarPorPrestamoNumeroCuota(prestamoDetalle.getPrestamo(), prestamoDetalle.getNumero());
 
-				if(adicionales.isEmpty()) {
-					adicionales = servicePrestamosAdicionales.
+				if(adicionalesCuotas.isEmpty()) {
+					adicionalesCuotas = servicePrestamosAdicionales.
 							buscarPorPrestamo(prestamoDetalle.getPrestamo());
+				}
+				
+				for (PrestamoAdicional adicionalCuota : adicionalesCuotas) {
+					DetalleMultiPrestamo multiPrestamo = new DetalleMultiPrestamo();
+					multiPrestamo.setFecha(adicionalCuota.getFecha());
+					multiPrestamo.setMonto(adicionalCuota.getMonto());
+					multiPrestamo.setDescuento_adicionales(adicionalCuota.getDescuento_adicionales());
+					multiPrestamo.setMonto_pagado(adicionalCuota.getMonto_pagado());
+					multiPrestamo.setMotivo(adicionalCuota.getMotivo());
+					multiPrestamo.setNota(adicionalCuota.getNota());
+					adicionales.add(multiPrestamo);
 				}
 			}
 		}
@@ -1168,37 +1191,70 @@ public class PrestamosController {
 		return "index :: #tablaMoras";
 	}
 	
-	@GetMapping("/detallesIntereses/{id}/{prestamoId}")
-	public String detallesIntereses(Model model, @PathVariable("id") Integer id, @PathVariable("prestamoId") Integer prestamoId) {
+	@GetMapping("/detallesCapitales/{id}/{prestamoId}")
+	public String detallesCapitales(Model model, @PathVariable("id") Integer id, @PathVariable("prestamoId") Integer prestamoId) {
 		Prestamo prestamo = servicePrestamos.buscarPorId(prestamoId);
-		List<MoraDetalle> moraDetalles = new LinkedList<>();
-		
+		List<DetalleMultiPrestamo> multiPrestamos = new LinkedList<>();
+		PrestamoDetalle prestamoDetalle = new PrestamoDetalle();
 		if(prestamo.getTipo().equals("2")) {
 			//Interes
-//			PrestamoInteresDetalle prestamoInteresDetalle = servicePrestamosInteresesDetalles.buscarPorId(id);
-//			if(prestamoInteresDetalle != null) {
-//				MoraDetalle moraDetalle = new MoraDetalle();
-//				moraDetalle.setId(prestamoInteresDetalle.getId());
-//				moraDetalle.setDescuento_mora(prestamoInteresDetalle.getDescuento_mora());
-//				moraDetalle.setMora(prestamoInteresDetalle.getMora());
-//				moraDetalle.setMora_pagada(prestamoInteresDetalle.getMora_pagada());
-//				moraDetalles.add(moraDetalle);
-//			}
 		}else {
 			//Cuotas
-			PrestamoDetalle prestamoDetalle = servicePrestamosDetalles.buscarPorId(id);
-			if(prestamoDetalle != null) {
-				MoraDetalle moraDetalle = new MoraDetalle();
-				moraDetalle.setId(prestamoDetalle.getId());
-				moraDetalle.setDescuento_mora(prestamoDetalle.getDescuento_mora());
-				moraDetalle.setMora(prestamoDetalle.getMora());
-				moraDetalle.setMora_pagada(prestamoDetalle.getMora_pagada());
-				moraDetalles.add(moraDetalle);
+			List<Abono> abonos = serviceAbonos.buscarPorPrestamo(prestamo);
+			prestamoDetalle = servicePrestamosDetalles.buscarPorId(id);
+			for (Abono abono : abonos) {
+				List<AbonoDetalle> abonosDetalles = serviceAbonosDetalles.buscarPorAbonoConcepto(abono, "Capital");
+				for (AbonoDetalle abonoDetalle : abonosDetalles) {
+					if (prestamoDetalle.getNumero() == abonoDetalle.getNumeroCuota()) {
+							DetalleMultiPrestamo detalleMultiPrestamo = new DetalleMultiPrestamo();
+							detalleMultiPrestamo.setId(abono.getId());
+							detalleMultiPrestamo.setFecha(abono.getFecha());
+							detalleMultiPrestamo.setCapital(prestamoDetalle.getCapital());
+							detalleMultiPrestamo.setCapital_pagado(abonoDetalle.getMonto());
+							multiPrestamos.add(detalleMultiPrestamo);
+					}
+				}
 			}
 		}
 		
-		model.addAttribute("detalles", moraDetalles);
-		return "index :: #tablaIntereses";
+		model.addAttribute("capitalGenerado", prestamoDetalle.getCapital());
+		model.addAttribute("capitalPagado", prestamoDetalle.getCapital_pagado());
+		model.addAttribute("balanceCapital",prestamoDetalle.getCapital() - prestamoDetalle.getCapital_pagado());
+		model.addAttribute("detalles", multiPrestamos);
+		return "index :: #capitalInfo";
+	}
+	
+	@GetMapping("/detallesIntereses/{id}/{prestamoId}")
+	public String detallesIntereses(Model model, @PathVariable("id") Integer id, @PathVariable("prestamoId") Integer prestamoId) {
+		Prestamo prestamo = servicePrestamos.buscarPorId(prestamoId);
+		List<DetalleMultiPrestamo> multiPrestamos = new LinkedList<>();
+		PrestamoDetalle prestamoDetalle = new PrestamoDetalle();
+		if(prestamo.getTipo().equals("2")) {
+			//Interes
+		}else {
+			//Cuotas
+			List<Abono> abonos = serviceAbonos.buscarPorPrestamo(prestamo);
+			prestamoDetalle = servicePrestamosDetalles.buscarPorId(id);
+			for (Abono abono : abonos) {
+				List<AbonoDetalle> abonosDetalles = serviceAbonosDetalles.buscarPorAbonoConcepto(abono, "Interes");
+				for (AbonoDetalle abonoDetalle : abonosDetalles) {
+					if (prestamoDetalle.getNumero() == abonoDetalle.getNumeroCuota()) {
+							DetalleMultiPrestamo detalleMultiPrestamo = new DetalleMultiPrestamo();
+							detalleMultiPrestamo.setId(abono.getId());
+							detalleMultiPrestamo.setFecha(abono.getFecha());
+							detalleMultiPrestamo.setInteres(prestamoDetalle.getInteres());
+							detalleMultiPrestamo.setInteres_pagado(abonoDetalle.getMonto());
+							multiPrestamos.add(detalleMultiPrestamo);
+					}
+				}
+			}
+		}
+		
+		model.addAttribute("interesGenerado", prestamoDetalle.getInteres());
+		model.addAttribute("interesPagado", prestamoDetalle.getInteres_pagado());
+		model.addAttribute("balanceInteres",prestamoDetalle.getInteres() - prestamoDetalle.getInteres_pagado());
+		model.addAttribute("detalles", multiPrestamos);
+		return "index :: #interesInfo";
 	}
 	
 	@GetMapping("/cuotasNoPagadas/{id}")

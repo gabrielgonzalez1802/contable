@@ -8,6 +8,7 @@ import com.contable.model.AbonoDetalle;
 public interface IAbonosDetallesService {
 	AbonoDetalle buscarPorId(Integer id);
 	List<AbonoDetalle> buscarPorAbono(Abono abono);
+	List<AbonoDetalle> buscarPorAbonoConcepto(Abono abono, String concepto);
 	void guardar(AbonoDetalle abonoDetalle);
 	void eliminar(AbonoDetalle abonoDetalle);
 }

@@ -9,4 +9,5 @@ import com.contable.model.AbonoDetalle;
 
 public interface AbonosDetallesRepository extends JpaRepository<AbonoDetalle, Integer> {
 	List<AbonoDetalle> findByAbono(Abono abono);
+	List<AbonoDetalle> findByAbonoAndConcepto(Abono abono, String concepto);
 }

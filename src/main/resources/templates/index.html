@@ -290,44 +290,108 @@ input {
         
       </div>
     </div>
-  </div>     
+  </div>   
+  
+   <!-- Modal Detalle Capitales -->         
+  <div class="modal" id="modalDetalleCapitales">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      	<div id="capitalInfo">
+		        <!-- Modal Header -->
+		        <div class="" style="margin-left: 25px; margin-top: 5px;">
+		        	<div>
+		        		 <h4 class="modal-title">Capital Generado: <span th:text="${capitalGenerado}"> </span></h4> 
+		        	</div>
+		        	<div>
+		         		 <h4 class="modal-title">Capital Pagado:  <span th:text="${capitalPagado}"></span> </h4> 
+		        	</div>
+		        	<div>
+		        		<h4 class="modal-title">Balance Capital: <span th:text="${balanceCapital}"></span> </h4>  
+		        	</div>
+		        </div>
+		        
+		        <!-- Modal body -->
+		        <div class="modal-body">
+		          	<div class="row">
+						<div class="col-md-12">
+							<div class="table-responsive" id="tablaCapitales">
+			                    <table class="table mg-b-0 text-md-nowrap">
+									<thead>
+										<tr>
+										   <th>Fecha</th>
+										   <th>Numero</th>
+										   <th>Capital Pagado</th>
+										 </tr>
+									 </thead>
+									<tbody>
+										 <tr th:each="detalle : ${detalles}">
+										 	  <td th:text="${#dates.format(detalle.fecha, 'dd/MM/yyyy')}">Fecha</td>
+											  <td th:text="${detalle.id}">Numero</td>
+											  <td th:text="${detalle.capital_pagado}">Capital Pagado</td>	
+										 </tr>
+									</tbody>
+								 </table>
+			                  </div>
+						</div>
+					</div>
+		
+		        </div>
+         </div>
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">Regresar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>       
   
     <!-- Modal Detalle Intereses -->         
   <div class="modal" id="modalDetalleIntereses">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
-      
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Interes Generado</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-        
-        <!-- Modal body -->
-        <div class="modal-body">
-          	<div class="row">
-				<div class="col-md-12">
-					<div class="table-responsive" id="tablaIntereses">
-	                    <table class="table mg-b-0 text-md-nowrap">
-							<thead>
-								<tr>
-								   <th>Interes Generado</th>
-								   <th>Interes Pagado</th>
-								 </tr>
-							 </thead>
-							<tbody>
-								 <tr th:each="detalle : ${detalles}">
-									  <td th:text="${detalle.interes}">Interes Generado</td>	
-									  <td th:text="${detalle.interes_pagado}">Interes Pagado</td>	
-								 </tr>
-							</tbody>
-						 </table>
-	                  </div>
-				</div>
-			</div>
-
-        </div>
-        
+      	<div id="interesInfo">
+		        <!-- Modal Header -->
+		        <div class="" style="margin-left: 25px; margin-top: 5px;">
+		        	<div>
+		        		 <h4 class="modal-title">Interes Generado: <span th:text="${interesGenerado}"> </span></h4> 
+		        	</div>
+		        	<div>
+		         		 <h4 class="modal-title">Interes Pagado:  <span th:text="${interesPagado}"></span> </h4> 
+		        	</div>
+		        	<div>
+		        		<h4 class="modal-title">Balance Interes: <span th:text="${balanceInteres}"></span> </h4>  
+		        	</div>
+		        
+		        </div>
+		        
+		        <!-- Modal body -->
+		        <div class="modal-body">
+		          	<div class="row">
+						<div class="col-md-12">
+							<div class="table-responsive" id="tablaIntereses">
+			                    <table class="table mg-b-0 text-md-nowrap">
+									<thead>
+										<tr>
+										   <th>Fecha</th>
+										   <th>Abono</th>
+										   <th>Interes Pagado</th>
+										 </tr>
+									 </thead>
+									<tbody>
+										 <tr th:each="detalle : ${detalles}">
+										 	  <td th:text="${#dates.format(detalle.fecha, 'dd/MM/yyyy')}">Fecha</td>
+											  <td th:text="${detalle.id}">Numero</td>
+											  <td th:text="${detalle.interes_pagado}">Interes Pagado</td>	
+										 </tr>
+									</tbody>
+								 </table>
+			                  </div>
+						</div>
+					</div>
+		
+		        </div>
+         </div>
         <!-- Modal footer -->
         <div class="modal-footer">
           <button type="button" class="btn btn-success" data-dismiss="modal">Regresar</button>
@@ -437,7 +501,7 @@ input {
 									  <td th:if="${detalle.tipo != 2}" th:text="${detalle.cuota}"></td>
 <!-- 									  <td th:unless="${detalle.tipo != 2}"></td> -->
 
-									  <td th:if="${detalle.tipo != 2}" th:text="${detalle.capital}"></td>
+									  <td th:if="${detalle.tipo != 2}" style="cursor: pointer;" th:text="${detalle.capital}" th:onclick="'cargarDetalleCapital(\'' + ${detalle.id} + '\');'"></td>
 									  
 									  <td th:text="${detalle.interes}" style="cursor: pointer;" th:onclick="'cargarDetalleInteres(\'' + ${detalle.id} + '\');'"></td>
 									  
@@ -480,50 +544,7 @@ input {
                 </div>
               </div>
             </div>
-<!--             <div class="col-md-4"> -->
-              
-<!--               <div style="border-left-style:solid;height: 80%;"> -->
 
-<!--                 <ul class="list-group wd-md-100p users-list-group"> -->
-<!--                   <li class="list-group-item d-flex align-items-center" style="background-color: transparent;"> -->
-<!--                     <img alt="" class="mr-3 rounded-circle avatar-md" th:src="@{/img/cafe.png}"> -->
-<!--                     <div> -->
-<!--                       <h6 class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Abono</h6> -->
-<!--                       <span class="d-block tx-13 text-muted">Fecha</span> -->
-<!--                     </div> -->
-<!--                     <div class="float-left ml-auto"> -->
-<!--                       <h4>2,000.00</h4> -->
-<!--                       27/12/2020 -->
-<!--                     </div> -->
-<!--                   </li> -->
-
-<!--                   <li class="list-group-item d-flex align-items-center" style="background-color: transparent;"> -->
-<!--                     <img alt="" class="mr-3 rounded-circle avatar-md" th:src="@{/img/cafe.png}"> -->
-<!--                     <div> -->
-<!--                       <h6 class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Gastos legales</h6> -->
-<!--                       <span class="d-block tx-13 text-muted">Fecha</span> -->
-<!--                     </div> -->
-<!--                     <div class="float-left ml-auto"> -->
-<!--                       <h4>2,000.00</h4> -->
-<!--                       27/12/2020 -->
-<!--                     </div> -->
-<!--                   </li> -->
-
-<!--                   </ul> -->
-                    
-<!--                   <div style="text-align: center;"> -->
-<!--                     <a href="#" class="btn  btn-info"> -->
-<!--                         Nueva transaccion -->
-<!--                       </a> -->
-                      
-<!--                       <a href="#" class="btn btn-danger mr-2"> -->
-<!--                         Cancelar transaccion -->
-<!--                       </a> -->
-<!--                   </div> -->
-
-
-<!--               </div> -->
-<!--             </div> -->
           </div>
         </div>
       </div>

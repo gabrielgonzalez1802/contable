@@ -41,4 +41,9 @@ public class AbonosDetallesServiceJpa implements IAbonosDetallesService {
 		repo.delete(abonoDetalle);
 	}
 
+	@Override
+	public List<AbonoDetalle> buscarPorAbonoConcepto(Abono abono, String concepto) {
+		return repo.findByAbonoAndConcepto(abono, concepto);
+	}
+
 }
