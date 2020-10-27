@@ -824,65 +824,76 @@ function addEvents(){
 		var tipoDescuento = $("#tipoDescuento").val();
 		var cuota = $("#selectCuotasMora").val();
 		
-		if(!cuota){
+		if(!montoDescuento){
 			$("#modalDescuentos").modal('hide');
 			Swal.fire({
 				title : 'Alerta!',
-				text : 'No hay datos para aplicar el descuento',
+				text : 'Debe ingresar un monto',
 				position : 'top',
 				icon : 'warning',
 				confirmButtonText : 'Cool'
 			})
-		}else{	
-			//Validamos que el descuento no sea mayor que el monto generado
-			 $.post("/prestamos/validarDescuento/",
-			 {
-				 "idPrestamo":idPrestamo,
-				 "monto":montoDescuento,
-				 "tipo":tipoDescuento,
-				 "cuota":cuota
-			 },function(data){
-				 if(data == 1){
-					 $.post("/prestamos/guardarDescuento/",{
-						 "idPrestamo":idPrestamo,
-						 "monto":montoDescuento,
-						 "tipo":tipoDescuento,
-						 "cuota":cuota
-					 },function(data){
-							console.log("Guardado de descuento");
-							if(data == "1"){
-								 Swal.fire({
-										title : 'Muy bien!',
-										text : 'Se ha guardado el descuento',
-										position : 'top',
-										icon : 'success',
-										confirmButtonText : 'Cool'
-									})
-							}else{
-								 Swal.fire({
-										title : 'Alerta!',
-										text : 'No se guardo el descuento',
-										position : 'top',
-										icon : 'warning',
-										confirmButtonText : 'Cool'
-									})
-							}
-							$("#montoDescuento").val("");
-							$("#modalDescuentos").modal('hide');
-							addEvents();
-							cargarDetallePrestamo(idPrestamo);
-					 });	
-				 }else{
-					 $("#modalDescuentos").modal('hide');
-					 Swal.fire({
-							title : 'Alerta!',
-							text : 'El descuento no puede ser mayor al balance',
-							position : 'top',
-							icon : 'warning',
-							confirmButtonText : 'Cool'
-					})
-				 }
-			});
+		}else{
+			if(!cuota){
+				$("#modalDescuentos").modal('hide');
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'No hay datos para aplicar el descuento',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}else{	
+				//Validamos que el descuento no sea mayor que el monto generado
+				 $.post("/prestamos/validarDescuento/",
+				 {
+					 "idPrestamo":idPrestamo,
+					 "monto":montoDescuento,
+					 "tipo":tipoDescuento,
+					 "cuota":cuota
+				 },function(data){
+					 if(data == 1){
+						 $.post("/prestamos/guardarDescuento/",{
+							 "idPrestamo":idPrestamo,
+							 "monto":montoDescuento,
+							 "tipo":tipoDescuento,
+							 "cuota":cuota
+						 },function(data){
+								console.log("Guardado de descuento");
+								if(data == "1"){
+									 Swal.fire({
+											title : 'Muy bien!',
+											text : 'Se ha guardado el descuento',
+											position : 'top',
+											icon : 'success',
+											confirmButtonText : 'Cool'
+										})
+								}else{
+									 Swal.fire({
+											title : 'Alerta!',
+											text : 'No se guardo el descuento',
+											position : 'top',
+											icon : 'warning',
+											confirmButtonText : 'Cool'
+										})
+								}
+								$("#montoDescuento").val("");
+								$("#modalDescuentos").modal('hide');
+								addEvents();
+								cargarDetallePrestamo(idPrestamo);
+						 });	
+					 }else{
+						 $("#modalDescuentos").modal('hide');
+						 Swal.fire({
+								title : 'Alerta!',
+								text : 'El descuento no puede ser mayor al balance',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+						})
+					 }
+				});
+			}
 		}
 	});
 	
@@ -898,37 +909,48 @@ function addEvents(){
 			cuota = 0;
 		}
 		
-		 $.post("/prestamos/guardarCargoCuota/",{
-			 "idPrestamo":idPrestamo,
-			 "motivo":motivo,
-			 "monto":monto,
-			 "cuota":cuota,
-			 "nota":nota
-		 },function(data){
-				console.log("Guardado de cargo");
-				if(data == "1"){
-					 Swal.fire({
-							title : 'Muy bien!',
-							text : 'Se ha guardado el cargo',
-							position : 'top',
-							icon : 'success',
-							confirmButtonText : 'Cool'
-						})
-				}else{
-					 Swal.fire({
-							title : 'Alerta!',
-							text : 'No se guardo el cargo',
-							position : 'top',
-							icon : 'warning',
-							confirmButtonText : 'Cool'
-						})
-				}
-				$("#motivoCargoCuota").val("");
-				$("#montoCargoCuota").val("");
-				$("#modalAplicarCargosCuotas").modal('hide');
-				addEvents();
-				cargarDetallePrestamo(idPrestamo);
-		 });
+		if(!monto){
+			$("#modalAplicarCargosCuotas").modal('hide');
+			Swal.fire({
+				title : 'Alerta!',
+				text : 'Debe ingresar un monto',
+				position : 'top',
+				icon : 'warning',
+				confirmButtonText : 'Cool'
+			})
+		}else{
+			 $.post("/prestamos/guardarCargoCuota/",{
+				 "idPrestamo":idPrestamo,
+				 "motivo":motivo,
+				 "monto":monto,
+				 "cuota":cuota,
+				 "nota":nota
+			 },function(data){
+					console.log("Guardado de cargo");
+					if(data == "1"){
+						 Swal.fire({
+								title : 'Muy bien!',
+								text : 'Se ha guardado el cargo',
+								position : 'top',
+								icon : 'success',
+								confirmButtonText : 'Cool'
+							})
+					}else{
+						 Swal.fire({
+								title : 'Alerta!',
+								text : 'No se guardo el cargo',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+					}
+					$("#motivoCargoCuota").val("");
+					$("#montoCargoCuota").val("");
+					$("#modalAplicarCargosCuotas").modal('hide');
+					addEvents();
+					cargarDetallePrestamo(idPrestamo);
+			 });
+		}
 	});
 	
 	$("#recibirAbono").click(function(e){
@@ -951,46 +973,56 @@ function addEvents(){
 		var tipoCuota = $("#selectTipoCuotaAbono").val();
 		var balancePendiente = parseFloat($("#capitalPendienteTemp").val());
 		
-		if(monto>balancePendiente){
+		if(!monto){
 			$("#modalRecibirAbonoCuotas").modal('hide');
 			Swal.fire({
 				title : 'Alerta!',
-				text : 'El monto a pagar no puede ser mayor que el balance pendiente',
+				text : 'Debe ingresar un monto',
 				position : 'top',
 				icon : 'warning',
 				confirmButtonText : 'Cool'
 			})
 		}else{
-			 $.post("/prestamos/guardarAbonoCuota/",{
-				 "idPrestamo":idPrestamo,
-				 "monto":monto,
-				 "tipoCuota":tipoCuota
-			 },function(data){
-					console.log("Guardado de cargo");
-					if(data == "1"){
-						 Swal.fire({
-								title : 'Muy bien!',
-								text : 'Se ha guardado el abono',
-								position : 'top',
-								icon : 'success',
-								confirmButtonText : 'Cool'
-							})
-					}else{
-						 Swal.fire({
-								title : 'Alerta!',
-								text : 'No se guardo el abono',
-								position : 'top',
-								icon : 'warning',
-								confirmButtonText : 'Cool'
-							})
-					}
-					$("#montoAbonoCuota").val("");
-					$("#modalRecibirAbonoCuotas").modal('hide');
-					addEvents();
-					cargarDetallePrestamo(idPrestamo);
-			 });
+			if(monto>balancePendiente){
+				$("#modalRecibirAbonoCuotas").modal('hide');
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'El monto a pagar no puede ser mayor que el balance pendiente',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}else{
+				 $.post("/prestamos/guardarAbonoCuota/",{
+					 "idPrestamo":idPrestamo,
+					 "monto":monto,
+					 "tipoCuota":tipoCuota
+				 },function(data){
+						console.log("Guardado de cargo");
+						if(data == "1"){
+							 Swal.fire({
+									title : 'Muy bien!',
+									text : 'Se ha guardado el abono',
+									position : 'top',
+									icon : 'success',
+									confirmButtonText : 'Cool'
+								})
+						}else{
+							 Swal.fire({
+									title : 'Alerta!',
+									text : 'No se guardo el abono',
+									position : 'top',
+									icon : 'warning',
+									confirmButtonText : 'Cool'
+								})
+						}
+						$("#montoAbonoCuota").val("");
+						$("#modalRecibirAbonoCuotas").modal('hide');
+						addEvents();
+						cargarDetallePrestamo(idPrestamo);
+				 });
+			}
 		}
-		
 	});
 
 /****************************************************** Fin Prestamos *******************************************************/

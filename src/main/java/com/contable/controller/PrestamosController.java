@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.contable.model.Abono;
+import com.contable.model.AbonoDetalle;
 import com.contable.model.Amortizacion;
 import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
@@ -39,6 +41,8 @@ import com.contable.model.PrestamoDetalle;
 import com.contable.model.PrestamoDetalleMixto;
 import com.contable.model.PrestamoInteresDetalle;
 import com.contable.model.Usuario;
+import com.contable.service.IAbonosDetallesService;
+import com.contable.service.IAbonosService;
 import com.contable.service.ICarpetasService;
 import com.contable.service.IClientesService;
 import com.contable.service.ICuentasService;
@@ -71,6 +75,12 @@ public class PrestamosController {
 	
 	@Autowired
 	private IPrestamosInteresesDetallesService servicePrestamosInteresesDetalles;
+	
+	@Autowired
+	private IAbonosService serviceAbonos;
+	
+	@Autowired
+	private IAbonosDetallesService serviceAbonosDetalles;
 	
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	
@@ -1355,6 +1365,23 @@ public class PrestamosController {
 		
 		if (tipoCuota == 1) {
 			if (prestamo.getTipo().equals("2")) {
+				Abono abono = new Abono(); 
+				List<Abono> abonos = serviceAbonos.buscarPorPrestamo(prestamo);
+				int numAbono = 1;
+				if(!abonos.isEmpty()) {
+					numAbono = abonos.get(abonos.size()-1).getNumero()+1;
+				}
+				
+				//Guardamos el abono en la tabla abonos
+				abono.setMonto(monto);
+				abono.setCliente(prestamo.getCliente());
+				abono.setEstado(0);
+				abono.setFecha(new Date());
+				abono.setNumero(numAbono);
+				abono.setPrestamo(prestamo);
+				abono.setUsuario(usuario);
+				serviceAbonos.guardar(abono);
+				
 				List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles
 						.buscarPorPrestamo(prestamo);
 
@@ -1367,8 +1394,10 @@ public class PrestamosController {
 						if (disponible > 0) {
 							if (!prestamosAdicionales.isEmpty()) {
 								for (PrestamoAdicional adicionales : prestamosAdicionales) {
+								  double pagadoCargoInicio = disponible;
 								  double tempMonto = adicionales.getMonto()-adicionales.getDescuento_adicionales();
-									if (disponible > 0) {
+//								  pagadoCargoFin = tempMonto;
+								  if (disponible > 0) {
 										if (adicionales.getMonto_pagado() < tempMonto) {
 											if (disponible + adicionales.getMonto_pagado() >= tempMonto) {
 												if (disponible + adicionales.getMonto_pagado()
@@ -1395,13 +1424,22 @@ public class PrestamosController {
 											if (adicionales.getMonto_pagado().doubleValue() == tempMonto) {
 												adicionales.setEstado(1);
 											}
+											double pagadoCargoFin = disponible;
 											servicePrestamosAdicionales.guardar(adicionales);
+											AbonoDetalle abonoDetalle = new AbonoDetalle();
+											abonoDetalle.setAbono(abono);
+											abonoDetalle.setConcepto("Cargo");
+											abonoDetalle.setDetalle(adicionales.getMotivo());
+											abonoDetalle.setMonto(pagadoCargoInicio-pagadoCargoFin);
+											abonoDetalle.setNumeroCuota(adicionales.getNumeroCuota());
+											serviceAbonosDetalles.guardar(abonoDetalle);
 										}
 									}
 								}
 							}
 						}
 						
+						double pagadoMoraInicio = disponible;
 						double tempMora = prestamoInteresDetalle.getMora()-prestamoInteresDetalle.getDescuento_mora();
 						//Pagamos las moras
 						if (disponible > 0) {
@@ -1425,10 +1463,18 @@ public class PrestamosController {
 								}
 								if (prestamoInteresDetalle.getMora_pagada().doubleValue() == tempMora) {
 								}
+								double pagadoMoraFin = disponible;
 								servicePrestamosInteresesDetalles.guardar(prestamoInteresDetalle);
+								AbonoDetalle abonoDetalle = new AbonoDetalle();
+								abonoDetalle.setAbono(abono);
+								abonoDetalle.setConcepto("Mora");
+								abonoDetalle.setMonto(pagadoMoraInicio-pagadoMoraFin);
+								abonoDetalle.setNumeroCuota(prestamoInteresDetalle.getNumero_cuota());
+								serviceAbonosDetalles.guardar(abonoDetalle);
 							}
 						}
 					
+						double pagadoInteresInicio = disponible;
 						//Pagamos el interes
 						if(disponible>0) {
 							if (prestamoInteresDetalle.getInteres_pagado() < prestamoInteresDetalle
@@ -1458,6 +1504,13 @@ public class PrestamosController {
 									}
 								}
 								servicePrestamosInteresesDetalles.guardar(prestamoInteresDetalle);
+								double pagadoInteresFin = disponible;
+								AbonoDetalle abonoDetalle = new AbonoDetalle();
+								abonoDetalle.setAbono(abono);
+								abonoDetalle.setConcepto("Interes");
+								abonoDetalle.setMonto(pagadoInteresInicio-pagadoInteresFin);
+								abonoDetalle.setNumeroCuota(prestamoInteresDetalle.getNumero_cuota());
+								serviceAbonosDetalles.guardar(abonoDetalle);
 							}
 						}
 					}
@@ -1465,6 +1518,7 @@ public class PrestamosController {
 				
 				//Antes de pagar el Capital volvemos a verificar los cargos por prestamo solamente
 				if (disponible > 0) {
+					double pagadoCargoInicio = disponible;
 					// Pagamos los cargos que no esten pagados
 					List<PrestamoAdicional> adicionalesTemps = servicePrestamosAdicionales.buscarPorPrestamoEstado(prestamo, 0);
 					if (!adicionalesTemps.isEmpty()) {
@@ -1499,6 +1553,14 @@ public class PrestamosController {
 										adicionalesTemp.setEstado(1);
 									}
 									servicePrestamosAdicionales.guardar(adicionalesTemp);
+									double pagadoCargoFin = disponible;
+									AbonoDetalle abonoDetalle = new AbonoDetalle();
+									abonoDetalle.setAbono(abono);
+									abonoDetalle.setConcepto("Cargo");
+									abonoDetalle.setMonto(pagadoCargoInicio-pagadoCargoFin);
+									abonoDetalle.setDetalle(adicionalesTemp.getMotivo());
+									abonoDetalle.setNumeroCuota(adicionalesTemp.getNumeroCuota());
+									serviceAbonosDetalles.guardar(abonoDetalle);
 								}
 							}
 						}
@@ -1507,6 +1569,7 @@ public class PrestamosController {
 								
 //				Pagamos el capital
 				if(disponible>0) {
+					double pagoCapitalInicio = disponible;
 					if (prestamo.getCapitalPagado() <= prestamo.getBalance()) {
 						if (disponible + prestamo.getCapitalPagado() >= prestamo.getBalance()) {
 							prestamo.setCapitalPagado(prestamo.getBalance());
@@ -1517,12 +1580,20 @@ public class PrestamosController {
 						}
 						prestamo.setBalance(prestamo.getMonto() - prestamo.getCapitalPagado());
 						servicePrestamos.guardar(prestamo);
+						
 					}else {
 						prestamo.setCapitalPagado(prestamo.getCapitalPagado()+disponible);
 						prestamo.setBalance(prestamo.getMonto() - prestamo.getCapitalPagado());
 						disponible= 0;
 						servicePrestamos.guardar(prestamo);
+						
 					}
+					double pagoCapitalFin = disponible;
+					AbonoDetalle abonoDetalle = new AbonoDetalle();
+					abonoDetalle.setAbono(abono);
+					abonoDetalle.setConcepto("Capital");
+					abonoDetalle.setMonto(pagoCapitalInicio-pagoCapitalFin);
+					serviceAbonosDetalles.guardar(abonoDetalle);
 				}
 				
 				for (PrestamoInteresDetalle prestamoDetalles : prestamoInteresDetalles) {
@@ -1539,7 +1610,6 @@ public class PrestamosController {
 					prestamo.setEstado(1);
 					servicePrestamos.guardar(prestamo);
 				}
-				
 			}else {
 				//Cuotas
 				List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
