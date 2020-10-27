@@ -956,7 +956,7 @@ function addEvents(){
 	$("#recibirAbono").click(function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
-		var tipoPrestamoAcct = $("#tipoPrestamoAcct").val();
+		var tipoPrestamoAcct = $("#tipoPrestamo").val();
 		if(tipoPrestamoAcct == 2){
 			$("#optionCuotasCapital").hide();
 		}else{
@@ -983,16 +983,16 @@ function addEvents(){
 				confirmButtonText : 'Cool'
 			})
 		}else{
-			if(monto>balancePendiente){
-				$("#modalRecibirAbonoCuotas").modal('hide');
-				Swal.fire({
-					title : 'Alerta!',
-					text : 'El monto a pagar no puede ser mayor que el balance pendiente',
-					position : 'top',
-					icon : 'warning',
-					confirmButtonText : 'Cool'
-				})
-			}else{
+//			if(monto>balancePendiente){
+//				$("#modalRecibirAbonoCuotas").modal('hide');
+//				Swal.fire({
+//					title : 'Alerta!',
+//					text : 'El monto a pagar no puede ser mayor que el balance pendiente',
+//					position : 'top',
+//					icon : 'warning',
+//					confirmButtonText : 'Cool'
+//				})
+//			}else{
 				 $.post("/prestamos/guardarAbonoCuota/",{
 					 "idPrestamo":idPrestamo,
 					 "monto":monto,
@@ -1021,7 +1021,7 @@ function addEvents(){
 						addEvents();
 						cargarDetallePrestamo(idPrestamo);
 				 });
-			}
+//			}
 		}
 	});
 
@@ -1156,7 +1156,7 @@ function cargarDetallePrestamo(id){
 			mostrarDetalleAmortizacion();
 			$("#cuerpo_amortizacion").replaceWith(data);
 			$("#prestamoAcct").val(id);
-				if($("#tipoPrestamoAcct").val()=='2'){
+				if($("#tipoPrestamo").val()=='2'){
 					//Interes
 					$("#thMontoCuota").hide();
 					$("#thMontoCapital").hide();
@@ -1205,16 +1205,26 @@ function checkCuota(idDetalle){
 }
 
 function cargarDetalleCargo(idPrestamoInteresDetalle){
-	$("#tablaCargos").load("/prestamos/detallesCargos/"+idPrestamoInteresDetalle,function(data){
+	var idPrestamo = $("#prestamoAcct").val();
+	$("#tablaCargos").load("/prestamos/detallesCargos/"+idPrestamoInteresDetalle+"/"+idPrestamo,function(data){
 		console.log("Detalles de los cargos");
 		$("#modalDetalleCargos").modal("show");
 	});
 }
 
 function cargarDetalleMora(idPrestamoInteresDetalle){
-	$("#tablaMoras").load("/prestamos/detallesMoras/"+idPrestamoInteresDetalle,function(data){
+	var idPrestamo = $("#prestamoAcct").val();
+	$("#tablaMoras").load("/prestamos/detallesMoras/"+idPrestamoInteresDetalle+"/"+idPrestamo,function(data){
 		console.log("Detalles de las moras");
 		$("#modalDetalleMoras").modal("show");
+	});
+}
+
+function cargarDetalleInteres(idPrestamoInteresDetalle){
+	var idPrestamo = $("#prestamoAcct").val();
+	$("#tablaIntereses").load("/prestamos/detallesIntereses/"+idPrestamoInteresDetalle+"/"+idPrestamo,function(data){
+		console.log("Detalles de los Intereses");
+		$("#modalDetalleIntereses").modal("show");
 	});
 }
 

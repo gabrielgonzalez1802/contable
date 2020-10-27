@@ -63,6 +63,11 @@ input {
     background-color: #fb750b;
 }
 
+.badge-Danger {
+    color: #fff;
+    background-color: #fb0b16;
+}
+
 ::-webkit-scrollbar {
     width: 15px;
     height: 15px
@@ -285,7 +290,52 @@ input {
         
       </div>
     </div>
-  </div>         
+  </div>     
+  
+    <!-- Modal Detalle Intereses -->         
+  <div class="modal" id="modalDetalleIntereses">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Interes Generado</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          	<div class="row">
+				<div class="col-md-12">
+					<div class="table-responsive" id="tablaIntereses">
+	                    <table class="table mg-b-0 text-md-nowrap">
+							<thead>
+								<tr>
+								   <th>Interes Generado</th>
+								   <th>Interes Pagado</th>
+								 </tr>
+							 </thead>
+							<tbody>
+								 <tr th:each="detalle : ${detalles}">
+									  <td th:text="${detalle.interes}">Interes Generado</td>	
+									  <td th:text="${detalle.interes_pagado}">Interes Pagado</td>	
+								 </tr>
+							</tbody>
+						 </table>
+	                  </div>
+				</div>
+			</div>
+
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">Regresar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>       
           
  <!-- Modal Detalle Cargo -->         
   <div class="modal" id="modalDetalleCargos">
@@ -342,6 +392,7 @@ input {
 
           <div class="row" id="cuerpoTabla">
             <div class="col-md-12" id="cuerpo_amortizacion">
+              <input type="hidden" id="tipoPrestamo" th:value="${tipoPrestamo}">
               <div class="card" id="contenidoTabla">
                 <div class="card-header pb-0">
                   <div class="d-flex justify-content-between">
@@ -359,7 +410,7 @@ input {
                 <div class="card-body">
                   <div >
 	                  <div class="table-responsive">
-	                    <table class="table mg-b-0 text-md-nowrap">
+	                   <table class="table mg-b-0 text-md-nowrap">
 							<thead>
 								<tr>
 								   <th></th>
@@ -385,15 +436,22 @@ input {
 									  <td th:text="${detalle.fecha}"></td>
 									  <td th:if="${detalle.tipo != 2}" th:text="${detalle.cuota}"></td>
 <!-- 									  <td th:unless="${detalle.tipo != 2}"></td> -->
+
 									  <td th:if="${detalle.tipo != 2}" th:text="${detalle.capital}"></td>
-									  <td th:text="${detalle.interes}"></td>
+									  
+									  <td th:text="${detalle.interes}" style="cursor: pointer;" th:onclick="'cargarDetalleInteres(\'' + ${detalle.id} + '\');'"></td>
+									  
 									  <td th:if="${detalle.tipo == 2}" th:text="${detalle.interesXhoy}"></td>
+									  
 									  <td th:text="${detalle.mora}" style="cursor: pointer;" th:onclick="'cargarDetalleMora(\'' + ${detalle.id} + '\');'"></td>
 									  <td th:text="${detalle.cargo}" style="cursor: pointer;" th:onclick="'cargarDetalleCargo(\'' + ${detalle.id} + '\');'"></td>
 									  <td th:text="${detalle.abono}"></td>
 									  <td th:text="${detalle.descuento}"></td>
+									  
 									  <td th:if="${detalle.tipo == 2}" th:text="${detalle.balance}"></td>
-									  <td th:unless="${detalle.tipo == 2}" th:text="${detalle.saldo}"></td>
+<!-- 									  <td th:unless="${detalle.tipo == 2}" th:text="${detalle.saldo}"></td> -->
+									  <td th:unless="${detalle.tipo == 2}"></td>
+									  
 									  <td th:text="${detalle.atraso}"></td>
 									  <td th:if="${detalle.estado == 'Normal'}"><span class="badge badge-primary" th:text="${detalle.estado}"></span></td>
 									  <td th:if="${detalle.estado == 'Saldo'}"><span class="badge badge-success" th:text="${detalle.estado}"></span></td>
