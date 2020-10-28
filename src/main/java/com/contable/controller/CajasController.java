@@ -39,6 +39,11 @@ public class CajasController {
 	@GetMapping("/mostrarCuadre")
 	public String mostrarCuadre(Model model, HttpSession session) {
 		Integer idCliente = (Integer) session.getAttribute("cliente");
+		
+		if(idCliente == null || idCliente == 0) {
+			return "redirect:/clientes/buscarCliente";
+		}
+		
 		Cliente cliente = serviceClientes.buscarPorId(idCliente);
 		Integer idCarpeta = (Integer) session.getAttribute("carpeta");
 		List<Abono> abonos = new LinkedList<>();
@@ -57,11 +62,16 @@ public class CajasController {
 				sumaEfectivo += abono.getMonto();
 				abonos.add(abono);
 			}
-			model.addAttribute("sumaEfectivo", sumaEfectivo);
+			model.addAttribute("sumaEfectivo", formato2d(sumaEfectivo));
 			model.addAttribute("abonos", abonos);
 			return "cajas/cuadreCaja :: cuadreCaja";
 		}
 		return "redirect:/clientes/buscarCliente";
 	}
 	
+	public double formato2d(double number) {
+		number = Math.round(number * 100);
+		number = number/100;
+		return number;
+	}
 }

@@ -1327,8 +1327,24 @@ public class PrestamosController {
 		Prestamo prestamo = servicePrestamos.buscarPorId(prestamoId);
 		List<DetalleMultiPrestamo> multiPrestamos = new LinkedList<>();
 		PrestamoDetalle prestamoDetalle = new PrestamoDetalle();
+		PrestamoInteresDetalle prestamoInteresDetalle = new PrestamoInteresDetalle();
 		if(prestamo.getTipo().equals("2")) {
 			//Interes
+			List<Abono> abonos = serviceAbonos.buscarPorPrestamo(prestamo);
+			prestamoInteresDetalle = servicePrestamosInteresesDetalles.buscarPorId(id);
+			for (Abono abono : abonos) {
+				List<AbonoDetalle> abonosDetalles = serviceAbonosDetalles.buscarPorAbonoConcepto(abono, "Interes");
+				for (AbonoDetalle abonoDetalle : abonosDetalles) {
+					if (prestamoInteresDetalle.getNumero_cuota() == abonoDetalle.getNumeroCuota()) {
+							DetalleMultiPrestamo detalleMultiPrestamo = new DetalleMultiPrestamo();
+							detalleMultiPrestamo.setId(abono.getId());
+							detalleMultiPrestamo.setFecha(abono.getFecha());
+							detalleMultiPrestamo.setInteres(prestamoInteresDetalle.getInteres());
+							detalleMultiPrestamo.setInteres_pagado(abonoDetalle.getMonto());
+							multiPrestamos.add(detalleMultiPrestamo);
+					}
+				}
+			}
 		}else {
 			//Cuotas
 			List<Abono> abonos = serviceAbonos.buscarPorPrestamo(prestamo);
@@ -1348,9 +1364,9 @@ public class PrestamosController {
 			}
 		}
 		
-		model.addAttribute("interesGenerado", prestamoDetalle.getInteres());
-		model.addAttribute("interesPagado", prestamoDetalle.getInteres_pagado());
-		model.addAttribute("balanceInteres",prestamoDetalle.getInteres() - prestamoDetalle.getInteres_pagado());
+		model.addAttribute("interesGenerado", !prestamo.getTipo().equals("2")?prestamoDetalle.getInteres():prestamoInteresDetalle.getInteres());
+		model.addAttribute("interesPagado", !prestamo.getTipo().equals("2")?prestamoDetalle.getInteres_pagado():prestamoInteresDetalle.getInteres_pagado());
+		model.addAttribute("balanceInteres",!prestamo.getTipo().equals("2")?prestamoDetalle.getInteres() - prestamoDetalle.getInteres_pagado():prestamoInteresDetalle.getInteres()-prestamoInteresDetalle.getInteres_pagado());
 		model.addAttribute("detalles", multiPrestamos);
 		return "index :: #interesInfo";
 	}
