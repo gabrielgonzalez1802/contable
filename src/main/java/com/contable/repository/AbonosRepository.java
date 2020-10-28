@@ -12,4 +12,5 @@ public interface AbonosRepository extends JpaRepository<Abono, Integer> {
 	List<Abono> findByPrestamo(Prestamo prestamo);
 	List<Abono> findByCliente(Cliente cliente);
 	List<Abono> findByPrestamoAndEstado(Prestamo prestamo, Integer estado);
+	List<Abono> findByPrestamoIn(List<Prestamo> prestamos);
 }

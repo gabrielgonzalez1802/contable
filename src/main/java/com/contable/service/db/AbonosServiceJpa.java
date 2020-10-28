@@ -46,4 +46,9 @@ public class AbonosServiceJpa implements IAbonosService{
 		repo.delete(abono);
 	}
 
+	@Override
+	public List<Abono> buscarPorPrestamosOrderByAbono(List<Prestamo> prestamos) {
+		return repo.findByPrestamoIn(prestamos);
+	}
+
 }

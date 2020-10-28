@@ -52,12 +52,10 @@ public class CajasController {
 		}
 		if(cliente!=null) {
 			List<Prestamo> prestamos = servicePrestamos.buscarPorClienteCarpetaPorFechaDesc(cliente, carpeta);
-			for (Prestamo prestamo : prestamos) {
-				List<Abono> abonosTemp = serviceAbonos.buscarPorPrestamo(prestamo);
-				for (Abono abono : abonosTemp) {
-					sumaEfectivo+=abono.getMonto();
-					abonos.add(abono);
-				}
+			List<Abono> abonosTemp = serviceAbonos.buscarPorPrestamosOrderByAbono(prestamos);
+			for (Abono abono : abonosTemp) {
+				sumaEfectivo += abono.getMonto();
+				abonos.add(abono);
 			}
 			model.addAttribute("sumaEfectivo", sumaEfectivo);
 			model.addAttribute("abonos", abonos);
