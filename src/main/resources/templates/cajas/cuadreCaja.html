@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="cuadreCaja">
+	         <div class="row">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header pb-0">
+                  <div class="d-flex justify-content-between">
+                    <h4 class="card-title mg-b-0">Cuadre de Caja</h4>
+                    <i class="mdi mdi-dots-horizontal text-gray"></i>
+                  </div>
+<!--                   <p class="tx-12 tx-gray-500 mb-2">Generar reporte. <a href="">Click</a></p> -->
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table mg-b-0 text-md-nowrap">
+                      <thead>
+                        <tr>
+                          <th>Fecha</th>
+                          <th>No. Abono</th>
+                          <th>No. Prestamo</th>
+                          <th>Cliente</th>
+                          <th>Monto Pagado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr th:each="abono : ${abonos}">
+                          <th scope="row" th:text="*{#dates.format(abono.fecha, 'dd/MM/yyyy')}"></th>
+                          <td th:text="${abono.id}"></td>
+                          <td th:text="${abono.prestamo.codigo}"></td>
+                          <td th:text="${abono.cliente.nombre}"></td>
+                          <td th:text="${abono.monto}"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              
+              <div style="border-left-style:solid;height: 80%;">
+
+                <ul class="list-group wd-md-100p users-list-group">
+                  <li class="list-group-item d-flex align-items-center" style="background-color: transparent;">
+<!--                     <img alt="" class="mr-3 rounded-circle avatar-md" src="cafe.png"> -->
+                    <div>
+                      <h6 class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Efectivo en caja</h6>
+<!--                       <span class="d-block tx-13 text-muted">Fecha</span> -->
+                    </div>
+                    <div class="float-left ml-auto">
+                      <h4>2000.00</h4>
+<!--                       27/12/2020 -->
+                    </div>
+                  </li>
+
+                 <li class="list-group-item d-flex align-items-center" style="background-color: transparent;">
+<!--                     <img alt="" class="mr-3 rounded-circle avatar-md" src="cafe.png"> -->
+                    <div>
+                      <h6 class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Transferencia</h6>
+<!--                       <span class="d-block tx-13 text-muted">Fecha</span> -->
+                    </div>
+                    <div class="float-left ml-auto">
+                      <h4>1000.00</h4>
+<!--                       27/12/2020 -->
+                    </div>
+                  </li>
+                  
+                   <li class="list-group-item d-flex align-items-center" style="background-color: transparent;">
+<!--                     <img alt="" class="mr-3 rounded-circle avatar-md" src="cafe.png"> -->
+                    <div>
+                      <h6 class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Cheques</h6>
+<!--                       <span class="d-block tx-13 text-muted">Fecha</span> -->
+                    </div>
+                    <div class="float-left ml-auto">
+                      <h4>500.00</h4>
+<!--                       27/12/2020 -->
+                    </div>
+                  </li>
+
+                  </ul>
+                    
+<!--                   <div style="text-align: center;"> -->
+<!--                     <a href="#" class="btn  btn-info"> -->
+<!--                         Nueva transaccion -->
+<!--                       </a> -->
+                      
+<!--                       <a href="#" class="btn btn-danger mr-2"> -->
+<!--                         Cancelar transaccion -->
+<!--                       </a> -->
+<!--                   </div> -->
+
+
+              </div>
+            </div>
+          </div> 
+</div>
+</body>
+</html>

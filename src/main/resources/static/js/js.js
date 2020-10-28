@@ -1026,6 +1026,20 @@ function addEvents(){
 	});
 
 /****************************************************** Fin Prestamos *******************************************************/
+
+/******************************************************** Caja **************************************************************/
+
+$("#caja").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	ocultarDetalleAmortizacion();
+	$("#contenido").load("/cajas/mostrarCuadre",function(data){
+		console.log("Cuadre de Caja");
+		addEvents();
+	});
+});
+	
+/******************************************************** Fin Caja **********************************************************/
 }
 
 
