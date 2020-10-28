@@ -43,6 +43,7 @@ public class CajasController {
 		Integer idCarpeta = (Integer) session.getAttribute("carpeta");
 		List<Abono> abonos = new LinkedList<>();
 		Carpeta carpeta = new Carpeta();
+		double sumaEfectivo = 0;
 		if(idCarpeta!=null) {
 			carpeta = serviceCarpetas.buscarPorId(idCarpeta);
 		}else {
@@ -54,13 +55,16 @@ public class CajasController {
 			for (Prestamo prestamo : prestamos) {
 				List<Abono> abonosTemp = serviceAbonos.buscarPorPrestamo(prestamo);
 				for (Abono abono : abonosTemp) {
+					sumaEfectivo+=abono.getMonto();
 					abonos.add(abono);
 				}
 			}
+			model.addAttribute("sumaEfectivo", sumaEfectivo);
+			model.addAttribute("abonos", abonos);
+			return "cajas/cuadreCaja :: cuadreCaja";
 		}
 		
-		model.addAttribute("abonos", abonos);
-		return "cajas/cuadreCaja :: cuadreCaja";
+		return "redirect:/clientes/buscarCliente";
 	}
 	
 }
