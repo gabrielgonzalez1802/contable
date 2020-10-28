@@ -264,14 +264,14 @@ input {
 	                    <table class="table mg-b-0 text-md-nowrap">
 							<thead>
 								<tr>
-								   <th>Mora Generada</th>
+								   <th>Mora Pendiente</th>
 								   <th>Descuento</th>
 								   <th>Mora Pagada</th>
 								 </tr>
 							 </thead>
 							<tbody>
 								 <tr th:each="detalle : ${detalles}">
-									  <td th:text="${detalle.mora}">Mora Generada</td>	
+									  <td th:text="${detalle.mora}">Mora Pendiente</td>	
 									  <td th:text="${detalle.descuento_mora}">Descuento</td>	
 									  <td th:text="${detalle.mora_pagada}">Mora Pagada</td>	
 								 </tr>
@@ -508,15 +508,17 @@ input {
 									  <td th:if="${detalle.tipo == 2}" th:text="${detalle.interesXhoy}"></td>
 									  
 									  <td th:text="${detalle.mora}" style="cursor: pointer;" th:onclick="'cargarDetalleMora(\'' + ${detalle.id} + '\');'"></td>
+									 
 									  <td th:text="${detalle.cargo}" style="cursor: pointer;" th:onclick="'cargarDetalleCargo(\'' + ${detalle.id} + '\');'"></td>
+									
 									  <td th:text="${detalle.abono}"></td>
+									  
 									  <td th:text="${detalle.descuento}"></td>
 									  
-									  <td th:if="${detalle.tipo == 2}" th:text="${detalle.balance}"></td>
-<!-- 									  <td th:unless="${detalle.tipo == 2}" th:text="${detalle.saldo}"></td> -->
-									  <td th:unless="${detalle.tipo == 2}"></td>
+									  <td th:text="${detalle.balance}"></td>
 									  
 									  <td th:text="${detalle.atraso}"></td>
+									  
 									  <td th:if="${detalle.estado == 'Normal'}"><span class="badge badge-primary" th:text="${detalle.estado}"></span></td>
 									  <td th:if="${detalle.estado == 'Saldo'}"><span class="badge badge-success" th:text="${detalle.estado}"></span></td>
 									  <td th:if="${detalle.estado == 'Atraso'}"><span class="badge badge-warning" th:text="${detalle.estado}"></span></td>
