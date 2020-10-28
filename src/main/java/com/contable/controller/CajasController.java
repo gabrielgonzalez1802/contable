@@ -61,7 +61,6 @@ public class CajasController {
 			model.addAttribute("abonos", abonos);
 			return "cajas/cuadreCaja :: cuadreCaja";
 		}
-		
 		return "redirect:/clientes/buscarCliente";
 	}
 	
