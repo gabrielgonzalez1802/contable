@@ -795,13 +795,15 @@ function addEvents(){
 	$("#descuentos").click(function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
+		$("#selectCuotasMora").show();
+		$('#tipoDescuento option:nth-child(1)').prop("selected", true).change(); 
 		var idPrestamo = $("#prestamoAcct").val();
 		var tipoDescuento = $("#tipoDescuento").val();
-		 $.get("/prestamos/cuotasNoPagadasDescuentos/"+idPrestamo+"/"+tipoDescuento,
+		 $.get("/prestamos/cuotasNoPagadasDescuentosTemp/"+idPrestamo+"/"+tipoDescuento,
 			function(data){
-			console.log("Cargar cuotas no pagadas");
-			$("#selectCuotasMora").replaceWith(data);
-			$("#modalDescuentos").modal('show');
+				console.log("Cargar cuotas no pagadas");
+				$("#selectCuotasMora").replaceWith(data);
+				$("#modalDescuentos").modal('show');
 		});
 	});
 	
@@ -810,10 +812,18 @@ function addEvents(){
 		e.stopImmediatePropagation();
 		var idPrestamo = $("#prestamoAcct").val();
 		var tipoDescuento = $("#tipoDescuento").val();
-		 $.get("/prestamos/cuotasNoPagadasDescuentos/"+idPrestamo+"/"+tipoDescuento,
-			function(data){
-			$("#selectCuotasMora").replaceWith(data);
-		});
+		var tipoPrestamo = $("#tipoPrestamo").val()
+		if(tipoDescuento == 1 && tipoPrestamo == 1){
+			 $.get("/prestamos/cuotasNoPagadasDescuentosTemp/"+idPrestamo+"/"+tipoDescuento,
+						function(data){
+						$("#selectCuotasMora").replaceWith(data);
+					});
+		}else{
+			 $.get("/prestamos/cuotasNoPagadasDescuentos/"+idPrestamo+"/"+tipoDescuento,
+						function(data){
+						$("#selectCuotasMora").replaceWith(data);
+					});
+		}
 	});
 	
 	$("#agregaDescuento").click(function(e){
@@ -822,6 +832,7 @@ function addEvents(){
 		var idPrestamo = $("#prestamoAcct").val();
 		var montoDescuento = $("#montoDescuento").val();
 		var tipoDescuento = $("#tipoDescuento").val();
+		var tipoPrestamo = $("#tipoPrestamo").val()
 		var cuota = $("#selectCuotasMora").val();
 		
 		if(!montoDescuento){
@@ -834,7 +845,7 @@ function addEvents(){
 				confirmButtonText : 'Cool'
 			})
 		}else{
-			if(!cuota){
+			if(tipoPrestamo == "2" && !cuota){
 				$("#modalDescuentos").modal('hide');
 				Swal.fire({
 					title : 'Alerta!',
