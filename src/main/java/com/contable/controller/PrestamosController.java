@@ -1,5 +1,6 @@
 package com.contable.controller;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,8 @@ import com.contable.model.Cliente;
 import com.contable.model.Cuenta;
 import com.contable.model.DetalleMultiPrestamo;
 import com.contable.model.MoraDetalle;
+import com.contable.model.Nota;
+import com.contable.model.PagoTemp;
 import com.contable.model.Prestamo;
 import com.contable.model.PrestamoAdicional;
 import com.contable.model.PrestamoDetalle;
@@ -48,10 +52,13 @@ import com.contable.service.IAbonosService;
 import com.contable.service.ICarpetasService;
 import com.contable.service.IClientesService;
 import com.contable.service.ICuentasService;
+import com.contable.service.INotasService;
+import com.contable.service.IPagosTempService;
 import com.contable.service.IPrestamosAdicionalesService;
 import com.contable.service.IPrestamosDetallesService;
 import com.contable.service.IPrestamosInteresesDetallesService;
 import com.contable.service.IPrestamosService;
+import com.contable.util.Utileria;
 
 @Controller
 @RequestMapping("/prestamos")
@@ -83,6 +90,15 @@ public class PrestamosController {
 	
 	@Autowired
 	private IAbonosDetallesService serviceAbonosDetalles;
+	
+	@Autowired
+	private INotasService serviceNotas;
+	
+	@Autowired
+	private IPagosTempService servicePagosTemp;
+	
+	@Value("${contable.ruta.imagenes}")
+	private String ruta;
 	
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	
@@ -838,6 +854,8 @@ public class PrestamosController {
 						estado = "Atraso";
 					}else if(prestamoInteresDetalle.getEstado()==1) {
 						estado = "Saldo";
+					}else if(prestamoInteresDetalle.getEstado()==3) {
+						estado = "Legal";
 					}
 					
 					double cargoPagadoTemp = 0;
@@ -989,7 +1007,18 @@ public class PrestamosController {
 			}
 		}
 		
-		Integer idCliente = (Integer) session.getAttribute("cliente");
+		Integer idCliente; 
+				
+		if(session.getAttribute("cliente")!=null) {
+			if((Integer) session.getAttribute("cliente") == 0) {
+				idCliente = prestamo.getCliente().getId();
+			}else {
+				idCliente = (Integer) session.getAttribute("cliente");
+			}
+		}else {
+			idCliente = prestamo.getCliente().getId();
+		}
+
 		Cliente cliente = serviceClientes.buscarPorId(idCliente);
 		String datosCliente  = cliente.getNombre()+" / Tel.: "+cliente.getTelefono();
 		
@@ -1108,6 +1137,33 @@ public class PrestamosController {
 		return "index :: #tablaCargos";
 	}
 	
+	@GetMapping("/mostrarCotasPrestamo/{id}")
+	public String mostrarCotasPrestamo(@PathVariable(name = "id") Integer idPrestamo, Model model) {
+		Prestamo prestamo = servicePrestamos.buscarPorId(idPrestamo);
+		List<DetalleMultiPrestamo> detalleMultiPrestamos = new LinkedList<>();
+		if(prestamo.getTipo().equals("2")) {
+			//Interes
+			List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorPrestamo(prestamo);
+			for (PrestamoInteresDetalle prestamoInteresDetalle : prestamoInteresDetalles) {
+				DetalleMultiPrestamo detalleMultiPrestamo = new DetalleMultiPrestamo();
+				detalleMultiPrestamo.setId(prestamoInteresDetalle.getId());
+				detalleMultiPrestamo.setNota(prestamoInteresDetalle.getNumero_cuota().toString());
+				detalleMultiPrestamos.add(detalleMultiPrestamo);
+			}
+		}else {
+			//Cuotas
+			List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
+			for (PrestamoDetalle prestamoDetalle : prestamoDetalles) {
+				DetalleMultiPrestamo detalleMultiPrestamo = new DetalleMultiPrestamo();
+				detalleMultiPrestamo.setId(prestamoDetalle.getId());
+				detalleMultiPrestamo.setNota(prestamoDetalle.getNumero().toString());
+				detalleMultiPrestamos.add(detalleMultiPrestamo);
+			}
+		}
+		model.addAttribute("cuotas",detalleMultiPrestamos);
+		return "notas/infoNotas :: #cuotaNota";
+	}
+	
 	@PostMapping("/totalesCuotas/")
 	public String totalesCuotas(Model model, HttpSession session,
 			Integer idPrestamo, Integer tipoCuota, String cuotas) throws ParseException {
@@ -1136,6 +1192,8 @@ public class PrestamosController {
 							estado = "Atraso";
 						}else if(prestamoInteresDetalle.getEstado()==1) {
 							estado = "Saldo";
+						}else if(prestamoInteresDetalle.getEstado()==3) {
+							estado = "Legal";
 						}
 						
 						double cargoPagadoTemp = 0;
@@ -1864,6 +1922,27 @@ public class PrestamosController {
 	public ResponseEntity<String> guardarAbonoCuota(Model model, HttpSession session,
 			Integer idPrestamo, Double monto, Integer tipoCuota) {
 		Prestamo prestamo = servicePrestamos.buscarPorId(idPrestamo);
+		monto = 0.0;
+		double abonoEfectivo = 0;
+		double abonoCheque = 0;
+		double abonoDeposito = 0;
+		String imagenCheque = null;
+		String imagenDepositoTransferencia = null;
+		List<PagoTemp> pagosTemp = servicePagosTemp.buscarPorPrestamo(prestamo);
+		for (PagoTemp pagoTemp : pagosTemp) {
+			if(pagoTemp.getTipo() == 1) {
+				abonoEfectivo+=pagoTemp.getMonto();
+			}else if(pagoTemp.getTipo() == 2) {
+				//Deposito / Transferencia
+				abonoDeposito+=pagoTemp.getMonto();
+				imagenDepositoTransferencia = pagoTemp.getImagen();
+			}else if(pagoTemp.getTipo() == 3) {
+				//Cheque
+				abonoCheque+=pagoTemp.getMonto();
+				imagenCheque = pagoTemp.getImagen();
+			}
+			monto += pagoTemp.getMonto();
+		}
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		List<Amortizacion> detalles = new LinkedList<>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
@@ -1888,6 +1967,15 @@ public class PrestamosController {
 				abono.setNumero(numAbono);
 				abono.setPrestamo(prestamo);
 				abono.setUsuario(usuario);
+				abono.setEfectivo(abonoEfectivo);
+				abono.setCheque(abonoCheque);
+				abono.setTransferencia_deposito(abonoDeposito);
+				if(imagenCheque!=null) {
+					abono.setImagen_cheque(imagenCheque);
+				}
+				if(imagenDepositoTransferencia!=null) {
+					abono.setImagen_deposito_transferencia(imagenDepositoTransferencia);
+				}
 				serviceAbonos.guardar(abono);
 				
 				List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles
@@ -2135,6 +2223,15 @@ public class PrestamosController {
 				abono.setNumero(numAbono);
 				abono.setPrestamo(prestamo);
 				abono.setUsuario(usuario);
+				abono.setEfectivo(abonoEfectivo);
+				abono.setCheque(abonoCheque);
+				abono.setTransferencia_deposito(abonoDeposito);
+				if(imagenCheque!=null) {
+					abono.setImagen_cheque(imagenCheque);
+				}
+				if(imagenDepositoTransferencia!=null) {
+					abono.setImagen_deposito_transferencia(imagenDepositoTransferencia);
+				}
 				serviceAbonos.guardar(abono);
 				
 				List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles
@@ -2310,34 +2407,6 @@ public class PrestamosController {
 							}
 						}
 						
-						
-//						if(disponible>0) {
-//							double pagoCapitalInicio = disponible;
-//							if (prestamoDetalle.getCapital_pagado() <= prestamoDetalle.getBalance()) {
-//								if (disponible + prestamoDetalle.getCapital_pagado() >= prestamoDetalle.getBalance()) {
-//									prestamoDetalle.setCapital_pagado(prestamoDetalle.getBalance());
-//									disponible -= prestamoDetalle.getCapital_pagado();
-//								} else {
-//									prestamoDetalle.setCapital_pagado(prestamoDetalle.getCapital_pagado() + disponible);
-//									disponible = 0;
-//								}
-//								prestamoDetalle.setBalance(prestamoDetalle.getMonto() - prestamoDetalle.getCapital_pagado());
-//								servicePrestamosDetalles.guardar(prestamoDetalle);
-//								
-//							}else {
-//								prestamoDetalle.setCapital_pagado(prestamoDetalle.getCapital_pagado()+disponible);
-//								prestamoDetalle.setBalance(prestamoDetalle.getMonto() - prestamoDetalle.getCapital_pagado());
-//								disponible= 0;
-//								servicePrestamosDetalles.guardar(prestamoDetalle);
-//								
-//							}
-//							double pagoCapitalFin = disponible;
-//							AbonoDetalle abonoDetalle = new AbonoDetalle();
-//							abonoDetalle.setAbono(abono);
-//							abonoDetalle.setConcepto("Capital");
-//							abonoDetalle.setMonto(pagoCapitalInicio-pagoCapitalFin);
-//							serviceAbonosDetalles.guardar(abonoDetalle);
-//						}
 					}
 				}
 				
@@ -2355,9 +2424,314 @@ public class PrestamosController {
 			}
 		}
 		
+		//Borramos los pagos temp
+		servicePagosTemp.eliminar(pagosTemp);
 		return new ResponseEntity<>("1", HttpStatus.OK);
 	}
 
+	@GetMapping("/prestamosPendientes")
+	public String prestamosPendientes(Model model, HttpSession session) {
+		Carpeta carpeta = new Carpeta();
+		if(session.getAttribute("carpeta") != null) {
+			carpeta = serviceCarpetas.buscarPorId((int) session.getAttribute("carpeta"));
+		}else {
+			//Cargamos la principal
+			carpeta = serviceCarpetas.buscarTipoCarpeta(1).get(0);
+		}
+
+		
+		if(session.getAttribute("cliente") != null) {
+			Cliente cliente = serviceClientes.buscarPorId((Integer) session.getAttribute("cliente"));
+		}else {
+			Cliente cliente = new Cliente();
+		}
+		
+		List<Prestamo> prestamos = servicePrestamos.buscarPorCarpeta(carpeta).stream().
+				filter(p -> p.getEstado() != 1).collect(Collectors.toList());
+		
+		for (Prestamo prestamo : prestamos) {
+			if(prestamo.getTipo().equals("2")) {
+				//Interes
+				List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorPrestamo(prestamo);
+				for (PrestamoInteresDetalle interesDetalle : prestamoInteresDetalles) {
+					if(interesDetalle.getEstado() == 3) {
+						prestamo.setEstado(3);
+						break;
+					}
+					
+					if(interesDetalle.getEstado() == 2) {
+						prestamo.setEstado(2);
+						break;
+					}
+					
+					if(interesDetalle.getEstado() == 0) {
+						prestamo.setEstado(0);
+						break;
+					}
+				}
+			}else {
+				//Cuotas
+				List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
+				for (PrestamoDetalle detalle : prestamoDetalles) {
+					if(detalle.getEstado_cuota().equalsIgnoreCase("Legal")) {
+						prestamo.setEstado(3);
+						break;
+					}
+					
+					if(detalle.getEstado_cuota().equalsIgnoreCase("Atraso")) {
+						prestamo.setEstado(2);
+						break;
+					}
+					
+					if(detalle.getEstado_cuota().equalsIgnoreCase("Normal")) {
+						prestamo.setEstado(0);
+						break;
+					}
+				}
+			}
+		}
+		
+		if(prestamos!=null) {
+			LocalDateTime fechaAcct =  LocalDateTime.now();
+			for (Prestamo prestamosTemp : prestamos) {
+				List<Nota> notas = serviceNotas.buscarPorPrestamo(prestamosTemp);
+				if(!notas.isEmpty()) {
+					int count = 0;
+					for (Nota nota : notas) {
+						LocalDateTime fechaNota = convertToLocalDateTimeViaInstant(nota.getFecha());
+						if(fechaNota.isAfter(fechaAcct) || fechaNota.isEqual(fechaAcct)) {
+							count++;
+						}
+					}
+					prestamosTemp.setNumeroNota(count);
+				}else {
+					prestamosTemp.setNumeroNota(0);
+				}
+			}
+		}
+		
+		model.addAttribute("item", "");
+		model.addAttribute("estado", "");
+		model.addAttribute("carpeta", carpeta);
+		model.addAttribute("prestamos", prestamos);
+		return "prestamos/prestamosPendientes :: prestamosPendientes";
+	}
+	
+	@PostMapping("/prestamosPendientesFiltro")
+	public String prestamosPendientesFiltro(Model model, HttpSession session,
+			@RequestParam(required = false, name = "carpetaId") Integer carpetaId, 
+			@RequestParam(required = false, name = "estado") String estado,
+			@RequestParam(required = false, name = "item") String item) {
+		Carpeta carpeta = new Carpeta();
+		
+		if(estado == null) {
+			estado = "";
+		}
+		
+		if(carpetaId == null) {
+			carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
+			
+			if(carpeta==null) {
+				//Cargamos la principal
+				List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
+				if(!carpetas.isEmpty()) {
+					carpeta = carpetas.get(0);
+				}
+			}
+		}else {
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
+			if(!carpetas.isEmpty()) {
+				carpeta = carpetas.get(0);
+			}
+		}
+		
+		Cliente cliente = serviceClientes.buscarPorId((Integer) session.getAttribute("cliente"));
+		if(cliente == null) {
+			cliente = new Cliente();
+		}
+		
+		List<Prestamo> prestamos  = servicePrestamos.buscarPorCarpeta(carpeta).stream().
+				filter(p -> p.getEstado() != 1).collect(Collectors.toList());
+		
+		if(!prestamos.isEmpty()) {
+			for (Prestamo prestamo : prestamos) {
+				if(prestamo.getTipo().equals("2")) {
+					//Interes
+					List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorPrestamo(prestamo);
+					for (PrestamoInteresDetalle interesDetalle : prestamoInteresDetalles) {
+						if(interesDetalle.getEstado() == 3) {
+							prestamo.setEstado(3);
+							break;
+						}
+						
+						if(interesDetalle.getEstado() == 2) {
+							prestamo.setEstado(2);
+							break;
+						}
+						
+						if(interesDetalle.getEstado() == 0) {
+							prestamo.setEstado(0);
+							break;
+						}
+					}
+				}else {
+					//Cuotas
+					List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
+					for (PrestamoDetalle detalle : prestamoDetalles) {
+						if(detalle.getEstado_cuota().equalsIgnoreCase("Legal")) {
+							prestamo.setEstado(3);
+							break;
+						}
+						
+						if(detalle.getEstado_cuota().equalsIgnoreCase("Atraso")) {
+							prestamo.setEstado(2);
+							break;
+						}
+						
+						if(detalle.getEstado_cuota().equalsIgnoreCase("Normal")) {
+							prestamo.setEstado(0);
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		List<Prestamo> filterList = new LinkedList<>();
+		
+		if(estado.equalsIgnoreCase("2")) {
+			filterList = prestamos.stream().
+					filter(p -> p.getEstado() == 2).collect(Collectors.toList());
+		}else if(estado.equalsIgnoreCase("3")) {
+			filterList  = prestamos.stream().
+					filter(p -> p.getEstado() == 3).collect(Collectors.toList());
+		}else if(estado.equalsIgnoreCase("0")) {
+			filterList  = prestamos.stream().
+					filter(p -> p.getEstado() == 0).collect(Collectors.toList());
+		}else {
+			filterList = prestamos;
+		}
+		
+		if(item != null) {
+			filterList = filterList.stream().filter( p -> 
+						p.getCliente().getNombre().toLowerCase().contains(item.toLowerCase()) || 
+						p.getCliente().getCedula().toLowerCase().contains(item.toLowerCase())
+					).collect(Collectors.toList());
+		}
+		
+		if(filterList!=null) {
+			LocalDateTime fechaAcct =  LocalDateTime.now();
+			for (Prestamo prestamosTemp : filterList) {
+				List<Nota> notas = serviceNotas.buscarPorPrestamo(prestamosTemp);
+				if(!notas.isEmpty()) {
+					int count = 0;
+					for (Nota nota : notas) {
+						LocalDateTime fechaNota = convertToLocalDateTimeViaInstant(nota.getFecha());
+						if(fechaNota.isAfter(fechaAcct) || fechaNota.isEqual(fechaAcct)) {
+							count++;
+						}
+					}
+					prestamosTemp.setNumeroNota(count);
+				}else {
+					prestamosTemp.setNumeroNota(0);
+				}
+			}
+		}
+
+		model.addAttribute("prestamos", filterList);
+		return "prestamos/prestamosPendientes :: #tablaPrestamosCobros";
+	}
+	
+	@GetMapping("/verNotas/{id}")
+	public String verNotas(@PathVariable(name = "id") Integer id, Model model) {
+		Prestamo prestamo = servicePrestamos.buscarPorId(id);
+		LocalDateTime fechaAcct =  LocalDateTime.now();
+		//Notas asociadas al prestamo
+		List<Nota> notas = serviceNotas.buscarPorPrestamo(prestamo);
+		List<Nota> depuredNota = new LinkedList<>();
+		for (Nota nota : notas) {
+			LocalDateTime fechaNota = convertToLocalDateTimeViaInstant(nota.getFecha());
+			if(fechaNota.isAfter(fechaAcct) || fechaNota.isEqual(fechaAcct)) {
+				depuredNota.add(nota);
+			}
+		}
+		model.addAttribute("notas", depuredNota);
+		model.addAttribute("prestamo", prestamo);
+		return "notas/infoNotas :: infoNotas";
+	}
+	
+	@PostMapping("/crearPagoTemp")
+	public String crearPagoTemp(Abono abono, Model model) {
+		Prestamo prestamo = servicePrestamos.buscarPorId(abono.getId());
+		List<PagoTemp> pagosTemp = servicePagosTemp.buscarPorPrestamo(prestamo);
+		PagoTemp pagoTemp = new PagoTemp();
+		
+		if (!abono.getImagen().isEmpty()) {
+			String nombreImagen = Utileria.guardarArchivo(abono.getImagen(), ruta);
+			if (nombreImagen != null) {
+				abono.setNombreImagen(nombreImagen);
+			}
+		}
+		
+		pagoTemp.setMonto(abono.getMonto());
+		pagoTemp.setTipo(abono.getTipoPago());
+		pagoTemp.setPrestamo(prestamo);
+		pagoTemp.setImagen(abono.getNombreImagen());
+		servicePagosTemp.guardar(pagoTemp);
+		pagosTemp.add(pagoTemp);
+		model.addAttribute("pagoTemp", pagosTemp);
+		return "notas/infoNotas :: #tablaPagos";
+	}
+	
+	@GetMapping("/cargarPagoTemp/{id}")
+	public String cargarPagoTemp(@PathVariable("id") Integer idPrestamo, Model model) {
+		Prestamo prestamo = servicePrestamos.buscarPorId(idPrestamo);
+		List<PagoTemp> pagosTemp = servicePagosTemp.buscarPorPrestamo(prestamo);
+		model.addAttribute("pagoTemp", pagosTemp);
+		return "notas/infoNotas :: #tablaPagos";
+	}
+	
+	@GetMapping("/montoTotalAbono/{id}")
+	public String montoTotalAbono(@PathVariable("id") Integer idPrestamo, Model model) {
+		Prestamo prestamo = servicePrestamos.buscarPorId(idPrestamo);
+		double montoTotalAbono = 0;
+		List<PagoTemp> pagosTemp = servicePagosTemp.buscarPorPrestamo(prestamo);
+		for (PagoTemp pagoTemp : pagosTemp) {
+			montoTotalAbono += pagoTemp.getMonto();
+		}
+		model.addAttribute("montoTotalAbono", montoTotalAbono);
+		return "notas/infoNotas :: #montoTotalAbono";
+	}
+	
+	@GetMapping("/eliminarPagoTemp/{id}")
+	public String eliminarPagoTemp(@PathVariable("id") Integer pagoTempId, Model model) {
+		PagoTemp pagoTemp = servicePagosTemp.buscarPorId(pagoTempId);
+		Prestamo prestamo = pagoTemp.getPrestamo();
+		if(!(pagoTemp.getImagen()==null)) {
+			File imageFile = new File(ruta+ pagoTemp.getImagen());
+			imageFile.delete();
+		}
+		servicePagosTemp.eliminar(pagoTemp);
+		List<PagoTemp> pagosTemp = servicePagosTemp.buscarPorPrestamo(prestamo);
+		model.addAttribute("pagoTemp", pagosTemp);
+		return "notas/infoNotas :: #tablaPagos";
+	}
+	
+	@GetMapping("/eliminarPagosTemp/{id}")
+	@ResponseBody
+	public ResponseEntity<String> eliminarPagosTemp(@PathVariable("id") Integer prestamoId) {
+		Prestamo prestamo = servicePrestamos.buscarPorId(prestamoId);
+		List<PagoTemp> pagosTemp = servicePagosTemp.buscarPorPrestamo(prestamo);
+		for (PagoTemp pagoTemp : pagosTemp) {
+			if(pagoTemp.getImagen() == null || pagoTemp.getImagen().equals("")) {
+				File imageFile = new File(ruta + pagoTemp.getImagen());
+				imageFile.delete();
+			}
+		}
+		servicePagosTemp.eliminar(pagosTemp);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
 	public Date convertToDateViaInstant(LocalDateTime dateToConvert) {
 	    return java.util.Date
 	      .from(dateToConvert.atZone(ZoneId.systemDefault())

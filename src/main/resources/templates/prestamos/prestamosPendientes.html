@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:fragment="prestamosPendientes">
+	
+		<div class="col-md-12">
+			<div class="form-row align-items-center">
+				<div class="col-sm-2 my-1" id="buscarCarpeta">
+					<label class="sr-only" for="">carpeta</label>
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<button style="width: 100%;" class="btn btn-success"
+								id="btnCarpetaCobros">
+								<i class="fas fa-search"></i>
+							</button>
+						</div>
+						<input type="hidden" th:value="${msgId}" id="msgId"> <input
+							type="hidden" th:value="${carpeta.id}" class="form-control"
+							id="carpetaId" placeholder="Carpeta" disabled="disabled">
+						<input type="text" th:value="${carpeta.nombre}"
+							class="form-control" id="carpeta" placeholder="Carpeta"
+							disabled="disabled">
+						<div th:if="${carpeta.principal != 1}" class="input-group-prepend">
+							<button style="width: 100%;" class="btn btn-danger"
+								id="btnExitCarpetaCobros">
+								<i class="fas fa-times"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-2 my-1">
+					<input type="hidden" th:value="${estado}" id="estadoCuotaHidden">
+					<select class="form-control" id="selectEstadoCuota">
+						<option value="">Todos</option>
+						<option value="0">Normal</option>
+						<option value="2">Atraso</option>
+						<option value="3">Legal</option>
+					</select>
+				</div>
+				<div class="col-sm-8 my-1">
+					<input type="hidden" id="itemPrestamosCobros" th:value="${item}">
+					<input type="text" class="form-control" id="nombreOCedula"
+						placeholder="Nombre / Cedula">
+				</div>
+			</div>
+		</div>
+
+		<br>
+		<div class="col-md-12">
+			<div class="row" id="">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="table-responsive" id="tablaPrestamosCobros">
+							<input type ="hidden" id="carpetaIdCobros" th:value="nombreCarpeta">
+							<table class="table mg-b-0 text-md-nowrap">
+								<thead>
+									<tr>
+										<th>Cliente</th>
+										<th>Cedula</th>
+										<th>Telefono</th>
+										<th>No.</th>
+										<th>Fecha</th>
+										<th>Monto</th>
+										<th>Nota</th>
+										<th>Estado</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="prestamo : ${prestamos}">
+										<td th:text="${prestamo.cliente.nombre}"></td>
+										<td th:text="${prestamo.cliente.cedula}"></td>
+										<td th:text="${prestamo.cliente.telefono}"></td>
+										<td th:text="${prestamo.codigo}"></td>
+										<td th:text="${#dates.format(prestamo.fecha, 'dd-MM-yyyy')}"></td>
+										<td th:text="${prestamo.monto}"></td>
+										
+										<td th:text="${prestamo.numeroNota}" style="cursor: pointer;" th:onclick="'verInfoNotas(\'' + ${prestamo.id} + '\');'"></td>
+
+										<td th:if="${prestamo.estado == 0}"><span
+											class="badge badge-primary" th:text="Normal"></span></td>
+										<td th:if="${prestamo.estado == 2}"><span
+											class="badge badge-warning" th:text="Atraso"></span></td>
+										<td th:if="${prestamo.estado == 3}"><span
+											class="badge badge-Danger" th:text="Legal"></span></td>
+										<td><button th:onclick="'verNotas(\'' + ${prestamo.id} + '\');'" class="btn btn-success btn-sm">
+												<i class="fas fa-search"></i>
+											</button></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

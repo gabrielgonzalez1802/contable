@@ -61,6 +61,9 @@ public class Prestamo {
 	
 	private Date fecha_cron;
 	
+	@Transient
+	private Integer numeroNota =0;
+	
 	@OneToOne
 	@JoinColumn(name = "id_usuario")
 	private Usuario usuario;
@@ -358,6 +361,14 @@ public class Prestamo {
 		this.capitalPagado = capitalPagado;
 	}
 
+	public Integer getNumeroNota() {
+		return numeroNota;
+	}
+
+	public void setNumeroNota(Integer numeroNota) {
+		this.numeroNota = numeroNota;
+	}
+
 	@Override
 	public String toString() {
 		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", idClienteTemp=" + idClienteTemp
@@ -366,9 +377,10 @@ public class Prestamo {
 				+ monto + ", pagos=" + pagos + ", tasa=" + tasa + ", codigo=" + codigo + ", forma_pago=" + forma_pago
 				+ ", valor_cuota=" + valor_cuota + ", mora=" + mora + ", observacion=" + observacion + ", balance="
 				+ balance + ", valor_interes=" + valor_interes + ", ultimoPago=" + ultimoPago + ", fecha_cron="
-				+ fecha_cron + ", usuario=" + usuario + ", estado=" + estado + ", moneda=" + moneda + ", carpeta="
-				+ carpeta + ", cuenta=" + cuenta + ", total_cuota=" + total_cuota + ", total_capital=" + total_capital
-				+ ", total_interes=" + total_interes + ", total_neto=" + total_neto + ", gastos_cierre=" + gastos_cierre
-				+ ", cantidad_pagos=" + cantidad_pagos + ", capitalPagado=" + capitalPagado + "]";
+				+ fecha_cron + ", numeroNota=" + numeroNota + ", usuario=" + usuario + ", estado=" + estado
+				+ ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta + ", total_cuota=" + total_cuota
+				+ ", total_capital=" + total_capital + ", total_interes=" + total_interes + ", total_neto=" + total_neto
+				+ ", gastos_cierre=" + gastos_cierre + ", cantidad_pagos=" + cantidad_pagos + ", capitalPagado="
+				+ capitalPagado + "]";
 	}
 }

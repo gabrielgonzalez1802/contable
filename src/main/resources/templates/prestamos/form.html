@@ -114,19 +114,19 @@
 								
 							<div class="row">
 								<div class="col-md-2">
-									 <input type="number" style="font-size: 15px;" th:field="*{monto}" class="form-control" oninput="javascript:calCuota()" id="monto" min="0" placeholder="Monto a prestar" data-toggle="tooltip" title="Monto a prestar">
+									 <input type="number" th:field="*{monto}" class="form-control maximizedLow" oninput="javascript:calCuota()" id="monto" min="0" placeholder="Monto a prestar" data-toggle="tooltip" title="Monto a prestar">
 								</div>
 								<div class="col-md-1" id="divPlazos">
-									<input type="number" style="font-size: 15px;" placeholder="Plazos" th:field="*{pagos}" class="form-control" oninput="javascript:calCuota()" id="pagos" min="0" data-toggle="tooltip" title="Plazo">
+									<input type="number" placeholder="Plazos" th:field="*{pagos}" class="form-control maximizedLow" oninput="javascript:calCuota()" id="pagos" min="0" data-toggle="tooltip" title="Plazo">
 								</div>
 								<div class="col-md-2">
-									<input type="number" style="font-size: 15px;" th:field="*{tasa}" class="form-control" oninput="javascript:calCuota()" min="0" id="tasa" placeholder="Tasa" data-toggle="tooltip" title="Tasa">
+									<input type="number" th:field="*{tasa}" class="form-control maximizedLow" oninput="javascript:calCuota()" min="0" id="tasa" placeholder="Tasa" data-toggle="tooltip" title="Tasa">
 								</div>
 								<div class="col-md-2">
-									 <input type="number" style="font-size: 15px;" th:field="*{mora}" class="form-control" id="pago_mora" min="0" placeholder="Mora" data-toggle="tooltip" title="Mora">
+									 <input type="number" th:field="*{mora}" class="form-control maximizedLow" id="pago_mora" min="0" placeholder="Mora" data-toggle="tooltip" title="Mora">
 								</div>
 								<div class="col-md-1">
-									 <input type="number" style="font-size: 15px;" th:field="*{dias_gracia}" class="form-control" min="0" placeholder="Dias Gracia" data-toggle="tooltip" title="Dias de gracia">
+									 <input type="number" th:field="*{dias_gracia}" class="form-control maximizedLow" min="0" placeholder="Dias Gracia" data-toggle="tooltip" title="Dias de gracia">
 								</div>
 							</div>
 							
@@ -148,10 +148,10 @@
 													
 						<div class="row">
 								<div class="col-md-3" id="divValorCuota">
-									<input type="number" style="font-size: 15px;" th:field="*{valor_cuota}" step="0.01" id="valor_cuota" oninput="javascript:calTasa()" class="form-control" min="0" data-toggle="tooltip" title="Valor Cuota">
+									<input type="number" th:field="*{valor_cuota}" step="0.01" id="valor_cuota" oninput="javascript:calTasa()" class="form-control maximizedLow" min="0" data-toggle="tooltip" title="Valor Cuota">
 								</div>
 								<div class="col-md-3" data-toggle="tooltip" title="Valor Interes">
-									 <input type="number" style="font-size: 15px;" th:field="*{valor_interes}" id="valor_interes" class="form-control" min="0">
+									 <input type="number" th:field="*{valor_interes}" id="valor_interes" class="form-control maximizedLow" min="0">
 								</div>
 <!-- 								<div class="col-md-3" data-toggle="tooltip" title="Total a Pagar"> -->
 <!-- 									 <input type="number" style="font-size: 15px;" th:field="*{totalPagar}" id="total_pagar" class="form-control" min="0"> -->
@@ -168,13 +168,13 @@
 									 </select>
 								</div>
 								<div class="col-md-4">
-									 <input type="text" style="font-size: 15px;" th:field="*{observacion}" class="form-control" placeholder="Observacion" data-toggle="tooltip" title="Observacion">
+									 <input type="text" th:field="*{observacion}" class="form-control" placeholder="Observacion" data-toggle="tooltip" title="Observacion">
 								</div>
 								<div class="col-md-2">
-									 <input type="number" style="font-size: 15px;" th:field="*{gastos_cierre}" min="0" class="form-control" value="0" data-toggle="tooltip" title="Gastos Cierre">
+									 <input type="number" th:field="*{gastos_cierre}" min="0" class="form-control maximizedLow" value="0" data-toggle="tooltip" title="Gastos Cierre">
 								</div>
 								<div class="col-md-1">
-									 <input type="number" style="font-size: 15px;" th:field="*{cantidad_pagos}" id="cantidad_pagos" min="0" class="form-control" value="0" data-toggle="tooltip" title="Cantidad de pagos">
+									 <input type="number" th:field="*{cantidad_pagos}" id="cantidad_pagos" min="0" class="form-control maximizedLow" value="0" data-toggle="tooltip" title="Cantidad de pagos">
 								</div>
 							</div>
 							

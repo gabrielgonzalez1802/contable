@@ -8,33 +8,35 @@ function addEvents(){
 	    theme: 'bootstrap4',
 	});
 		
-	//$('#tabla').DataTable({
-	//"scrollY": "400px",
-//	    "language": {
-//	        "sProcessing":    "Procesando...",
-//	        "sLengthMenu":    "Mostrar _MENU_ registros",
-//	        "sZeroRecords":   "No se encontraron resultados",
-//	        "sEmptyTable":    "Ningún dato disponible en esta tabla",
-//	        "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-//	        "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
-//	        "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
-//	        "sInfoPostFix":   "",
-//	        "sSearch":        "Buscar:",
-//	        "sUrl":           "",
-//	        "sInfoThousands":  ",",
-//	        "sLoadingRecords": "Cargando...",
-//	        "oPaginate": {
-//	            "sFirst":    "Primero",
-//	            "sLast":    "Último",
-//	            "sNext":    "Siguiente",
-//	            "sPrevious": "Anterior"
-//	        },
-//	        "oAria": {
-//	            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-//	        }
-//	    }
-	//});
 	
+	if($("#tabla").length) {
+		$('#tabla').DataTable({
+			    "language": {
+			        "sProcessing":    "Procesando...",
+			        "sLengthMenu":    "Mostrar _MENU_ registros",
+			        "sZeroRecords":   "No se encontraron resultados",
+			        "sEmptyTable":    "Ningún dato disponible en esta tabla",
+			        "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+			        "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+			        "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+			        "sInfoPostFix":   "",
+			        "sSearch":        "Buscar:",
+			        "sUrl":           "",
+			        "sInfoThousands":  ",",
+			        "sLoadingRecords": "Cargando...",
+			        "oPaginate": {
+			            "sFirst":    "Primero",
+			            "sLast":    "Último",
+			            "sNext":    "Siguiente",
+			            "sPrevious": "Anterior"
+			        },
+			        "oAria": {
+			            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+			        }
+			    }
+		});
+	}
+
 /*********************************************** Fin Configuraciones Iniciales **********************************************/	
 
 /******************************************************* Clientes ***********************************************************/	
@@ -973,6 +975,16 @@ function addEvents(){
 		}else{
 			$("#optionCuotasCapital").show();
 		}
+		var idPrestamoAcct = $("#prestamoAcct").val();
+		
+		if($("#tablaPagos").length){
+			$("#tablaPagos").load("/prestamos/cargarPagoTemp/"+idPrestamoAcct,function(data){
+				addEvents();
+				montoTotalAbono();
+				$("#montoAbonoCuota").val("");
+			});
+		}
+		
 		$("#modalRecibirAbonoCuotas").modal('show');
 	});
 	
@@ -980,11 +992,11 @@ function addEvents(){
 		e.preventDefault();
 		e.stopImmediatePropagation();
 		var idPrestamo = $("#prestamoAcct").val();
-		var monto = $("#montoAbonoCuota").val();
+		var monto = $("#montoAbono").val();
 		var tipoCuota = $("#selectTipoCuotaAbono").val();
 		var balancePendiente = parseFloat($("#capitalPendienteTemp").val());
 		
-		if(!monto){
+		if(!monto || monto<1){
 			$("#modalRecibirAbonoCuotas").modal('hide');
 			Swal.fire({
 				title : 'Alerta!',
@@ -1027,6 +1039,7 @@ function addEvents(){
 									confirmButtonText : 'Cool'
 								})
 						}
+						$("#archivoPago").val("");
 						$("#montoAbonoCuota").val("");
 						$("#modalRecibirAbonoCuotas").modal('hide');
 						addEvents();
@@ -1036,6 +1049,69 @@ function addEvents(){
 		}
 	});
 
+	$("#eliminarPagosTemp").click(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var id = $("#prestamoAcct").val();
+		 $.get("/prestamos/eliminarPagosTemp/"+id,
+			function(data){
+			 $("#archivoPago").val("");
+			 $("#montoAbonoCuota").val("");
+			 $("#modalRecibirAbonoCuotas").modal("hide");
+			 	addEvents();
+		 	});
+	});
+	
+	$("#crearNota").click(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var prestamoAcct = $("#prestamoAcct").val();
+		//Cargamos el combo de cuotas
+		$("#cuotaNota").load("/prestamos/mostrarCotasPrestamo/"+prestamoAcct,function(data){
+			console.log("Cuotas");
+			addEvents();
+		});
+		$("#modalAgregarNota").modal('show');
+	});
+	
+	$("#btnAgregarNota").click(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var fecha = $("#fechaNota").val();
+		var nota = $("#valorNota").val();
+		var cuota = $("#cuotaNota").val(); 
+		var prestamoAcct = $("#prestamoAcct").val();
+
+		 $.post("/notas/guardarNota",{
+			 "idPrestamo":prestamoAcct,
+			 "nota":nota,
+			 "fecha":fecha,
+			 "cuota":cuota
+		 },function(data){
+				console.log("Guardado de Nota");
+				if(data == "1"){
+					 Swal.fire({
+							title : 'Muy bien!',
+							text : 'Se ha guardado la nota',
+							position : 'top',
+							icon : 'success',
+							confirmButtonText : 'Cool'
+						})
+				}else{
+					 Swal.fire({
+							title : 'Alerta!',
+							text : 'No se guardo la nota',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+				}
+				$("#modalAgregarNota").modal('hide');
+				$("#valorNota").val("");
+				verNotas(prestamoAcct);
+		 });
+		
+	});
 /****************************************************** Fin Prestamos *******************************************************/
 
 /******************************************************** Caja **************************************************************/
@@ -1050,7 +1126,383 @@ $("#caja").click(function(e){
 	});
 });
 	
-/******************************************************** Fin Caja **********************************************************/
+/****************************************************** Fin Caja **********************************************************/
+
+/****************************************************** Contabilidad **************************************************************/
+
+$("#contabilidad").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	ocultarDetalleAmortizacion();
+	$("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
+		console.log("Contabilidad");
+		addEvents();
+	});
+});
+
+/******************************************************Fin Contabilidad **********************************************************/
+
+/******************************************************** Usuarios **********************************************************/
+
+$("#usuarios").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	ocultarDetalleAmortizacion();
+	$("#contenido").load("/usuarios/listaUsuarios",function(data){
+		console.log("Agregar Usuario");
+		addEvents();
+	});
+});
+
+$("#listaUsuarios").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	ocultarDetalleAmortizacion();
+	$("#contenido").load("/usuarios/listaUsuarios",function(data){
+		console.log("lista Usuario");
+		addEvents();
+	});
+});
+
+$("#agregarUsuarios").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	ocultarDetalleAmortizacion();
+	$("#contenido").load("/usuarios/agregarUsuarios",function(data){
+		console.log("Agregar Usuario");
+		addEvents();
+	});
+});
+
+$("#formAgregarUsuario").submit(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var datos = $("#formAgregarUsuario").serializeArray();
+	console.log(datos);
+	 $.post("/usuarios/crear",datos,
+		function(data){
+			if(data == "1"){
+//				$("#contenido").replaceWith(data);
+				Swal.fire({
+					title : 'Muy bien!',
+					text : 'Usuario creado correctamente',
+					position : 'top',
+					icon : 'success',
+					confirmButtonText : 'Cool'
+				})
+				addEvents();
+			}else if(data == "2"){
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'El usuario ya existe',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}else if(data == "0"){
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'No se guardo el usuario',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}
+			$("#contenido").load("/usuarios/agregarUsuarios",function(data){
+				console.log("Agregar Usuario");
+				addEvents();
+			});
+		});
+});
+
+$("#formModificarPasswordUsuario").submit(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var datos = $("#formModificarPasswordUsuario").serializeArray();
+	console.log(datos);
+	 $.post("/usuarios/modificarPassword",datos,
+		function(data){
+			if(data == "1"){
+//				$("#contenido").replaceWith(data);
+				Swal.fire({
+					title : 'Muy bien!',
+					text : 'Usuario modificado correctamente',
+					position : 'top',
+					icon : 'success',
+					confirmButtonText : 'Cool'
+				})
+				addEvents();
+			}else if(data == "2"){
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'El usuario ya existe',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}else if(data == "0"){
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'No se modifico el usuario',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}
+			$("#contenido").load("/usuarios/agregarUsuarios",function(data){
+				console.log("Agregar Usuario");
+				addEvents();
+			});
+		});
+});
+
+$("#formModificarUsuario").submit(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var datos = $("#formModificarUsuario").serializeArray();
+	console.log(datos);
+	 $.post("/usuarios/modificar",datos,
+		function(data){
+			if(data == "1"){
+//				$("#contenido").replaceWith(data);
+				Swal.fire({
+					title : 'Muy bien!',
+					text : 'Usuario modificado correctamente',
+					position : 'top',
+					icon : 'success',
+					confirmButtonText : 'Cool'
+				})
+				addEvents();
+			}else if(data == "2"){
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'El usuario ya existe',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}else if(data == "0"){
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'No se modifico el usuario',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}
+			$("#contenido").load("/usuarios/agregarUsuarios",function(data){
+				console.log("Agregar Usuario");
+				addEvents();
+			});
+		});
+});
+/******************************************************** Fin Usuarios **********************************************************/
+
+/******************************************************** Cobros **********************************************************/
+
+$("#cobros").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	ocultarDetalleAmortizacion();
+	$("#contenido").load("/prestamos/prestamosPendientes",function(data){
+		console.log("Prestamos pendientes");
+		addEvents();
+	});
+});
+
+$("#btnCarpetaCobros").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	Swal.fire({
+		  title: 'Ingrese la carpeta',
+		  position: 'top',
+		  input: 'text',
+		  inputAttributes: {
+		    autocapitalize: 'off'
+		  },
+		  showCancelButton: true,
+		  confirmButtonText: 'Buscar',
+		  cancelButtonText: 'Cancelar',
+		  showLoaderOnConfirm: true,
+		  preConfirm: (carpeta) => {
+			  $.ajax({
+		            url: "/carpetas/buscarCarpetaCobros/"+carpeta,
+		            type: "GET",
+//		            data: "",
+//		            enctype: 'multipart/form-data',
+		            processData: false,
+		            contentType: false,
+		            cache: false,
+		            success: function (res) {
+						$("#buscarCarpeta").replaceWith(res);
+		            	var msg = $("#msgId").val();
+			            if(msg=="0"){
+							Swal.fire({
+								title : 'No tienes carpetas creadas!',
+//								text : 'No tienes carpetas creadas',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+							addEvents();
+						}else{
+							Swal.fire({
+								title : 'Muy bien!',
+								text : 'Carpeta Seleccionada',
+								position : 'top',
+								icon : 'success',
+								confirmButtonText : 'Cool'
+							})
+		
+							$("#tablaPrestamosCobros").load("/prestamos/prestamosPendientesFiltro",
+								{
+									
+								},function(data){
+								console.log("Lista de clientes");
+								ocultarDetalleAmortizacion();
+								addEvents();
+							});
+						}
+		            },
+		            error: function (err) {
+		                console.error(err);
+		                Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo completar la operacion, intente mas tarde',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+		            }
+		        });
+		  },
+		  allowOutsideClick: () => !Swal.isLoading()
+		}).then((result) => {
+		  if (result.isConfirmed) {
+		    //Correcto
+		  }
+		})
+});
+
+$("#tipoPago").change(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var tipoPago = $("#tipoPago").val();
+	if(tipoPago == "2" || tipoPago == "3"){
+		 $("#imagenTransaccionAbono").show();
+	}else{
+		 $("#imagenTransaccionAbono").hide();
+	}
+});
+
+$("#agregarPagoTemp").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var prestamoAcct = $("#prestamoAcct").val(); 
+	$("#idPrestamoAbonoNota").val(prestamoAcct); 
+	var form = $('#formAbonosNotas')[0];
+	console.log();
+	  $.ajax({
+          url: "/prestamos/crearPagoTemp",
+          type: "POST",
+          data: new FormData(form),
+          enctype: 'multipart/form-data',
+          processData: false,
+          contentType: false,
+          cache: false,
+          success: function (res) {
+          	$("#tablaPagos").replaceWith(res);
+	        addEvents();
+	        montoTotalAbono();
+	        $("#montoAbonoCuota").val("");
+	        $("#archivoPago").val("");
+          },
+          error: function (err) {
+              console.error(err);
+              Swal.fire({
+					title : 'Error!',
+					text : 'No se pudo completar la operacion, intente mas tarde',
+					position : 'top',
+					icon : 'error',
+					confirmButtonText : 'Cool'
+				})
+          }});
+   });
+
+$("#selectEstadoCuota").change(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var estado = $("#selectEstadoCuota").val();
+	$("#tablaPrestamosCobros").load("/prestamos/prestamosPendientesFiltro",
+		{
+			"estado": estado
+		},function(data){
+		console.log("Lista de prestamos del cliente");
+		addEvents();
+		var estadoCuotaHidden = $("#estadoCuotaHidden").val();
+		$("#selectEstadoCuota option[value="+ estadoCuotaHidden +"]").attr("selected",true);
+	});
+});
+
+$('#nombreOCedula').on('keyup', function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var item = $('#nombreOCedula').val();
+	var estado = $("#selectEstadoCuota").val();
+	var longitud = item.length;
+	if(longitud > 2){
+		$("#tablaPrestamosCobros").load("/prestamos/prestamosPendientesFiltro",
+			{
+				"estado": estado,
+				"item": item
+			},function(data){
+			console.log("Lista de prestamos del cliente");
+			addEvents();
+		});
+	}
+});
+
+$("#btnExitCarpetaCobros").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	  $.ajax({
+          url: "/carpetas/buscarCarpetaCobros",
+          type: "GET",
+//          data: "",
+//          enctype: 'multipart/form-data',
+          processData: false,
+          contentType: false,
+          cache: false,
+          success: function (res) {
+				$("#buscarCarpeta").replaceWith(res);
+          	var msg = $("#msgId").val();
+	            if(msg=="0"){
+					addEvents();
+				}else{
+					$("#tablaPrestamosCobros").load("/prestamos/prestamosPendientesFiltro",
+						{
+							
+						},function(data){
+						console.log("Lista de clientes");
+						ocultarDetalleAmortizacion();
+						addEvents();
+					});
+				}
+          },
+          error: function (err) {
+              console.error(err);
+              Swal.fire({
+					title : 'Error!',
+					text : 'No se pudo completar la operacion, intente mas tarde',
+					position : 'top',
+					icon : 'error',
+					confirmButtonText : 'Cool'
+				})
+          }
+      });
+});	
+
+/******************************************************* Fin Cobros **********************************************************/
 }
 
 
@@ -1258,6 +1710,115 @@ function cargarDetalleInteres(idPrestamoInteresDetalle){
 	$("#interesInfo").load("/prestamos/detallesIntereses/"+idPrestamoInteresDetalle+"/"+idPrestamo,function(data){
 		console.log("Detalles de los Intereses");
 		$("#modalDetalleIntereses").modal("show");
+	});
+}
+
+function versubcat(id){
+    var textdato = $("#"+id+"").text();
+
+    if(textdato!='-'){
+        $("#"+id+"").text("-");
+        $("#subcategoria-"+id+"").show();
+        $("#"+id+"").removeClass("btn btn-sm btn-info");
+        $("#"+id+"").addClass("btn btn-sm btn-danger");
+    }else{
+        $("#"+id+"").text("+");
+        $("#subcategoria-"+id+"").hide();
+        $("#"+id+"").removeClass("btn btn-sm btn-danger");
+        $("#"+id+"").addClass("btn btn-sm btn-info");
+    }
+}
+
+function versubcat2(id){
+    var textdato = $("#"+id+"").text();
+
+    if(textdato!='-'){
+        $("#"+id+"").text("-");
+        $("#subcategoria2-"+id+"").show();
+        $("#"+id+"").removeClass("btn btn-sm btn-info");
+        $("#"+id+"").addClass("btn btn-sm btn-danger");
+    }else{
+        $("#"+id+"").text("+");
+        $("#subcategoria2-"+id+"").hide();
+        $("#"+id+"").removeClass("btn btn-sm btn-danger");
+        $("#"+id+"").addClass("btn btn-sm btn-info");
+    }
+}
+
+function versubcat3(id){
+    var textdato = $("#"+id+"").text();
+
+    if(textdato!='-'){
+        $("#"+id+"").text("-");
+        $("#subcategoria3-"+id+"").show();
+        $("#"+id+"").removeClass("btn btn-sm btn-info");
+        $("#"+id+"").addClass("btn btn-sm btn-danger");
+    }else{
+        $("#"+id+"").text("+");
+        $("#subcategoria3-"+id+"").hide();
+        $("#"+id+"").removeClass("btn btn-sm btn-danger");
+        $("#"+id+"").addClass("btn btn-sm btn-info");
+    }
+}
+
+function versubcat4(id){
+    var textdato = $("#"+id+"").text();
+
+    if(textdato!='-'){
+        $("#"+id+"").text("-");
+        $("#subcategoria4-"+id+"").show();
+        $("#"+id+"").removeClass("btn btn-sm btn-info");
+        $("#"+id+"").addClass("btn btn-sm btn-danger");
+    }else{
+        $("#"+id+"").text("+");
+        $("#subcategoria4-"+id+"").hide();
+        $("#"+id+"").removeClass("btn btn-sm btn-danger");
+        $("#"+id+"").addClass("btn btn-sm btn-info");
+    }
+}
+
+function modificarUsuario(id){
+	$("#contenido").load("/usuarios/modificarUsuario/"+id,function(data){
+		console.log("Formulario Modificar Usuario");
+		addEvents();
+	});
+}
+
+function cambiarPassword(id){
+	$("#contenido").load("/usuarios/cambiarPassword/"+id,function(data){
+		console.log("Formulario Cambiar Password");
+		addEvents();
+	});
+}
+
+function verNotas(id){
+	$("#contenido").load("/prestamos/verNotas/"+id,function(data){
+		console.log("Ver Notas");
+		var idPrestamo = $("#prestamoAcct").val();
+		addEvents();
+		cargarDetallePrestamo(idPrestamo);
+	});
+}
+
+function eliminarPagoTemp(id){
+	$("#tablaPagos").load("/prestamos/eliminarPagoTemp/"+id, function(data){
+		montoTotalAbono();
+		addEvents();
+	});
+}
+
+function montoTotalAbono(){
+	var idPrestamo = $("#prestamoAcct").val();
+	$("#montoTotalAbono").load("/prestamos/montoTotalAbono/"+idPrestamo, function(data){
+		addEvents();
+	});
+}
+
+function verInfoNotas(id){
+	$("#tablaNotas").load("/notas/listaNotas/"+id,function(data){
+		console.log("Ver Notas");
+		$("#modalDetalleNotas").modal("show");
+		addEvents();
 	});
 }
 

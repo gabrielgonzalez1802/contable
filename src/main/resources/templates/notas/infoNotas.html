@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="infoNotas">
+                <div class="row">
+				  <div class="col-md-8">
+				  	<div class="col-md-12">
+				  		<div class="row">
+				  		<input type="hidden" id="prestamoAcct" th:value="${prestamo.id}">
+				  		   <div th:each="nota : ${notas}" class="col-md-4 col-sm-4">
+						      <div class="card overflow-hidden sales-card bg-nota-gradient" style="height: 140px;">
+			                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
+			                       <div class="d-flex">
+				                       <span class="mb-1 tx-15 text-black" th:if="${nota.tipo == 2}" th:text="'Cuota No. ' + ${nota.prestamoInteresDetalle.numero_cuota}"> </span>
+				                       <span class="mb-1 tx-15 text-black" th:unless="${nota.tipo == 2}" th:text="'Cuota No. ' + ${nota.prestamoDetalle.numero}"> </span>
+				                        
+				                       <span class="float-right ml-auto">
+				                             <span class="text-black tx-15" th:text="${#dates.format(nota.fecha, 'dd-MM-yyyy')}"></span>
+				                       </span>
+			                       </div>
+		
+			                        <input type="hidden" id="tipoPrestamoAcct" th:value="${nota.prestamo.tipo}">
+			                        <div class="pb-0 mt-0">
+			                          <div class="d-flex">
+			                            <div class="">
+			                              <h4 class="tx-15 font-weight-bold mb-1 text-black" th:text="${nota.usuario.username}"></h4>
+			                               <h5 class="tx-20 font-weight-bold mb-1 text-black" th:text="${nota.nota}"></h5>
+			                            </div>
+			                          </div>
+			                        </div>
+			                      </div>
+			                      <span id="" class="pt-1"><canvas width="298" height="30" style="display: inline-block; width: 298.25px; height: 30px; vertical-align: top;"></canvas></span>
+			                    </div>
+						   </div>
+						    
+				  		</div>
+					 </div>
+				 </div>
+
+                  <div class="col-md-4 col-sm-4">
+                    <div class="" style="border-left-style: solid;">
+                      <div class="card-body">
+                      	<div id="totalesGeneralesPrestamo">
+	                        <h5 class="card-title" th:text="${prestamo.cliente.nombre}"></h5>
+	                        <p class="card-text"><H3><span id="totalBalance" >0</span></H3></p>
+                       </div>
+                       <span id="botonesNotasPrestamo"> <br>
+			                 <button class="btn btn-primary" id="recibirAbono">Recibir Abono</button>
+<!-- 			                 <button class="btn btn-info" id="aplicarCargos">Aplicar Cargo</button> -->
+			                <button class="btn btn-success" id="crearNota">Crear Nota</button>	
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+  
+   <!-- Modal Recibir Abono -->
+  <div class="modal" id="modalRecibirAbonoCuotas">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Recibir Abono</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+        	<form id="formAbonosNotas">
+	        	<div class="row">
+	        		<div class="col-md-2">
+						<select id="selectTipoCuotaAbono" class="form-control maximizedLow">
+							<option value="1">Cuotas</option>
+						<!-- <option value="2" id="optionCuotasCapital">Cuotas y Capital</option> -->
+						</select>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div id="montoTotalAbono">
+	        				<input type="text" disabled class="form-control fontMaximized" th:value="${montoTotalAbono}" id="montoAbono">
+	        			</div>
+	        		</div>
+	        	</div>
+	        	
+	        	<br>
+	        
+	          	<div class="row">
+	
+					<div class="col-md-3">
+					 	<div class="form-group">
+						   	<input type="number" name="monto" class="form-control fontMaximized" placeholder="Monto" id="montoAbonoCuota">
+						 </div>
+					</div>
+					
+					<div class="col-md-1">
+					 	<div class="form-group">
+						   	<button class="btn btn-primary" id="agregarPagoTemp"> + </button>
+						 </div>
+					</div>
+					
+					<input type="hidden" name="id" id="idPrestamoAbonoNota">
+							
+					<div class="col-md-4">
+					 	<div class="form-group">
+						   	<select name="tipoPago" id="tipoPago" class="form-control maximizedLow">
+						   		<option value="1">Efectivo</option>
+						   		<option value="2">Deposito / Transferencia</option>
+						   		<option value="3">Cheque</option>
+						   	</select>
+						 </div>
+					</div>
+					
+					<div class="col-md-4">
+						<div id="imagenTransaccionAbono" style="display: none;">
+							 <div class="form-group">
+							   	<input type="file" name="imagen" id="archivoPago" class="form-control">
+							 </div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<br>
+			
+			<div class="row">
+					<div class="col-md-3">
+					
+					</div>
+					
+					<div class="col-md-6">
+						<div id="tablaPagos">
+							<div class="table-responsive">
+			                   <table class="table mg-b-0 text-md-nowrap">
+									<thead style="background-color: #0162e8;height: 80px;">
+										<tr>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Monto</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Tipo</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;"></th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Eliminar</th>
+										</tr>
+									 </thead>
+									<tbody>
+										 <tr th:each="pago : ${pagoTemp}">
+										 	 <td th:text="${pago.monto}"></td>
+										 	 <td th:if="${pago.tipo == 1}">Efectivo</td>
+										 	 <td th:if="${pago.tipo == 2}">Deposito / Transferencia</td>
+										 	 <td th:if="${pago.tipo == 3}">Cheque</td>
+										 	 <td> <img th:if="${pago.imagen != null}" style="width:100px;border-radius: 25%;" th:src="@{/logos/{img} (img=${pago.imagen})}" ></td>
+										 	 <td> <button th:onclick="'eliminarPagoTemp(\'' + ${pago.id} + '\');'" class="btn btn-danger"><i class="fas fa-trash"></i></button></td>
+										 </tr>
+									</tbody>
+								 </table>
+		                	  </div>
+						</div>
+					</div>
+					
+					<div class="col-md-3">
+					
+					</div>
+			</div>
+
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" id="eliminarPagosTemp">Regresar</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="agregarAbonoCuota">Agregar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>   
+  
+       <!-- Modal Agregar Nota -->
+  <div class="modal" id="modalAgregarNota">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Agregar Nota</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          	<div class="row">
+
+				<div class="col-md-4">
+				 	<div class="form-group">
+					   	<input type="date" class="form-control" id="fechaNota">
+					 </div>
+				</div>
+				
+				<div class="col-md-4">
+				 	<div class="form-group">
+					   	<select id="cuotaNota" class="form-control">
+					   		<option th:each="cuota : ${cuotas}"
+					   				th:value="${cuota.id}" th:text="'Cuota: '+${cuota.nota}"
+					   		></option>
+					   	</select>
+					 </div>
+				</div>
+				
+				<div class="col-md-4">
+					<input type="text" class="form-control" id="valorNota" placeholder="Nota">
+				</div>
+			</div>
+
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">Regresar</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnAgregarNota">Agregar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>  
+    
+</div>	
+
+</body>
+</html>

@@ -11,6 +11,6 @@ public interface IUsuariosService {
 	List<Usuario> buscarPorEstado(Integer estado);
 	List<Usuario> buscarPorPerfilEstado(Perfil perfil, Integer estado);
 	Usuario buscarPorUsername(String userName);
-	void guardar(Usuario usurio);
+	void guardar(Usuario usuario);
 	void eliminar(Integer id);
 }

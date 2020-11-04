@@ -10,6 +10,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Table(name = "abonos")
@@ -30,6 +33,13 @@ public class Abono {
 	
 	private Date fecha;
 	
+	private Double efectivo = 0.0;
+	private Double cheque = 0.0;
+	private Double transferencia_deposito = 0.0;
+	
+	private String imagen_cheque;
+	private String imagen_deposito_transferencia;
+	
 	@OneToOne
 	@JoinColumn(name = "id_cliente")
 	private Cliente cliente;
@@ -37,6 +47,15 @@ public class Abono {
 	@OneToOne
 	@JoinColumn(name = "id_usuario")
 	private Usuario usuario;
+	
+	@Transient 
+	private MultipartFile imagen;
+	
+	@Transient
+	private String nombreImagen;
+	
+	@Transient
+	private Integer tipoPago;
 	
 	private String nota;
 	private Integer estado = 0;
@@ -95,10 +114,61 @@ public class Abono {
 	public void setEstado(Integer estado) {
 		this.estado = estado;
 	}
+	public Integer getTipoPago() {
+		return tipoPago;
+	}
+	public void setTipoPago(Integer tipoPago) {
+		this.tipoPago = tipoPago;
+	}
+	public MultipartFile getImagen() {
+		return imagen;
+	}
+	public void setImagen(MultipartFile imagen) {
+		this.imagen = imagen;
+	}
+	public String getNombreImagen() {
+		return nombreImagen;
+	}
+	public void setNombreImagen(String nombreImagen) {
+		this.nombreImagen = nombreImagen;
+	}
+	public Double getEfectivo() {
+		return efectivo;
+	}
+	public void setEfectivo(Double efectivo) {
+		this.efectivo = efectivo;
+	}
+	public Double getCheque() {
+		return cheque;
+	}
+	public void setCheque(Double cheque) {
+		this.cheque = cheque;
+	}
+	public Double getTransferencia_deposito() {
+		return transferencia_deposito;
+	}
+	public void setTransferencia_deposito(Double transferencia_deposito) {
+		this.transferencia_deposito = transferencia_deposito;
+	}
+	public String getImagen_cheque() {
+		return imagen_cheque;
+	}
+	public void setImagen_cheque(String imagen_cheque) {
+		this.imagen_cheque = imagen_cheque;
+	}
+	public String getImagen_deposito_transferencia() {
+		return imagen_deposito_transferencia;
+	}
+	public void setImagen_deposito_transferencia(String imagen_deposito_transferencia) {
+		this.imagen_deposito_transferencia = imagen_deposito_transferencia;
+	}
 	@Override
 	public String toString() {
 		return "Abono [id=" + id + ", prestamo=" + prestamo + ", numero=" + numero + ", monto=" + monto + ", fecha="
-				+ fecha + ", cliente=" + cliente + ", usuario=" + usuario + ", nota=" + nota + ", estado=" + estado
+				+ fecha + ", efectivo=" + efectivo + ", cheque=" + cheque + ", transferencia_deposito="
+				+ transferencia_deposito + ", imagen_cheque=" + imagen_cheque + ", imagen_deposito_transferencia="
+				+ imagen_deposito_transferencia + ", cliente=" + cliente + ", usuario=" + usuario + ", imagen=" + imagen
+				+ ", nombreImagen=" + nombreImagen + ", tipoPago=" + tipoPago + ", nota=" + nota + ", estado=" + estado
 				+ "]";
 	}
 }

@@ -1,5 +1,6 @@
 package com.contable.service.db;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,11 @@ public class PerfilesServiceJpa implements IPerfilesService{
 		if(optional.isPresent()) {
 			repo.delete(optional.get());
 		}
+	}
+
+	@Override
+	public List<Perfil> buscarTodos() {
+		return repo.findAll();
 	}
 
 }

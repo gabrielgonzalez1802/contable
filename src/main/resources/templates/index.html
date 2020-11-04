@@ -17,6 +17,7 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
     <link th:href="@{/assets/css/animate.css}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+     <link href="//cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css" rel="stylesheet" />
     <link th:href="@{/css/select2-bootstrap4.min.css}" rel="stylesheet"> 
     
     	<!-- Fonts and icons -->
@@ -68,6 +69,22 @@ input {
     background-color: #fb0b16;
 }
 
+.bg-nota-gradient {
+    background-image: linear-gradient(to left, #ecb95c 0%, #ecb95c 100%) !important;
+}
+
+.text-black{
+ 	color: #000;
+}
+
+.fontMaximized {
+	font-size: 35px;
+}
+
+.maximizedLow {
+	font-size: 25px;
+}
+
 ::-webkit-scrollbar {
     width: 15px;
     height: 15px
@@ -99,7 +116,7 @@ input {
 /* 	overflow: auto; */
 /* 	height: 420px; */
 /* 	max-height: 420px; */
-/* } */
+/* } 
 
 /* #contenidoTabla{ */
 /* 	min-height: 400px; */
@@ -291,6 +308,54 @@ input {
       </div>
     </div>
   </div>   
+  
+  <!-- Modal Detalle Notas -->         
+  <div class="modal" id="modalDetalleNotas">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Notas</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          	<div class="row">
+				<div class="col-md-12">
+					<div class="table-responsive" id="tablaNotas">
+	                    <table class="table mg-b-0 text-md-nowrap">
+							<thead>
+								<tr>
+								   <th>Fecha</th>
+								   <th>Nota</th>
+								   <th>Usuario</th>
+								 </tr>
+							 </thead>
+							<tbody>
+								 <tr th:each="nota : ${notas}">
+									  <td th:text="${#dates.format(nota.fecha, 'dd-MM-yyyy')}">Fecha</td>	
+									  <td th:text="${nota.nota}">Nota</td>	
+									  <td th:text="${nota.usuario.username}">Usuario</td>	
+								 </tr>
+							</tbody>
+						 </table>
+	                  </div>
+				</div>
+			</div>
+
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">Regresar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>   
+	
   
    <!-- Modal Detalle Capitales -->         
   <div class="modal" id="modalDetalleCapitales">
@@ -573,6 +638,7 @@ input {
 <!--     <script th:src="@{/assets/plugins/sidebar/sidebar.js}"></script> -->
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     <script th:src="@{/assets/plugins/sidebar/sidebar-custom.js}"></script>
+    <script src="//cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
     <script th:src="@{/assets/js/custom.js}"></script>
     <script th:src="@{/js/js.js}"></script>
      <script>

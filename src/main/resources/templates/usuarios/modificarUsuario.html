@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:fragment="modificarUsuario">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card">
+					<div class="card-header pb-0">
+						<div class="d-flex justify-content-between">
+							<span class="card-title">Modificar Usuario</span>
+							<button class="btn btn-primary" id="listaUsuarios">Lista Usuarios</button>
+<!-- 							<i class="mdi mdi-dots-horizontal text-gray"></i> -->
+						</div>
+						<!--                   <p class="tx-12 tx-gray-500 mb-2">Generar reporte. <a href="">Click</a></p> -->
+					</div>
+					<div class="card-body">
+						<form method="POST" th:object="${usuario}" id="formModificarUsuario">
+							<div class="row">
+								<div class="col-md-3">
+									<div class="form-group">
+										<input type="hidden" th:field="*{id}"> 
+										<input type="text" th:field="*{nombre}" class="form-control" placeholder="Nombre del Usuario" required="required">
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<div class="form-group">
+										<input class="form-control" type="text" th:field="*{username}"
+											placeholder="Usuario" required="required">
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<div class="form-group">
+										<select th:field="*{perfil.id}" class="form-control" required="required">
+											<option th:each="perfil : ${perfiles}" 
+													th:value="${perfil.id}" 
+													th:text="${perfil.perfil}">
+										</select>
+									</div>
+								</div>
+								
+<!-- 								<div class="col-md-3"> -->
+<!-- 									<div class="form-group"> -->
+<!-- 										<select th:field="*{estatus}" class="form-control" required="required"> -->
+<!-- 											<option value="1">Activo</option> -->
+<!-- 											<option value="2">Inactivo</option> -->
+<!-- 										</select> -->
+<!-- 									</div> -->
+<!-- 								</div> -->
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group pull-right">
+										<input type="submit" value="Guardar" class="btn btn-primary">
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

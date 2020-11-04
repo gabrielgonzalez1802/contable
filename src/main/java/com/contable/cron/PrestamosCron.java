@@ -33,6 +33,7 @@ public class PrestamosCron {
 	private final Integer NORMAL = 0;
 //	private final Integer PAGADO = 1;
 	private final Integer VENCIDO = 2;
+	private final Integer LEGAL = 3;
 
 	@Scheduled(cron = "0 30 15 * * *")
 	public void calculoVencimientoCuota() throws ParseException {
@@ -53,8 +54,10 @@ public class PrestamosCron {
 					prestamoDetalle.setMora(formato2d(mora));
 					prestamoDetalle.setDias_atraso((int) vencidos);
 					if(vencidos < 90) {
+						prestamoDetalle.setEstado(2);
 						prestamoDetalle.setEstado_cuota("Atraso");
 					}else {
+						prestamoDetalle.setEstado(3);
 						prestamoDetalle.setEstado_cuota("Legal");
 					}
 					servicePrestamosDetalles.guardar(prestamoDetalle);
@@ -80,7 +83,7 @@ public class PrestamosCron {
 		}
 	}
 	
-	@Scheduled(cron = "0 28 15 * * *")
+	@Scheduled(cron = "0 56 18 * * *")
 	public void generarPrestamoInteresDetalle() throws ParseException {
 		List<Prestamo> prestamos = servicePrestamos.buscarPorEstado(NORMAL);
 		LocalDateTime dateAcct =  LocalDateTime.now();
@@ -148,9 +151,13 @@ public class PrestamosCron {
 				prestamoInteresDetalle.setDias_atraso((int) vencidos);
 				
 				if(vencidos>0) {
+					if(vencidos>=90) {
+						prestamoInteresDetalle.setEstado(LEGAL);
+					}else {
+						prestamoInteresDetalle.setEstado(VENCIDO);
+					}
 					Double mora = ((prestamoInteresDetalle.getInteres() * (prestamoInteresDetalle.getPrestamo().getMora()/100) ) / 30.00) * vencidos;
 					prestamoInteresDetalle.setMora(mora);
-					prestamoInteresDetalle.setEstado(VENCIDO);
 				}
 
 				servicePrestamosInteresesDetalles.guardar(prestamoInteresDetalle);
