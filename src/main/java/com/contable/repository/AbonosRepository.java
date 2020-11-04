@@ -1,5 +1,6 @@
 package com.contable.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,6 @@ public interface AbonosRepository extends JpaRepository<Abono, Integer> {
 	List<Abono> findByCliente(Cliente cliente);
 	List<Abono> findByPrestamoAndEstado(Prestamo prestamo, Integer estado);
 	List<Abono> findByPrestamoIn(List<Prestamo> prestamos);
+	List<Abono> findByPrestamoInAndFecha(List<Prestamo> prestamos, Date fecha);
+	List<Abono> findByFecha(Date fecha);
 }

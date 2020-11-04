@@ -1,5 +1,6 @@
 package com.contable.service.db;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +49,21 @@ public class AbonosServiceJpa implements IAbonosService{
 
 	@Override
 	public List<Abono> buscarPorPrestamosOrderByAbono(List<Prestamo> prestamos) {
+		return repo.findByPrestamoIn(prestamos);
+	}
+
+	@Override
+	public List<Abono> buscarPorPrestamosFecha(List<Prestamo> prestamos, Date fecha) {
+		return repo.findByPrestamoInAndFecha(prestamos, fecha);
+	}
+
+	@Override
+	public List<Abono> buscarPorFecha(Date fecha) {
+		return repo.findByFecha(fecha);
+	}
+
+	@Override
+	public List<Abono> buscarPorPrestamos(List<Prestamo> prestamos) {
 		return repo.findByPrestamoIn(prestamos);
 	}
 

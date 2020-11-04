@@ -15,6 +15,8 @@ public interface IPrestamosService {
 	List<Prestamo> buscarPorFecha(Date fecha);
 	List<Prestamo> buscarPorTipo(String tipo);
 	List<Prestamo> buscarPorClienteCarpetaPorFechaDesc(Cliente cliente, Carpeta carpeta);
+	List<Prestamo> buscarPorCarpetaFechaDesc(Carpeta carpeta);
+	List<Prestamo> buscarPorCarpetaFecha(Carpeta carpeta, Date date);
 	void guardar(Prestamo prestamo);
 	void eliminar(Integer id);
 }

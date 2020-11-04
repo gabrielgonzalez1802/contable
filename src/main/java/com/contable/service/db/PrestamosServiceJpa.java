@@ -71,4 +71,14 @@ public class PrestamosServiceJpa implements IPrestamosService{
 		return repo.findByTipo(tipo);
 	}
 
+	@Override
+	public List<Prestamo> buscarPorCarpetaFechaDesc(Carpeta carpeta) {
+		return repo.findByCarpetaOrderByFechaDesc(carpeta);
+	}
+
+	@Override
+	public List<Prestamo> buscarPorCarpetaFecha(Carpeta carpeta, Date date) {
+		return repo.findByCarpetaAndFecha(carpeta, date);
+	}
+
 }
