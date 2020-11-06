@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.contable.model.Abono;
 import com.contable.model.Prestamo;
+import com.contable.model.Usuario;
 import com.contable.repository.AbonosRepository;
 import com.contable.service.IAbonosService;
 
@@ -65,6 +66,11 @@ public class AbonosServiceJpa implements IAbonosService{
 	@Override
 	public List<Abono> buscarPorPrestamos(List<Prestamo> prestamos) {
 		return repo.findByPrestamoIn(prestamos);
+	}
+
+	@Override
+	public List<Abono> buscarPorPrestamosUsuario(List<Prestamo> prestamos, Usuario usuarioTemp) {
+		return repo.findByPrestamoInAndUsuario(prestamos, usuarioTemp);
 	}
 
 }

@@ -1,3 +1,5 @@
+imprimirAbonoDetalle(22);
+
 function addEvents(){
 	
 /************************************************** Configuraciones Iniciales **********************************************/
@@ -996,57 +998,72 @@ function addEvents(){
 		var tipoCuota = $("#selectTipoCuotaAbono").val();
 		var balancePendiente = parseFloat($("#capitalPendienteTemp").val());
 		
-		if(!monto || monto<1){
-			$("#modalRecibirAbonoCuotas").modal('hide');
+		var totalesCuota = parseFloat($("#totalesCuotas").text());
+		
+		if(monto > totalesCuota){
 			Swal.fire({
 				title : 'Alerta!',
-				text : 'Debe ingresar un monto',
+				text : 'El monto no puede ser mayor al total',
 				position : 'top',
 				icon : 'warning',
 				confirmButtonText : 'Cool'
 			})
+			$("#modalRecibirAbonoCuotas").modal('hide');
 		}else{
-//			if(monto>balancePendiente){
-//				$("#modalRecibirAbonoCuotas").modal('hide');
-//				Swal.fire({
-//					title : 'Alerta!',
-//					text : 'El monto a pagar no puede ser mayor que el balance pendiente',
-//					position : 'top',
-//					icon : 'warning',
-//					confirmButtonText : 'Cool'
-//				})
-//			}else{
-				 $.post("/prestamos/guardarAbonoCuota/",{
-					 "idPrestamo":idPrestamo,
-					 "monto":monto,
-					 "tipoCuota":tipoCuota
-				 },function(data){
-						console.log("Guardado de cargo");
-						if(data == "1"){
-							 Swal.fire({
-									title : 'Muy bien!',
-									text : 'Se ha guardado el abono',
-									position : 'top',
-									icon : 'success',
-									confirmButtonText : 'Cool'
-								})
-						}else{
-							 Swal.fire({
-									title : 'Alerta!',
-									text : 'No se guardo el abono',
-									position : 'top',
-									icon : 'warning',
-									confirmButtonText : 'Cool'
-								})
-						}
-						$("#archivoPago").val("");
-						$("#montoAbonoCuota").val("");
-						$("#modalRecibirAbonoCuotas").modal('hide');
-						addEvents();
-						cargarDetallePrestamo(idPrestamo);
-				 });
-//			}
+			if(!monto || monto<1){
+				$("#modalRecibirAbonoCuotas").modal('hide');
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'Debe ingresar un monto',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}else{
+//				if(monto>balancePendiente){
+//					$("#modalRecibirAbonoCuotas").modal('hide');
+//					Swal.fire({
+//						title : 'Alerta!',
+//						text : 'El monto a pagar no puede ser mayor que el balance pendiente',
+//						position : 'top',
+//						icon : 'warning',
+//						confirmButtonText : 'Cool'
+//					})
+//				}else{
+					 $.post("/prestamos/guardarAbonoCuota/",{
+						 "idPrestamo":idPrestamo,
+						 "monto":monto,
+						 "tipoCuota":tipoCuota
+					 },function(data){
+							console.log("Guardado de cargo");
+							if(data > 0){
+								 Swal.fire({
+										title : 'Muy bien!',
+										text : 'Se ha guardado el abono',
+										position : 'top',
+										icon : 'success',
+										confirmButtonText : 'Cool'
+									})
+								imprimirAbonoDetalle(data);	
+							}else{
+								 Swal.fire({
+										title : 'Alerta!',
+										text : 'No se guardo el abono',
+										position : 'top',
+										icon : 'warning',
+										confirmButtonText : 'Cool'
+									})
+							}
+							$("#archivoPago").val("");
+							$("#montoAbonoCuota").val("");
+							$("#modalRecibirAbonoCuotas").modal('hide');
+							addEvents();
+							cargarDetallePrestamo(idPrestamo);
+					 });
+//				}
+			}
 		}
+		
 	});
 
 	$("#eliminarPagosTemp").click(function(e){
@@ -1125,7 +1142,43 @@ $("#caja").click(function(e){
 		addEvents();
 	});
 });
-	
+
+$("#fechaCuadreCaja").change(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	ocultarDetalleAmortizacion();
+	var fecha = $("#fechaCuadreCaja").val();
+	var user = $("#usuarioCuadreCaja").val();
+	$("#contenido").load("/cajas/mostrarCuadre",
+		{
+			"fecha" : fecha,
+			"userId" : user
+		},function(data){
+		var userAcctCaja = $("#userAcctCaja").val();	
+		$("#usuarioCuadreCaja option[value="+ userAcctCaja +"]").attr("selected",true);
+		console.log("Cuadre de Caja");
+		addEvents();
+	});
+});
+
+$("#usuarioCuadreCaja").change(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	ocultarDetalleAmortizacion();
+	var fecha = $("#fechaCuadreCaja").val();
+	var user = $("#usuarioCuadreCaja").val();
+	$("#contenido").load("/cajas/mostrarCuadre",
+		{
+			"fecha" : fecha,
+			"userId" : user
+		},function(data){
+		var userAcctCaja = $("#userAcctCaja").val();	
+		$("#usuarioCuadreCaja option[value="+ userAcctCaja +"]").attr("selected",true);
+		console.log("Cuadre de Caja");
+		addEvents();
+	});
+});
+
 /****************************************************** Fin Caja **********************************************************/
 
 /****************************************************** Contabilidad **************************************************************/
@@ -1459,6 +1512,15 @@ $('#nombreOCedula').on('keyup', function(e) {
 			console.log("Lista de prestamos del cliente");
 			addEvents();
 		});
+	}else{
+		$("#tablaPrestamosCobros").load("/prestamos/prestamosPendientesFiltro",
+				{
+					"estado": estado,
+					"item": 0
+				},function(data){
+				console.log("Lista de prestamos del cliente");
+				addEvents();
+			});
 	}
 });
 
@@ -1820,6 +1882,10 @@ function verInfoNotas(id){
 		$("#modalDetalleNotas").modal("show");
 		addEvents();
 	});
+}
+
+function imprimirAbonoDetalle(id){
+	window.open("/prestamos/imprimirDetalleAbono/"+id);
 }
 
 function mostrarDetalleAmortizacion(){

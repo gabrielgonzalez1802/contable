@@ -6,7 +6,22 @@
 </head>
 <body>
 <div th:fragment="cuadreCaja">
-	         <div class="row">
+
+	<div class="row">
+			<input type="hidden" th:value="${userAcct}" id="userAcctCaja">
+		 	<div class="col-md-3">
+		 		<input type="date" class="form-control" id="fechaCuadreCaja" th:value="*{#dates.format(fecha, 'yyyy-MM-dd')}">
+		 	</div>
+		 	<div class="col-md-3">
+		 		<select id="usuarioCuadreCaja" class="form-control">
+		 			<option value="0">Todos</option>
+		 			<option th:each="usuario : ${usuarios}"
+		 					th:value="${usuario.id}" th:text="${usuario.username}"></option>
+		 		</select>
+		 	</div>
+	</div>
+
+	       <div class="row">
             <div class="col-md-8">
               <div class="card">
                 <div class="card-header pb-0">
@@ -26,6 +41,7 @@
                           <th>No. Prestamo</th>
                           <th>Cliente</th>
                           <th>Monto Pagado</th>
+                          <th>Usuario</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -35,6 +51,7 @@
                           <td th:text="${abono.prestamo.codigo}"></td>
                           <td th:text="${abono.cliente.nombre}"></td>
                           <td th:text="${abono.monto}"></td>
+                          <td th:text="${abono.usuario.username}"></td>
                         </tr>
                       </tbody>
                     </table>
