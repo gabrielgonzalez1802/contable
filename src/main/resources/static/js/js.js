@@ -1,4 +1,4 @@
-imprimirAbonoDetalle(22);
+//imprimirAbonoDetalle(22);
 
 function addEvents(){
 	
