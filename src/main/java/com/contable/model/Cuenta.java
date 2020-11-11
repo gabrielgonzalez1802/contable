@@ -1,5 +1,7 @@
 package com.contable.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -7,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "cuentas")
@@ -18,6 +21,12 @@ public class Cuenta {
 	
 	private String banco;
 	private String numero;
+	
+	@Transient
+	private String montoPlano;
+	
+	@Transient
+	private BigDecimal montoBigDecimal;
 	
 	@OneToOne
 	@JoinColumn(name = "id_carpeta")
@@ -65,9 +74,25 @@ public class Cuenta {
 		this.monto = monto;
 	}
 
+	public String getMontoPlano() {
+		return montoPlano;
+	}
+
+	public void setMontoPlano(String montoPlano) {
+		this.montoPlano = montoPlano;
+	}
+
+	public BigDecimal getMontoBigDecimal() {
+		return montoBigDecimal;
+	}
+
+	public void setMontoBigDecimal(BigDecimal montoBigDecimal) {
+		this.montoBigDecimal = montoBigDecimal;
+	}
+
 	@Override
 	public String toString() {
-		return "Cuenta [id=" + id + ", banco=" + banco + ", numero=" + numero + ", carpeta=" + carpeta + ", monto="
-				+ monto + "]";
+		return "Cuenta [id=" + id + ", banco=" + banco + ", numero=" + numero + ", montoPlano=" + montoPlano
+				+ ", montoBigDecimal=" + montoBigDecimal + ", carpeta=" + carpeta + ", monto=" + monto + "]";
 	}
 }

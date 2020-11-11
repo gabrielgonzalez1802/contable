@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="listaEmpresas">
+
+	<div class="card-header">
+		<div class="card-head-row">
+			<div class="card-title">
+				Lista de Empresas 
+			</div>
+			<div class="card-tools">
+				<a href="#" id="agregarEmpresa" class="btn btn-primary btn-border btn-round btn-sm">
+					<span class="btn-label">
+						<i class="fas fa-plus"></i>
+					</span>
+					Agregar
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class="card-body" style="padding-top: 0px;">
+		<div style="min-height: 300px;max-height: 300px;overflow: auto;">
+			<div class="table-responsive">
+               <table id="tabla" class="table mg-b-0 text-md-nowrap">
+				    <thead>
+				      <tr>
+				        <th>Nombre</th>
+				        <th>Telefono</th>
+				        <th>Direcci&oacute;n</th>
+				        <th>RNC</th>
+				        <th>Logo</th>
+				        <th></th>
+				      </tr>
+				    </thead>
+				    <tbody>
+				      <tr th:each="empresa:${empresas}">
+				        <td th:text="${empresa.nombre}"></td>
+				        <td th:text="${empresa.telefono}"></td>
+				        <td th:text="${empresa.direccion}"></td>
+				        <td th:text="${empresa.rnc}"></td>
+				        <td> <img th:src="@{/logos/{img} (img=${empresa.logo} )}"> </td>
+				        <td>
+				            <a style="color: #fff;cursor: pointer;" th:onclick="'modificarEmpresa(\'' + ${empresa.id} + '\');'" class="btn btn-primary btn-sm" role="button" title="Editar el registro."><i class="fa fa-edit" aria-hidden="true"></i></a>
+<!-- 							<a style="color: #fff;cursor: pointer;" th:onclick="'asignarDeduccion(\'' + ${empleado.id} + '\');'" class="btn btn-success btn-sm" role="button" title="Deduccion"><i class="fas fa-minus" aria-hidden="true"></i></a> -->
+				        </td>
+				      </tr>
+				    </tbody>
+				  </table>
+			  </div>
+		</div>
+	</div>
+</div>	
+</body>
+</html>

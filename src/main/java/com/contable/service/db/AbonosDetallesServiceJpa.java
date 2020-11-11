@@ -46,4 +46,9 @@ public class AbonosDetallesServiceJpa implements IAbonosDetallesService {
 		return repo.findByAbonoAndConcepto(abono, concepto);
 	}
 
+	@Override
+	public List<AbonoDetalle> buscarPorAbonoOrderByCuota(Abono abono) {
+		return repo.findByAbonoOrderByNumeroCuotaAsc(abono);
+	}
+
 }

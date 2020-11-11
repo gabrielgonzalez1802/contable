@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="form">
+	<div class="card-body">
+		<h2>Informaci&oacute;n del Empleado</h2>
+		<div>
+			<form th:object="${empleado}" id="formEmpleado" method="post">
+			<div class="row">
+			
+				<input type="hidden" th:value="*{id}" name="id">
+
+				<div class="col-md-6">
+					 <div class="form-group">
+					    <label for="">Nombre</label>
+					    <input type="text" maxlength="13" th:field="*{nombre}" class="form-control" placeholder="Nombre" required="required">
+					  </div>
+				</div>
+				
+				<div class="col-md-6">
+				 	<div class="form-group">
+					  <label for="">Apellido</label>
+					   	<input type="text" class="form-control" th:field="*{apellido}" placeholder="Apellido" required="required">
+					 </div>
+				</div>
+				
+			</div>
+			
+			<div class="row">
+				<div class="col-md-7">
+					 <div class="form-group">
+					    <label for="">Direccion</label>
+					    <input type="text" th:field="*{direccion}" class="form-control" placeholder="Direccion">
+					  </div>
+				</div>
+				
+				<div class="col-md-3">
+				 	<div class="form-group">
+					  <label for="">Cedula</label>
+					   	<input type="text" class="form-control" th:field="*{cedula}" placeholder="Cedula" required="required">
+					 </div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-3">
+					 <div class="form-group">
+					    <label for="">Telefono</label>
+					    <input type="text" th:field="*{telefono}" class="form-control" placeholder="Telefono">
+					  </div>
+				</div>
+				
+				<div class="col-md-3">
+				 	<div class="form-group">
+					  <label for="">No. Emergencia</label>
+					   	<input type="text" class="form-control" th:field="*{numeroEmergencia}" placeholder="No. Emergencia">
+					 </div>
+				</div>
+				
+				<div class="col-md-3">
+					 <div class="form-group">
+					    <label for="">Puesto</label>
+					    <input type="text" th:field="*{puesto}" class="form-control" placeholder="Puesto">
+					  </div>
+				</div>
+				
+				<div class="col-md-3">
+				 	<div class="form-group">
+					  <label for="">Sueldo</label>
+					   	<input type="number" min="0" class="form-control" th:field="*{sueldo}" placeholder="Sueldo">
+					 </div>
+				</div>
+			</div>
+		
+			<div class="row">
+				<div class="col-md-4">
+				 	<div class="form-group">
+					  <label for="">Fecha de Nacimiento</label>
+					   	<input type="date" class="form-control" th:field="*{fechaNacimiento}" required="required">
+					 </div>
+				</div>
+				
+				<div class="col-md-4">
+				 	<div class="form-group">
+					  <label for="">Fecha de Ingreso</label>
+					   	<input type="date" class="form-control" th:field="*{fechaIngreso}">
+					 </div>
+				</div>
+			</div>							
+			
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group pull-right">
+						<input type="submit" value="Guardar" class="btn btn-primary">
+					</div>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+</body>
+</html>

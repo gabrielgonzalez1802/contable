@@ -12,7 +12,7 @@
       <div class="row justify-content-sm-center">
         <div class="col-md-4 col-sm-4">
           <div style="border-radius:50px; border-style: solid;border-color: gray;">
-            <form th:action="@{/login}" method="POST" class="form-signin" style="padding-top: 10%;padding-bottom: 10%;padding-left: 8%;padding-right:8%;">
+            <form th:action="@{/login}" id="formLogin" method="POST" class="form-signin" style="padding-top: 10%;padding-bottom: 10%;padding-left: 8%;padding-right:8%;">
             <h1 style="text-align: center;padding-bottom: 2%;">Usuario:</h1>
             
             <div class="form-group has-search">
@@ -34,6 +34,20 @@
               </span>
               <input type="password" name="password" class="form-control" placeholder="**********" style="border-radius: 10px;">
             </div>
+            
+             <div class="form-group has-search">
+              <span class="form-control-feedback">
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-person-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                </svg>
+              </span>
+              <select class="form-control" style="border-radius: 10px;" name="empresa" id="idEmpresa">
+              		<option th:each="empresa : ${empresas}"
+              				th:value="${empresa.id}" th:text="${empresa.nombre}"
+              		></option>
+              </select>
+            </div>
+            
             <input type="submit" value="Sign in" class="btn btn-success btn-block mb-1" style="border-radius: 10px;">
           </form>
           </div>
@@ -41,8 +55,20 @@
       </div>
     </div>
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script th:src="@{/js/jquery-3.5.1.slim.min.js}" ></script>
+     <script th:src="@{/assets/plugins/jquery/jquery.min.js}"></script>
     <script th:src="@{/js/popper.min.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}" ></script>
+    
+     <script>
+    	$("#formLogin").submit(function(e){
+    		var empresaId = $("#idEmpresa").val();
+		    	$.post("/setEmpresa",{
+		   			 "empresaId":empresaId,
+		   		 },function(data){
+		   				return true;		
+		   		 });
+   				return true;		
+    	});
+    </script>
   </body>
 </html>

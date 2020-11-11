@@ -26,6 +26,10 @@ public class Prestamo {
 	@JoinColumn(name = "id_cliente")
 	private Cliente cliente;
 	
+	@OneToOne
+	@JoinColumn(name = "id_empresa")
+	private Empresa empresa;
+	
 	@Transient
 	private Integer idClienteTemp = 0;
 	
@@ -369,18 +373,26 @@ public class Prestamo {
 		this.numeroNota = numeroNota;
 	}
 
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+
 	@Override
 	public String toString() {
-		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", idClienteTemp=" + idClienteTemp
-				+ ", idCarpetaTemp=" + idCarpetaTemp + ", idCuentaTemp=" + idCuentaTemp + ", fechaTemp=" + fechaTemp
-				+ ", tipo=" + tipo + ", tipo_prestamo=" + tipo_prestamo + ", dias_gracia=" + dias_gracia + ", monto="
-				+ monto + ", pagos=" + pagos + ", tasa=" + tasa + ", codigo=" + codigo + ", forma_pago=" + forma_pago
-				+ ", valor_cuota=" + valor_cuota + ", mora=" + mora + ", observacion=" + observacion + ", balance="
-				+ balance + ", valor_interes=" + valor_interes + ", ultimoPago=" + ultimoPago + ", fecha_cron="
-				+ fecha_cron + ", numeroNota=" + numeroNota + ", usuario=" + usuario + ", estado=" + estado
-				+ ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta + ", total_cuota=" + total_cuota
-				+ ", total_capital=" + total_capital + ", total_interes=" + total_interes + ", total_neto=" + total_neto
-				+ ", gastos_cierre=" + gastos_cierre + ", cantidad_pagos=" + cantidad_pagos + ", capitalPagado="
-				+ capitalPagado + "]";
+		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", empresa=" + empresa
+				+ ", idClienteTemp=" + idClienteTemp + ", idCarpetaTemp=" + idCarpetaTemp + ", idCuentaTemp="
+				+ idCuentaTemp + ", fechaTemp=" + fechaTemp + ", tipo=" + tipo + ", tipo_prestamo=" + tipo_prestamo
+				+ ", dias_gracia=" + dias_gracia + ", monto=" + monto + ", pagos=" + pagos + ", tasa=" + tasa
+				+ ", codigo=" + codigo + ", forma_pago=" + forma_pago + ", valor_cuota=" + valor_cuota + ", mora="
+				+ mora + ", observacion=" + observacion + ", balance=" + balance + ", valor_interes=" + valor_interes
+				+ ", ultimoPago=" + ultimoPago + ", fecha_cron=" + fecha_cron + ", numeroNota=" + numeroNota
+				+ ", usuario=" + usuario + ", estado=" + estado + ", moneda=" + moneda + ", carpeta=" + carpeta
+				+ ", cuenta=" + cuenta + ", total_cuota=" + total_cuota + ", total_capital=" + total_capital
+				+ ", total_interes=" + total_interes + ", total_neto=" + total_neto + ", gastos_cierre=" + gastos_cierre
+				+ ", cantidad_pagos=" + cantidad_pagos + ", capitalPagado=" + capitalPagado + "]";
 	}
 }

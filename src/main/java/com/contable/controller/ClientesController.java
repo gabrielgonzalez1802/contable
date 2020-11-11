@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
 import com.contable.model.ComprobanteFiscal;
+import com.contable.model.Empresa;
 import com.contable.model.Prestamo;
 import com.contable.model.Usuario;
 import com.contable.service.ICarpetasService;
@@ -136,7 +137,7 @@ public class ClientesController {
 			
 			return "clientes/buscarCliente :: buscarCliente"; 
 		}
-		List<Prestamo> prestamos = servicePrestamos.buscarPorClienteCarpetaPorFechaDesc(cliente, carpetaTemp);
+		List<Prestamo> prestamos = servicePrestamos.buscarPorClienteCarpetaEmpresaPorFechaDesc(cliente, carpetaTemp, (Empresa) session.getAttribute("empresa"));
 		model.addAttribute("tipoDocumentoAcct", cliente.getTipoDocumento());
 		model.addAttribute("prestamos", prestamos);
 		model.addAttribute("cliente", cliente);
@@ -150,7 +151,7 @@ public class ClientesController {
 		Carpeta carpeta = serviceCarpetas.buscarPorId(idCarpeta);
 		model.addAttribute("carpeta", carpeta);
 		if(cliente != null) {
-			List<Prestamo> prestamos = servicePrestamos.buscarPorClienteCarpetaPorFechaDesc(cliente, carpeta);
+			List<Prestamo> prestamos = servicePrestamos.buscarPorClienteCarpetaEmpresaPorFechaDesc(cliente, carpeta, (Empresa) session.getAttribute("empresa"));
 			session.setAttribute("cliente", cliente.getId());
 			model.addAttribute("tipoDocumentoAcct", cliente.getTipoDocumento());
 			model.addAttribute("cliente", cliente);

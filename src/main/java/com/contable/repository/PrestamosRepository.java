@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
+import com.contable.model.Empresa;
 import com.contable.model.Prestamo;
 
 public interface PrestamosRepository extends JpaRepository<Prestamo, Integer>{
@@ -17,5 +18,6 @@ public interface PrestamosRepository extends JpaRepository<Prestamo, Integer>{
 	List<Prestamo> findByCarpeta(Carpeta carpeta);
 	List<Prestamo> findByTipo(String tipo);
 	List<Prestamo> findByClienteAndCarpetaOrderByFechaDesc(Cliente cliente, Carpeta carpeta);
+	List<Prestamo> findByClienteAndCarpetaAndEmpresaOrderByFechaDesc(Cliente cliente, Carpeta carpeta, Empresa empresa);
 	List<Prestamo> findByCarpetaOrderByFechaDesc(Carpeta carpeta);
 }

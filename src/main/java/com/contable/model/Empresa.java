@@ -5,6 +5,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Table(name = "empresas")
@@ -19,6 +22,9 @@ public class Empresa {
 	private String telefono;
 	private String rnc;
 	private String logo;
+	
+	@Transient
+	private MultipartFile logoTemp;
 	
 	public Integer getId() {
 		return id;
@@ -56,9 +62,15 @@ public class Empresa {
 	public void setLogo(String logo) {
 		this.logo = logo;
 	}
+	public MultipartFile getLogoTemp() {
+		return logoTemp;
+	}
+	public void setLogoTemp(MultipartFile logoTemp) {
+		this.logoTemp = logoTemp;
+	}
 	@Override
 	public String toString() {
 		return "Empresa [id=" + id + ", nombre=" + nombre + ", direccion=" + direccion + ", telefono=" + telefono
-				+ ", rnc=" + rnc + ", logo=" + logo + "]";
+				+ ", rnc=" + rnc + ", logo=" + logo + ", logoTemp=" + logoTemp + "]";
 	}
 }

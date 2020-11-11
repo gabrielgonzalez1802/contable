@@ -41,8 +41,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/js/**",
 			"/css/**").permitAll()
 		// Las vistas públicas no requieren autenticación
-//		.antMatchers(
-//			"/login").permitAll()
+		.antMatchers(
+			"/setEmpresa").permitAll()
 		
 //		// Asignar permisos a URLs por ROLES
 //		.antMatchers("/vacantes/**").hasAnyAuthority("SUPERVISOR","ADMINISTRADOR")

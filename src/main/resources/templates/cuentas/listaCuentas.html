@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="listaCuentas">
+
+	<div class="card-header">
+		<div class="card-head-row">
+			<div class="card-title">
+		 <div class="form-row align-items-center">
+		 	Lista de Cuentas &nbsp;&nbsp;&nbsp;
+			<div class="col-sm-2 my-1" id="buscarCarpeta">
+				<label class="sr-only" for="">carpeta</label>
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<button style="width: 100%;" class="btn btn-success"
+							id="btnCarpetaCuentas">
+							<i class="fas fa-search"></i>
+						</button>
+					</div>
+					<input type="hidden" th:value="${msgId}" id="msgId">
+					 <input
+						type="hidden" th:value="${carpeta.id}" class="form-control"
+						id="carpetaId" placeholder="Carpeta" disabled="disabled">
+					<input type="text" th:value="${carpeta.nombre}"
+						class="form-control" id="carpeta" placeholder="Carpeta"
+						disabled="disabled">
+					<div th:if="${carpeta.principal != 1}" class="input-group-prepend">
+						<button style="width: 100%;" class="btn btn-danger"
+							id="btnExitCarpetaCuentas">
+							<i class="fas fa-times"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="pull-right">
+				<a href="#" id="agregarCuenta" class="btn btn-primary btn-border btn-round btn-sm">
+					<span class="btn-label">
+						<i class="fas fa-plus"></i>
+					</span>Agregar
+				</a>
+			</div>
+		</div>
+			</div>
+		</div>
+	</div>
+	<div class="card-body" style="padding-top: 0px;">
+		<div style="min-height: 300px;max-height: 300px;overflow: auto;">
+			<div class="table-responsive">
+               <table id="tabla" class="table mg-b-0 text-md-nowrap">
+				    <thead>
+				      <tr>
+				        <th>Banco</th>
+				        <th>N&uacute;mero</th>
+				        <th>Monto</th>
+				        <th></th>
+				      </tr>
+				    </thead>
+				    <tbody>
+				      <tr th:each="cuenta:${cuentas}">
+				        <td th:text="${cuenta.banco}"></td>
+				        <td th:text="${cuenta.numero}"></td>
+				        <td th:text="${cuenta.montoBigDecimal}"></td>
+				        <td>
+				            <a style="color: #fff;cursor: pointer;" th:onclick="'modificarCuenta(\'' + ${cuenta.id} + '\');'" class="btn btn-primary btn-sm" role="button" title="Editar el registro."><i class="fa fa-edit" aria-hidden="true"></i></a>
+<!-- 							<a style="color: #fff;cursor: pointer;" th:onclick="'asignarDeduccion(\'' + ${empleado.id} + '\');'" class="btn btn-success btn-sm" role="button" title="Deduccion"><i class="fas fa-minus" aria-hidden="true"></i></a> -->
+				        </td>
+				      </tr>
+				    </tbody>
+				  </table>
+			  </div>
+		</div>
+	</div>
+</div>	
+</body>
+</html>

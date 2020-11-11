@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="form">
+	<div class="card-body">
+		<h2>Informaci&oacute;n de la cuenta</h2>
+		<div>
+			<form th:object="${cuenta}" id="formAddCuenta" method="post">
+			<div class="row">
+			
+				<div class="col-md-4">
+					 <div class="form-group">
+					    <label for="">Banco</label>
+					    <input type="text" th:field="*{banco}" class="form-control" placeholder="Banco" required="required">
+					  </div>
+				</div>
+				
+				<div class="col-md-4">
+				 	<div class="form-group">
+					  <label for="">Numero</label>
+					   	<input type="text" class="form-control" th:field="*{numero}" placeholder="Numero" required="required">
+					 </div>
+				</div>
+				
+				<div class="col-md-4">
+					 <div class="form-group">
+					    <label for="">Monto</label>
+					    <input type="number" min="0" th:field="*{monto}" class="form-control" placeholder="Monto">
+					  </div>
+				</div>
+				
+			</div>			
+			
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group pull-right">
+						<input type="submit" value="Guardar" class="btn btn-primary">
+					</div>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

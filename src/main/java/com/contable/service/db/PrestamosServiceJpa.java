@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
+import com.contable.model.Empresa;
 import com.contable.model.Prestamo;
 import com.contable.repository.PrestamosRepository;
 import com.contable.service.IPrestamosService;
@@ -79,6 +80,12 @@ public class PrestamosServiceJpa implements IPrestamosService{
 	@Override
 	public List<Prestamo> buscarPorCarpetaFecha(Carpeta carpeta, Date date) {
 		return repo.findByCarpetaAndFecha(carpeta, date);
+	}
+
+	@Override
+	public List<Prestamo> buscarPorClienteCarpetaEmpresaPorFechaDesc(Cliente cliente, Carpeta carpeta,
+			Empresa empresa) {
+		return repo.findByClienteAndCarpetaAndEmpresaOrderByFechaDesc(cliente, carpeta, empresa);
 	}
 
 }

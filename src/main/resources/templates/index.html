@@ -243,17 +243,17 @@ input {
           <div class="row" id="cuerpo" style="overflow-y:hidden">
             <div class="col-md-12">
               <div class="card principal card-dashboard-map-one" id="contenido">
-				 <center><img th:src="@{/img/martinsa.PNG}" style="max-width: 80%;"></center> 
+				 <center><img th:src="@{/logos/{img} (img=${empresa.logo} )}" style="max-width: 80%;"></center> 
 				 
 				 <br><br>
 				 
 				 <div class="container"> 
 					 <div class="float-right"> 
 					  	<div style="text-align:center">
-						  <h1 style="color: #2EABD7;" class="tx-35 mb-1 tx-inverse tx-semibold mg-b-0">809-582-9558</h1>
-						  <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">plaza barcelona</h2>
-						  <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">51000 Santiago de los caballeros,</h2>
-				          <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Republica Dominicana</h2>
+						  <h1 style="color: #2EABD7;" class="tx-35 mb-1 tx-inverse tx-semibold mg-b-0" th:text="${empresa.telefono}">809-582-9558</h1>
+						  <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0" th:text="${empresa.direccion}">plaza barcelona</h2>
+<!-- 						  <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">51000 Santiago de los caballeros,</h2> -->
+<!-- 				          <h2 style="color: #2EABD7;" class="tx-15 mb-1 tx-inverse tx-semibold mg-b-0">Republica Dominicana</h2> -->
 				      	</div>
 				      </div> 
 			      </div>

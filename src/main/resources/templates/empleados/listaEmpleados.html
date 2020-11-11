@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="listaEmpleados">
+
+ <!-- Modal Asignacion -->
+  <div class="modal" id="modalAsignacion">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Agregar Asignacion</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          	<div class="row">
+          		
+          		<input type="hidden" class="form-control" id="idEmpleadoAsignacion">
+          	
+				<div class="col-md-5">
+				 	<div class="form-group">
+					   	<input type="text" class="form-control" id="motivoAsignacion" placeholder="Motivo">
+					 </div>
+				</div>
+				
+				<div class="col-md-5">
+				 	<div class="form-group">
+					   	<input type="number" min="0" class="form-control" id="montoAsignacion" placeholder="Monto">
+					 </div>
+				</div>
+				
+				<div class="col-md-2">
+				 	<div class="form-group">
+					   	  <button type="button" class="btn btn-success" id="agregarAsignacion"> + </button>
+					 </div>
+				</div>
+			</div>
+			
+			<br>
+			
+			<div class="row">
+				<div class="col-md-12">
+					<div id="asignacionesEmpleado">
+						<div class="table-responsive">
+			                   <table class="table mg-b-0 text-md-nowrap" id="tablaAsignaciones">
+									<thead style="background-color: #0162e8;height: 80px;">
+										<tr>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Motivo</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Monto</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Estado</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;"></th>
+										</tr>
+									 </thead>
+									<tbody>
+										 <tr th:each="asignacion : ${asignaciones}">
+											 <td th:text="${asignacion.motivo}">Motivo</td>
+										 	 <td th:text="${asignacion.monto}">Monto</td>
+										 	 <td th:if="${asignacion.estado}">Estado</td>
+											 <td> 
+<!-- 											 <button th:onclick="'modificarAsignacion(\'' + ${asignacion.id} + '\');'" class="btn btn-info"><i class="fas fa-edit"></i></button> -->
+										 	 	  <button th:onclick="'eliminarAsignacion(\'' + ${asignacion.id} + '\');'" class="btn btn-danger"><i class="fas fa-trash"></i></button>
+										 	 </td>
+										 </tr>
+									</tbody>
+								 </table>
+		                	  </div>
+					</div>
+				</div>
+			</div>
+
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Regresar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>  
+
+ <!-- Modal Deduccion -->
+  <div class="modal" id="modalDeduccion">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Agregar Deduccion</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          	<div class="row">
+          		
+          		<input type="hidden" class="form-control" id="idEmpleadoDeduccion">
+          	
+				<div class="col-md-5">
+				 	<div class="form-group">
+					   	<input type="text" class="form-control" id="motivoDeduccion" placeholder="Motivo">
+					 </div>
+				</div>
+				
+				<div class="col-md-5">
+				 	<div class="form-group">
+					   	<input type="number" min="0" class="form-control" id="montoDeduccion" placeholder="Monto">
+					 </div>
+				</div>
+				
+				<div class="col-md-2">
+				 	<div class="form-group">
+					   	  <button type="button" class="btn btn-success" id="agregarDeduccion"> + </button>
+					 </div>
+				</div>
+			</div>
+			
+			<br>
+			
+			<div class="row">
+				<div class="col-md-12">
+					<div id="deduccionesEmpleado">
+						<div class="table-responsive">
+			                   <table class="table mg-b-0 text-md-nowrap" id="tablaAsignaciones">
+									<thead style="background-color: #0162e8;height: 80px;">
+										<tr>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Motivo</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Monto</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Estado</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;"></th>
+										</tr>
+									 </thead>
+									<tbody>
+										 <tr th:each="deduccion : ${deducciones}">
+											 <td th:text="${deduccion.motivo}">Motivo</td>
+										 	 <td th:text="${deduccion.monto}">Monto</td>
+										 	 <td th:if="${deduccion.estado}">Estado</td>
+											 <td> 
+<!-- 											 <button th:onclick="'modificarAsignacion(\'' + ${asignacion.id} + '\');'" class="btn btn-info"><i class="fas fa-edit"></i></button> -->
+										 	 	  <button th:onclick="'eliminarDeduccion(\'' + ${deduccion.id} + '\');'" class="btn btn-danger"><i class="fas fa-trash"></i></button>
+										 	 </td>
+										 </tr>
+									</tbody>
+								 </table>
+		                	  </div>
+					</div>
+				</div>
+			</div>
+
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Regresar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>  
+
+	<div class="card-header">
+		<div class="card-head-row">
+			<div class="card-title">
+				Lista de Empleados 
+			</div>
+			<div class="card-tools">
+				<a href="#" id="agregarEmpleado" class="btn btn-primary btn-border btn-round btn-sm">
+					<span class="btn-label">
+						<i class="fas fa-plus"></i>
+					</span>
+					Agregar
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class="card-body" style="padding-top: 0px;">
+		<div style="min-height: 300px;max-height: 300px;overflow: auto;">
+			<div class="table-responsive">
+               <table id="tabla" class="table mg-b-0 text-md-nowrap">
+				    <thead>
+				      <tr>
+				        <th>Nombres</th>
+				        <th>Apellidos</th>
+				        <th>cedula</th>
+				        <th>telefono</th>
+				        <th>No. Emergencia</th>
+				        <th></th>
+				      </tr>
+				    </thead>
+				    <tbody>
+				      <tr th:each="empleado:${empleados}">
+				        <td th:text="${empleado.nombre}"></td>
+				        <td th:text="${empleado.apellido}"></td>
+				        <td th:text="${empleado.cedula}"></td>
+				        <td th:text="${empleado.telefono}"></td>
+				        <td th:text="${empleado.numeroEmergencia}"></td>
+				        <td>
+				            <a style="color: #fff;cursor: pointer;" th:onclick="'modificarEmpleado(\'' + ${empleado.id} + '\');'" class="btn btn-primary btn-sm" role="button" title="Editar el registro."><i class="fa fa-edit" aria-hidden="true"></i></a>
+							<a style="color: #fff;cursor: pointer;" th:onclick="'asignarDeduccion(\'' + ${empleado.id} + '\');'" class="btn btn-success btn-sm" role="button" title="Deduccion"><i class="fas fa-minus" aria-hidden="true"></i></a>
+							<a style="color: #fff;cursor: pointer;" th:onclick="'asignarAsignacion(\'' + ${empleado.id} + '\');'" class="btn btn-info btn-sm" role="button" title="Asignacion"><i class="fas fa-plus" aria-hidden="true"></i></a>
+				        </td>
+				      </tr>
+				    </tbody>
+				  </table>
+			  </div>
+		</div>
+	</div>
+</div>	
+</body>
+</html>

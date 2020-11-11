@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="form">
+	<div class="card-body">
+		<h2>Informaci&oacute;n de la empresa</h2>
+		<div>
+			<form th:object="${empresa}" id="formAddEmpresa" method="post">
+			<div class="row">
+			
+				<div class="col-md-4">
+					 <div class="form-group">
+					    <label for="">Nombre</label>
+					    <input type="text" th:field="*{nombre}" class="form-control" placeholder="Nombre" required="required">
+					  </div>
+				</div>
+				
+				<div class="col-md-8">
+				 	<div class="form-group">
+					  <label for="">Direccion</label>
+					   	<input type="text" class="form-control" th:field="*{direccion}" placeholder="Direccion" required="required">
+					 </div>
+				</div>
+				
+			</div>
+			
+			<div class="row">
+				<div class="col-md-4">
+					 <div class="form-group">
+					    <label for="">Telefono</label>
+					    <input type="text" th:field="*{telefono}" class="form-control" placeholder="Telefono">
+					  </div>
+				</div>
+				
+				<div class="col-md-4">
+				 	<div class="form-group">
+					  <label for="">RNC</label>
+					   	<input type="text" class="form-control" th:field="*{rnc}" placeholder="RNC">
+					 </div>
+				</div>
+				
+				<div class="col-md-4">
+					 <div class="form-group">
+					    <label for="">Logo</label>
+					    <input type="file" th:field="*{logoTemp}" class="form-control" required="required">
+					  </div>
+				</div>
+			</div>						
+			
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group pull-right">
+						<input type="submit" value="Guardar" class="btn btn-primary">
+					</div>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<div th:fragment="formEdit">
+	<div class="card-body">
+		<h2>Informaci&oacute;n de la empresa</h2>
+		<div>
+			<form th:object="${empresa}" id="formUpdateEmpresa" method="post">
+			<div class="row">
+				<input type="hidden" th:value="*{id}" name="id">
+				<div class="col-md-4">
+					 <div class="form-group">
+					    <label for="">Nombre</label>
+					    <input type="text" th:field="*{nombre}" class="form-control" placeholder="Nombre" required="required">
+					  </div>
+				</div>
+				
+				<div class="col-md-8">
+				 	<div class="form-group">
+					  <label for="">Direccion</label>
+					   	<input type="text" class="form-control" th:field="*{direccion}" placeholder="Direccion" required="required">
+					 </div>
+				</div>
+				
+			</div>
+			
+			<div class="row">
+				<div class="col-md-4">
+					 <div class="form-group">
+					    <label for="">Telefono</label>
+					    <input type="text" th:field="*{telefono}" class="form-control" placeholder="Telefono">
+					  </div>
+				</div>
+				
+				<div class="col-md-4">
+				 	<div class="form-group">
+					  <label for="">RNC</label>
+					   	<input type="text" class="form-control" th:field="*{rnc}" placeholder="RNC">
+					 </div>
+				</div>
+				
+				<div class="col-md-4">
+					 <div class="form-group">
+					    <label for="">Logo</label>
+					    <input type="file" th:field="*{logoTemp}" class="form-control">
+					    <img th:src="@{/logos/{img} (img=*{logo} )}" style="width: 200px">
+					  </div>
+				</div>
+			</div>						
+			
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group pull-right">
+						<input type="submit" value="Modificar" class="btn btn-primary">
+					</div>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+</body>
+</html>

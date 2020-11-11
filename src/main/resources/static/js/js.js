@@ -1,4 +1,4 @@
-imprimirAbonoDetalle(22);
+// imprimirAbonoDetalle(2);
 
 function addEvents(){
 	
@@ -12,7 +12,8 @@ function addEvents(){
 		
 	
 	if($("#tabla").length) {
-		$('#tabla').DataTable({
+		if( $.fn.DataTable.isDataTable('#tabla') == false){
+			$('#tabla').DataTable({
 			    "language": {
 			        "sProcessing":    "Procesando...",
 			        "sLengthMenu":    "Mostrar _MENU_ registros",
@@ -36,7 +37,8 @@ function addEvents(){
 			            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
 			        }
 			    }
-		});
+			});
+		}
 	}
 
 /*********************************************** Fin Configuraciones Iniciales **********************************************/	
@@ -1137,6 +1139,7 @@ $("#caja").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
 	ocultarDetalleAmortizacion();
+	styleSeccion1Only();
 	$("#contenido").load("/cajas/mostrarCuadre",function(data){
 		console.log("Cuadre de Caja");
 		addEvents();
@@ -1187,6 +1190,7 @@ $("#contabilidad").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
 	ocultarDetalleAmortizacion();
+	styleSeccion1Only();
 	$("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
 		console.log("Contabilidad");
 		addEvents();
@@ -1565,6 +1569,521 @@ $("#btnExitCarpetaCobros").click(function(e){
 });	
 
 /******************************************************* Fin Cobros **********************************************************/
+
+/******************************************************** Empleados *********************************************************/
+
+$("#empleados").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/empleados/listaEmpleados",function(data){
+		ocultarDetalleAmortizacion();
+		console.log("Lista de empleados");
+		addEvents();
+	});
+});
+
+$("#listaEmpleados").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/empleados/listaEmpleados",function(data){
+		ocultarDetalleAmortizacion();
+		console.log("Lista de empleados");
+		addEvents();
+	});
+});
+
+$("#agregarEmpleado").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/empleados/agregarEmpleado",function(data){
+		ocultarDetalleAmortizacion();
+		console.log("Agregar empleados");
+		addEvents();
+	});
+});
+
+$("#formEmpleado").submit(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var datos = $("#formEmpleado").serializeArray();
+	
+//	if(){
+//		datos.push( {name:'id', value:id} );
+//	}
+	
+	console.log(datos);
+	 $.post("/empleados/guardar",datos,
+		function(data){
+			if(data == "1"){
+//				$("#contenido").replaceWith(data);
+				Swal.fire({
+					title : 'Muy bien!',
+					text : 'Empleado creado correctamente',
+					position : 'top',
+					icon : 'success',
+					confirmButtonText : 'Cool'
+				})
+				addEvents();
+			}else if(data == "2"){
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'El empleado ya existe',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}else if(data == "0"){
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'No se guardo el empleado',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}else if(data == "4"){
+				Swal.fire({
+					title : 'Muy bien!',
+					text : 'Empleado modificado correctamente',
+					position : 'top',
+					icon : 'success',
+					confirmButtonText : 'Cool'
+				})
+			}
+			$("#contenido").load("/empleados/agregarEmpleado",function(data){
+				console.log("Agregar Empleado");
+				addEvents();
+			});
+		});
+});
+
+$("#agregarAsignacion").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var idEmpleado = $("#idEmpleadoAsignacion").val();
+	var motivoAsignacion = $("#motivoAsignacion").val();
+	var montoAsignacion = $("#montoAsignacion").val();
+	
+	if(!montoAsignacion || !motivoAsignacion){
+		$("#modalAsignacion").modal("hide");
+		Swal.fire({
+			title : 'Alerta!',
+			text : 'Los campos no pueden estar vacios',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		$("#asignacionesEmpleado").load("/empleados/guardarAsignacion",
+				{
+					"idEmpleado" : idEmpleado,
+					"motivo" : motivoAsignacion,
+					"monto" : montoAsignacion
+				},function(data){
+					$("#modalAsignacion").modal("hide");
+					if(data == "0"){
+						Swal.fire({
+							title : 'Alerta!',
+							text : 'No se guardo la asignacion',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+					}else{
+						$("#modalAsignacion").modal("show");
+						console.log("Guardar Asignacion");
+						$("#asignacionesEmpleado").load("/empleados/listaAsignaciones/"+idEmpleado,function(data){
+							$("#motivoAsignacion").val("");
+							$("#montoAsignacion").val("");
+							console.log("Agregar Asignacion");
+						});
+					}
+
+		});
+	}
+});
+
+$("#agregarDeduccion").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var idEmpleado = $("#idEmpleadoDeduccion").val();
+	var motivoDeduccion = $("#motivoDeduccion").val();
+	var montoDeduccion = $("#montoDeduccion").val();
+	
+	if(!montoDeduccion || !motivoDeduccion){
+		$("#modalDeduccion").modal("hide");
+		Swal.fire({
+			title : 'Alerta!',
+			text : 'Los campos no pueden estar vacios',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		$("#deduccionesEmpleado").load("/empleados/guardarDeduccion",
+				{
+					"idEmpleado" : idEmpleado,
+					"motivo" : motivoDeduccion,
+					"monto" : montoDeduccion
+				},function(data){
+					$("#modalDeduccion").modal("hide");
+					if(data == "0"){
+						Swal.fire({
+							title : 'Alerta!',
+							text : 'No se guardo la deduccion',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+					}else{
+						$("#modalDeduccion").modal("show");
+						console.log("Guardar deduccion");
+						$("#deduccionesEmpleado").load("/empleados/listaDeducciones/"+idEmpleado,function(data){
+							$("#motivoDeduccion").val("");
+							$("#montoDeduccion").val("");
+						});
+					}
+
+		});
+	}
+});
+
+/******************************************************** Fin Empleados *****************************************************/
+
+/******************************************************** Empresas **********************************************************/
+
+$("#empresas").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/empresas/listaEmpresas",function(data){
+		ocultarDetalleAmortizacion();
+		console.log("Lista de empresas");
+		addEvents();
+	});
+});
+
+$("#agregarEmpresa").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/empresas/agregarEmpresa",function(data){
+		ocultarDetalleAmortizacion();
+		console.log("Formulario de empresas");
+		addEvents();
+	});
+});
+
+$("#formAddEmpresa").on("submit", function (e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+        $.ajax({
+            url: "/empresas/crear/",
+            type: "POST",
+            data: new FormData(this),
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function (res) {
+	            if(res=="1"){
+					Swal.fire({
+						title : 'Muy bien!',
+						text : 'Registro guardado',
+						position : 'top',
+						icon : 'success',
+						confirmButtonText : 'Cool'
+					})
+				}else{
+					Swal.fire({
+						title : 'Error!',
+						text : 'No se pudo crear el registro',
+						position : 'top',
+						icon : 'error',
+						confirmButtonText : 'Cool'
+					})
+				}
+	               $("#contenido").load("/empresas/agregarEmpresa",function(data){
+	        		addEvents();
+	        	});
+            },
+            error: function (err) {
+                console.error(err);
+                Swal.fire({
+					title : 'Error!',
+					text : 'No se pudo completar la operacion, intente mas tarde',
+					position : 'top',
+					icon : 'error',
+					confirmButtonText : 'Cool'
+				})
+            }
+        });
+});
+
+$("#formUpdateEmpresa").on("submit", function (e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+        $.ajax({
+            url: "/empresas/modificar/",
+            type: "POST",
+            data: new FormData(this),
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function (res) {
+	            if(res=="1"){
+					Swal.fire({
+						title : 'Muy bien!',
+						text : 'Registro modificado',
+						position : 'top',
+						icon : 'success',
+						confirmButtonText : 'Cool'
+					})
+				}else{
+					Swal.fire({
+						title : 'Error!',
+						text : 'No se pudo modificar el registro',
+						position : 'top',
+						icon : 'error',
+						confirmButtonText : 'Cool'
+					})
+				}
+	               $("#contenido").load("/empresas/agregarEmpresa",function(data){
+	        		addEvents();
+	        	});
+            },
+            error: function (err) {
+                console.error(err);
+                Swal.fire({
+					title : 'Error!',
+					text : 'No se pudo completar la operacion, intente mas tarde',
+					position : 'top',
+					icon : 'error',
+					confirmButtonText : 'Cool'
+				})
+            }
+        });
+});
+
+/******************************************************** Fin Empresas ******************************************************/
+
+/******************************************************** Cuentas ***********************************************************/
+
+$("#cuentas").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/cuentas/listaCuentas",function(data){
+		ocultarDetalleAmortizacion();
+		console.log("Lista de cuentas");
+		addEvents();
+	});
+});
+
+$("#btnCarpetaCuentas").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	Swal.fire({
+		  title: 'Ingrese la carpeta',
+		  position: 'top',
+		  input: 'text',
+		  inputAttributes: {
+		    autocapitalize: 'off'
+		  },
+		  showCancelButton: true,
+		  confirmButtonText: 'Buscar',
+		  cancelButtonText: 'Cancelar',
+		  showLoaderOnConfirm: true,
+		  preConfirm: (carpeta) => {
+			  $.ajax({
+		            url: "/carpetas/buscarCarpetaCuentas/"+carpeta,
+		            type: "GET",
+		            processData: false,
+		            contentType: false,
+		            cache: false,
+		            success: function (res) {
+						$("#buscarCarpeta").replaceWith(res);
+		            	var msg = $("#msgId").val();
+			            if(msg=="0"){
+							Swal.fire({
+								title : 'No tienes carpetas creadas!',
+//								text : 'No tienes carpetas creadas',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+							addEvents();
+						}else{
+							Swal.fire({
+								title : 'Muy bien!',
+								text : 'Carpeta Seleccionada',
+								position : 'top',
+								icon : 'success',
+								confirmButtonText : 'Cool'
+							})
+		
+							$("#contenido").load("/cuentas/listaCuentas",function(data){
+								ocultarDetalleAmortizacion();
+								console.log("Lista de cuentas");
+								addEvents();
+							});
+						}
+		            },
+		            error: function (err) {
+		                console.error(err);
+		                Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo completar la operacion, intente mas tarde',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+		            }
+		        });
+		  },
+		  allowOutsideClick: () => !Swal.isLoading()
+		}).then((result) => {
+		  if (result.isConfirmed) {
+		    //Correcto
+		  }
+		})
+});
+
+$("#btnExitCarpetaCuentas").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	  $.ajax({
+          url: "/carpetas/buscarCarpetaCuentas",
+          type: "GET",
+          processData: false,
+          contentType: false,
+          cache: false,
+          success: function (res) {
+				$("#buscarCarpeta").replaceWith(res);
+          	var msg = $("#msgId").val();
+	            if(msg=="0"){
+					addEvents();
+				}else{
+					$("#contenido").load("/cuentas/listaCuentas",function(data){
+						ocultarDetalleAmortizacion();
+						console.log("Lista de cuentas");
+						addEvents();
+					});
+				}
+          },
+          error: function (err) {
+              console.error(err);
+              Swal.fire({
+					title : 'Error!',
+					text : 'No se pudo completar la operacion, intente mas tarde',
+					position : 'top',
+					icon : 'error',
+					confirmButtonText : 'Cool'
+				})
+          }
+      });
+});	
+
+$("#agregarCuenta").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/cuentas/agregarCuenta",function(data){
+		ocultarDetalleAmortizacion();
+		console.log("Formulario de cuentas");
+		addEvents();
+	});
+});
+
+$("#formAddCuenta").on("submit", function (e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+        $.ajax({
+            url: "/cuentas/crear/",
+            type: "POST",
+            data: new FormData(this),
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function (res) {
+	            if(res=="1"){
+					Swal.fire({
+						title : 'Muy bien!',
+						text : 'Registro guardado',
+						position : 'top',
+						icon : 'success',
+						confirmButtonText : 'Cool'
+					})
+				}else{
+					Swal.fire({
+						title : 'Error!',
+						text : 'No se pudo crear el registro',
+						position : 'top',
+						icon : 'error',
+						confirmButtonText : 'Cool'
+					})
+				}
+	            $("#contenido").load("/cuentas/agregarCuenta",function(data){
+	            	addEvents();
+	            });
+            },
+            error: function (err) {
+                console.error(err);
+                Swal.fire({
+					title : 'Error!',
+					text : 'No se pudo completar la operacion, intente mas tarde',
+					position : 'top',
+					icon : 'error',
+					confirmButtonText : 'Cool'
+				})
+            }
+        });
+});
+
+$("#formUpdateCuenta").on("submit", function (e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+        $.ajax({
+            url: "/cuentas/modificar/",
+            type: "POST",
+            data: new FormData(this),
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function (res) {
+	            if(res=="1"){
+					Swal.fire({
+						title : 'Muy bien!',
+						text : 'Registro modificado',
+						position : 'top',
+						icon : 'success',
+						confirmButtonText : 'Cool'
+					})
+				}else{
+					Swal.fire({
+						title : 'Error!',
+						text : 'No se pudo modificar el registro',
+						position : 'top',
+						icon : 'error',
+						confirmButtonText : 'Cool'
+					})
+				}
+	            $("#contenido").load("/cuentas/agregarCuenta",function(data){
+	            	addEvents();
+	            });
+            },
+            error: function (err) {
+                console.error(err);
+                Swal.fire({
+					title : 'Error!',
+					text : 'No se pudo completar la operacion, intente mas tarde',
+					position : 'top',
+					icon : 'error',
+					confirmButtonText : 'Cool'
+				})
+            }
+        });
+});
+
+/******************************************************** Fin Cuentas *******************************************************/
 }
 
 
@@ -1886,6 +2405,128 @@ function verInfoNotas(id){
 
 function imprimirAbonoDetalle(id){
 	window.open("/prestamos/imprimirDetalleAbono/"+id);
+}
+
+function modificarEmpleado(id){
+	$("#contenido").load("/empleados/modificarEmpleado/"+id,function(data){
+		console.log("Modificar Empleado");
+		addEvents();
+	});
+}
+
+function asignarDeduccion(id){
+	$("#deduccionesEmpleado").load("/empleados/listaDeducciones/"+id,function(data){
+		$("#idEmpleadoDeduccion").val(id);
+		$("#motivoDeduccion").val("");
+		$("#montoDeduccion").val("");
+		$("#modalDeduccion").modal("show");
+		console.log("Agregar Deduccion");
+	});
+}
+
+function asignarAsignacion(id){
+	$("#asignacionesEmpleado").load("/empleados/listaAsignaciones/"+id,function(data){
+		$("#idEmpleadoAsignacion").val(id);
+		$("#motivoAsignacion").val("");
+		$("#montoAsignacion").val("");
+		$("#modalAsignacion").modal("show");
+		console.log("Agregar Asignacion");
+	});
+}
+
+function eliminarAsignacion(id){
+	$("#modalAsignacion").modal("hide");
+	
+	Swal.fire({
+		  title: 'Seguro de eliminar el registro?',
+		  icon: 'warning',
+		  showCancelButton: true,
+		  confirmButtonColor: '#3085d6',
+		  cancelButtonColor: '#d33',
+		  cancelButtonText: 'Cancelar',
+		  position : 'top',
+		  confirmButtonText: 'Si, Eliminar!'
+		}).then((result) => {
+		  if (result.isConfirmed) {
+				$("#modalAsignacion").modal("hide");
+				$("#asignacionesEmpleado").load("/empleados/eliminarAsignacion/"+id,function(data){
+					$("#motivoAsignacion").val("");
+					$("#montoAsignacion").val("");
+					console.log("Eliminar Asignacion");
+				}); 
+				Swal.fire({
+					title : 'Borrado!',
+					text : 'Se elimindo el registro',
+					position : 'top',
+					icon : 'success',
+					confirmButtonText : 'Cool'
+				})
+		  }
+		})
+}
+
+function eliminarDeduccion(id){
+	$("#modalDeduccion").modal("hide");
+	
+	Swal.fire({
+		  title: 'Seguro de eliminar el registro?',
+		  icon: 'warning',
+		  showCancelButton: true,
+		  confirmButtonColor: '#3085d6',
+		  cancelButtonColor: '#d33',
+		  cancelButtonText: 'Cancelar',
+		  position : 'top',
+		  confirmButtonText: 'Si, Eliminar!'
+		}).then((result) => {
+		  if (result.isConfirmed) {
+				$("#modalDeduccion").modal("hide");
+				$("#deduccionesEmpleado").load("/empleados/eliminarDeduccion/"+id,function(data){
+					$("#motivoDeduccion").val("");
+					$("#montoDeduccion").val("");
+					console.log("Eliminar Deduccion");
+				}); 
+				Swal.fire({
+					title : 'Borrado!',
+					text : 'Se elimindo el registro',
+					position : 'top',
+					icon : 'success',
+					confirmButtonText : 'Cool'
+				})
+		  }
+		})
+}
+
+function modificarEmpresa(id){
+	$("#contenido").load("/empresas/modificarEmpresa/"+id,function(data){
+		ocultarDetalleAmortizacion();
+		console.log("Formulario modificar empresas");
+		addEvents();
+	});
+}
+
+function modificarCuenta(id){
+	$("#contenido").load("/cuentas/modificarCuenta/"+id,function(data){
+		ocultarDetalleAmortizacion();
+		console.log("Formulario modificar cuentas");
+		addEvents();
+	});
+}
+
+function styleSeccion1Only(){
+	$("#cuerpo").css("min-height", "420px");
+	$("#cuerpo").css("overflow", "hidden");
+	$("#cuerpo").css("height", "auto");
+	$("#cuerpo").css("max-height", "auto");
+	
+	$("#contenido").css("min-height", "400px");
+	$("#contenido").css("overflow", "hidden");
+	$("#contenido").css("height", "auto");
+	$("#contenido").css("max-height", "auto");
+	
+	$("#formularioCuerpo").css("min-height", "400px");
+	$("#formularioCuerpo").css("overflow", "hidden");
+	$("#formularioCuerpo").css("height", "auto");
+	$("#formularioCuerpo").css("max-height", "auto");
 }
 
 function mostrarDetalleAmortizacion(){

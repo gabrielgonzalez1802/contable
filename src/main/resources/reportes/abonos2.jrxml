@@ -1,17 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.14.0.final using JasperReports Library version 6.14.0-2ab0d8625be255bf609c78e1181801213e51db8f  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="factura" pageWidth="595" pageHeight="421" orientation="Landscape" columnWidth="575" leftMargin="10" rightMargin="10" topMargin="5" bottomMargin="5" uuid="b28f9afc-8445-4a17-b9b5-a1560997f2ae">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="factura" pageWidth="595" pageHeight="421" columnWidth="575" leftMargin="10" rightMargin="10" topMargin="5" bottomMargin="5" uuid="b28f9afc-8445-4a17-b9b5-a1560997f2ae">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.unit." value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<style name="Table 2_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
 			<topPen lineWidth="0.5" lineColor="#000000"/>
@@ -133,10 +124,6 @@
 	<parameter name="numeroAbono" class="java.lang.String"/>
 	<parameter name="prestamo" class="java.lang.String"/>
 	<parameter name="monto" class="java.lang.String"/>
-	<parameter name="totalPagado" class="java.lang.Double"/>
-	<parameter name="nombreUsuario" class="java.lang.String"/>
-	<parameter name="balance" class="java.lang.Double"/>
-	<parameter name="totalCapital" class="java.lang.Double"/>
 	<queryString>
 		<![CDATA[SELECT e.nombre, e.direccion, e.telefono, e.rnc 
 FROM empresas e 
@@ -293,7 +280,7 @@ WHERE e.id = $P{idEmpresa}]]>
 		<band/>
 	</columnHeader>
 	<detail>
-		<band height="69">
+		<band height="67">
 			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
 			<componentElement>
 				<reportElement x="1" y="8" width="568" height="52" uuid="ce4eb773-72fc-4f3d-bf64-ea8618dd0a8b">
@@ -442,18 +429,20 @@ WHERE e.id = $P{idEmpresa}]]>
 				</jr:table>
 			</componentElement>
 		</band>
-		<band height="25">
-			<printWhenExpression><![CDATA[$P{totalCapital} > 0.0]]></printWhenExpression>
-			<textField isBlankWhenNull="true">
-				<reportElement x="1" y="2" width="158" height="20" uuid="1be6d1a0-d872-4f1c-94a1-0e4fc8299859"/>
-				<textElement textAlignment="Left"/>
-				<textFieldExpression><![CDATA["CAPITAL: "+$P{totalCapital}]]></textFieldExpression>
-			</textField>
-		</band>
 	</detail>
 	<summary>
-		<band height="67">
+		<band height="53">
 			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+			<staticText>
+				<reportElement x="1" y="0" width="209" height="20" uuid="5bf1e995-6dfb-4c0b-be18-84a926faf93a"/>
+				<textElement textAlignment="Left"/>
+				<text><![CDATA[BALANCE A LA FECHA: 1350000]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="361" y="0" width="209" height="20" uuid="6fe0930f-7b50-48e7-b1d2-e9d87381dc08"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[TOTAL PAGADO: 1350000]]></text>
+			</staticText>
 			<line>
 				<reportElement x="0" y="40" width="229" height="1" uuid="2077fe69-790e-4789-9d60-27bf7049b393"/>
 			</line>
@@ -461,25 +450,15 @@ WHERE e.id = $P{idEmpresa}]]>
 				<reportElement x="335" y="40" width="229" height="1" uuid="533c8a56-890c-4229-8f3f-e67b8ca19bfe"/>
 			</line>
 			<staticText>
-				<reportElement x="411" y="41" width="139" height="20" uuid="21352945-4c19-425c-a939-a4505bce9e29"/>
-				<textElement textAlignment="Left" verticalAlignment="Top"/>
+				<reportElement x="27" y="33" width="183" height="19" uuid="92ea1d2a-6897-48cd-a3f4-1575c2137407"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom"/>
+				<text><![CDATA[RECIBIDO POR: MERARIS LOPEZ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="411" y="33" width="139" height="20" uuid="21352945-4c19-425c-a939-a4505bce9e29"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom"/>
 				<text><![CDATA[FIRMA DEL CLIENTE]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="401" y="0" width="169" height="22" uuid="b13f3db8-750d-484b-9c47-e337bf729e84"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA["TOTAL PAGADO: "+$P{totalPagado}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="1" y="41" width="229" height="21" uuid="578a4269-e678-4066-9f50-79076bde9e9a"/>
-				<textElement textAlignment="Center"/>
-				<textFieldExpression><![CDATA["RECIBIDO POR: "+$P{nombreUsuario}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="1" y="0" width="209" height="20" uuid="5bdf4874-6128-48fd-b2c7-5f357220e54a"/>
-				<textElement textAlignment="Left"/>
-				<textFieldExpression><![CDATA["BALANCE A LA FECHA: "+$P{balance}]]></textFieldExpression>
-			</textField>
 		</band>
 	</summary>
 </jasperReport>
