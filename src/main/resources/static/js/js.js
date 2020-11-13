@@ -40,6 +40,26 @@ function addEvents(){
 			});
 		}
 	}
+	
+	$("#changeEmpresa").click(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		$("#modalCambioEmpresa").modal("show");
+	});
+	
+	$("#btnCambioEmpresa").click(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var idEmpresa = $("#selectCambioEmpresa").val(); 
+		$("#selectCambioEmpresa").load("/empresas/change",
+			{
+				'idEmpresa': idEmpresa,
+			},
+		function(data){
+			location.reload();
+		});
+		$("#modalCambioEmpresa").modal("hide");
+	});
 
 /*********************************************** Fin Configuraciones Iniciales **********************************************/	
 
@@ -1544,6 +1564,7 @@ $("#btnExitCarpetaCobros").click(function(e){
           	var msg = $("#msgId").val();
 	            if(msg=="0"){
 					addEvents();
+					location.href = '/logout';
 				}else{
 					$("#tablaPrestamosCobros").load("/prestamos/prestamosPendientesFiltro",
 						{
@@ -1960,6 +1981,7 @@ $("#btnExitCarpetaCuentas").click(function(e){
           	var msg = $("#msgId").val();
 	            if(msg=="0"){
 					addEvents();
+					location.href = '/logout';
 				}else{
 					$("#contenido").load("/cuentas/listaCuentas",function(data){
 						ocultarDetalleAmortizacion();
@@ -2405,6 +2427,12 @@ function verInfoNotas(id){
 
 function imprimirAbonoDetalle(id){
 	window.open("/prestamos/imprimirDetalleAbono/"+id);
+}
+
+function verEmpleado(id){
+	$("#datosEmpleado").load("/empleados/infoEmpleado/"+id,function(data){
+		$("#modalEmpleado").modal("show");
+	});
 }
 
 function modificarEmpleado(id){

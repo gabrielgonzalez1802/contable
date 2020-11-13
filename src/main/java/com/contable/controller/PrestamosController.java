@@ -2652,14 +2652,9 @@ public class PrestamosController {
 			carpeta = serviceCarpetas.buscarPorId((int) session.getAttribute("carpeta"));
 		}else {
 			//Cargamos la principal
-			carpeta = serviceCarpetas.buscarTipoCarpeta(1).get(0);
-		}
-
-		
-		if(session.getAttribute("cliente") != null) {
-			Cliente cliente = serviceClientes.buscarPorId((Integer) session.getAttribute("cliente"));
-		}else {
-			Cliente cliente = new Cliente();
+			if(session.getAttribute("empresa")!=null) {
+				carpeta = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa")).get(0);
+			}
 		}
 		
 		List<Prestamo> prestamos = servicePrestamos.buscarPorCarpeta(carpeta).stream().

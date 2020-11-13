@@ -3,6 +3,8 @@ package com.contable.controller;
 import java.io.File;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -84,6 +86,16 @@ public class EmpresasController {
 			response = "1";
 		}
 		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
+	}
+	
+	@PostMapping("/change")
+	public String change(Integer idEmpresa, Model model, HttpSession session) {
+		List<Empresa> empresas = serviceEmpresas.buscarTodas();
+		Empresa empresa = serviceEmpresas.buscarPorId(idEmpresa);
+		model.addAttribute("empresas", empresas);
+		model.addAttribute("empresa", empresa);
+		session.setAttribute("empresa", empresa);
+		return "index :: #selectCambioEmpresa";
 	}
 	
 	@GetMapping("/modificarEmpresa/{id}")

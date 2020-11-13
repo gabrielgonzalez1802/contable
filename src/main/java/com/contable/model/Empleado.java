@@ -7,7 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "empleados")
@@ -34,7 +37,22 @@ public class Empleado {
 	@Column(name = "fecha_ingreso")
 	private Date fechaIngreso;
 	
+	@Transient
+	private Double totalNeto = 0.0;
+	
+	@Transient
+	private Double totalAsignaciones = 0.0;
+	
+	@Transient
+	private Double totalDeducciones = 0.0;
+	
+	@OneToOne
+	@JoinColumn(name = "id_empresa")
+	private Empresa empresa;
+	
 	private Integer estado = 1;
+	
+	private String recurrencia = "QUINCENAL";
 
 	public Integer getId() {
 		return id;
@@ -132,11 +150,53 @@ public class Empleado {
 		this.estado = estado;
 	}
 
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+
+	public String getRecurrencia() {
+		return recurrencia;
+	}
+
+	public void setRecurrencia(String recurrencia) {
+		this.recurrencia = recurrencia;
+	}
+
+	public Double getTotalNeto() {
+		return totalNeto;
+	}
+
+	public void setTotalNeto(Double totalNeto) {
+		this.totalNeto = totalNeto;
+	}
+
+	public Double getTotalAsignaciones() {
+		return totalAsignaciones;
+	}
+
+	public void setTotalAsignaciones(Double totalAsignaciones) {
+		this.totalAsignaciones = totalAsignaciones;
+	}
+
+	public Double getTotalDeducciones() {
+		return totalDeducciones;
+	}
+
+	public void setTotalDeducciones(Double totalDeducciones) {
+		this.totalDeducciones = totalDeducciones;
+	}
+
 	@Override
 	public String toString() {
 		return "Empleado [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", direccion=" + direccion
 				+ ", cedula=" + cedula + ", telefono=" + telefono + ", numeroEmergencia=" + numeroEmergencia
 				+ ", puesto=" + puesto + ", sueldo=" + sueldo + ", fechaNacimiento=" + fechaNacimiento
-				+ ", fechaIngreso=" + fechaIngreso + ", estado=" + estado + "]";
+				+ ", fechaIngreso=" + fechaIngreso + ", totalNeto=" + totalNeto + ", totalAsignaciones="
+				+ totalAsignaciones + ", totalDeducciones=" + totalDeducciones + ", empresa=" + empresa + ", estado="
+				+ estado + ", recurrencia=" + recurrencia + "]";
 	}
 }

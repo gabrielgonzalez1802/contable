@@ -7,6 +7,56 @@
 <body>
 <div th:fragment="listaEmpleados">
 
+<!-- Modal Asignacion -->
+  <div class="modal" id="modalEmpleado">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Informaci&oacute;n del Empleado</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div id="datosEmpleado">
+          		<div class="row">
+	          		<div class="col-md-6">
+					 	<div class="form-group">
+					 		<span><b>Nombre: </b></span><span th:text="${empleado.nombre}"></span><br>
+					 		<span><b>Apellido:  </b></span><span th:text="${empleado.apellido}"></span><br>
+					 		<span><b>C&eacute;dula:  </b></span><span th:text="${empleado.cedula}"></span><br>
+					 		<span><b>Tel&eacute;fono:  </b></span><span th:text="${empleado.telefono}"></span><br>
+					 		<span><b>N&uacute;mero de Emergencia:  </b></span><span th:text="${empleado.numeroEmergencia}"></span><br>
+							<span><b>Direcci&oacute;n:  </b></span><span th:text="${empleado.direccion}"></span><br>
+							<span><b>Fecha de Nacimiento:  </b></span><span th:text="${#dates.format(empleado.fechaNacimiento, 'dd-MM-yyyy')}"></span><br>
+						 </div>
+					</div>
+					
+					<div class="col-md-6">
+					 	<div class="form-group">
+					 		<span><b>Fecha de Ingreso:  </b></span><span th:text="${#dates.format(empleado.fechaIngreso, 'dd-MM-yyyy')}"></span><br>
+					 		<span><b>Puesto:  </b></span><span th:text="${empleado.puesto}"></span><br>
+					 		<span><b>Sueldo:  </b></span><span th:text="${empleado.sueldo}"></span><br>
+					 		<span><b>Total Asignaciones:  </b></span><span th:text="${empleado.totalAsignaciones}"></span><br>
+					 		<span><b>Total Deducciones:  </b></span><span th:text="${empleado.totalDeducciones}"></span><br>
+					 		<span><b>Total Neto:  </b></span><span th:text="${empleado.totalNeto}"></span><br>
+						 </div>
+					</div>
+          		</div>    
+			</div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Regresar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>  
+
  <!-- Modal Asignacion -->
   <div class="modal" id="modalAsignacion">
     <div class="modal-dialog modal-lg">
@@ -202,8 +252,9 @@
 				        <td th:text="${empleado.telefono}"></td>
 				        <td th:text="${empleado.numeroEmergencia}"></td>
 				        <td>
-				            <a style="color: #fff;cursor: pointer;" th:onclick="'modificarEmpleado(\'' + ${empleado.id} + '\');'" class="btn btn-primary btn-sm" role="button" title="Editar el registro."><i class="fa fa-edit" aria-hidden="true"></i></a>
-							<a style="color: #fff;cursor: pointer;" th:onclick="'asignarDeduccion(\'' + ${empleado.id} + '\');'" class="btn btn-success btn-sm" role="button" title="Deduccion"><i class="fas fa-minus" aria-hidden="true"></i></a>
+				        	<a style="color: #fff;cursor: pointer;" th:onclick="'verEmpleado(\'' + ${empleado.id} + '\');'" class="btn btn-primary btn-sm" role="button" title="Ver."><i class="fas fa-search" aria-hidden="true"></i></a>
+				            <a style="color: #fff;cursor: pointer;" th:onclick="'modificarEmpleado(\'' + ${empleado.id} + '\');'" class="btn btn-success btn-sm" role="button" title="Editar el registro."><i class="fa fa-edit" aria-hidden="true"></i></a>
+							<a style="color: #fff;cursor: pointer;" th:onclick="'asignarDeduccion(\'' + ${empleado.id} + '\');'" class="btn btn-warning btn-sm" role="button" title="Deduccion"><i class="fas fa-minus" aria-hidden="true"></i></a>
 							<a style="color: #fff;cursor: pointer;" th:onclick="'asignarAsignacion(\'' + ${empleado.id} + '\');'" class="btn btn-info btn-sm" role="button" title="Asignacion"><i class="fas fa-plus" aria-hidden="true"></i></a>
 				        </td>
 				      </tr>

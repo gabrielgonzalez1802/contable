@@ -37,13 +37,16 @@ public class HomeController {
 		usuario = serviceUsuarios.buscarPorUsername(userName);
 		usuario.setPassword(null);
 		//Agregamos el usuario a la sesion
+		List<Empresa> empresas = serviceEmpresas.buscarTodas();
 		session.setAttribute("usuario", usuario);
 		if(session.getAttribute("empresa") == null) {
-			List<Empresa> empresas = serviceEmpresas.buscarTodas();
-			model.addAttribute("empresas", empresas);
-			return "login";
+			Empresa empresa = serviceEmpresas.buscarPorId(1);
+			model.addAttribute("empresa", empresa);
+			session.setAttribute("empresa", empresa);
+		}else {
+			model.addAttribute("empresa", (Empresa) session.getAttribute("empresa"));
 		}
-		model.addAttribute("empresa", (Empresa) session.getAttribute("empresa"));
+		model.addAttribute("empresas", empresas);
 		return "index";
 	}
 	

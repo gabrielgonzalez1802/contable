@@ -17,7 +17,7 @@
 				<div class="col-md-6">
 					 <div class="form-group">
 					    <label for="">Nombre</label>
-					    <input type="text" maxlength="13" th:field="*{nombre}" class="form-control" placeholder="Nombre" required="required">
+					    <input type="text" maxlength="30" th:field="*{nombre}" class="form-control" placeholder="Nombre" required="required">
 					  </div>
 				</div>
 				
@@ -77,6 +77,17 @@
 			</div>
 		
 			<div class="row">
+				<div class="col-md-4">
+				 	<div class="form-group">
+					  <label for="">Recurrecia</label>
+					   	<select th:field="*{recurrencia}" id="recurrecia" class="form-control">
+					   		<option value="SEMANAL">Semanal</option>
+					   		<option value="QUINCENAL">Quincenal</option>
+					   		<option value="MENSUAL">Mensual</option>
+					   	</select>
+					 </div>
+				</div>
+			
 				<div class="col-md-4">
 				 	<div class="form-group">
 					  <label for="">Fecha de Nacimiento</label>

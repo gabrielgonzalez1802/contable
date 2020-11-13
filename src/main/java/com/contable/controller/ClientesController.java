@@ -80,7 +80,13 @@ public class ClientesController {
 	
 	@GetMapping("/buscarClienteCarpetaPrincipal")
 	public String formBuscarClienteCarpetaPrincipal(Model model, HttpSession session) {
-		List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
+		Empresa empresa = null;
+		if(session.getAttribute("empresa")!=null) {
+			empresa = (Empresa) session.getAttribute("empresa");
+		}else {
+			empresa = new Empresa();
+		}
+		List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, empresa);
 		model.addAttribute("carpeta", carpetas.get(0));
 		session.setAttribute("carpeta", carpetas.get(0).getId());
 		model.addAttribute("msg", "0");

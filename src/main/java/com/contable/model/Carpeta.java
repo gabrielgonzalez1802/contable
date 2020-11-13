@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -16,6 +18,10 @@ public class Carpeta {
 	
 	private String nombre;
 	private Integer principal = 0;
+	
+	@OneToOne
+	@JoinColumn(name = "id_empresa")
+	private Empresa empresa;
 	
 	public Integer getId() {
 		return id;
@@ -36,8 +42,15 @@ public class Carpeta {
 		this.principal = principal;
 	}
 	
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+	
 	@Override
 	public String toString() {
-		return "Carpeta [id=" + id + ", nombre=" + nombre + ", principal=" + principal + "]";
+		return "Carpeta [id=" + id + ", nombre=" + nombre + ", principal=" + principal + ", empresa=" + empresa + "]";
 	}
 }

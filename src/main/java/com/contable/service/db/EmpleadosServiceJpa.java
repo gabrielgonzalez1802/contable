@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.contable.model.Empleado;
+import com.contable.model.Empresa;
 import com.contable.repository.EmpleadosRepository;
 import com.contable.service.IEmpleadosService;
 
@@ -48,6 +49,11 @@ public class EmpleadosServiceJpa implements IEmpleadosService {
 	@Override
 	public List<Empleado> buscarTodosEstado(Integer estado) {
 		return repo.findByEstado(estado);
+	}
+
+	@Override
+	public List<Empleado> buscarPorEmpresa(Empresa empresa) {
+		return repo.findByEmpresa(empresa);
 	}
 
 }

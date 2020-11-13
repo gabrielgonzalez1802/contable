@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.contable.model.Carpeta;
+import com.contable.model.Empresa;
 import com.contable.repository.CarpetasRepository;
 import com.contable.service.ICarpetasService;
 
@@ -43,6 +44,16 @@ public class CarpetasServiceJpa implements ICarpetasService{
 	@Override
 	public void eliminar(Carpeta carpeta) {
 		repo.delete(carpeta);
+	}
+
+	@Override
+	public Carpeta buscarPorNombreEmpresa(String nombre, Empresa empresa) {
+		return repo.findByNombreAndEmpresa(nombre, empresa);
+	}
+
+	@Override
+	public List<Carpeta> buscarTipoCarpetaEmpresa(Integer id, Empresa empresa) {
+		return repo.findByPrincipalAndEmpresa(id, empresa);
 	}
 
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.contable.model.Carpeta;
 import com.contable.model.Cuenta;
+import com.contable.model.Empresa;
 import com.contable.service.ICarpetasService;
 import com.contable.service.ICuentasService;
 
@@ -38,7 +39,7 @@ public class CuentasController {
 		if(session.getAttribute("carpeta") != null) {
 			carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
 		}else {
-			carpeta = serviceCarpetas.buscarTipoCarpeta(1).get(0);
+			carpeta = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa")).get(0);
 		}
 		List<Cuenta> cuentas = serviceCuentas.buscarPorCarpeta(carpeta);
 		for (Cuenta cuenta : cuentas) {
@@ -79,7 +80,7 @@ public class CuentasController {
 		if(session.getAttribute("carpeta") != null) {
 			carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
 		}else {
-			carpeta = serviceCarpetas.buscarTipoCarpeta(1).get(0);
+			carpeta = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa")).get(0);
 		}
 		cuenta.setCarpeta(carpeta);
 		serviceCuentas.guardar(cuenta);
@@ -91,16 +92,18 @@ public class CuentasController {
 	
 	@PostMapping("/modificar")
 	public ResponseEntity<String> modificar(Cuenta cuenta, HttpSession session){
+		Cuenta originalCuenta = serviceCuentas.buscarPorId(cuenta.getId());
 		String response = "0";
 		Carpeta carpeta;
 		if(session.getAttribute("carpeta") != null) {
 			carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
 		}else {
-			carpeta = serviceCarpetas.buscarTipoCarpeta(1).get(0);
+			carpeta = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa")).get(0);
 		}
 		cuenta.setCarpeta(carpeta);
-		cuenta.setMonto(cuenta.getMontoBigDecimal().doubleValue());
-		cuenta.setMontoPlano(cuenta.getMontoBigDecimal().toPlainString());
+		cuenta.setMonto(originalCuenta.getMonto().doubleValue());
+		cuenta.setMontoPlano(originalCuenta.getMonto().toString());
+		cuenta.setMontoBigDecimal(originalCuenta.getMontoBigDecimal());
 		serviceCuentas.guardar(cuenta);
 		if(cuenta.getId()!=null) {
 			response = "1";

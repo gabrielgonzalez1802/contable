@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.contable.model.Abono;
 import com.contable.model.Carpeta;
+import com.contable.model.Empresa;
 import com.contable.model.Prestamo;
 import com.contable.model.Usuario;
 import com.contable.service.IAbonosService;
@@ -31,9 +31,6 @@ import com.contable.service.IUsuariosService;
 @Controller
 @RequestMapping("/cajas")
 public class CajasController {
-	
-	@Autowired
-	private IClientesService serviceClientes;
 	
 	@Autowired
 	private ICarpetasService serviceCarpetas;
@@ -58,7 +55,7 @@ public class CajasController {
 		if(idCarpeta!=null) {
 			carpeta = serviceCarpetas.buscarPorId(idCarpeta);
 		}else {
-			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa"));
 			carpeta = carpetas.get(0);
 		}
 		
@@ -114,7 +111,7 @@ public class CajasController {
 		if(idCarpeta!=null) {
 			carpeta = serviceCarpetas.buscarPorId(idCarpeta);
 		}else {
-			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpeta(1);
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa"));
 			carpeta = carpetas.get(0);
 		}
 		

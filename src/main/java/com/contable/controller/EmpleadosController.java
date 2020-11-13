@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.contable.model.Asignacion;
 import com.contable.model.Deduccion;
 import com.contable.model.Empleado;
+import com.contable.model.Empresa;
 import com.contable.service.IAsignacionesServices;
 import com.contable.service.IDeduccionesServices;
 import com.contable.service.IEmpleadosService;
@@ -40,15 +43,18 @@ public class EmpleadosController {
 	private IDeduccionesServices serviceDeducciones;
 	
 	@GetMapping("/listaEmpleados")
-	public String listaEmpleados(Model model) {
-		List<Empleado> empleados = serviceEmpleados.buscarTodos();
+	public String listaEmpleados(Model model, HttpSession session) {
+		List<Empleado> empleados = serviceEmpleados.buscarPorEmpresa((Empresa) session.getAttribute("empresa"));
 		model.addAttribute("empleados", empleados);
+		model.addAttribute("empleado", new Empleado());
 		return "empleados/listaEmpleados :: listaEmpleados";
 	}
 	
 	@GetMapping("/agregarEmpleado")
-	public String agregarEmpleado(Model model) {
+	public String agregarEmpleado(Model model, HttpSession session) {
 		Empleado empleado = new Empleado();
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		empleado.setEmpresa(empresa);
 		model.addAttribute("empleado", empleado);
 		return "empleados/formEmpleados :: form";
 	}
@@ -132,7 +138,7 @@ public class EmpleadosController {
 	
 	@PostMapping("/guardar")
 	@ResponseBody
-	public ResponseEntity<String> crear(@ModelAttribute("empleado") Empleado empleado){
+	public ResponseEntity<String> crear(@ModelAttribute("empleado") Empleado empleado, HttpSession session){
 		String response = "0";
 		
 		if(empleado.getId()==null) {
@@ -141,17 +147,48 @@ public class EmpleadosController {
 			if(!usuarioTemp.isEmpty()) {
 				response = "2";
 			}else {
+				Empresa empresa = (Empresa) session.getAttribute("empresa");
+				empleado.setEmpresa(empresa);
 				serviceEmpleados.guardar(empleado);
 				if(empleado.getId()!=null) {
 					response = "1";
 				}
 			}
 		}else {			
+			Empresa empresa = (Empresa) session.getAttribute("empresa");
+			empleado.setEmpresa(empresa);
 			serviceEmpleados.guardar(empleado);
 			response = "4";
 		}
 		
 		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/infoEmpleado/{id}")
+	public String infoEmpleado(Model model, @PathVariable(name = "id") Integer idEmpleado) {
+		Empleado empleado = serviceEmpleados.buscarPorId(idEmpleado);
+		Double totalAsignaciones = 0.0;
+		Double totalDeducciones = 0.0;
+		List<Asignacion> asignaciones = serviceAsignaciones.buscarPorEmpleado(empleado);
+		for (Asignacion asignacion : asignaciones) {
+			totalAsignaciones+=asignacion.getMonto();
+		}
+		List<Deduccion> deducciones = serviceDeducciones.buscarPorEmpleado(empleado);
+		for (Deduccion deduccion : deducciones) {
+			totalDeducciones+=deduccion.getMonto();
+		}
+		if(empleado.getRecurrencia().equalsIgnoreCase("SEMANAL")) {
+			empleado.setSueldo(empleado.getSueldo().doubleValue()*12.00/52.00);
+		}else if(empleado.getRecurrencia().equalsIgnoreCase("QUINCENAL")) {
+			empleado.setSueldo(empleado.getSueldo().doubleValue()*12.00/24.00);
+		} else if(empleado.getRecurrencia().equalsIgnoreCase("MENSUAL")) {
+			empleado.setSueldo(empleado.getSueldo().doubleValue()*12.00/12.00);
+		}
+		empleado.setTotalAsignaciones(totalAsignaciones);
+		empleado.setTotalDeducciones(totalDeducciones);
+		empleado.setTotalNeto(empleado.getSueldo()+totalAsignaciones-totalDeducciones);
+		model.addAttribute("empleado", empleado);
+		return "empleados/listaEmpleados :: #datosEmpleado";
 	}
 	
 	@InitBinder
