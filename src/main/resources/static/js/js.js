@@ -1210,13 +1210,339 @@ $("#contabilidad").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
 	ocultarDetalleAmortizacion();
-	styleSeccion1Only();
 	$("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
 		console.log("Contabilidad");
 		addEvents();
 	});
 });
 
+$("#editCodigoCuenta").on('keyup', function(e) { 
+	e.stopImmediatePropagation();
+	
+	var valor = $('#editCodigoCuenta').val();
+	var res = valor.match(/^[0-9-]+$/);
+		
+	if(res == null){
+		 $('#editCodigoCuenta').val(valor.substring(0, valor.length - 1));
+	}
+
+	var codigoCuenta = $("#editCodigoCuenta").val();
+	var cant = codigoCuenta.length;
+	if(cant == 1){
+		$.get("/grupoCuentas/buscarGrupoCuenta/"+codigoCuenta,
+			function(data){
+				if(data != "0"){
+					$("#editGrupoCuenta").val(data);
+				}else{
+					$("#editGrupoCuenta").val("");
+				}
+			addEvents();
+		});
+	}
+	
+	if(cant == 0){
+		$("#editGrupoCuenta").val("");
+	}
+	
+	if(cant > 1){
+		$.get("/cuentasContables/buscarCuentaControl/"+codigoCuenta,
+				function(data){
+					if(data[1] != "0"){
+						$("#editCuentaControl").val(data[0]);
+						$("#idEditCuentaControl").val(data[1]);
+					}else{
+						$("#editCuentaControl").val("");
+						$("#idEditCuentaControl").val("0");
+					}
+			addEvents();
+		});
+	}
+});
+
+$("#codigoCuenta").on('keyup', function(e) { 
+	e.stopImmediatePropagation();
+	
+	var valor = $('#codigoCuenta').val();
+	var res = valor.match(/^[0-9-]+$/);
+		
+	if(res == null){
+		 $('#codigoCuenta').val(valor.substring(0, valor.length - 1));
+	}
+
+	var codigoCuenta = $("#codigoCuenta").val();
+	var cant = codigoCuenta.length;
+	if(cant == 1){
+		$.get("/grupoCuentas/buscarGrupoCuenta/"+codigoCuenta,
+			function(data){
+				if(data != "0"){
+					$("#grupoCuenta").val(data);
+				}else{
+					$("#grupoCuenta").val("");
+				}
+			addEvents();
+		});
+	}
+	
+	if(cant == 0){
+		$("#grupoCuenta").val("");
+	}
+	
+	if(cant > 1){
+		$.get("/cuentasContables/buscarCuentaControl/"+codigoCuenta,
+				function(data){
+					if(data[1] != "0"){
+						$("#cuentaControl").val(data[0]);
+						$("#idCuentaControl").val(data[1]);
+					}else{
+						$("#cuentaControl").val("");
+						$("#idCuentaControl").val("0");
+					}
+			addEvents();
+		});
+	}
+});
+
+$("#btnCrearCuentas").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#tablaCuentasContables").load("/cuentasContables/mostrarCuentasContables",function(data){
+		console.log("Cuentas Contables");
+		$("#modalCuentas").modal("show");
+		addEvents();
+	});
+});
+
+$("#agregarCuentaContable").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var tipoCuenta = $("#tipoCuenta").val();
+	var grupoCuenta = $("#grupoCuenta").val();
+	var codigoCuenta = $("#codigoCuenta").val();
+	var nombreCuenta = $("#nombreCuenta").val();
+	var cuentaControl = $("#cuentaControl").val();
+	var idCuentaControl = $("#idCuentaControl").val();
+	if(tipoCuenta != 0 && grupoCuenta!="" && nombreCuenta!=""){
+		 $.post("/cuentasContables/crear",{
+			 "tipoCuenta":tipoCuenta,
+			 "grupoCuenta":grupoCuenta,
+			 "codigoCuenta":codigoCuenta,
+			 "nombreCuenta":nombreCuenta,
+			 "cuentaControl":cuentaControl,
+			 "idCuentaControl":idCuentaControl
+		 },function(data){
+				$("#grupoCuenta").val("");
+				$("#codigoCuenta").val("");
+				$("#nombreCuenta").val("");
+				$("#cuentaControl").val("");
+				$("#idCuentaControl").val("");
+			 	if(data == "1"){
+			 		$("#tablaCuentasContables").load("/cuentasContables/mostrarCuentasContables",function(data){
+			 			console.log("Cuentas Contables");
+			 			addEvents();
+			 		});
+			 	}else if(data == "-1"){
+			 		$("#modalCuentas").modal("hide");
+					Swal.fire({
+						  title: 'Alerta!',
+						  text: "No se puede agregar esta cuenta",
+						  icon: 'warning',
+						  position : 'top',
+						  showCancelButton: false,
+						  confirmButtonColor: '#3085d6',
+						  confirmButtonText: 'Ok!'
+						}).then((result) => {
+						  if (result.isConfirmed) {
+							$("#modalCuentas").modal("show");
+						  }
+						})
+			 	}else if(data == "-2"){
+			 		$("#modalCuentas").modal("hide");
+					Swal.fire({
+						  title: 'Alerta!',
+						  text: "No puede agregar cuentas a cuentas auxiliares",
+						  icon: 'warning',
+						  position : 'top',
+						  showCancelButton: false,
+						  confirmButtonColor: '#3085d6',
+						  confirmButtonText: 'Ok!'
+						}).then((result) => {
+						  if (result.isConfirmed) {
+							$("#modalCuentas").modal("show");
+						  }
+						})
+			 	}else if(data == "-3"){
+			 		$("#modalCuentas").modal("hide");
+			 		Swal.fire({
+						  title: 'Alerta!',
+						  text: "No puede agregar esta cuenta",
+						  icon: 'warning',
+						  position : 'top',
+						  showCancelButton: false,
+						  confirmButtonColor: '#3085d6',
+						  confirmButtonText: 'Ok!'
+						}).then((result) => {
+						  if (result.isConfirmed) {
+							$("#modalCuentas").modal("show");
+						  }
+						})
+			 	}else{
+			 		//No guardo
+			 		$("#modalCuentas").modal("hide");
+					Swal.fire({
+						  title: 'Alerta!',
+						  text: "No se guardo la cuenta contable",
+						  icon: 'warning',
+						  position : 'top',
+						  showCancelButton: false,
+						  confirmButtonColor: '#3085d6',
+						  confirmButtonText: 'Ok!'
+						}).then((result) => {
+						  if (result.isConfirmed) {
+							$("#modalCuentas").modal("show");
+						  }
+						})
+			 	}
+				addEvents();
+		 });
+	}else{
+		$("#modalCuentas").modal("hide");
+		Swal.fire({
+			  title: 'Alerta!',
+			  text: "El nombre, el tipo y el Grupo cuenta no pueden estar vacio",
+			  icon: 'warning',
+			  position : 'top',
+			  showCancelButton: false,
+			  confirmButtonColor: '#3085d6',
+			  confirmButtonText: 'Ok!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
+				$("#modalCuentas").modal("show");
+			  }
+			})
+	}
+});
+
+$("#btnGuardarUpdateCuentaContable").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var id = $("#idEditCuentaControlPrincipal").val();
+	var codigoCuenta = $("#editCodigoCuenta").val();
+	var nombreCuenta = $("#editNombreCuenta").val();
+	var tipoCuenta = $("#editTipoCuenta").val();
+	var cuentaControl = $("#editCuentaControl").val();
+	var grupoCuenta = $("#editGrupoCuenta").val();
+	var idCuentaControl = $("#idEditCuentaControl").val();
+	
+	if(tipoCuenta != 0 && grupoCuenta!="" && nombreCuenta!=""){
+		 $.post("/cuentasContables/modificar",{
+			 "id":id,
+			 "tipoCuenta":tipoCuenta,
+			 "grupoCuenta":grupoCuenta,
+			 "codigoCuenta":codigoCuenta,
+			 "nombreCuenta":nombreCuenta,
+			 "cuentaControl":cuentaControl,
+			 "idCuentaControl":idCuentaControl
+		 },function(data){
+			 	if(data == "1"){
+			 		$("#tablaCuentasContables").load("/cuentasContables/mostrarCuentasContables",function(data){
+			 			console.log("Cuentas Contables");
+			 			addEvents();
+				 		$("#modalModificarCuentas").modal("hide");
+						Swal.fire({
+							  title: 'Muy Bien!',
+							  text: "Registro modificado",
+							  icon: 'success',
+							  position : 'top',
+							  showCancelButton: false,
+							  confirmButtonColor: '#3085d6',
+							  confirmButtonText: 'Ok!'
+							}).then((result) => {
+							  if (result.isConfirmed) {
+								$("#modalCuentas").modal("show");
+							  }
+							})
+			 		});
+			 	}else if(data == "-1"){
+			 		$("#modalModificarCuentas").modal("hide");
+					Swal.fire({
+						  title: 'Alerta!',
+						  text: "No se puede agregar esta cuenta",
+						  icon: 'warning',
+						  position : 'top',
+						  showCancelButton: false,
+						  confirmButtonColor: '#3085d6',
+						  confirmButtonText: 'Ok!'
+						}).then((result) => {
+						  if (result.isConfirmed) {
+							$("#modalModificarCuentas").modal("show");
+						  }
+						})
+			 	}else if(data == "-2"){
+			 		$("#modalModificarCuentas").modal("hide");
+					Swal.fire({
+						  title: 'Alerta!',
+						  text: "No puede agregar cuentas a cuentas auxiliares",
+						  icon: 'warning',
+						  position : 'top',
+						  showCancelButton: false,
+						  confirmButtonColor: '#3085d6',
+						  confirmButtonText: 'Ok!'
+						}).then((result) => {
+						  if (result.isConfirmed) {
+							$("#modalModificarCuentas").modal("show");
+						  }
+						})
+			 	}else if(data == "-3"){
+			 		$("#modalModificarCuentas").modal("hide");
+			 		Swal.fire({
+						  title: 'Alerta!',
+						  text: "No puede modificar esta cuenta",
+						  icon: 'warning',
+						  position : 'top',
+						  showCancelButton: false,
+						  confirmButtonColor: '#3085d6',
+						  confirmButtonText: 'Ok!'
+						}).then((result) => {
+						  if (result.isConfirmed) {
+							$("#modalCuentas").modal("show");
+						  }
+						})
+			 	}else{
+			 		//No guardo
+			 		$("#modalModificarCuentas").modal("hide");
+					Swal.fire({
+						  title: 'Alerta!',
+						  text: "No se guardo la cuenta contable",
+						  icon: 'warning',
+						  position : 'top',
+						  showCancelButton: false,
+						  confirmButtonColor: '#3085d6',
+						  confirmButtonText: 'Ok!'
+						}).then((result) => {
+						  if (result.isConfirmed) {
+							$("#modalModificarCuentas").modal("show");
+						  }
+						})
+			 	}
+				addEvents();
+		 });
+	}else{
+		$("#modalModificarCuentas").modal("hide");
+		Swal.fire({
+			  title: 'Alerta!',
+			  text: "El nombre, el tipo y el Grupo cuenta no pueden estar vacio",
+			  icon: 'warning',
+			  position : 'top',
+			  showCancelButton: false,
+			  confirmButtonColor: '#3085d6',
+			  confirmButtonText: 'Ok!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
+				$("#modalModificarCuentas").modal("show");
+			  }
+			})
+	}
+});
 /******************************************************Fin Contabilidad **********************************************************/
 
 /******************************************************** Usuarios **********************************************************/
@@ -2538,6 +2864,75 @@ function modificarCuenta(id){
 		console.log("Formulario modificar cuentas");
 		addEvents();
 	});
+}
+
+function modificarCuentaContable(id){
+	$("#modalCuentas").modal('hide');
+	$("#editCuentaContable").load("/cuentasContables/modificarCuentaContable/"+id,function(data){
+		$("#modalModificarCuentas").modal('show');
+		addEvents();
+	});
+}
+
+function eliminarCuentaContable(id){
+	$("#modalCuentas").modal('hide');
+	$("#modalModificarCuentas").modal('hide');
+	Swal.fire({
+		  title: 'Seguro de eliminar el registro?',
+		  icon: 'warning',
+		  showCancelButton: true,
+		  confirmButtonColor: '#3085d6',
+		  cancelButtonColor: '#d33',
+		  cancelButtonText: 'Cancelar',
+		  position : 'top',
+		  confirmButtonText: 'Si, Eliminar!'
+		}).then((result) => {
+		  if (result.isConfirmed) {
+				 $.post("/cuentasContables/eliminar/",
+						 {
+							 "idCuentaContable":id
+						 },function(data){
+							 if(data == 1){
+								 $("#modalCuentas").modal('hide');
+									Swal.fire({
+									title: 'Muy bien!',
+									text: "Registro eliminado",
+									icon: 'success',
+									position : 'top',
+									showCancelButton: false,
+									 confirmButtonColor: '#3085d6',
+									  confirmButtonText: 'Ok!'
+									}).then((result) => {
+									  if (result.isConfirmed) {
+										$("#tablaCuentasContables").load("/cuentasContables/mostrarCuentasContables",function(data){
+									 			console.log("Cuentas Contables");
+									 			addEvents();
+												$("#modalCuentas").modal("show");
+									 	});
+									  }
+									})
+							 }else{
+								$("#modalCuentas").modal('hide');
+								$("#modalModificarCuentas").modal('hide');
+								Swal.fire({
+								title: 'Alerta!',
+								text: "No se pudo eliminar el registro",
+								icon: 'warning',
+								position : 'top',
+								showCancelButton: false,
+								 confirmButtonColor: '#3085d6',
+								  confirmButtonText: 'Ok!'
+								}).then((result) => {
+								  if (result.isConfirmed) {
+									$("#modalCuentas").modal("show");
+								  }
+							})
+						 }
+				});
+		  }else{
+			  $("#modalCuentas").modal("show");
+		  }
+		})
 }
 
 function styleSeccion1Only(){

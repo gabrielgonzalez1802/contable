@@ -27,7 +27,7 @@ public class Cuenta {
 	
 	@Transient
 	private BigDecimal montoBigDecimal;
-	
+		
 	@OneToOne
 	@JoinColumn(name = "id_carpeta")
 	private Carpeta carpeta;
