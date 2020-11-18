@@ -297,6 +297,7 @@ function addEvents(){
 	$("#agregarCliente").click(function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
+		styleSeccionAll();
 		var idCliente = $("#idCliente").val();
 		$("#contenido").load("/clientes/agregar",function(data){
 			console.log("Formulario agregar clientes");
