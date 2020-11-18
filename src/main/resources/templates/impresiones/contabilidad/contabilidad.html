@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div id="testCarga">
+<style>
+.table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 16px 0 16px 0;
+}
+
+.table th {
+	border: 1px solid #ddd;
+	padding: 4px;
+	background-color: #d4eefd;
+	text-align: left;
+	font-size: 15px;
+}
+
+.table td {
+	border: 1px solid #ddd;
+	text-align: left;
+	padding: 6px;
+}
+</style>
+
+<!--    <img alt="" th:src="@{/img/cafe.png}"> -->
+   <center><img th:src="@{/logos/{img} (img=${empresa.logo} )}" style="max-width: 20%;"></center>
+   <center th:text="${empresa.direccion}"></center>
+   <center th:text="'TEL: ' + ${empresa.telefono}"></center>
+   <center th:text="'RNC: ' + ${empresa.rnc}"></center>
+
+  <hr>
+
+  <div class="container" id="testCuentas">
+			<div class="row">
+				<div class="col-md-12">
+					<div id="">
+						<div class="table-responsive">
+			                   <table class="table mg-b-0 text-md-nowrap" id="tablaCuentasContables">
+									<thead style="background-color: #0162e8;height: 80px;">
+										<tr>
+										   <th style="color: #f3f3f3;padding-top: 10px;"><b>Codigo</b></th>
+										   <th style="color: #f3f3f3;padding-top: 10px;"><b>Cuenta</b></th>
+										   <th style="color: #f3f3f3;padding-top: 10px;"><b>Control</b></th>
+										   <th style="color: #f3f3f3;padding-top: 10px;"><b>Tipo</b></th>
+										</tr>
+									 </thead>
+									<tbody>
+										 <tr th:each="cuentaContable : ${cuentasContables}">
+											 <td th:text="${cuentaContable.codigo}"></td>
+										 	 <td th:text="${cuentaContable.nombreCuenta}"></td>
+										 	 <td th:text="${cuentaContable.cuentaControl}"></td>
+										 	 <td th:text="${cuentaContable.tipo}"></td>
+									 </tr> 
+								</tbody>
+							 </table>
+		                 </div>
+					</div>
+				</div>
+			</div>
+    </div>
+  </div> 
+</body>
+</html>

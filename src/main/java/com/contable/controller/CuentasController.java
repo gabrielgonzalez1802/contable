@@ -83,6 +83,7 @@ public class CuentasController {
 			carpeta = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa")).get(0);
 		}
 		cuenta.setCarpeta(carpeta);
+		cuenta.setEmpresa((Empresa) session.getAttribute("empresa"));
 		serviceCuentas.guardar(cuenta);
 		if(cuenta.getId()!=null) {
 			response = "1";
@@ -100,6 +101,7 @@ public class CuentasController {
 		}else {
 			carpeta = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa")).get(0);
 		}
+		cuenta.setEmpresa((Empresa) session.getAttribute("empresa"));
 		cuenta.setCarpeta(carpeta);
 		cuenta.setMonto(originalCuenta.getMonto().doubleValue());
 		cuenta.setMontoPlano(originalCuenta.getMonto().toString());
@@ -110,5 +112,16 @@ public class CuentasController {
 		}
 		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
 	}
-
+	
+	@PostMapping("/depositar")
+	public ResponseEntity<String> depositar(Integer idCuenta, Double montoBanco, HttpSession session){
+		String response = "0";
+		Cuenta cuenta = serviceCuentas.buscarPorId(idCuenta);
+		cuenta.setMonto(cuenta.getMonto()+montoBanco);
+		serviceCuentas.guardar(cuenta);
+		if(cuenta.getMonto().doubleValue()>montoBanco.doubleValue()) {
+			response = "1";
+		}
+		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
+	}
 }

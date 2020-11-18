@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.contable.model.Abono;
+import com.contable.model.Cliente;
+import com.contable.model.Empresa;
 import com.contable.model.Prestamo;
 import com.contable.model.Usuario;
 import com.contable.repository.AbonosRepository;
@@ -71,6 +73,26 @@ public class AbonosServiceJpa implements IAbonosService{
 	@Override
 	public List<Abono> buscarPorPrestamosUsuario(List<Prestamo> prestamos, Usuario usuarioTemp) {
 		return repo.findByPrestamoInAndUsuario(prestamos, usuarioTemp);
+	}
+
+	@Override
+	public List<Abono> buscarPorClienteEmpresa(Cliente cliente, Empresa empresa) {
+		return repo.findByClienteAndEmpresa(cliente, empresa);
+	}
+
+	@Override
+	public List<Abono> buscarPorClienteEmpresaFechas(Cliente cliente, Empresa empresa, Date desde, Date hasta) {
+		return repo.findByClienteAndEmpresaAndFechaBetween(cliente, empresa, desde, hasta);
+	}
+
+	@Override
+	public List<Abono> buscarPorEmpresa(Empresa empresa) {
+		return repo.findByEmpresa(empresa);
+	}
+
+	@Override
+	public List<Abono> buscarPorEmpresaFechas(Empresa empresa, Date desde, Date hasta) {
+		return repo.findByEmpresaAndFechaBetween(empresa, desde, hasta);
 	}
 
 }

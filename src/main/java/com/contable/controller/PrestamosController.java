@@ -2010,6 +2010,7 @@ public class PrestamosController {
 				abono.setEfectivo(abonoEfectivo);
 				abono.setCheque(abonoCheque);
 				abono.setTransferencia_deposito(abonoDeposito);
+				abono.setEmpresa((Empresa) session.getAttribute("empresa"));
 				if(imagenCheque!=null) {
 					abono.setImagen_cheque(imagenCheque);
 				}
@@ -2268,6 +2269,7 @@ public class PrestamosController {
 				abono.setEfectivo(abonoEfectivo);
 				abono.setCheque(abonoCheque);
 				abono.setTransferencia_deposito(abonoDeposito);
+				abono.setEmpresa((Empresa) session.getAttribute("empresa"));
 				if(imagenCheque!=null) {
 					abono.setImagen_cheque(imagenCheque);
 				}

@@ -19,5 +19,7 @@ public interface PrestamosRepository extends JpaRepository<Prestamo, Integer>{
 	List<Prestamo> findByTipo(String tipo);
 	List<Prestamo> findByClienteAndCarpetaOrderByFechaDesc(Cliente cliente, Carpeta carpeta);
 	List<Prestamo> findByClienteAndCarpetaAndEmpresaOrderByFechaDesc(Cliente cliente, Carpeta carpeta, Empresa empresa);
+	List<Prestamo> findByClienteAndCarpetaAndEmpresaAndFechaBetweenOrderByFechaDesc(Cliente cliente, Carpeta carpeta, Empresa empresa, Date desde, Date hasta);
+	List<Prestamo> findByCarpetaAndEmpresaAndFechaBetweenOrderByFechaDesc(Carpeta carpeta, Empresa empresa, Date desde, Date hasta);
 	List<Prestamo> findByCarpetaOrderByFechaDesc(Carpeta carpeta);
 }

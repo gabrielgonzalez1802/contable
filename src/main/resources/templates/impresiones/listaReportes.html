@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="listaReportes">
+		<div class="row">
+
+			<div class="col-md-12 col-sm-12">
+				<div class="">
+					<div class="card-body">
+						<span id="botonesNotasPrestamo"> <br>
+							<button class="btn btn-primary" id="btnMostrarAbonoImpresion">Abonos</button> <!-- 			                 <button class="btn btn-info" id="aplicarCargos">Aplicar Cargo</button> -->
+							<button class="btn btn-success" id=btnMostrarPrestamoImpresion>Prestamos</button>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<br>
+		
+		<div id="cuerpoImpresion">
+				
+		</div>
+
+<!--  Modal Impresion Prestamo -->
+  <div class="modal" id="modalImpresionPrestamo">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <div class="modal-header">
+          <h4 class="modal-title">Buscar Prestamos</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          	<div class="row">
+					<div class="col-md-4">
+					 	<div class="form-group">
+					 		<label>Desde <span style="color: red;">*</span> </label>
+						   	<input type="date" class="form-control" id="PrestamoDesdeImpresion" required="required">
+						 </div>
+					</div>
+					
+					<div class="col-md-4">
+					 	<div class="form-group">
+					 		<label>Hasta <span style="color: red;">*</span></label>
+						   	<input type="date" class="form-control" id="PrestamoHastaImpresion" required="required">
+						 </div>
+					</div>
+					
+					<div class="col-md-4">
+					 	<div class="form-group">
+						  	 <button type="submit" style="margin-top: 30px;" class="btn btn-primary" id="btnBuscarPrestamoImpresion">Buscar</button>
+						 </div>
+					</div>
+			</div>
+        </div>
+      </div>
+    </div>
+  </div>  
+  
+  <!--  Modal Impresion Abono -->
+  <div class="modal" id="modalImpresionAbono">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <div class="modal-header">
+          <h4 class="modal-title">Buscar Abonos</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          	<div class="row">
+					<div class="col-md-3">
+					 	<div class="form-group">
+					 		<label>Desde <span style="color: red;"></span> </label>
+						   	<input type="date" class="form-control" id="AbonoDesdeImpresion" required="required">
+						 </div>
+					</div>
+					
+					<div class="col-md-3">
+					 	<div class="form-group">
+					 		<label>Hasta <span style="color: red;"></span></label>
+						   	<input type="date" class="form-control" id="AbonoHastaImpresion" required="required">
+						 </div>
+					</div>
+					
+					<div class="col-md-3">
+					 	<div class="form-group">
+					 		<label>Cliente</label>
+					 		<select id="clienteAbonoImpresion" class="form-control">
+					 			<option value="0">Todos</option>
+					 			<option th:each="cliente : ${clientes}" 
+					 					th:value="${cliente.id}" 
+					 					th:text="${cliente.nombre}"></option>
+					 		</select>
+					 	</div>
+					</div>
+					
+					<div class="col-md-3">
+					 	<div class="form-group">
+						  	 <button type="button" style="margin-top: 30px;" class="btn btn-primary" id="btnBuscarAbonosImpresion">Buscar</button>
+						 </div>
+					</div>
+			</div>
+        </div>
+      </div>
+    </div>
+  </div>  
+    
+</div>	
+
+</body>
+</html>

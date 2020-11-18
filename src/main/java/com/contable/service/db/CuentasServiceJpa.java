@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.contable.model.Carpeta;
 import com.contable.model.Cuenta;
+import com.contable.model.Empresa;
 import com.contable.repository.CuentasRepository;
 import com.contable.service.ICuentasService;
 
@@ -39,6 +40,11 @@ public class CuentasServiceJpa implements ICuentasService{
 	@Override
 	public void eliminar(Cuenta cuenta) {
 		repo.delete(cuenta);
+	}
+
+	@Override
+	public List<Cuenta> buscarPorCarpetaEmpresa(Carpeta carpeta, Empresa empresa) {
+		return repo.findByCarpetaAndEmpresa(carpeta, empresa);
 	}
 
 }

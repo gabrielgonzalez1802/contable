@@ -5,93 +5,47 @@
 <title>Insert title here</title>
 </head>
 <body>
-<div th:fragment="cuadreCaja">
+<div id="imprimirData">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<style>
+.table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 16px 0 16px 0;
+}
 
-  <!-- Modal Depositar -->
-  <div class="modal" id="modalDepositar">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-      
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Depositar</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-        
-        <!-- Modal body -->
-        <div class="modal-body">
-          	<div class="row">
-				
-				<div class="col-md-6">
-				 	<div class="form-group">
-					   	<select id="idCuenta" class="form-control">
-					   		<option th:each="cuenta : ${cuentas}"
-					   				th:value="${cuenta.id}" th:text="${cuenta.banco} + ' ' + ${cuenta.numero}"
-					   		></option>
-					   	</select>
-					 </div>
-				</div>
-				
-				<div class="col-md-3">
-					<input type="number" min="0" class="form-control" id="montoBanco" placeholder="Monto">
-				</div>
-				
-				<div class="col-md-3">
-					 <button type="button" class="btn btn-primary" data-dismiss="modal" id="depositar">Agregar</button>
-				</div>
-			</div>
+.table th {
+	border: 1px solid #ddd;
+	padding: 4px;
+	background-color: #d4eefd;
+	text-align: left;
+	font-size: 15px;
+}
 
-        </div>
-      </div>
-    </div>
-  </div>  
+.table td {
+	border: 1px solid #ddd;
+	text-align: left;
+	padding: 6px;
+}
+</style>
 
-	<div class="row">
-			<input type="hidden" th:value="${userAcct}" id="userAcctCaja">
-			<div class="col-md-3" id="buscarCarpeta">
-				<label class="sr-only" for="">carpeta</label>
-				<div class="input-group">
-					<div class="input-group-prepend">
-						<button style="width: 100%;" class="btn btn-success"
-							id="btnCarpetaCajas">
-							<i class="fas fa-search"></i>
-						</button>
-					</div>
-					<input type="hidden" th:value="${msgId}" id="msgId"> 
-					<input type="hidden" th:value="${carpeta.id}" class="form-control" id="carpetaId" 
-					placeholder="Carpeta" disabled="disabled"> 
-					<input type="text" th:value="${carpeta.nombre}" class="form-control"
-						id="carpeta" placeholder="Carpeta" disabled="disabled">
-					<div th:if="${carpeta.principal != 1}" class="input-group-prepend">
-						<button style="width: 100%;" class="btn btn-danger"
-							id="btnExitCarpetaCaja">
-							<i class="fas fa-times"></i>
-						</button>
-					</div>
-				</div>
-			</div>
-			
-		 	<div class="col-md-3">
-		 		<input type="date" class="form-control" id="fechaCuadreCaja" th:value="*{#dates.format(fecha, 'yyyy-MM-dd')}">
-		 	</div>
-		 	<div class="col-md-3">
-		 		<select id="usuarioCuadreCaja" class="form-control">
-		 			<option value="0">Todos</option>
-		 			<option th:each="usuario : ${usuarios}"
-		 					th:value="${usuario.id}" th:text="${usuario.username}"></option>
-		 		</select>
-		 	</div>
-		 	<div class="col-md-3">
-		 		<button id="imprimirCuadre" class="btn btn-success"><i class="fas fa-print"></i></button>
-		 	</div>
-	</div>
+<div id="encabezadoCuadreCaja">
+	<!--    <img alt="" th:src="@{/img/cafe.png}"> -->
+   <center><img th:src="@{/logos/{img} (img=${empresa.logo} )}" style="max-width: 20%;"></center>
+   <center th:text="${empresa.direccion}"></center>
+   <center th:text="'TEL: ' + ${empresa.telefono}"></center>
+   <center th:text="'RNC: ' + ${empresa.rnc}"></center>
 
-	       <div class="row">
+  <hr>
+</div>
+
+  <div style="text-align:center; font-size: 20px;font-weight: bold;margin-bottom: 10px;">Cuadre de Caja </div>
+		
+		<div class="row">
             <div class="col-md-8">
               <div class="card">
                 <div class="card-header pb-0">
                   <div class="d-flex justify-content-between">
-                    <h4 class="card-title mg-b-0">Cuadre de Caja</h4>
                     <i class="mdi mdi-dots-horizontal text-gray"></i>
                   </div>
 <!--                   <p class="tx-12 tx-gray-500 mb-2">Generar reporte. <a href="">Click</a></p> -->
@@ -111,7 +65,7 @@
                       </thead>
                       <tbody>
                         <tr th:each="abono : ${abonos}">
-                          <th scope="row" th:text="*{#dates.format(abono.fecha, 'dd/MM/yyyy')}"></th>
+                          <td th:text="*{#dates.format(abono.fecha, 'dd/MM/yyyy')}"></td>
                           <td th:text="${abono.id}"></td>
                           <td th:text="${abono.prestamo.codigo}"></td>
                           <td th:text="${abono.cliente.nombre}"></td>
@@ -166,14 +120,10 @@
                   </li>
 
                   </ul>
-                    
-                  <div style="text-align: right;">
-                  	<button id="btnDepositar" class="btn btn-info btn-lg"> Depositar </button>
-                  </div>
-
               </div>
             </div>
           </div> 
-</div>
+	
+  </div> 
 </body>
 </html>

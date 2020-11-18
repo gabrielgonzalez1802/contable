@@ -136,6 +136,15 @@ public class CuentasContablesController {
 		return "contabilidad/contabilidad :: #tablaCuentasContables";
 	}
 	
+	@GetMapping("/imprimirCuentasContables")
+	public String imprimirCuentasContables(Model model, HttpSession session) {
+		List<CuentaContable> cuentasContables = serviceCuentasContables.buscarPorEmpresaOrderByCodigo((Empresa) session.getAttribute("empresa"));
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		model.addAttribute("cuentasContables", cuentasContables);
+		model.addAttribute("empresa", empresa);
+		return "impresiones/contabilidad/contabilidad :: #testCarga";
+	}
+	
 	@PostMapping("/eliminar")
 	public ResponseEntity<String> eliminar(Integer idCuentaContable){
 		CuentaContable cuentaContable = serviceCuentasContables.buscarPorId(idCuentaContable);

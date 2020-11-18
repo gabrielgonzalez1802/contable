@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.contable.model.Abono;
 import com.contable.model.Cliente;
+import com.contable.model.Empresa;
 import com.contable.model.Prestamo;
 import com.contable.model.Usuario;
 
@@ -18,5 +19,8 @@ public interface AbonosRepository extends JpaRepository<Abono, Integer> {
 	List<Abono> findByPrestamoInAndFecha(List<Prestamo> prestamos, Date fecha);
 	List<Abono> findByFecha(Date fecha);
 	List<Abono> findByPrestamoInAndUsuario(List<Prestamo> prestamos, Usuario usuario);
-	
+	List<Abono> findByClienteAndEmpresa(Cliente cliente, Empresa empresa);
+	List<Abono> findByClienteAndEmpresaAndFechaBetween(Cliente cliente, Empresa empresa, Date desde, Date hasta);
+	List<Abono> findByEmpresa(Empresa empresa);
+	List<Abono> findByEmpresaAndFechaBetween(Empresa empresa, Date desde, Date hasta);
 }

@@ -32,6 +32,10 @@ public class Cuenta {
 	@JoinColumn(name = "id_carpeta")
 	private Carpeta carpeta;
 	
+	@OneToOne
+	@JoinColumn(name = "id_empresa")
+	private Empresa empresa;
+	
 	private Double monto = 0.0;
 
 	public Integer getId() {
@@ -90,9 +94,18 @@ public class Cuenta {
 		this.montoBigDecimal = montoBigDecimal;
 	}
 
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+
 	@Override
 	public String toString() {
 		return "Cuenta [id=" + id + ", banco=" + banco + ", numero=" + numero + ", montoPlano=" + montoPlano
-				+ ", montoBigDecimal=" + montoBigDecimal + ", carpeta=" + carpeta + ", monto=" + monto + "]";
+				+ ", montoBigDecimal=" + montoBigDecimal + ", carpeta=" + carpeta + ", empresa=" + empresa + ", monto="
+				+ monto + "]";
 	}
 }

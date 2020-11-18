@@ -4,10 +4,12 @@ import java.util.List;
 
 import com.contable.model.Carpeta;
 import com.contable.model.Cuenta;
+import com.contable.model.Empresa;
 
 public interface ICuentasService {
 	Cuenta buscarPorId(Integer id);
 	List<Cuenta> buscarPorCarpeta(Carpeta carpeta);
+	List<Cuenta> buscarPorCarpetaEmpresa(Carpeta carpeta, Empresa empresa);
 	void guardar(Cuenta cuenta);
 	void eliminar(Cuenta cuenta);
 }

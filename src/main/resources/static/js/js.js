@@ -1,5 +1,4 @@
 // imprimirAbonoDetalle(2);
-
 function addEvents(){
 	
 /************************************************** Configuraciones Iniciales **********************************************/
@@ -273,7 +272,7 @@ function addEvents(){
 			})
 	});
 	
-	$("#btnExitCarpeta").click(function(e){
+	$("#btnExitCarpeta").click(function(e){ 
 		e.preventDefault();
 		e.stopImmediatePropagation();
 		$("#contenido").load("/clientes/buscarClienteCarpetaPrincipal",function(data){
@@ -1159,12 +1158,154 @@ $("#caja").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
 	ocultarDetalleAmortizacion();
-	styleSeccion1Only();
 	$("#contenido").load("/cajas/mostrarCuadre",function(data){
 		console.log("Cuadre de Caja");
 		addEvents();
 	});
 });
+
+$("#imprimirCuadre").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var fecha = $("#fechaCuadreCaja").val();
+	var user = $("#usuarioCuadreCaja").val();
+	
+	if(!fecha){
+		fecha = "";
+	}
+	
+	$.post("/reportes/cuadreCaja",{
+	 "fecha" : fecha,
+	 "userId" : user
+	},function(data){
+		impresion(data);
+		addEvents();
+	});
+});
+
+$("#btnCarpetaCajas").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	Swal.fire({
+		  title: 'Ingrese la carpeta',
+		  position: 'top',
+		  input: 'text',
+		  inputAttributes: {
+		    autocapitalize: 'off'
+		  },
+		  showCancelButton: true,
+		  confirmButtonText: 'Buscar',
+		  cancelButtonText: 'Cancelar',
+		  showLoaderOnConfirm: true,
+		  preConfirm: (carpeta) => {
+			  $.ajax({
+		            url: "/carpetas/buscarCarpetaCajas/"+carpeta,
+		            type: "GET",
+//		            data: "",
+//		            enctype: 'multipart/form-data',
+		            processData: false,
+		            contentType: false,
+		            cache: false,
+		            success: function (res) {
+						$("#buscarCarpeta").replaceWith(res);
+		            	var msg = $("#msgId").val();
+			            if(msg=="0"){
+							Swal.fire({
+								title : 'No tienes carpetas creadas!',
+//								text : 'No tienes carpetas creadas',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+							addEvents();
+						}else{
+							Swal.fire({
+								title : 'Muy bien!',
+								text : 'Carpeta Seleccionada',
+								position : 'top',
+								icon : 'success',
+								confirmButtonText : 'Cool'
+							})
+							
+							var fecha = $("#fechaCuadreCaja").val();
+							var user = $("#usuarioCuadreCaja").val();
+							$("#contenido").load("/cajas/mostrarCuadre",
+								{
+									"fecha" : fecha,
+									"userId" : user
+								},function(data){
+								var userAcctCaja = $("#userAcctCaja").val();	
+								$("#usuarioCuadreCaja option[value="+ userAcctCaja +"]").attr("selected",true);
+								console.log("Cuadre de Caja");
+								addEvents();
+							});
+		
+						}
+		            },
+		            error: function (err) {
+		                console.error(err);
+		                Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo completar la operacion, intente mas tarde',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+		            }
+		        });
+		  },
+		  allowOutsideClick: () => !Swal.isLoading()
+		}).then((result) => {
+		  if (result.isConfirmed) {
+		    //Correcto
+		  }
+		})
+});
+
+$("#btnExitCarpetaCaja").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	  $.ajax({
+          url: "/carpetas/buscarCarpetaCajas",
+          type: "GET",
+//          data: "",
+//          enctype: 'multipart/form-data',
+          processData: false,
+          contentType: false,
+          cache: false,
+          success: function (res) {
+				$("#buscarCarpeta").replaceWith(res);
+          	var msg = $("#msgId").val();
+	            if(msg=="0"){
+					addEvents();
+					location.href = '/logout';
+				}else{
+					var fecha = $("#fechaCuadreCaja").val();
+					var user = $("#usuarioCuadreCaja").val();
+					$("#contenido").load("/cajas/mostrarCuadre",
+						{
+							"fecha" : fecha,
+							"userId" : user
+						},function(data){
+						var userAcctCaja = $("#userAcctCaja").val();	
+						$("#usuarioCuadreCaja option[value="+ userAcctCaja +"]").attr("selected",true);
+						console.log("Cuadre de Caja");
+						addEvents();
+					});
+				}
+          },
+          error: function (err) {
+              console.error(err);
+              Swal.fire({
+					title : 'Error!',
+					text : 'No se pudo completar la operacion, intente mas tarde',
+					position : 'top',
+					icon : 'error',
+					confirmButtonText : 'Cool'
+				})
+          }
+      });
+});	
 
 $("#fechaCuadreCaja").change(function(e){
 	e.preventDefault();
@@ -1202,6 +1343,62 @@ $("#usuarioCuadreCaja").change(function(e){
 	});
 });
 
+$("#btnDepositar").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	ocultarDetalleAmortizacion();
+	$("#modalDepositar").modal("show");
+});
+
+$("#depositar").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var idCuenta = $("#idCuenta").val();
+	var montoBanco = $("#montoBanco").val();
+	
+	if(montoBanco){
+		$("#modalDepositar").modal("hide");
+		 $.post("/cuentas/depositar",{
+			 "idCuenta":idCuenta,
+			 "montoBanco":montoBanco
+		 },function(data){
+			 if(data == "1"){
+				 Swal.fire({
+						title : 'Muy bien!',
+						text : 'Deposito guardado correctamente',
+						position : 'top',
+						icon : 'success',
+						confirmButtonText : 'Cool'
+					})
+				$("#montoBanco").val("");
+			 }else{
+				 Swal.fire({
+						title : 'Error!',
+						text : 'No se pudo guardar el deposito',
+						position : 'top',
+						icon : 'error',
+						confirmButtonText : 'Cool'
+					})
+			 }
+		 });
+	}else{
+		$("#modalDepositar").modal("hide");
+		Swal.fire({
+			  title: 'Alerta!',
+			  text: "El monto no puede estar vacio",
+			  icon: 'warning',
+			  position : 'top',
+			  showCancelButton: false,
+			  confirmButtonColor: '#3085d6',
+			  confirmButtonText: 'Ok!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
+				  $("#modalDepositar").modal("show");
+			  }
+			})
+	}
+});
+
 /****************************************************** Fin Caja **********************************************************/
 
 /****************************************************** Contabilidad **************************************************************/
@@ -1212,6 +1409,23 @@ $("#contabilidad").click(function(e){
 	ocultarDetalleAmortizacion();
 	$("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
 		console.log("Contabilidad");
+		addEvents();
+	});
+});
+
+$("#imprime").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	ocultarDetalleAmortizacion();
+	impresionTabla("tablaCuentasContables");
+});
+
+$("#imprime2").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	ocultarDetalleAmortizacion();
+	$.get("/cuentasContables/imprimirCuentasContables",function(data){
+		impresion(data);
 		addEvents();
 	});
 });
@@ -2432,8 +2646,163 @@ $("#formUpdateCuenta").on("submit", function (e) {
 });
 
 /******************************************************** Fin Cuentas *******************************************************/
-}
 
+/******************************************************** Reportes **********************************************************/
+
+$("#reportes").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/reportes/listaReportes",function(data){
+		ocultarDetalleAmortizacion();
+		console.log("Lista de Reportes");
+		addEvents();
+	});
+});
+
+$("#btnMostrarPrestamoImpresion").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#modalImpresionPrestamo").modal("show");
+	addEvents();
+});
+
+$("#btnBuscarPrestamoImpresion").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var desde = $("#PrestamoDesdeImpresion").val();
+	var hasta = $("#PrestamoHastaImpresion").val();
+	
+	if(desde && hasta){
+		$("#modalImpresionPrestamo").modal("hide");
+		$("#cuerpoImpresion").load("/reportes/listaPrestamos/"+desde+"/"+hasta,function(data){
+			addEvents();
+		});
+	}
+});
+
+$("#imprimirListaPrestamos").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	 $.get("/reportes/listaPrestamos",function(elemento){
+		impresion(elemento);
+		addEvents();
+	 });
+});
+
+$("#btnMostrarAbonoImpresion").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#modalImpresionAbono").modal("show");
+	addEvents();
+});
+
+$("#btnBuscarAbonosImpresion").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var desde = $("#AbonoDesdeImpresion").val();
+	var hasta = $("#AbonoHastaImpresion").val();
+	var idCliente = $("#clienteAbonoImpresion").val();
+	
+	if(!desde){
+		desde = "";
+	}
+	
+	if(!hasta){
+		hasta = "";
+	}
+	
+	$("#modalImpresionAbono").modal("hide");
+	$("#cuerpoImpresion").load("/reportes/listaAbonos",
+		{
+			'desde': desde,
+			'hasta': hasta,
+			'idCliente': idCliente
+		},
+	function(elemento){
+		$("#encabezadoAbono").hide();
+		impresion(elemento);
+		addEvents();
+	});		
+});
+
+/******************************************************** Fin Reportes ******************************************************/
+
+/******************************************************** Administracion ****************************************************/
+
+$("#administracion").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/administracion/",function(data){
+		ocultarDetalleAmortizacion();
+		console.log("Administracion");
+		addEvents();
+	});
+});
+
+$("#crearToken").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$.get("/administracion/crearToken",
+		function(data){
+		Swal.fire({
+			title : 'Muy bien!',
+			text : 'Token Generado: '+data,
+			position : 'top',
+			icon : 'success',
+			confirmButtonText : 'Cool'
+		})
+		$("#contenido").load("/administracion/",function(data){
+			ocultarDetalleAmortizacion();
+			console.log("Administracion");
+			addEvents();
+		});
+	});
+});
+
+$("#actualizarToken").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var tokenId = $("#tokenId").val();
+	var expire = $("#fechaExpiracion").val();
+	var estado = $("#estadoToken").val();
+	
+	if(!expire){
+		expire = "";
+	}
+	
+	$.post("/administracion/actualizarToken",{
+		 "tokenId":tokenId,
+		 "expire":expire,
+		 "estado":estado
+	 },function(data){
+		 $("#modalToken").modal("hide");
+		 if(data == "1"){
+			 Swal.fire({
+					title : 'Muy bien!',
+					text : 'Token Actualizado',
+					position : 'top',
+					icon : 'success',
+					confirmButtonText : 'Cool'
+				})
+		 }else{
+			 Swal.fire({
+					title : 'Alerta!',
+					text : 'No se pudo actualizar el token',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+		 }
+		 $("#contenido").load("/administracion/",function(data){
+				ocultarDetalleAmortizacion();
+				console.log("Administracion");
+				addEvents();
+		 });
+	 });
+});
+
+/******************************************************** Fin Administracion ****************************************************/
+}
 
 /****************************************************** Funciones ***********************************************************/
 
@@ -2935,6 +3304,67 @@ function eliminarCuentaContable(id){
 		})
 }
 
+function modificarToken(idToken){
+	$("#editToken").load("/administracion/modificarToken/"+idToken,function(data){
+		$("#modalToken").modal('show');
+		addEvents();
+	});
+}
+
+function eliminarToken(tokenId){
+	Swal.fire({
+		  title: 'Esta seguro?',
+		  text: "Esta accion es irreversible!",
+		  icon: 'warning',
+		  position: 'top',
+		  showCancelButton: true,
+		  confirmButtonColor: '#3085d6',
+		  cancelButtonColor: '#d33',
+		  confirmButtonText: 'Si, Eliminar!',
+		  cancelButtonText: 'Cancelar',
+		}).then((result) => {
+		  if (result.value) {
+		    Swal.fire({
+			  icon: 'success',
+			  title: 'Muy bien!',
+			  text: 'El registro se borrara.!',
+			  position: 'top'
+			})
+		    
+			 $.post("/administracion/eliminarToken",
+					 {
+						 "tokenId":tokenId
+					},function(data){
+						 if(data == "1"){
+								Swal.fire({
+									title: 'Muy bien!',
+									text: "Registro eliminado",
+									icon: 'success',
+									position : 'top',
+									showCancelButton: false,
+									 confirmButtonColor: '#3085d6',
+									  confirmButtonText: 'Ok!'
+									}).then((result) => {
+									  if (result.isConfirmed) {
+										  $("#contenido").load("/administracion/",function(data){
+												console.log("Administracion");
+												addEvents();
+											});
+									  }
+							})
+						 }else{
+							 Swal.fire({
+								  icon: 'error',
+								  title: 'Error!',
+								  text: 'No se pudo borrar el registro!',
+								  position: 'top'
+								})
+						 }
+					});		
+		  }
+		})
+}
+
 function styleSeccion1Only(){
 	$("#cuerpo").css("min-height", "420px");
 	$("#cuerpo").css("overflow", "hidden");
@@ -2959,4 +3389,50 @@ function mostrarDetalleAmortizacion(){
 function ocultarDetalleAmortizacion(){
 	$("#cuerpoTabla").hide();
 }
+
+function impresion(elemento){
+	 var ventimp = window.open(' ', "MsgWindow", "width=1000,height=800");
+	 ventimp.document.write('<html><head>');
+//	 ventimp.document.write('<style>.table{width:100%;border-collapse:collapse;margin:16px 0 16px 0;}.table th{border:1px solid #ddd;padding:4px;background-color:#d4eefd;text-align:left;font-size:15px;}.table td{border:1px solid #ddd;text-align:left;padding:6px;}</style>');
+	 ventimp.document.write('</head><body >');
+	 ventimp.document.write(elemento);
+	 ventimp.document.write('</body></html>');
+	 ventimp.document.close();
+	 ventimp.focus();
+	 setTimeout(function() {
+		 ventimp.print();
+		}, 1000);
+  }
+
+function impresion2(elemento){
+    var mywindow = window.open('', 'MsgWindow', 'height=1000,width=800');
+    mywindow.document.write('<html><head>');
+	mywindow.document.write('<style>.table{width:100%;border-collapse:collapse;margin:16px 0 16px 0;}.table th{border:1px solid #ddd;padding:4px;background-color:#d4eefd;text-align:left;font-size:15px;}.table td{border:1px solid #ddd;text-align:left;padding:6px;}</style>');
+    mywindow.document.write('</head><body >');
+    mywindow.document.write(document.getElementById(elemento).innerHTML);
+    mywindow.document.write('</body></html>');
+    mywindow.document.close(); // necesario para IE >= 10
+    mywindow.focus(); // necesario para IE >= 10
+    mywindow.print();
+    mywindow.close();
+    return true;
+  }
+
+function impresionTabla(elemento){
+    var mywindow = window.open('', 'MsgWindow', 'height=1000,width=800');
+    mywindow.document.write('<!DOCTYPE html>');
+    mywindow.document.write('<html xmlns:th="http://www.thymeleaf.org"><head>');
+	mywindow.document.write('<style>.table{width:100%;border-collapse:collapse;margin:16px 0 16px 0;}.table th{border:1px solid #ddd;padding:4px;background-color:#d4eefd;text-align:left;font-size:15px;}.table td{border:1px solid #ddd;text-align:left;padding:6px;}</style>');
+    mywindow.document.write('</head><body>');
+    mywindow.document.write('<p th:text="Hola"></p>');
+    mywindow.document.write('<table class="table">');
+    mywindow.document.write(document.getElementById(elemento).innerHTML);
+    mywindow.document.write('</table>');
+    mywindow.document.write('</body></html>');
+    mywindow.document.close(); // necesario para IE >= 10
+    mywindow.focus(); // necesario para IE >= 10
+    mywindow.print();
+    mywindow.close();
+    return true;
+  }
 /******************************************************* Fin Funciones ******************************************************/

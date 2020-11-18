@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div id="imprimirData">
+<style>
+.table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 16px 0 16px 0;
+}
+
+.table th {
+	border: 1px solid #ddd;
+	padding: 4px;
+	background-color: #d4eefd;
+	text-align: left;
+	font-size: 15px;
+}
+
+.table td {
+	border: 1px solid #ddd;
+	text-align: left;
+	padding: 6px;
+}
+</style>
+
+<!--    <img alt="" th:src="@{/img/cafe.png}"> -->
+   <center><img th:src="@{/logos/{img} (img=${empresa.logo} )}" style="max-width: 20%;"></center>
+   <center th:text="${empresa.direccion}"></center>
+   <center th:text="'TEL: ' + ${empresa.telefono}"></center>
+   <center th:text="'RNC: ' + ${empresa.rnc}"></center>
+
+  <hr>
+  
+  <div style="text-align:center; font-size: 20px;font-weight: bold;margin-bottom: 10px;">Lista de prestamos </div>
+
+  <div class="container">
+		<div class="row">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="table-responsive">
+							<table class="table mg-b-0 text-md-nowrap" id="tablaListaPrestamos">
+								<thead style="background-color: #0162e8;height: 80px;">
+									<tr>
+										<th style="color: #f3f3f3;padding-top: 10px;">Cliente</th>
+										<th style="color: #f3f3f3;padding-top: 10px;">Cedula</th>
+										<th style="color: #f3f3f3;padding-top: 10px;">Telefono</th>
+										<th style="color: #f3f3f3;padding-top: 10px;">No.</th>
+										<th style="color: #f3f3f3;padding-top: 10px;">Fecha</th>
+										<th style="color: #f3f3f3;padding-top: 10px;">Monto</th>
+										<th style="color: #f3f3f3;padding-top: 10px;">Tipo</th>
+										<th style="color: #f3f3f3;padding-top: 10px;">Tasa</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="prestamo : ${prestamos}">
+										<td th:text="${prestamo.cliente.nombre}"></td>
+										<td th:text="${prestamo.cliente.cedula}"></td>
+										<td th:text="${prestamo.cliente.telefono}"></td>
+										<td th:text="${prestamo.codigo}"></td>
+										<td th:text="${#dates.format(prestamo.fecha, 'dd-MM-yyyy')}"></td>
+										<td th:text="${prestamo.monto}"></td>
+										<td th:if="${prestamo.tipo == 2}"> Interes </td>
+										<td th:unless="${prestamo.tipo == 2}"> Cuota </td>
+										<td th:text="${prestamo.tasa}"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+   </div>
+  </div> 
+</body>
+</html>

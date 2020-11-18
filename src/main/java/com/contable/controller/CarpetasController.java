@@ -118,5 +118,38 @@ public class CarpetasController {
 		model.addAttribute("msgId", msg);
 		return "cuentas/listaCuentas :: #buscarCarpeta";
 	}
-
+	
+	@GetMapping("/buscarCarpetaCajas/{carpeta}")
+	public String buscarCarpetaCajas(@PathVariable("carpeta") String item, HttpSession session, Model model){
+		Carpeta carpeta = null;
+		if(session.getAttribute("empresa") != null) {
+			 carpeta = serviceCarpetas.buscarPorNombreEmpresa(item, (Empresa) session.getAttribute("empresa"));
+		}
+		String msg = "0";
+		if(carpeta == null) {
+			model.addAttribute("carpeta", serviceCarpetas.buscarPorId((int) session.getAttribute("carpeta")));
+		}else {
+			msg = "1";
+			session.setAttribute("carpeta", carpeta.getId());
+			model.addAttribute("carpeta", carpeta);
+		}
+		model.addAttribute("msgId", msg);
+		return "cajas/cuadreCaja :: #buscarCarpeta";
+	}
+	
+	@GetMapping("/buscarCarpetaCajas")
+	public String buscarCarpetaCajas(HttpSession session, Model model){
+		String msg = "1";
+		List<Carpeta> carpetas = new LinkedList<>();
+		if(session.getAttribute("empresa") != null) {
+			carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa"));
+			session.setAttribute("carpeta", carpetas.get(0).getId());
+			model.addAttribute("carpeta", carpetas.get(0));
+			model.addAttribute("msgId", msg);
+		}else {
+			msg = "0";
+		}
+		model.addAttribute("msgId", msg);
+		return "cajas/cuadreCaja :: #buscarCarpeta";
+	}
 }
