@@ -128,7 +128,7 @@ public class ReportesController {
 		
 		List<Abono> abonosTemp = new LinkedList<>();
 		
-		List<Prestamo> prestamos = servicePrestamos.buscarPorCarpeta(carpeta);
+		List<Prestamo> prestamos = servicePrestamos.buscarPorCarpetaEmpresa(carpeta, (Empresa) session.getAttribute("empresa"));
 		if(userId>0) {
 			Usuario usuarioTemp = serviceUsuarios.buscarPorId(userId);
 			abonosTemp = serviceAbonos.buscarPorPrestamosUsuario(prestamos, usuarioTemp);

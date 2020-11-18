@@ -64,7 +64,7 @@ public class CajasController {
 			carpeta = carpetas.get(0);
 		}
 		
-		List<Prestamo> prestamos = servicePrestamos.buscarPorCarpeta(carpeta);
+		List<Prestamo> prestamos = servicePrestamos.buscarPorCarpetaEmpresa(carpeta, (Empresa) session.getAttribute("empresa"));
 		List<Abono> abonosTemp = serviceAbonos.buscarPorPrestamos(prestamos);
 		List<Abono> abonosDepured = new LinkedList<>();
 		LocalDateTime fechaAcct =  LocalDateTime.now();
@@ -125,7 +125,7 @@ public class CajasController {
 		
 		List<Abono> abonosTemp = new LinkedList<>();
 		
-		List<Prestamo> prestamos = servicePrestamos.buscarPorCarpeta(carpeta);
+		List<Prestamo> prestamos = servicePrestamos.buscarPorCarpetaEmpresa(carpeta, (Empresa) session.getAttribute("empresa"));
 		if(userId>0) {
 			Usuario usuarioTemp = serviceUsuarios.buscarPorId(userId);
 			abonosTemp = serviceAbonos.buscarPorPrestamosUsuario(prestamos, usuarioTemp);

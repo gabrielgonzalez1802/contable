@@ -13,6 +13,7 @@ public interface IPrestamosService {
 	List<Prestamo> buscarPorEstado(Integer estado);
 	List<Prestamo> buscarPorCliente(Cliente cliente);
 	List<Prestamo> buscarPorCarpeta(Carpeta carpeta);
+	List<Prestamo> buscarPorCarpetaEmpresa(Carpeta carpeta, Empresa empresa);
 	List<Prestamo> buscarPorFecha(Date fecha);
 	List<Prestamo> buscarPorTipo(String tipo);
 	List<Prestamo> buscarPorClienteCarpetaPorFechaDesc(Cliente cliente, Carpeta carpeta);
