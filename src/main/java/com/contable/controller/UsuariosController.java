@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -77,6 +78,15 @@ public class UsuariosController {
 		return "usuarios/agregarUsuario :: agregarUsuario";
 	}
 	
+	@GetMapping("/cambiarClaveUsuarioAcct")
+	public String cambiarClaveUsuarioAcct(Model model, HttpSession session, Authentication auth) {
+		String userName = auth.getName();
+		Usuario usuario = null;
+		usuario = serviceUsuarios.buscarPorUsername(userName);
+		model.addAttribute("usuario", usuario);
+		return "usuarios/cambiarPasswordUserAcct :: cambiarPassword";
+	}
+	
 	@PostMapping("/crear")
 	public ResponseEntity<String> crear(@ModelAttribute("usuario") Usuario usuario){
 		String response = "0";
@@ -122,6 +132,28 @@ public class UsuariosController {
 	
 	@PostMapping("/modificarPassword")
 	public ResponseEntity<String> modificarPassword(@ModelAttribute("usuario") Usuario usuario){
+		String response = "0";
+		Usuario originalUser = serviceUsuarios.buscarPorId(usuario.getId());
+		//Verificamos que el usuario no exista
+		Usuario usuarioTemp = serviceUsuarios.buscarPorUsername(usuario.getUsername());
+		if(usuarioTemp != null) {
+			response = "2";
+		}else {
+			if(originalUser != null) {
+				String pdwPlano = usuario.getPassword();
+				String pwdEncriptado = passwordEncoder.encode(pdwPlano);
+				originalUser.setPassword(pwdEncriptado);
+				serviceUsuarios.guardar(originalUser);
+				response = "1";
+			}else {
+				response = "0";
+			}
+		}
+		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+	}
+	
+	@PostMapping("/modificarPasswordAcct")
+	public ResponseEntity<String> modificarPasswordAcct(@ModelAttribute("usuario") Usuario usuario){
 		String response = "0";
 		Usuario originalUser = serviceUsuarios.buscarPorId(usuario.getId());
 		//Verificamos que el usuario no exista

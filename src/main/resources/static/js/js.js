@@ -478,6 +478,7 @@ function addEvents(){
 	$("#prestamos").click(function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
+		styleSeccionOriginal();
 		$("#contenido").load("/clientes/buscarCliente",function(data){
 			ocultarDetalleAmortizacion();
 			console.log("Lista de clientes");
@@ -1158,6 +1159,7 @@ $("#caja").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
 	ocultarDetalleAmortizacion();
+	styleSeccionAll();
 	$("#contenido").load("/cajas/mostrarCuadre",function(data){
 		console.log("Cuadre de Caja");
 		addEvents();
@@ -1407,6 +1409,7 @@ $("#contabilidad").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
 	ocultarDetalleAmortizacion();
+	styleSeccionAll();
 	$("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
 		console.log("Contabilidad");
 		addEvents();
@@ -1765,8 +1768,19 @@ $("#usuarios").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
 	ocultarDetalleAmortizacion();
+	styleSeccionAll();
 	$("#contenido").load("/usuarios/listaUsuarios",function(data){
 		console.log("Agregar Usuario");
+		addEvents();
+	});
+});
+
+$("#perfil").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	ocultarDetalleAmortizacion();
+	styleSeccionOriginal
+	$("#contenido").load("/usuarios/cambiarClaveUsuarioAcct",function(data){
 		addEvents();
 	});
 });
@@ -1827,6 +1841,46 @@ $("#formAgregarUsuario").submit(function(e){
 			}
 			$("#contenido").load("/usuarios/agregarUsuarios",function(data){
 				console.log("Agregar Usuario");
+				addEvents();
+			});
+		});
+});
+
+$("#formModificarPasswordUsuarioAcct").submit(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var datos = $("#formModificarPasswordUsuarioAcct").serializeArray();
+	console.log(datos);
+	 $.post("/usuarios/modificarPasswordAcct",datos,
+		function(data){
+			if(data == "1"){
+//				$("#contenido").replaceWith(data);
+				Swal.fire({
+					title : 'Muy bien!',
+					text : 'Usuario modificado correctamente',
+					position : 'top',
+					icon : 'success',
+					confirmButtonText : 'Cool'
+				})
+				addEvents();
+			}else if(data == "2"){
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'El usuario ya existe',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}else if(data == "0"){
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'No se modifico el usuario',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}
+			$("#contenido").load("/usuarios/cambiarClaveUsuarioAcct",function(data){
 				addEvents();
 			});
 		});
@@ -1921,6 +1975,7 @@ $("#cobros").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
 	ocultarDetalleAmortizacion();
+	styleSeccionAll();
 	$("#contenido").load("/prestamos/prestamosPendientes",function(data){
 		console.log("Prestamos pendientes");
 		addEvents();
@@ -2136,6 +2191,7 @@ $("#btnExitCarpetaCobros").click(function(e){
 $("#empleados").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
+	styleSeccionAll();
 	$("#contenido").load("/empleados/listaEmpleados",function(data){
 		ocultarDetalleAmortizacion();
 		console.log("Lista de empleados");
@@ -2315,6 +2371,7 @@ $("#agregarDeduccion").click(function(e){
 $("#empresas").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
+	styleSeccionAll();
 	$("#contenido").load("/empresas/listaEmpresas",function(data){
 		ocultarDetalleAmortizacion();
 		console.log("Lista de empresas");
@@ -2431,6 +2488,7 @@ $("#formUpdateEmpresa").on("submit", function (e) {
 $("#cuentas").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
+	styleSeccionAll();
 	$("#contenido").load("/cuentas/listaCuentas",function(data){
 		ocultarDetalleAmortizacion();
 		console.log("Lista de cuentas");
@@ -2652,6 +2710,7 @@ $("#formUpdateCuenta").on("submit", function (e) {
 $("#reportes").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
+	styleSeccionAll();
 	$("#contenido").load("/reportes/listaReportes",function(data){
 		ocultarDetalleAmortizacion();
 		console.log("Lista de Reportes");
@@ -2732,6 +2791,7 @@ $("#btnBuscarAbonosImpresion").click(function(e){
 $("#administracion").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
+	styleSeccionAll();
 	$("#contenido").load("/administracion/",function(data){
 		ocultarDetalleAmortizacion();
 		console.log("Administracion");
@@ -3365,21 +3425,39 @@ function eliminarToken(tokenId){
 		})
 }
 
-function styleSeccion1Only(){
-	$("#cuerpo").css("min-height", "420px");
+function styleSeccionAll(){
+	$("#cuerpo").css("min-height", "800px");
 	$("#cuerpo").css("overflow", "hidden");
-	$("#cuerpo").css("height", "auto");
-	$("#cuerpo").css("max-height", "auto");
+	$("#cuerpo").css("height", "820px");
+	$("#cuerpo").css("max-height", "820px");
+	
+	$("#contenido").css("min-height", "800px");
+	$("#contenido").css("overflow", "hidden");
+	$("#contenido").css("height", "800px");
+	$("#contenido").css("max-height", "800px");
+	
+	$("#formularioCuerpo").css("min-height", "800px");
+	$("#formularioCuerpo").css("overflow", "hidden");
+	$("#formularioCuerpo").css("height", "800px");
+	$("#formularioCuerpo").css("max-height", "800px");
+}
+
+function styleSeccionOriginal(){
+	$("#cuerpo").css("min-height", "420px");
+	$("#cuerpo").css("overflow", "auto");
+	$("#cuerpo").css("height", "420px");
+	$("#cuerpo").css("max-height", "420px");
 	
 	$("#contenido").css("min-height", "400px");
-	$("#contenido").css("overflow", "hidden");
-	$("#contenido").css("height", "auto");
-	$("#contenido").css("max-height", "auto");
+	$("#contenido").css("overflow", "auto");
+	$("#contenido").css("height", "400px");
+	$("#contenido").css("max-height", "400px");
 	
 	$("#formularioCuerpo").css("min-height", "400px");
 	$("#formularioCuerpo").css("overflow", "hidden");
-	$("#formularioCuerpo").css("height", "auto");
-	$("#formularioCuerpo").css("max-height", "auto");
+	$("#formularioCuerpo").css("height", "400px");
+	$("#formularioCuerpo").css("max-height", "400px");
+	
 }
 
 function mostrarDetalleAmortizacion(){
