@@ -425,9 +425,19 @@ function addEvents(){
 			}
 	});
 	
+	//Lista clientes
+	$("#listaClientes").click(function(e){
+		$("#contenido").load("/clientes/",function(data){
+			styleSeccionAll();
+			console.log("Lista de clientes");
+			addEvents();
+		});	
+	});	
+	
     $("#formClient").on("submit", function (e) {
 		e.preventDefault();
 		e.stopImmediatePropagation();
+		
 	        $.ajax({
 	            url: "/clientes/guardar/",
 	            type: "POST",
@@ -2894,6 +2904,13 @@ function seleccionarCliente(id){
 
 function modificarCliente(id){
 	$("#contenido").load("/clientes/modificar/"+id,function(data){
+		 if($("#doctypeTemp").val() == "cedula"){
+        	 $('#cedulaCliente').attr('maxlength', 13);
+        	 $("#docCedula").prop("checked", true);
+		 }else{
+			 $('#cedulaCliente').attr('maxlength', 50);
+			 $("#docPasaporte").prop("checked", true);
+		 }
 		console.log("Modificar Cliente");
 		addEvents();
 	});

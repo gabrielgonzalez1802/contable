@@ -185,6 +185,11 @@ public class ClientesController {
 	public String formularioModificarCliente(Model model, @PathVariable(name = "id") Integer id) {
 		Cliente cliente = serviceClientes.buscarPorId(id);
 		if (cliente != null) {
+			if(cliente.getTipoDocumento().equalsIgnoreCase("cedula")) {
+				cliente.setDoctypeTemp("cedula");
+			}else {
+				cliente.setDoctypeTemp("otro");
+			}
 			model.addAttribute("cliente", cliente);
 		} else {
 			model.addAttribute("cliente", new Cliente());

@@ -14,7 +14,7 @@
 			</div>
 			
 			<div class="card-tools">
-				<a href="#" id="listadoClientes" class="btn btn-primary btn-border btn-round btn-sm">
+				<a href="#" id="listaClientes" class="btn btn-primary btn-border btn-round btn-sm">
 					<span class="btn-label">
 						<i class="fas fa-users"></i>
 					</span>
@@ -22,40 +22,33 @@
 				</a>
 			</div>
 		</div>
-		<ul class="nav nav-pills nav-secondary" id="pills-tab" role="tablist">
-			<li class="nav-item submenu">
-				<a class="nav-link active show" id="navListaCliente" data-toggle="pill" role="tab" aria-selected="true">Clientes</a>
-			</li>
-			<li class="nav-item submenu">
-				<a class="nav-link" id="navListaPrestamo" data-toggle="pill" role="tab" aria-selected="false">Prestamos</a>
-			</li>
-		</ul>
 	</div>
 	<div class="card-body">
-		<div style="min-height: 375px">
-			<form th:object="${cliente}" id="formClient" method="post" enctype="multipart/form-data">
+		<form th:object="${cliente}" id="formClient" method="post" enctype="multipart/form-data">
 			<div class="row">
 				<div class="col-md-3">
-					 <div class="form-group">
-					 	<input type="hidden" th:field="*{id}">
-					    <label for="tipoDocumento">Tipo de identificacion</label>
-					   <select class ="form-control" th:field="*{tipoDocumento}">
-					  		<option value="Cedula">Cedula</option>
-					  		<option value="Pasaporte">Pasaporte</option>
-					   </select>
-					  </div>
+					<input type="hidden" id="idCliente" th:field="*{id}">
+					<input type="hidden" id="doctypeTemp" th:field="*{doctypeTemp}">
+					<div class="form-check-inline">
+					  <label class="form-check-label">
+					    <input type="radio" class="form-check-input" checked="checked" id="docCedula" name="tipoDocumento">Ced.
+					  </label>
+					</div>
+					<div class="form-check-inline">
+					  <label class="form-check-label">
+					    <input type="radio" class="form-check-input" id="docPasaporte" name="tipoDocumento">Otro
+					  </label>
+					</div>
 				</div>
 				
 				<div class="col-md-3">
 					 <div class="form-group">
-					    <label for="cedulaCliente">Numero</label>
-					    <input type="text" maxlength="13" th:field="*{cedula}" class="form-control" placeholder="Cedula" id="cedulaCliente" required="required">
+					    <input type="text" maxlength="13" th:field="*{cedula}" class="form-control" placeholder="Documento" id="cedulaCliente" required="required">
 					  </div>
 				</div>
 				
 				<div class="col-md-6">
 				 	<div class="form-group">
-					  <label for="nombreCliente">Nombre</label>
 					   	<input type="text" class="form-control" th:field="*{nombre}" placeholder="Nombre" id="nombreCliente" required="required">
 					 </div>
 				</div>
@@ -64,55 +57,56 @@
 			
 			<div class="row">
 			
-				<div class="col-md-3">
+				<div class="col-md-2">
 				 	<div class="form-group">
-					  <label for="telefonoCliente">Telefono</label>
-					   	<input type="text" maxlength="12" th:field="*{telefono}" class="form-control" id="telefonoCliente" placeholder="Telefono">
+					   	<input type="text" maxlength="12" th:field="*{telefono}" class="form-control" id="telefonoCliente" placeholder="Telefono" required="required">
 					 </div>
 				</div>
 				
-				<div class="col-md-3">
+				<div class="col-md-2">
 				 	<div class="form-group">
-					  <label for="telefonoCliente">Celular</label>
 					   	<input type="text" maxlength="12" th:field="*{celular}" class="form-control" id="celularCliente" placeholder="Celular">
 					 </div>
 				</div>
 				
-				<div class="col-md-3">
+				<div class="col-md-2">
 				 	<div class="form-group">
-					  <label for="rncCliente">RNC</label>
 					   	<input type="text" th:field="*{rnc}" class="form-control" id="rncCliente" placeholder="RNC">
 					 </div>
 				</div>
 				
-				<div class="col-md-3">
+				<div class="col-md-2">
 				 	<div class="form-group">
-					  <label for="rncCliente">NCF</label>
-					   	<input type="text" th:field="*{ncf}" class="form-control" id="ncfCliente" placeholder="NCF">
+					   	<select th:field="*{comprobanteFiscal.id}" id="ncfCliente" class="form-control">
+					   		<option value="0"></option>
+					   		<option th:each="comprobanteFiscal : ${comprobantesFiscales}"
+					   				th:value="${comprobanteFiscal.id}" th:text="${comprobanteFiscal.nombre}"></option>
+					   	</select>
 					 </div>
 				</div>
+				
+				<div class="col-md-4">
+				 	<div class="form-group">
+					   	<input type="text" th:field="*{nota}" class="form-control" id="notaCliente" placeholder="Nota">
+					 </div>
+				</div>
+			
 			</div>
 			
 			<div class="row">
-				<div class="col-md-6">
+				<div class="col-md-3">
 					 <div class="form-group">
-					    <label for="fotoFrente">Foto frontal</label>
 					    <input type="file" th:field="*{frontal}" class="form-control" id="fotoFrente">
 					  </div>
 				</div>
-				<div class="col-md-6">
+				<div class="col-md-3">
 					 <div class="form-group">
-					    <label for="fotoTrasera">Foto posterior</label>
 					    <input type="file" th:field="*{trasera}" class="form-control" id="fotoTrasera">
 					  </div>
 				</div>
-			</div>
-			
-			<div class="row">
-				<div class="col-md-12">
+				<div class="col-md-6">
 					 <div class="form-group">
-					    <label for="cedulaCliente">Direcci&oacute;n</label>
-					    <textarea th:field="*{direccion}" rows="1" class="form-control"></textarea>
+					   <input type="text"  th:field="*{direccion}" class="form-control" id="direccion" placeholder="Direccion">
 					  </div>
 				</div>
 			</div>
@@ -120,24 +114,19 @@
 			<div class="row">
 				<div class="col-md-4">
 					 <div class="form-group">
-					    <label for="nombreEmpresaCliente">Nombre de la Empresa</label>
 					    <input type="text" th:field="*{nombreEmpresa}" class="form-control" placeholder="Nombre de la Empresa" id="nombreEmpresaCliente">
 					  </div>
 				</div>
 				
-				<div class="col-md-8">
+				<div class="col-md-4">
 				 	<div class="form-group">
-					  <label for="telefonoEmpresaCliente">Telefono de la Empresa</label>
 					   	<input type="text" maxlength="12" class="form-control" th:field="*{telefonoEmpresa}" placeholder="Telefono de la Empresa" id="telefonoEmpresaCliente">
 					 </div>
 				</div>
-			</div>
-			
-			<div class="row">
-				<div class="col-md-12">
+				
+				<div class="col-md-4">
 					 <div class="form-group">
-					    <label for="direccionEmpresaCliente">Direcci&oacute;n de la Empresa</label>
-					    <textarea th:field="*{direccionEmpresa}" id="direccionEmpresaCliente" rows="1" class="form-control"></textarea>
+					    <input type="text" th:field="*{direccionEmpresa}" id="direccionEmpresaCliente" class="form-control" placeholder="Direcci&oacute;n de la Empresa">
 					  </div>
 				</div>
 			</div>
@@ -145,12 +134,12 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="form-group pull-right">
+						<button class="btn btn-danger" id="cancelCliente">Cancelar</button>
 						<input type="submit" value="Guardar" class="btn btn-primary">
 					</div>
 				</div>
 			</div>
 			</form>
-		</div>
 	</div>
 </div>
 </body>
