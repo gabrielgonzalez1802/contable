@@ -27,8 +27,8 @@ public class CuentasContablesServiceJpa implements ICuentasContablesService{
 	}
 
 	@Override
-	public List<CuentaContable> buscarPorEmpresaOrderByCodigo(Empresa empresa) {
-		return repo.findByEmpresaOrderByCodigoAsc(empresa);
+	public List<CuentaContable> buscarPorEmpresaOrderByCodigoDesc(Empresa empresa) {
+		return repo.findByEmpresaOrderByCodigoDesc(empresa);
 	}
 
 	@Override
@@ -49,6 +49,41 @@ public class CuentasContablesServiceJpa implements ICuentasContablesService{
 	@Override
 	public List<CuentaContable> buscarPorEmpresaNombreCuenta(Empresa empresa, String nombreCuenta) {
 		return repo.findByEmpresaAndNombreCuenta(empresa, nombreCuenta);
+	}
+
+	@Override
+	public List<CuentaContable> buscarPorEmpresaTipoEstado(Empresa empresa, String tipo, Integer estado) {
+		return repo.findByEmpresaAndTipoAndEstado(empresa, tipo, estado);
+	}
+
+	@Override
+	public List<CuentaContable> buscarPorEmpresaTipoCuentaControl(Empresa empresa, String tipo, String cuentaControl) {
+		return repo.findByEmpresaAndTipoAndCuentaControl(empresa, tipo, cuentaControl);
+	}
+
+	@Override
+	public List<CuentaContable> buscarPorEmpresaTipo(Empresa empresa, String tipo) {
+		return repo.findByEmpresaAndTipo(empresa, tipo);
+	}
+
+	@Override
+	public List<CuentaContable> buscarPorEmpresaTipoOrderByCodigo(Empresa empresa, String tipo) {
+		return repo.findByEmpresaAndTipoOrderByCodigoAsc(empresa, tipo);
+	}
+
+	@Override
+	public List<CuentaContable> buscarPorEmpresaCuentaControl(Empresa empresa, String cuentaControl) {
+		return repo.findByEmpresaAndCuentaControl(empresa, cuentaControl);
+	}
+
+	@Override
+	public List<CuentaContable> buscarPorEmpresaIdCuentaControl(Empresa empresa, Integer idCuentaControl) {
+		return repo.findByEmpresaAndIdCuentaControl(empresa, idCuentaControl);
+	}
+
+	@Override
+	public List<CuentaContable> buscarPorEmpresaOrderByCodigoAsc(Empresa empresa) {
+		return repo.findByEmpresaOrderByCodigoAsc(empresa);
 	}
 
 }

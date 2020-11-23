@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "cuentas_contable")
@@ -33,9 +34,17 @@ public class CuentaContable {
 	@Column(name = "grupo_cuenta")
 	private String grupoCuenta;
 	
+	private Integer estado = 0;
+		
+	@Transient
+	private String clase = "";
+	
 	@OneToOne
 	@JoinColumn(name = "id_empresa")
 	private Empresa empresa;
+	
+	@Transient
+	private Double monto = 0.0;
 
 	public Integer getId() {
 		return id;
@@ -101,10 +110,35 @@ public class CuentaContable {
 		this.idCuentaControl = idCuentaControl;
 	}
 
+	public String getClase() {
+		return clase;
+	}
+
+	public void setClase(String clase) {
+		this.clase = clase;
+	}
+
+	public Integer getEstado() {
+		return estado;
+	}
+
+	public void setEstado(Integer estado) {
+		this.estado = estado;
+	}
+
+	public Double getMonto() {
+		return monto;
+	}
+
+	public void setMonto(Double monto) {
+		this.monto = monto;
+	}
+
 	@Override
 	public String toString() {
 		return "CuentaContable [id=" + id + ", codigo=" + codigo + ", nombreCuenta=" + nombreCuenta + ", cuentaControl="
 				+ cuentaControl + ", tipo=" + tipo + ", idCuentaControl=" + idCuentaControl + ", grupoCuenta="
-				+ grupoCuenta + ", empresa=" + empresa + "]";
+				+ grupoCuenta + ", estado=" + estado + ", clase=" + clase + ", empresa=" + empresa + ", monto=" + monto
+				+ "]";
 	}
 }

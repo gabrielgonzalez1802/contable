@@ -1,5 +1,6 @@
 package com.contable.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.contable.model.CuentaContable;
 import com.contable.model.Empresa;
+import com.contable.model.EntradaDiario;
 import com.contable.service.ICuentasContablesService;
+import com.contable.service.IEntradasDiariosService;
 
 @Controller
 @RequestMapping("/cuentasContables")
@@ -24,6 +27,9 @@ public class CuentasContablesController {
 	
 	@Autowired
 	private ICuentasContablesService serviceCuentasContables;
+	
+	@Autowired
+	private IEntradasDiariosService serviceEntradasDiario;
 
 	@PostMapping("/crear")
 	public ResponseEntity<String> crear(Model model, HttpSession session, 
@@ -71,6 +77,37 @@ public class CuentasContablesController {
 			response = "1";
 		}
 		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
+	}
+	
+	@PostMapping("/iniciarContabilidad")
+	public ResponseEntity<String> iniciarContabilidad(Model model, HttpSession session,
+			Integer idCuentaContable, Integer tipo, Double monto){
+		CuentaContable cuentaContable = serviceCuentasContables.buscarPorId(idCuentaContable);
+		EntradaDiario entradaDiario = new EntradaDiario();
+		String response = "0";
+		if(tipo == 1) {
+			entradaDiario.setDebito(new BigDecimal(monto));
+		}else if(tipo == 2){
+			entradaDiario.setCredito(new BigDecimal(monto));
+		}
+		entradaDiario.setCuentaContable(cuentaContable);
+		entradaDiario.setDetalle("inicio contable");
+		serviceEntradasDiario.guardar(entradaDiario);
+		
+		if(entradaDiario.getId()!=null) {
+			response = "1";
+			cuentaContable.setEstado(1);
+			serviceCuentasContables.guardar(cuentaContable);
+		}
+		
+		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
+	}
+	
+	@GetMapping("/cuentasContablesAuxiliar")
+	public String cuentasContablesAuxiliar(Model model, HttpSession session){
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipoEstado((Empresa) session.getAttribute("empresa"), "A", 0);
+		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
+		return "contabilidad/contabilidad :: #cuentaContableAuxiliar";
 	}
 	
 	@PostMapping("/modificar")
@@ -131,14 +168,21 @@ public class CuentasContablesController {
 	
 	@GetMapping("/mostrarCuentasContables")
 	public String mostrarCuentasContables(Model model, HttpSession session) {
-		List<CuentaContable> cuentasContables = serviceCuentasContables.buscarPorEmpresaOrderByCodigo((Empresa) session.getAttribute("empresa"));
+		List<CuentaContable> cuentasContables = serviceCuentasContables.buscarPorEmpresaOrderByCodigoAsc((Empresa) session.getAttribute("empresa"));
+		for (CuentaContable cuentaContable : cuentasContables) {
+			if(cuentaContable.getCuentaControl()!=null && cuentaContable.getTipo().equals("C")) {
+				cuentaContable.setClase("ccpadre");
+			}else if(cuentaContable.getCuentaControl()!=null && cuentaContable.getTipo().equals("C")) {
+				
+			}
+		}
 		model.addAttribute("cuentasContables", cuentasContables);
 		return "contabilidad/contabilidad :: #tablaCuentasContables";
 	}
 	
 	@GetMapping("/imprimirCuentasContables")
 	public String imprimirCuentasContables(Model model, HttpSession session) {
-		List<CuentaContable> cuentasContables = serviceCuentasContables.buscarPorEmpresaOrderByCodigo((Empresa) session.getAttribute("empresa"));
+		List<CuentaContable> cuentasContables = serviceCuentasContables.buscarPorEmpresaOrderByCodigoAsc((Empresa) session.getAttribute("empresa"));
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		model.addAttribute("cuentasContables", cuentasContables);
 		model.addAttribute("empresa", empresa);

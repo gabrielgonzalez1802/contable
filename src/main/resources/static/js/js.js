@@ -1427,6 +1427,71 @@ $("#contabilidad").click(function(e){
 	});
 });
 
+$("#btnIniciarContabilidad").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#cuentaContableAuxiliar").load("/cuentasContables/cuentasContablesAuxiliar",
+		function(data){
+			$("#modalCuentasAuxiliares").modal("show");
+			addEvents();
+		});
+});
+
+$("#btnGuardarInicioContable").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var idCuentaContable = $("#cuentaContableAuxiliar").val();
+	var tipoCuentaAuxiliar = $("#tipoCuentaAuxiliar").val();
+	var montoCuentaAuxiliar = $("#montoCuentaAuxiliar").val();
+		
+	$.post("/cuentasContables/iniciarContabilidad",
+	 {
+		 "idCuentaContable":idCuentaContable,
+		 "tipo":tipoCuentaAuxiliar,
+		 "monto":montoCuentaAuxiliar
+	 },function(data){
+		 if(data == "1"){
+			 $("#modalCuentasAuxiliares").modal("hide");
+				Swal.fire({
+					  title: 'Muy Bien!',
+					  text: "Guardado con exito",
+					  icon: 'success',
+					  position : 'top',
+					  showCancelButton: false,
+					  confirmButtonColor: '#3085d6',
+					  confirmButtonText: 'Ok!'
+					}).then((result) => {
+					  if (result.isConfirmed) {
+						 $("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
+								console.log("Contabilidad");
+								addEvents();
+						});
+					  }
+					})
+		 	}else if(data == "0"){
+		 		$("#modalCuentasAuxiliares").modal("hide");
+				Swal.fire({
+					  title: 'Alerta!',
+					  text: "No se pudo iniciar la contabilidad",
+					  icon: 'warning',
+					  position : 'top',
+					  showCancelButton: false,
+					  confirmButtonColor: '#3085d6',
+					  confirmButtonText: 'Ok!'
+					}).then((result) => {
+					  if (result.isConfirmed) {
+						$("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
+							console.log("Contabilidad");
+							addEvents();
+						});
+					  }
+					})
+		 	}
+		});
+	
+	addEvents();
+});
+
 $("#imprime").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
@@ -3444,20 +3509,23 @@ function eliminarToken(tokenId){
 }
 
 function styleSeccionAll(){
-	$("#cuerpo").css("min-height", "800px");
+	$("#cuerpo").css("min-height", "100%");
 	$("#cuerpo").css("overflow", "hidden");
-	$("#cuerpo").css("height", "820px");
-	$("#cuerpo").css("max-height", "820px");
+	$("#cuerpo").css("height", "100%");
+	$("#cuerpo").css("max-height", "100%");
+	$("#cuerpo").css("width", "100%");
 	
-	$("#contenido").css("min-height", "800px");
+	$("#contenido").css("min-height", "100%");
 	$("#contenido").css("overflow", "hidden");
-	$("#contenido").css("height", "800px");
-	$("#contenido").css("max-height", "800px");
+	$("#contenido").css("height", "100%");
+	$("#contenido").css("max-height", "100%");
+	$("#contenido").css("width", "100%");
 	
-	$("#formularioCuerpo").css("min-height", "800px");
+	$("#formularioCuerpo").css("min-height", "100%");
 	$("#formularioCuerpo").css("overflow", "hidden");
-	$("#formularioCuerpo").css("height", "800px");
-	$("#formularioCuerpo").css("max-height", "800px");
+	$("#formularioCuerpo").css("height", "100%");
+	$("#formularioCuerpo").css("max-height", "100%");
+	$("#formularioCuerpo").css("width", "100%");
 }
 
 function styleSeccionOriginal(){
@@ -3476,6 +3544,13 @@ function styleSeccionOriginal(){
 	$("#formularioCuerpo").css("height", "400px");
 	$("#formularioCuerpo").css("max-height", "400px");
 	
+}
+
+function mostrararHerencia(idCuentaContable){
+	$.get("/contabilidad/mostrarHerencia/"+idCuentaContable,
+		function(data){
+			addEvents();
+	});
 }
 
 function mostrarDetalleAmortizacion(){

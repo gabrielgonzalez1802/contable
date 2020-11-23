@@ -22,8 +22,8 @@ public class EntradaDiario {
 	@JoinColumn(name = "id_cuenta_contable")
 	private CuentaContable cuentaContable;
 	
-	private BigDecimal debito;
-	private BigDecimal credito;
+	private BigDecimal debito = new BigDecimal(0);
+	private BigDecimal credito = new BigDecimal(0);
 	
 	private String detalle;
 	
@@ -81,7 +81,7 @@ public class EntradaDiario {
 
 	@Override
 	public String toString() {
-		return "EntradaDdiario [id=" + id + ", cuentaContable=" + cuentaContable + ", debito=" + debito + ", credito="
+		return "EntradaDiario [id=" + id + ", cuentaContable=" + cuentaContable + ", debito=" + debito + ", credito="
 				+ credito + ", detalle=" + detalle + ", diario=" + diario + "]";
 	}
 }

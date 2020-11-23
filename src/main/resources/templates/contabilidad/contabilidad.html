@@ -103,7 +103,7 @@
     </div>
   </div> 
 	
- <!-- Modal CUENTAS -->         
+ <!-- Modal Agregar Cuentas -->         
   <div class="modal" id="modalCuentas">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
@@ -149,8 +149,8 @@
 				</div>
 				<div class="col-md-2">
 					<button class="btn btn-success btn-md" style="margin-top: 30px; font-size: 25px;" id="agregarCuentaContable"> Agregar </button>
-					<button id="imprime">Imprimir</button>
-					<button id="imprime2">Imprimir test</button>
+<!-- 					<button id="imprime">Imprimir</button> -->
+					<button id="imprime2" class="btn btn-info btn-md" style="margin-top: 30px; font-size: 25px;"><i class="fas fa-print"></i></button>
 				</div>
 			</div>
 			
@@ -200,6 +200,52 @@
     </div>
   </div> 
 		
+		
+   <!-- Modal CUENTAS -->         
+  <div class="modal" id="modalCuentasAuxiliares">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Iniciar Contabilidad</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          	<div class="row">
+          		<div class="col-md-4">
+          			<label>Cuenta Contable</label>
+          			<select id="cuentaContableAuxiliar" class="form-control">
+          				<option th:each="cuentaContable : ${cuentasContablesAuxiliares}"
+          						th:value="${cuentaContable.id}" th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+          			</select>
+          		</div>
+          		
+          		<div class="col-md-4">
+          			<label>Tipo</label>
+          			<select id="tipoCuentaAuxiliar" class="form-control">
+          				<option value="1">Debito</option>
+          				<option value="2">Credito</option>
+          			</select>
+          		</div>
+          	
+				<div class="col-md-4">
+					<label>Monto</label>
+					<input type="number" min="0" placeholder="Monto" class="form-control" id="montoCuentaAuxiliar">
+				</div>
+			</div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="btnGuardarInicioContable">Guardar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div> 	
 	
 		<div class="row">
 			<div class="col-md-12">
@@ -210,7 +256,8 @@
 <!-- 							<i class="mdi mdi-dots-horizontal text-gray"></i> -->
 						</div>
 						<div class="">
-								<button class="btn btn-primary" id="btnCrearCuentas"> Crear cuentas </button>
+								<button class="btn btn-primary" id="btnIniciarContabilidad"> Iniciar contabilidad </button>
+								<button class="btn btn-info" id="btnCrearCuentas"> Crear cuentas </button>
 								<button class="btn btn-success" id="btnEntrada diarios"> Entrada de diario </button>
 						</div>
 						<!--                   <p class="tx-12 tx-gray-500 mb-2">Generar reporte. <a href="">Click</a></p> -->
@@ -218,111 +265,33 @@
 					<div class="card-body">
 						<div class="table-responsive">
 							<div class="table-responsive">
-								<table class="table text-md-nowrap" id="example1">
-									<thead>
+								<table class="table mg-b-0 text-md-nowrap" id="">
+									<thead style="background-color: #0162e8;height: 80px;">
 										<tr>
-											<th>
-												<div class="">
-													<div class="row">
-														<div class="col-md-3">Nombre</div>
-														<div class="col-md-3">Cantidad</div>
-														<div class="col-md-3">Precio</div>
-														<div class="col-md-3">Ver mas</div>
-													</div>
-												</div>
-											</th>
+										   <th></th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Codigo</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Cuenta</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Control</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Tipo</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Valor</th>
 										</tr>
-									</thead>
+									 </thead>
 									<tbody>
-										<tr>
-											<td>
-												<div class="alert alert-info">
-													<div class="row" style="padding: 5px;">
-														<div class="col-md-3">Este es mi producto</div>
-														<div class="col-md-3">654</div>
-														<div class="col-md-3">$8768</div>
-														<div class="col-md-3">
-															<a href="#" id="s-2" class="btn btn-sm btn-info"
-																onclick="versubcat(this.id);">+</a>
-															<!-- 																	 <a href="#" class="btn btn-sm btn-danger">-</a> -->
-														</div>
-													</div>
-
-													<div id="subcategoria-s-2"
-														style="padding: 5px; background-color: whitesmoke; display: none;">
-
-														<div class="row">
-															<div class="col-md-3">Este es mi producto color</div>
-															<div class="col-md-3">654</div>
-															<div class="col-md-3">$8768</div>
-															<div class="col-md-3">
-																<a href="#" id="s-3" class="btn btn-sm btn-info"
-																	onclick="versubcat2(this.id);">+</a>
-																<!-- 																	<a href="#" class="btn btn-sm btn-danger">-</a> -->
-															</div>
-														</div>
-
-
-													</div>
-
-													<div id="subcategoria2-s-3"
-														style="padding: 5px; background-color: whitesmoke; display: none;">
-
-														<div class="row">
-															<div class="col-md-3">Este es mi producto color2</div>
-															<div class="col-md-3">654</div>
-															<div class="col-md-3">$8768</div>
-															<div class="col-md-3">
-																<a href="#" id="s-4" class="btn btn-sm btn-info"
-																	onclick="versubcat3(this.id);">+</a>
-																<!-- 																	<a href="#" class="btn btn-sm btn-danger">-</a> -->
-															</div>
-														</div>
-
-
-													</div>
-
-													<div id="subcategoria3-s-4"
-														style="padding: 5px; background-color: whitesmoke; display: none;">
-
-														<div class="row">
-															<div class="col-md-3">Este es mi producto color3</div>
-															<div class="col-md-3">654</div>
-															<div class="col-md-3">$8768</div>
-															<div class="col-md-3">
-																<a href="#" id="s-5" class="btn btn-sm btn-info"
-																	onclick="versubcat4(this.id);">+</a>
-																<!-- 																	<a href="#" class="btn btn-sm btn-danger">-</a> -->
-															</div>
-														</div>
-
-
-													</div>
-
-													<div id="subcategoria4-s-5"
-														style="padding: 5px; background-color: whitesmoke; display: none;">
-
-														<div class="row">
-															<div class="col-md-3">Este es mi producto color4</div>
-															<div class="col-md-3">654</div>
-															<div class="col-md-3">$8768</div>
-															<div class="col-md-3">
-																<a href="#" id="s-6" class="btn btn-sm btn-info"
-																	onclick="versubcat(this.id);">+</a>
-																<!-- 																	<a href="#" class="btn btn-sm btn-danger">-</a> -->
-															</div>
-														</div>
-
-
-													</div>
-
-												</div>
-											</td>
-											
-										</tr>
-
-									</tbody>
-								</table>
+										<div th:each="cuentaContable : ${cuentasContables}">
+											<tr th:class="${cuentaContable.clase}">
+												 <td>
+													  <button th:onclick="'mostrararHerencia(\'' + ${cuentaContable.id} + '\');'" class="btn btn-info"><i class="fas fa-plus"></i></button>
+											 	</td> 
+												 <td th:text="${cuentaContable.codigo}"></td>
+											 	 <td th:text="${cuentaContable.nombreCuenta}"></td>
+											 	 <td th:text="${cuentaContable.cuentaControl}"></td>
+											 	 <td th:text="${cuentaContable.tipo}"></td>
+											 	 <td th:text="${cuentaContable.monto}"></td>
+										 	</tr> 
+										</div>
+										 
+								</tbody>
+							 </table>
 							</div>
 						</div>
 					</div>

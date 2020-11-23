@@ -8,8 +8,15 @@ import com.contable.model.Empresa;
 public interface ICuentasContablesService {
 	CuentaContable buscarPorId(Integer id);
 	List<CuentaContable> buscarPorEmpresaCodigo(Empresa empresa, String codigo);
-	List<CuentaContable> buscarPorEmpresaOrderByCodigo(Empresa empresa);
+	List<CuentaContable> buscarPorEmpresaTipo(Empresa empresa, String tipo);
+	List<CuentaContable> buscarPorEmpresaTipoOrderByCodigo(Empresa empresa, String tipo);
+	List<CuentaContable> buscarPorEmpresaOrderByCodigoDesc(Empresa empresa);
+	List<CuentaContable> buscarPorEmpresaOrderByCodigoAsc(Empresa empresa);
+	List<CuentaContable> buscarPorEmpresaIdCuentaControl(Empresa empresa, Integer idCuentaControl);
 	List<CuentaContable> buscarPorEmpresaNombreCuenta(Empresa empresa, String nombreCuenta);
+	List<CuentaContable> buscarPorEmpresaTipoEstado(Empresa empresa, String tipo, Integer estado);
+	List<CuentaContable> buscarPorEmpresaCuentaControl(Empresa empresa, String cuentaControl);
+	List<CuentaContable> buscarPorEmpresaTipoCuentaControl(Empresa empresa, String tipo, String cuentaControl);
 	void guardar(CuentaContable cuentaContable);
 	void eliminar(CuentaContable cuentaContable);
 }
