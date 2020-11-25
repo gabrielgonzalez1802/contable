@@ -35,7 +35,7 @@ public class PrestamosCron {
 	private final Integer VENCIDO = 2;
 	private final Integer LEGAL = 3;
 
-	@Scheduled(cron = "0 41 19 * * *")
+	@Scheduled(cron = "0 28 21 * * *")
 	public void calculoVencimientoCuota() throws ParseException {
 		//Buscamos los detalles vencidos de los prestamos 
 		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorEstado(2);
@@ -66,7 +66,7 @@ public class PrestamosCron {
 		}
 	}
 	
-	@Scheduled(cron = "0 40 19 * * *")
+	@Scheduled(cron = "0 27 21 * * *")
 	public void diasVencidos() throws ParseException {
 		//Buscamos los detalles pendientes de los prestamos 
 		List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorEstado(0);
@@ -83,7 +83,7 @@ public class PrestamosCron {
 		}
 	}
 	
-	@Scheduled(cron = "0 16 22 * * *")
+	@Scheduled(cron = "0 26 21 * * *")
 	public void generarPrestamoInteresDetalle() throws ParseException {
 		List<Prestamo> prestamos = servicePrestamos.buscarPorEstado(NORMAL);
 		LocalDateTime dateAcct =  LocalDateTime.now();

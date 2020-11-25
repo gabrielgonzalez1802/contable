@@ -6,8 +6,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.contable.model.Carpeta;
 import com.contable.model.CuentaContable;
 import com.contable.model.Diario;
+import com.contable.model.Empresa;
 import com.contable.model.EntradaDiario;
 import com.contable.repository.EntradasDiariosRepository;
 import com.contable.service.IEntradasDiariosService;
@@ -50,6 +52,12 @@ public class EntradasDiariosServiceJpa implements IEntradasDiariosService {
 	@Override
 	public void eliminar(EntradaDiario entradaDiario) {
 		repo.delete(entradaDiario);
+	}
+
+	@Override
+	public List<EntradaDiario> buscarPorCuentaContableEmpresaCarpeta(CuentaContable cuentaContable, Empresa empresa,
+			Carpeta carpeta) {
+		return repo.findByCuentaContableAndEmpresaAndCarpeta(cuentaContable, empresa, carpeta);
 	}
 
 }

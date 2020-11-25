@@ -39,6 +39,11 @@
 										<td th:unless="${prestamo.tipo == 2}"> Cuota </td>
 										<td th:text="${prestamo.tasa}"></td>
 									</tr>
+									<tr>
+										<td colspan="6"></td>
+										<td style="font-weight: bold;">Total Monto</td>
+										<td th:text="${totalMonto}" style="font-weight: bold;"></td>
+									</tr>
 								</tbody>
 							</table>
 						</div>

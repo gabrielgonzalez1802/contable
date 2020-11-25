@@ -43,7 +43,10 @@ public class Prestamo {
 	private String fechaTemp;
 	
 	private String tipo;
-	private String tipo_prestamo;
+	
+	@OneToOne
+	@JoinColumn(name = "id_prestamo_tipo")
+	private PrestamoTipo prestamoTipo;
 	
 	private Integer dias_gracia = 0;
 	private Double monto = 0.0;
@@ -124,14 +127,6 @@ public class Prestamo {
 
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
-	}
-
-	public String getTipo_prestamo() {
-		return tipo_prestamo;
-	}
-
-	public void setTipo_prestamo(String tipo_prestamo) {
-		this.tipo_prestamo = tipo_prestamo;
 	}
 
 	public Integer getDias_gracia() {
@@ -381,11 +376,19 @@ public class Prestamo {
 		this.empresa = empresa;
 	}
 
+	public PrestamoTipo getPrestamoTipo() {
+		return prestamoTipo;
+	}
+
+	public void setPrestamoTipo(PrestamoTipo prestamoTipo) {
+		this.prestamoTipo = prestamoTipo;
+	}
+
 	@Override
 	public String toString() {
 		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", empresa=" + empresa
 				+ ", idClienteTemp=" + idClienteTemp + ", idCarpetaTemp=" + idCarpetaTemp + ", idCuentaTemp="
-				+ idCuentaTemp + ", fechaTemp=" + fechaTemp + ", tipo=" + tipo + ", tipo_prestamo=" + tipo_prestamo
+				+ idCuentaTemp + ", fechaTemp=" + fechaTemp + ", tipo=" + tipo + ", prestamoTipo=" + prestamoTipo
 				+ ", dias_gracia=" + dias_gracia + ", monto=" + monto + ", pagos=" + pagos + ", tasa=" + tasa
 				+ ", codigo=" + codigo + ", forma_pago=" + forma_pago + ", valor_cuota=" + valor_cuota + ", mora="
 				+ mora + ", observacion=" + observacion + ", balance=" + balance + ", valor_interes=" + valor_interes

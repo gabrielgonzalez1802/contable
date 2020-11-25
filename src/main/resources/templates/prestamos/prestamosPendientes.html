@@ -7,6 +7,37 @@
 <body>
 	<div th:fragment="prestamosPendientes">
 	
+ <!-- Modal Ver Cedula Cliente-->         
+  <div class="modal" id="modalVerCedulaCliente">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h5>C&eacute;dula</h5>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+        	<div id="detalleCedulaCliente">
+        		<div class="row">
+					<div class="col-md-6">
+						 <img th:if="${cliente.fotoFrontal != null}" th:src="@{/logos/{img} (img=${cliente.fotoFrontal})}" class="rounded mx-auto d-block" alt="Generic placeholder image"  width="100%" height="250px">            
+						 <img th:unless="${cliente.fotoFrontal != null}" th:src="@{/img/no-image.png}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="100%" height="150px">            
+					</div>
+					<div class="col-md-6">
+						 <img th:if="${cliente.fotoTrasera != null}" th:src="@{/logos/{img} (img=${cliente.fotoTrasera})}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="100%" height="100%">            
+						 <img th:unless="${cliente.fotoTrasera != null}" th:src="@{/img/no-image.png}" class="rounded mx-auto d-block" alt="Generic placeholder image" width="100%" height="150px">            
+					</div>
+				</div>
+        	</div>
+        </div>
+
+      </div>
+    </div>
+  </div> 
+	
 		<div class="col-md-12">
 			<div class="form-row align-items-center">
 				<div class="col-sm-2 my-1" id="buscarCarpeta">
@@ -41,10 +72,17 @@
 						<option value="3">Legal</option>
 					</select>
 				</div>
-				<div class="col-sm-8 my-1">
+				<div class="col-sm-6 my-1">
 					<input type="hidden" id="itemPrestamosCobros" th:value="${item}">
 					<input type="text" class="form-control" id="nombreOCedula"
 						placeholder="Nombre / Cedula">
+				</div>
+				<div class="col-sm-2 my-1">
+					<select class="form-control" th:value="${moneda}" id="selectMonedas">
+						<option value="">Todas</option>
+						<option value="pesos">Pesos RD$</option>
+						<option value="dolar">Dolar USD$</option>
+					</select>
 				</div>
 			</div>
 		</div>
@@ -73,12 +111,12 @@
 								<tbody>
 									<tr th:each="prestamo : ${prestamos}">
 										<td th:text="${prestamo.cliente.nombre}"></td>
-										<td th:text="${prestamo.cliente.cedula}"></td>
+										<td th:text="${prestamo.cliente.cedula}" style="cursor: pointer;" th:onclick="'verCedula(\'' + ${prestamo.cliente.id} + '\');'"></td>
 										<td th:text="${prestamo.cliente.telefono}"></td>
 										<td th:text="${prestamo.codigo}"></td>
 										<td th:text="${#dates.format(prestamo.fecha, 'dd-MM-yyyy')}"></td>
-										<td th:text="${prestamo.monto}"></td>
-										
+										<td th:if="${prestamo.moneda == 'pesos'}" th:text="${prestamo.monto} + ' - RD$'"></td>
+										<td th:if="${prestamo.moneda == 'dolar'}" th:text="${prestamo.monto} + ' - USD$'"></td>
 										<td th:text="${prestamo.numeroNota}" style="cursor: pointer;" th:onclick="'verInfoNotas(\'' + ${prestamo.id} + '\');'"></td>
 
 										<td th:if="${prestamo.estado == 0}"><span

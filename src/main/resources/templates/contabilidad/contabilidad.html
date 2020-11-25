@@ -201,7 +201,7 @@
   </div> 
 		
 		
-   <!-- Modal CUENTAS -->         
+   <!-- Modal Iniciar Contabilidad -->         
   <div class="modal" id="modalCuentasAuxiliares">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
@@ -249,19 +249,38 @@
 	
 		<div class="row">
 			<div class="col-md-12">
+					<div class="form-row align-items-center">
+					    <div class="col-sm-2 my-1" id="buscarCarpeta">
+							<label class="sr-only" for="">carpeta</label>
+							<div class="input-group">
+								<div class="input-group-prepend">
+									<button style="width: 100%;" class="btn btn-success"
+										id="btnCarpetaContabilidad">
+										<i class="fas fa-search"></i>
+									</button>
+								</div>
+								<input type="hidden" th:value="${msgId}" id="msgId"> <input
+									type="hidden" th:value="${carpeta.id}" class="form-control"
+									id="carpetaId" placeholder="Carpeta" disabled="disabled">
+								<input type="text" th:value="${carpeta.nombre}"
+									class="form-control" id="carpeta" placeholder="Carpeta"
+									disabled="disabled">
+								<div th:if="${carpeta.principal != 1}" class="input-group-prepend">
+									<button style="width: 100%;" class="btn btn-danger"
+										id="btnExitCarpetaContabilidad">
+										<i class="fas fa-times"></i>
+									</button>
+								</div>
+							</div>
+						</div>
+					    <div class="col-sm-8">
+							<button class="btn btn-primary" id="btnIniciarContabilidad"> Iniciar contabilidad </button>
+							<button class="btn btn-info" id="btnCrearCuentas"> Crear cuentas </button>
+							<button class="btn btn-success" id="btnEntrada diarios"> Entrada de diario </button>
+						</div>
+					  </div>
+			
 				<div class="card">
-					<div class="card-header pb-0">
-						<div class="d-flex">
-							<h4 class="card-title mg-b-0">Contabilidad</h4>
-<!-- 							<i class="mdi mdi-dots-horizontal text-gray"></i> -->
-						</div>
-						<div class="">
-								<button class="btn btn-primary" id="btnIniciarContabilidad"> Iniciar contabilidad </button>
-								<button class="btn btn-info" id="btnCrearCuentas"> Crear cuentas </button>
-								<button class="btn btn-success" id="btnEntrada diarios"> Entrada de diario </button>
-						</div>
-						<!--                   <p class="tx-12 tx-gray-500 mb-2">Generar reporte. <a href="">Click</a></p> -->
-					</div>
 					<div class="card-body">
 						<div class="table-responsive">
 							<div class="table-responsive">

@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.contable.model.Carpeta;
 import com.contable.model.CuentaContable;
 import com.contable.model.Empresa;
 import com.contable.model.EntradaDiario;
+import com.contable.service.ICarpetasService;
 import com.contable.service.ICuentasContablesService;
 import com.contable.service.IEntradasDiariosService;
 
@@ -30,6 +32,9 @@ public class CuentasContablesController {
 	
 	@Autowired
 	private IEntradasDiariosService serviceEntradasDiario;
+	
+	@Autowired
+	private ICarpetasService serviceCarpetas;
 
 	@PostMapping("/crear")
 	public ResponseEntity<String> crear(Model model, HttpSession session, 
@@ -84,6 +89,19 @@ public class CuentasContablesController {
 			Integer idCuentaContable, Integer tipo, Double monto){
 		CuentaContable cuentaContable = serviceCuentasContables.buscarPorId(idCuentaContable);
 		EntradaDiario entradaDiario = new EntradaDiario();
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		
+		Carpeta carpeta = null;
+		
+		if(session.getAttribute("carpeta") != null) {
+			 carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
+		}else {
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, empresa);
+			if(!carpetas.isEmpty()) {
+				carpeta = carpetas.get(0);
+			}
+		}
+		
 		String response = "0";
 		if(tipo == 1) {
 			entradaDiario.setDebito(new BigDecimal(monto));
@@ -92,6 +110,8 @@ public class CuentasContablesController {
 		}
 		entradaDiario.setCuentaContable(cuentaContable);
 		entradaDiario.setDetalle("inicio contable");
+		entradaDiario.setEmpresa(empresa);
+		entradaDiario.setCarpeta(carpeta);
 		serviceEntradasDiario.guardar(entradaDiario);
 		
 		if(entradaDiario.getId()!=null) {

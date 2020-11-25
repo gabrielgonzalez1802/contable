@@ -36,40 +36,33 @@
 
   <hr>
   
-  <div style="text-align:center; font-size: 20px;font-weight: bold;margin-bottom: 10px;">Lista de prestamos </div>
+  <div style="text-align:center; font-size: 20px;font-weight: bold;margin-bottom: 10px;">Lista de descuentos </div>
 
   <div class="container">
 		<div class="row">
 				<div class="col-md-12">
 					<div class="row">
 						<div class="table-responsive">
-							<table class="table mg-b-0 text-md-nowrap" id="tablaListaPrestamos">
+							<table class="table mg-b-0 text-md-nowrap" id="tablaListaDescuentos">
 								<thead style="background-color: #0162e8;height: 80px;">
 									<tr>
-										<th style="padding-top: 10px;font-weight: bold;">Cliente</th>
-										<th style="padding-top: 10px;font-weight: bold;">Cedula</th>
-										<th style="padding-top: 10px;font-weight: bold;">Telefono</th>
-										<th style="padding-top: 10px;font-weight: bold;">No.</th>
 										<th style="padding-top: 10px;font-weight: bold;">Fecha</th>
+										<th style="padding-top: 10px;font-weight: bold;">Cliente</th>
 										<th style="padding-top: 10px;font-weight: bold;">Monto</th>
-										<th style="padding-top: 10px;font-weight: bold;">Tipo</th>
-										<th style="padding-top: 10px;font-weight: bold;">Tasa</th>
+										<th style="padding-top: 10px;font-weight: bold;">Concepto</th>
+										<th style="padding-top: 10px;font-weight: bold;">Usuario</th>
 									</tr>
 								</thead>
 								<tbody>
-									<tr th:each="prestamo : ${prestamos}">
-										<td th:text="${prestamo.cliente.nombre}"></td>
-										<td th:text="${prestamo.cliente.cedula}"></td>
-										<td th:text="${prestamo.cliente.telefono}"></td>
-										<td th:text="${prestamo.codigo}"></td>
-										<td th:text="${#dates.format(prestamo.fecha, 'dd-MM-yyyy')}"></td>
-										<td th:text="${prestamo.monto}"></td>
-										<td th:if="${prestamo.tipo == 2}"> Interes </td>
-										<td th:unless="${prestamo.tipo == 2}"> Cuota </td>
-										<td th:text="${prestamo.tasa}"></td>
+									<tr th:each="descuento : ${descuentos}">
+										<td th:text="${#dates.format(descuento.fecha, 'dd-MM-yyyy')}"></td>
+										<td th:text="${descuento.cliente.nombre}"></td>
+										<td th:text="${descuento.totalDescuento}"></td>
+										<td th:text="${descuento.concepto}"></td>
+										<td th:text="${descuento.usuario.username}"></td>
 									</tr>
 									<tr>
-										<td colspan="6"></td>
+										<td colspan="3"></td>
 										<td style="font-weight: bold;">Total Monto</td>
 										<td th:text="${totalMonto}" style="font-weight: bold;"></td>
 									</tr>

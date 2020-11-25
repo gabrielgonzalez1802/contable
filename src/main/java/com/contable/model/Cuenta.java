@@ -22,6 +22,8 @@ public class Cuenta {
 	private String banco;
 	private String numero;
 	
+	private String moneda;
+	
 	@Transient
 	private String montoPlano;
 	
@@ -102,10 +104,18 @@ public class Cuenta {
 		this.empresa = empresa;
 	}
 
+	public String getMoneda() {
+		return moneda;
+	}
+
+	public void setMoneda(String moneda) {
+		this.moneda = moneda;
+	}
+
 	@Override
 	public String toString() {
-		return "Cuenta [id=" + id + ", banco=" + banco + ", numero=" + numero + ", montoPlano=" + montoPlano
-				+ ", montoBigDecimal=" + montoBigDecimal + ", carpeta=" + carpeta + ", empresa=" + empresa + ", monto="
-				+ monto + "]";
+		return "Cuenta [id=" + id + ", banco=" + banco + ", numero=" + numero + ", moneda=" + moneda + ", montoPlano="
+				+ montoPlano + ", montoBigDecimal=" + montoBigDecimal + ", carpeta=" + carpeta + ", empresa=" + empresa
+				+ ", monto=" + monto + "]";
 	}
 }

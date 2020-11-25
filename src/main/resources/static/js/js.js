@@ -497,6 +497,89 @@ function addEvents(){
 		});
 	});
 	
+	$("#moneda").change(function(e){
+		var moneda = $("#moneda").val();
+		$("#id_cuenta").load("/cuentas/listaPorMoneda",
+		 {
+			"moneda":moneda
+		 },function(data){
+			addEvents();
+		});
+	});
+	
+	$("#formImagenPrestamo").submit(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		
+		var idPrestamo = $("#prestamoAcct").val();
+		var fotos = $("#inputFotosPrestamos").val();
+		var formData = new FormData(this);
+		
+		if(!fotos){
+			$("#cargarImagenesPrestamoModal").modal("hide");
+			Swal.fire({
+				  title: 'Alerta!',
+				  text: "Debe seleccionar al menos una imagen",
+				  icon: 'warning',
+				  position : 'top',
+				  showCancelButton: false,
+				  confirmButtonColor: '#3085d6',
+				  confirmButtonText: 'Ok!'
+				}).then((result) => {
+				  if (result.isConfirmed) {
+					  $("#cargarImagenesPrestamoModal").modal("show");
+				  }
+				})
+		}else{
+			  $.ajax({
+		          url: "/prestamos/cargarImagenes",
+		          type: "POST",
+		          data: formData,
+		          enctype: 'multipart/form-data',
+		          processData: false,
+		          contentType: false,
+		          cache: false,
+		          success: function (res) {
+			        addEvents();
+		          },
+		          error: function (err) {
+		              console.error(err);
+		              Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo completar la operacion, intente mas tarde',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+		        }});
+		}
+	});
+	
+	$("#btnCargarImagenesPrestamo").click(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var idPrestamo = $("#prestamoAcct").val();
+		$("#cargarImagenesPrestamoModal").modal("show");
+//		$("#contenido").load("/clientes/buscarCliente",function(data){
+//			ocultarDetalleAmortizacion();
+//			console.log("Lista de clientes");
+//			addEvents();
+//		});
+	});
+
+	
+	$("#btnAddDataVehiculo").click(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var idPrestamo = $("#prestamoAcct").val();
+		alert("id prestamo: "+idPrestamo);
+//		$("#contenido").load("/clientes/buscarCliente",function(data){
+//			ocultarDetalleAmortizacion();
+//			console.log("Lista de clientes");
+//			addEvents();
+//		});
+	});
+	
 	$("#btnCarpetaPrestamo").click(function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
@@ -600,7 +683,8 @@ function addEvents(){
 		e.preventDefault();
 		e.stopImmediatePropagation();
 		//Ocultamos la seccion de detalle de amortizacion
-		mostrarDetalleAmortizacion();
+		ocultarDetalleAmortizacion();
+		styleSeccionAll();
 		$("#contenido").load("/prestamos/agregar",function(data){
 			console.log("Agregar Prestamo");
 			if($("#msg").val()=="NOCLIENTE"){
@@ -626,13 +710,20 @@ function addEvents(){
 					$("#cedulaPrestamo").attr('checked', false);
 				}
 			}
-			addEvents();
+			var moneda = $("#moneda").val();
+			$("#id_cuenta").load("/cuentas/listaPorMoneda",
+			 {
+				"moneda":moneda
+			 },function(data){
+				addEvents();
+			});
 		});
 	});
 	
 	$("#cancelarFormPrestamo").click(function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
+		styleSeccionOriginal();
 			$("#contenido").load("/clientes/buscarCliente",function(data){
 					console.log("Lista de clientes");
 					addEvents();
@@ -992,7 +1083,7 @@ function addEvents(){
 								confirmButtonText : 'Cool'
 							})
 					}
-					$("#motivoCargoCuota").val("");
+//					$("#motivoCargoCuota").val("");
 					$("#montoCargoCuota").val("");
 					$("#modalAplicarCargosCuotas").modal('hide');
 					addEvents();
@@ -1426,6 +1517,108 @@ $("#contabilidad").click(function(e){
 		addEvents();
 	});
 });
+
+$("#btnCarpetaContabilidad").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	Swal.fire({
+		  title: 'Ingrese la carpeta',
+		  position: 'top',
+		  input: 'text',
+		  inputAttributes: {
+		    autocapitalize: 'off'
+		  },
+		  showCancelButton: true,
+		  confirmButtonText: 'Buscar',
+		  cancelButtonText: 'Cancelar',
+		  showLoaderOnConfirm: true,
+		  preConfirm: (carpeta) => {
+			  $.ajax({
+		            url: "/carpetas/buscarCarpetaContabilidad/"+carpeta,
+		            type: "GET",
+		            processData: false,
+		            contentType: false,
+		            cache: false,
+		            success: function (res) {
+						$("#buscarCarpeta").replaceWith(res);
+		            	var msg = $("#msgId").val();
+			            if(msg=="0"){
+							Swal.fire({
+								title : 'No tienes carpetas creadas!',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+							addEvents();
+						}else{
+							Swal.fire({
+								title : 'Muy bien!',
+								text : 'Carpeta Seleccionada',
+								position : 'top',
+								icon : 'success',
+								confirmButtonText : 'Cool'
+							})
+		
+							$("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
+								console.log("Contabilidad");
+								addEvents();
+							});
+						}
+		            },
+		            error: function (err) {
+		                console.error(err);
+		                Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo completar la operacion, intente mas tarde',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+		            }
+		        });
+		  },
+		  allowOutsideClick: () => !Swal.isLoading()
+		}).then((result) => {
+		  if (result.isConfirmed) {
+		    //Correcto
+		  }
+		})
+});
+
+$("#btnExitCarpetaContabilidad").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	  $.ajax({
+          url: "/carpetas/buscarCarpetaContabilidad",
+          type: "GET",
+          processData: false,
+          contentType: false,
+          cache: false,
+          success: function (res) {
+				$("#buscarCarpeta").replaceWith(res);
+          	var msg = $("#msgId").val();
+	            if(msg=="0"){
+					addEvents();
+					location.href = '/logout';
+				}else{
+					$("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
+						console.log("Contabilidad");
+						addEvents();
+					});
+				}
+          },
+          error: function (err) {
+              console.error(err);
+              Swal.fire({
+					title : 'Error!',
+					text : 'No se pudo completar la operacion, intente mas tarde',
+					position : 'top',
+					icon : 'error',
+					confirmButtonText : 'Cool'
+				})
+          }
+      });
+});	
 
 $("#btnIniciarContabilidad").click(function(e){
 	e.preventDefault();
@@ -2061,6 +2254,7 @@ $("#cobros").click(function(e){
 $("#btnCarpetaCobros").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
+	var moneda = $("#selectMonedas").val();
 	Swal.fire({
 		  title: 'Ingrese la carpeta',
 		  position: 'top',
@@ -2104,7 +2298,7 @@ $("#btnCarpetaCobros").click(function(e){
 		
 							$("#tablaPrestamosCobros").load("/prestamos/prestamosPendientesFiltro",
 								{
-									
+									"moneda":moneda
 								},function(data){
 								console.log("Lista de clientes");
 								ocultarDetalleAmortizacion();
@@ -2181,8 +2375,10 @@ $("#selectEstadoCuota").change(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
 	var estado = $("#selectEstadoCuota").val();
+	var moneda = $("#selectMonedas").val();
 	$("#tablaPrestamosCobros").load("/prestamos/prestamosPendientesFiltro",
 		{
+			"moneda": moneda,
 			"estado": estado
 		},function(data){
 		console.log("Lista de prestamos del cliente");
@@ -2192,15 +2388,33 @@ $("#selectEstadoCuota").change(function(e){
 	});
 });
 
+$("#selectMonedas").change(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var estado = $("#selectEstadoCuota").val();
+	var moneda = $("#selectMonedas").val();
+	
+	$("#tablaPrestamosCobros").load("/prestamos/prestamosPendientesFiltro",
+		{
+			"moneda": moneda,
+			"estado": estado
+		},function(data){
+		console.log("Lista de prestamos del cliente");
+		addEvents();
+	});
+});
+
 $('#nombreOCedula').on('keyup', function(e) {
 	e.preventDefault();
 	e.stopImmediatePropagation();
 	var item = $('#nombreOCedula').val();
 	var estado = $("#selectEstadoCuota").val();
+	var moneda = $("#selectMonedas").val();
 	var longitud = item.length;
 	if(longitud > 2){
 		$("#tablaPrestamosCobros").load("/prestamos/prestamosPendientesFiltro",
 			{
+				"moneda": moneda,
 				"estado": estado,
 				"item": item
 			},function(data){
@@ -2210,6 +2424,7 @@ $('#nombreOCedula').on('keyup', function(e) {
 	}else{
 		$("#tablaPrestamosCobros").load("/prestamos/prestamosPendientesFiltro",
 				{
+					"moneda": moneda,
 					"estado": estado,
 					"item": 0
 				},function(data){
@@ -2222,6 +2437,7 @@ $('#nombreOCedula').on('keyup', function(e) {
 $("#btnExitCarpetaCobros").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
+	var moneda = $("#selectMonedas").val();
 	  $.ajax({
           url: "/carpetas/buscarCarpetaCobros",
           type: "GET",
@@ -2239,7 +2455,7 @@ $("#btnExitCarpetaCobros").click(function(e){
 				}else{
 					$("#tablaPrestamosCobros").load("/prestamos/prestamosPendientesFiltro",
 						{
-							
+							"moneda":moneda
 						},function(data){
 						console.log("Lista de clientes");
 						ocultarDetalleAmortizacion();
@@ -2794,11 +3010,164 @@ $("#reportes").click(function(e){
 	});
 });
 
+$("#btnCarpetaReportes").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	Swal.fire({
+		  title: 'Ingrese la carpeta',
+		  position: 'top',
+		  input: 'text',
+		  inputAttributes: {
+		    autocapitalize: 'off'
+		  },
+		  showCancelButton: true,
+		  confirmButtonText: 'Buscar',
+		  cancelButtonText: 'Cancelar',
+		  showLoaderOnConfirm: true,
+		  preConfirm: (carpeta) => {
+			  $.ajax({
+		            url: "/carpetas/buscarCarpetaReportes/"+carpeta,
+		            type: "GET",
+		            processData: false,
+		            contentType: false,
+		            cache: false,
+		            success: function (res) {
+						$("#buscarCarpeta").replaceWith(res);
+		            	var msg = $("#msgId").val();
+			            if(msg=="0"){
+							Swal.fire({
+								title : 'No tienes carpetas creadas!',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+							addEvents();
+						}else{
+							Swal.fire({
+								title : 'Muy bien!',
+								text : 'Carpeta Seleccionada',
+								position : 'top',
+								icon : 'success',
+								confirmButtonText : 'Cool'
+							})
+		
+							$("#contenido").load("/reportes/listaReportes",function(data){
+								ocultarDetalleAmortizacion();
+								console.log("Lista de Reportes");
+								addEvents();
+							});
+						}
+		            },
+		            error: function (err) {
+		                console.error(err);
+		                Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo completar la operacion, intente mas tarde',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+		            }
+		        });
+		  },
+		  allowOutsideClick: () => !Swal.isLoading()
+		}).then((result) => {
+		  if (result.isConfirmed) {
+		    //Correcto
+		  }
+		})
+});
+
+$("#btnExitCarpetaReportes").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	  $.ajax({
+          url: "/carpetas/buscarCarpetaReportes",
+          type: "GET",
+          processData: false,
+          contentType: false,
+          cache: false,
+          success: function (res) {
+				$("#buscarCarpeta").replaceWith(res);
+          	var msg = $("#msgId").val();
+	            if(msg=="0"){
+					addEvents();
+					location.href = '/logout';
+				}else{
+					$("#contenido").load("/reportes/listaReportes",function(data){
+						ocultarDetalleAmortizacion();
+						console.log("Lista de Reportes");
+						addEvents();
+					});
+				}
+          },
+          error: function (err) {
+              console.error(err);
+              Swal.fire({
+					title : 'Error!',
+					text : 'No se pudo completar la operacion, intente mas tarde',
+					position : 'top',
+					icon : 'error',
+					confirmButtonText : 'Cool'
+				})
+          }
+      });
+});	
+
 $("#btnMostrarPrestamoImpresion").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
 	$("#modalImpresionPrestamo").modal("show");
 	addEvents();
+});
+
+$("#btnMostrarDescuentosImpresion").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#modalImpresionDescuentos").modal("show");
+	addEvents();
+});
+
+$("#btnBuscarDescuentoImpresion").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var desde = $("#DescuentoDesdeImpresion").val();
+	var hasta = $("#DescuentoHastaImpresion").val();
+	
+	if(desde && hasta){
+		$("#modalImpresionDescuentos").modal("hide");
+		$("#cuerpoImpresion").load("/reportes/listaDescuentos/"+desde+"/"+hasta,function(data){
+			addEvents();
+		});
+	}
+});
+
+$("#imprimirListaDescuentos").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	 $.get("/reportes/listaDescuentos",function(elemento){
+		impresion(elemento);
+		addEvents();
+	 });
+});
+
+$("#btnMostrarPorCobrarImpresion").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+
+	$("#cuerpoImpresion").load("/reportes/porCobrar",function(data){
+		addEvents();
+	});
+
+});
+
+$("#imprimirListaPendientes").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	 $.get("/reportes/listaPendientes",function(elemento){
+		impresion(elemento);
+		addEvents();
+	 });
 });
 
 $("#btnBuscarPrestamoImpresion").click(function(e){
@@ -3088,8 +3457,26 @@ function cargarDetallePrestamo(id){
 					$("#thInteres").text("Interes");
 					$("#thInteresGenerado").hide();
 				}
-				addEvents();
 			$("#botonesAccionPrestamo").show();
+			 $.get("/prestamos/getTipoPrestamo/"+id,
+					function(data){
+				 		if(data == "0"){
+				 			Swal.fire({
+								title : 'Alerta!',
+								text : 'No se encontro la informacion del tipo de prestamo',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+				 		}else{
+				 			if(data == "vehiculo"){
+					 			$("#btnAddDataVehiculo").show();
+				 			}else{
+				 				$("#btnAddDataVehiculo").hide();
+				 			}
+				 		}
+			 		});
+				addEvents();
 	 	});
 }
 
@@ -3506,6 +3893,13 @@ function eliminarToken(tokenId){
 					});		
 		  }
 		})
+}
+
+function verCedula(idCliente){
+	$("#detalleCedulaCliente").load("/prestamos/cedulaClienteCobros/"+idCliente,function(data){
+		$("#modalVerCedulaCliente").modal("show");
+		addEvents();
+	});
 }
 
 function styleSeccionAll(){

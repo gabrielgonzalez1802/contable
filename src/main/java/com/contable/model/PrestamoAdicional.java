@@ -27,7 +27,10 @@ public class PrestamoAdicional {
 	@JoinColumn(name = "id_prestamo_detalle")
 	private PrestamoDetalle prestamoDetalle;
 	
-	private String motivo;
+	@OneToOne
+	@JoinColumn(name = "id_motivo_prestamo_adicional")
+	private MotivoPrestamoAdicional motivo;
+	
 	private Date fecha;
 	private Date fecha_vencimiento;
 	
@@ -66,10 +69,10 @@ public class PrestamoAdicional {
 	public void setPrestamoDetalle(PrestamoDetalle prestamoDetalle) {
 		this.prestamoDetalle = prestamoDetalle;
 	}
-	public String getMotivo() {
+	public MotivoPrestamoAdicional getMotivo() {
 		return motivo;
 	}
-	public void setMotivo(String motivo) {
+	public void setMotivo(MotivoPrestamoAdicional motivo) {
 		this.motivo = motivo;
 	}
 	public Date getFecha() {

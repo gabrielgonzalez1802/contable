@@ -30,6 +30,14 @@ public class EntradaDiario {
 	@OneToOne
 	@JoinColumn(name = "id_diario")
 	private Diario diario;
+	
+	@OneToOne
+	@JoinColumn(name = "id_carpeta")
+	private Carpeta carpeta;
+	
+	@OneToOne
+	@JoinColumn(name = "id_empresa")
+	private Empresa empresa;
 
 	public Integer getId() {
 		return id;
@@ -79,9 +87,26 @@ public class EntradaDiario {
 		this.diario = diario;
 	}
 
+	public Carpeta getCarpeta() {
+		return carpeta;
+	}
+
+	public void setCarpeta(Carpeta carpeta) {
+		this.carpeta = carpeta;
+	}
+
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+
 	@Override
 	public String toString() {
 		return "EntradaDiario [id=" + id + ", cuentaContable=" + cuentaContable + ", debito=" + debito + ", credito="
-				+ credito + ", detalle=" + detalle + ", diario=" + diario + "]";
+				+ credito + ", detalle=" + detalle + ", diario=" + diario + ", carpeta=" + carpeta + ", empresa="
+				+ empresa + "]";
 	}
 }

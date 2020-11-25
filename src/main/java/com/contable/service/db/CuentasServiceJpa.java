@@ -47,4 +47,9 @@ public class CuentasServiceJpa implements ICuentasService{
 		return repo.findByCarpetaAndEmpresa(carpeta, empresa);
 	}
 
+	@Override
+	public List<Cuenta> buscarPorCarpetaEmpresaMoneda(Carpeta carpeta, Empresa empresa, String moneda) {
+		return repo.findByCarpetaAndEmpresaAndMoneda(carpeta, empresa, moneda);
+	}
+
 }

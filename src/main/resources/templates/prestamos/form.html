@@ -81,12 +81,10 @@
 								</div>
 																
 								<div class="col-md-3">
-										 <select th:field="*{tipo_prestamo}" id="prestamo" class="form-control" style="font-size: 15px;" required="required" data-toggle="tooltip" title="Prestamo">
-										 	<option value="personal">Personal</option>
-										 	<option value="hipotecatio">Hipotecario</option>
-										 	<option value="vehiculo">Vehiculo</option>
-										 	<option value="garantia">Garantia</option>
-										 	<option value="otro">Otro</option>
+										 <select th:field="*{prestamoTipo.id}" id="prestamo" class="form-control" style="font-size: 15px;" required="required" data-toggle="tooltip" title="Prestamo">
+										 	<option th:each="prestamoTipo : ${prestamosTipos}"
+										 			th:value="${prestamoTipo.id}" 
+										 			th:text="${prestamoTipo.tipo}"></option>
 										 </select>
 								</div>
 								
@@ -127,6 +125,12 @@
 								</div>
 								<div class="col-md-1">
 									 <input type="number" th:field="*{dias_gracia}" class="form-control maximizedLow" min="0" placeholder="Dias Gracia" data-toggle="tooltip" title="Dias de gracia">
+								</div>
+								<div class="col-md-2">
+									 <select th:field="*{moneda}" class="form-control" data-toggle="tooltip" title="Moneda">
+									 	<option value="pesos">Pesos RD$</value>
+									 	<option value="dolar">Dolar USD$</value>
+									 </select>
 								</div>
 							</div>
 							

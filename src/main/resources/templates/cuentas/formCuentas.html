@@ -12,24 +12,34 @@
 			<form th:object="${cuenta}" id="formAddCuenta" method="post">
 			<div class="row">
 			
-				<div class="col-md-4">
+				<div class="col-md-3">
 					 <div class="form-group">
 					    <label for="">Banco</label>
 					    <input type="text" th:field="*{banco}" class="form-control" placeholder="Banco" required="required">
 					  </div>
 				</div>
 				
-				<div class="col-md-4">
+				<div class="col-md-3">
 				 	<div class="form-group">
 					  <label for="">Numero</label>
 					   	<input type="text" class="form-control" th:field="*{numero}" placeholder="Numero" required="required">
 					 </div>
 				</div>
 				
-				<div class="col-md-4">
+				<div class="col-md-3">
 					 <div class="form-group">
 					    <label for="">Monto</label>
 					    <input type="number" min="0" th:field="*{monto}" class="form-control" placeholder="Monto">
+					  </div>
+				</div>
+				
+				<div class="col-md-3">
+					 <div class="form-group">
+					    <label for="">Moneda</label>
+					    <select class="form-control" th:field="*{moneda}">
+					    	<option value="pesos">Pesos RD$</option>
+					    	<option value="dolar">Dolar USD$</option>
+					    </select>
 					  </div>
 				</div>
 				

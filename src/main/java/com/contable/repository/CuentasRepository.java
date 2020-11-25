@@ -11,4 +11,5 @@ import com.contable.model.Empresa;
 public interface CuentasRepository extends JpaRepository<Cuenta, Integer> {
 	List<Cuenta> findByCarpeta(Carpeta carpeta);
 	List<Cuenta> findByCarpetaAndEmpresa(Carpeta carpeta, Empresa empresa);
+	List<Cuenta> findByCarpetaAndEmpresaAndMoneda(Carpeta carpeta, Empresa empresa, String moneda);
 }

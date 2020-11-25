@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.contable.model.Carpeta;
 import com.contable.model.CuentaContable;
 import com.contable.model.Empresa;
 import com.contable.model.EntradaDiario;
+import com.contable.service.ICarpetasService;
 import com.contable.service.ICuentasContablesService;
 import com.contable.service.IEntradasDiariosService;
 
@@ -30,11 +32,26 @@ public class ContabilidadController {
 	
 	@Autowired
 	private IEntradasDiariosService serviceEntradasDiarios;
+	
+	@Autowired
+	private ICarpetasService serviceCarpetas;
 
 	@GetMapping("/mostrarContabilidad")
 	public String mostrarContabilidad(Model model, HttpSession session) {
-		List<CuentaContable> cuentasContables = serviceCuentasContables.buscarPorEmpresaOrderByCodigoDesc((Empresa) session.getAttribute("empresa"));
-//		String codigoPadre = "";
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Carpeta carpeta = null;
+		
+		if(session.getAttribute("carpeta") != null) {
+			 carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
+		}else {
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, empresa);
+			if(!carpetas.isEmpty()) {
+				carpeta = carpetas.get(0);
+			}
+		}
+		
+		List<CuentaContable> cuentasContables = serviceCuentasContables.buscarPorEmpresaOrderByCodigoDesc(empresa);
+		//String codigoPadre = "";
 
 		for (CuentaContable cuentaContable : cuentasContables) {
 //			if(cuentaContable.getCuentaControl()==null && cuentaContable.getTipo().equals("C")) {
@@ -46,7 +63,7 @@ public class ContabilidadController {
 //				cuentaContable.setClase("nietocc ccnieto-"+cuentaContable.getCuentaControl()+" "+"cccode"+cuentaContable.getCodigo()+" "+"herencia-"+codigoPadre);
 //			}
 			
-			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContable(cuentaContable);
+			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContable, empresa, carpeta);
 			for (EntradaDiario entradaDiario : entradasDiarios) {
 				BigDecimal monto = entradaDiario.getCredito().subtract(entradaDiario.getDebito());
 				cuentaContable.setMonto(monto.doubleValue());
@@ -54,13 +71,13 @@ public class ContabilidadController {
 			
 			if(cuentaContable.getTipo().equals("C")) {
 				List<CuentaContable> cuentasContablesTemp = serviceCuentasContables.
-							buscarPorEmpresaCuentaControl((Empresa) session.getAttribute("empresa"), 
+							buscarPorEmpresaCuentaControl(empresa, 
 									cuentaContable.getCodigo());
 				
 				if(!cuentasContablesTemp.isEmpty()) {
 					Double montoTemp = 0.0;
 					for (CuentaContable cuentaContableTemp : cuentasContablesTemp) {
-						List<EntradaDiario> entradasDiariosTemp = serviceEntradasDiarios.buscarPorCuentaContable(cuentaContableTemp);
+						List<EntradaDiario> entradasDiariosTemp = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableTemp, empresa, carpeta);
 						for (EntradaDiario entradaDiarioTemp : entradasDiariosTemp) {
 							montoTemp+=entradaDiarioTemp.getCredito().subtract(entradaDiarioTemp.getDebito()).doubleValue();
 						}
@@ -72,7 +89,7 @@ public class ContabilidadController {
 		
 		
 		for (CuentaContable cuentaContable2 : cuentasContables) {
-			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContable(cuentaContable2);
+			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContable2, empresa, carpeta);
 			double valorInicial = 0.0;
 			for (EntradaDiario entradaDiario : entradasDiarios) {
 					valorInicial += entradaDiario.getCredito().doubleValue()-entradaDiario.getDebito().doubleValue();
@@ -84,7 +101,7 @@ public class ContabilidadController {
 		for (CuentaContable cuentaContableTemp : cuentasContables) {
 
 			List<CuentaContable> cuentasTemp = serviceCuentasContables.
-						buscarPorEmpresaIdCuentaControl((Empresa) session.getAttribute("empresa"), cuentaContableTemp.getId());
+						buscarPorEmpresaIdCuentaControl(empresa, cuentaContableTemp.getId());
 				
 			double valor = 0;
 							
@@ -104,7 +121,9 @@ public class ContabilidadController {
 			newOrder.add(cuentasContables.get(i-1));
 		}
 
-		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipoEstado((Empresa) session.getAttribute("empresa"), "A", 0);
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipoEstado(empresa, "A", 0);
+		model.addAttribute("carpeta", carpeta);
+		model.addAttribute("empresa", empresa);
 		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
 		model.addAttribute("cuentasContables", newOrder);
 		model.addAttribute("cuentaContable", new CuentaContable());

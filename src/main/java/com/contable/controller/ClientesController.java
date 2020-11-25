@@ -23,11 +23,13 @@ import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
 import com.contable.model.ComprobanteFiscal;
 import com.contable.model.Empresa;
+import com.contable.model.MotivoPrestamoAdicional;
 import com.contable.model.Prestamo;
 import com.contable.model.Usuario;
 import com.contable.service.ICarpetasService;
 import com.contable.service.IClientesService;
 import com.contable.service.IComprobantesFiscalesService;
+import com.contable.service.IMotivosPrestamosAdicionalesService;
 import com.contable.service.IPrestamosService;
 import com.contable.util.Utileria;
 
@@ -49,6 +51,9 @@ public class ClientesController {
 	
 	@Autowired
 	private IPrestamosService servicePrestamos;
+
+	@Autowired
+	private IMotivosPrestamosAdicionalesService serviceMotivosPrestamosAdicionales;
 
 	@GetMapping("/")
 	public String getListaClientes(Model model) {
@@ -144,6 +149,8 @@ public class ClientesController {
 			return "clientes/buscarCliente :: buscarCliente"; 
 		}
 		List<Prestamo> prestamos = servicePrestamos.buscarPorClienteCarpetaEmpresaPorFechaDesc(cliente, carpetaTemp, (Empresa) session.getAttribute("empresa"));
+		List<MotivoPrestamoAdicional> motivos = serviceMotivosPrestamosAdicionales.buscarTodos();
+		model.addAttribute("motivosCargos", motivos);
 		model.addAttribute("tipoDocumentoAcct", cliente.getTipoDocumento());
 		model.addAttribute("prestamos", prestamos);
 		model.addAttribute("cliente", cliente);

@@ -7,24 +7,86 @@
 <body>
 <div th:fragment="listaReportes">
 		<div class="row">
-
 			<div class="col-md-12 col-sm-12">
-				<div class="">
-					<div class="card-body">
-						<span id="botonesNotasPrestamo"> <br>
-							<button class="btn btn-primary" id="btnMostrarAbonoImpresion">Abonos</button> <!-- 			                 <button class="btn btn-info" id="aplicarCargos">Aplicar Cargo</button> -->
-							<button class="btn btn-success" id=btnMostrarPrestamoImpresion>Prestamos</button>
-						</span>
-					</div>
-				</div>
-			</div>
+				<div class="form-row align-items-center">
+					    <div class="col-sm-2 my-1" id="buscarCarpeta">
+							<label class="sr-only" for="">carpeta</label>
+							<div class="input-group">
+								<div class="input-group-prepend">
+									<button style="width: 100%;" class="btn btn-success"
+										id="btnCarpetaReportes">
+										<i class="fas fa-search"></i>
+									</button>
+								</div>
+								<input type="hidden" th:value="${msgId}" id="msgId"> <input
+									type="hidden" th:value="${carpeta.id}" class="form-control"
+									id="carpetaId" placeholder="Carpeta" disabled="disabled">
+								<input type="text" th:value="${carpeta.nombre}"
+									class="form-control" id="carpeta" placeholder="Carpeta"
+									disabled="disabled">
+								<div th:if="${carpeta.principal != 1}" class="input-group-prepend">
+									<button style="width: 100%;" class="btn btn-danger"
+										id="btnExitCarpetaReportes">
+										<i class="fas fa-times"></i>
+									</button>
+								</div>
+							</div>
+						</div>
+					    <div class="col-sm-10">
+							<span id="botonesNotasPrestamo"> 
+								<button class="btn btn-primary" id="btnMostrarAbonoImpresion">Abonos</button> <!-- 			                 <button class="btn btn-info" id="aplicarCargos">Aplicar Cargo</button> -->
+								<button class="btn btn-success" id="btnMostrarPrestamoImpresion">Prestamos</button>
+								<button class="btn btn-info" id="btnMostrarDescuentosImpresion">Descuentos</button>
+								<button class="btn btn-warning" id="btnMostrarPorCobrarImpresion">Por cobrar</button>
+							</span>
+						</div>
+					  </div>
+
 		</div>
+	</div>
 		
 		<br>
 		
 		<div id="cuerpoImpresion">
 				
 		</div>
+		
+<!--  Modal Impresion Descuentos -->
+  <div class="modal" id="modalImpresionDescuentos">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <div class="modal-header">
+          <h4 class="modal-title">Buscar Descuentos</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          	<div class="row">
+					<div class="col-md-4">
+					 	<div class="form-group">
+					 		<label>Desde <span style="color: red;">*</span> </label>
+						   	<input type="date" class="form-control" id="DescuentoDesdeImpresion" required="required">
+						 </div>
+					</div>
+					
+					<div class="col-md-4">
+					 	<div class="form-group">
+					 		<label>Hasta <span style="color: red;">*</span></label>
+						   	<input type="date" class="form-control" id="DescuentoHastaImpresion" required="required">
+						 </div>
+					</div>
+					
+					<div class="col-md-4">
+					 	<div class="form-group">
+						  	 <button type="submit" style="margin-top: 30px;" class="btn btn-primary" id="btnBuscarDescuentoImpresion">Buscar</button>
+						 </div>
+					</div>
+			</div>
+        </div>
+      </div>
+    </div>
+  </div> 		
 
 <!--  Modal Impresion Prestamo -->
   <div class="modal" id="modalImpresionPrestamo">

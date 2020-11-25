@@ -49,6 +49,10 @@ public class Abono {
 	private Empresa empresa;
 	
 	@OneToOne
+	@JoinColumn(name = "id_carpeta")
+	private Carpeta carpeta;
+	
+	@OneToOne
 	@JoinColumn(name = "id_usuario")
 	private Usuario usuario;
 	
@@ -172,13 +176,19 @@ public class Abono {
 	public void setEmpresa(Empresa empresa) {
 		this.empresa = empresa;
 	}
+	public Carpeta getCarpeta() {
+		return carpeta;
+	}
+	public void setCarpeta(Carpeta carpeta) {
+		this.carpeta = carpeta;
+	}
 	@Override
 	public String toString() {
 		return "Abono [id=" + id + ", prestamo=" + prestamo + ", numero=" + numero + ", monto=" + monto + ", fecha="
 				+ fecha + ", efectivo=" + efectivo + ", cheque=" + cheque + ", transferencia_deposito="
 				+ transferencia_deposito + ", imagen_cheque=" + imagen_cheque + ", imagen_deposito_transferencia="
-				+ imagen_deposito_transferencia + ", cliente=" + cliente + ", empresa=" + empresa + ", usuario="
-				+ usuario + ", imagen=" + imagen + ", nombreImagen=" + nombreImagen + ", tipoPago=" + tipoPago
-				+ ", nota=" + nota + ", estado=" + estado + "]";
+				+ imagen_deposito_transferencia + ", cliente=" + cliente + ", empresa=" + empresa + ", carpeta="
+				+ carpeta + ", usuario=" + usuario + ", imagen=" + imagen + ", nombreImagen=" + nombreImagen
+				+ ", tipoPago=" + tipoPago + ", nota=" + nota + ", estado=" + estado + "]";
 	}
 }

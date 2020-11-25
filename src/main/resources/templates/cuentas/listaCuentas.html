@@ -56,6 +56,7 @@
 				        <th>Banco</th>
 				        <th>N&uacute;mero</th>
 				        <th>Monto</th>
+				        <th>Moneda</th>
 				        <th></th>
 				      </tr>
 				    </thead>
@@ -64,6 +65,7 @@
 				        <td th:text="${cuenta.banco}"></td>
 				        <td th:text="${cuenta.numero}"></td>
 				        <td th:text="${cuenta.montoBigDecimal}"></td>
+				        <td th:text="${cuenta.moneda}"></td>
 				        <td>
 				            <a style="color: #fff;cursor: pointer;" th:onclick="'modificarCuenta(\'' + ${cuenta.id} + '\');'" class="btn btn-primary btn-sm" role="button" title="Editar el registro."><i class="fa fa-edit" aria-hidden="true"></i></a>
 <!-- 							<a style="color: #fff;cursor: pointer;" th:onclick="'asignarDeduccion(\'' + ${empleado.id} + '\');'" class="btn btn-success btn-sm" role="button" title="Deduccion"><i class="fas fa-minus" aria-hidden="true"></i></a> -->

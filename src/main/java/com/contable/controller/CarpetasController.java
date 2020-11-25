@@ -57,6 +57,7 @@ public class CarpetasController {
 		if(carpeta == null) {
 			if(session.getAttribute("carpeta")!=null) {
 				model.addAttribute("carpeta", serviceCarpetas.buscarPorId((int) session.getAttribute("carpeta")));
+				carpeta = serviceCarpetas.buscarPorId((int) session.getAttribute("carpeta"));
 			}else {
 				carpeta = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa")).get(0);
 				model.addAttribute("carpeta", carpeta);
@@ -83,6 +84,84 @@ public class CarpetasController {
 		}
 		model.addAttribute("msgId", msg);
 		return "prestamos/prestamosPendientes :: #buscarCarpeta";
+	}
+	
+	@GetMapping("/buscarCarpetaReportes/{carpeta}")
+	public String buscarCarpetaReportes(@PathVariable("carpeta") String item, HttpSession session, Model model){
+		Carpeta carpeta = null;
+		if(session.getAttribute("empresa") != null) {
+			 carpeta = serviceCarpetas.buscarPorNombreEmpresa(item, (Empresa) session.getAttribute("empresa"));
+		}
+		String msg = "0";
+		if(carpeta == null) {
+			if(session.getAttribute("carpeta")!=null) {
+				model.addAttribute("carpeta", serviceCarpetas.buscarPorId((int) session.getAttribute("carpeta")));
+				carpeta = serviceCarpetas.buscarPorId((int) session.getAttribute("carpeta"));
+			}else {
+				carpeta = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa")).get(0);
+				model.addAttribute("carpeta", carpeta);
+			}
+		}else {
+			msg = "1";
+		}
+		model.addAttribute("msgId", msg);
+		session.setAttribute("carpeta", carpeta.getId());
+		model.addAttribute("carpeta", carpeta);
+		return "impresiones/listaReportes :: #buscarCarpeta";
+	}
+	
+	@GetMapping("/buscarCarpetaReportes")
+	public String buscarCarpetaReportes(HttpSession session, Model model){
+		String msg = "1";
+		List<Carpeta> carpetas = new LinkedList<>();
+		if(session.getAttribute("empresa") != null) {
+			carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa"));
+			session.setAttribute("carpeta", carpetas.get(0).getId());
+			model.addAttribute("carpeta", carpetas.get(0));
+		}else {
+			msg = "0";
+		}
+		model.addAttribute("msgId", msg);
+		return "impresiones/listaReportes :: #buscarCarpeta";
+	}
+	
+	@GetMapping("/buscarCarpetaContabilidad/{carpeta}")
+	public String buscarCarpetaContabilidad(@PathVariable("carpeta") String item, HttpSession session, Model model){
+		Carpeta carpeta = null;
+		if(session.getAttribute("empresa") != null) {
+			 carpeta = serviceCarpetas.buscarPorNombreEmpresa(item, (Empresa) session.getAttribute("empresa"));
+		}
+		String msg = "0";
+		if(carpeta == null) {
+			if(session.getAttribute("carpeta")!=null) {
+				model.addAttribute("carpeta", serviceCarpetas.buscarPorId((int) session.getAttribute("carpeta")));
+				carpeta = serviceCarpetas.buscarPorId((int) session.getAttribute("carpeta"));
+			}else {
+				carpeta = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa")).get(0);
+				model.addAttribute("carpeta", carpeta);
+			}
+		}else {
+			msg = "1";
+		}
+		model.addAttribute("msgId", msg);
+		session.setAttribute("carpeta", carpeta.getId());
+		model.addAttribute("carpeta", carpeta);
+		return "contabilidad/contabilidad :: #buscarCarpeta";
+	}
+	
+	@GetMapping("/buscarCarpetaContabilidad")
+	public String buscarCarpetaContabilidad(HttpSession session, Model model){
+		String msg = "1";
+		List<Carpeta> carpetas = new LinkedList<>();
+		if(session.getAttribute("empresa") != null) {
+			carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa"));
+			session.setAttribute("carpeta", carpetas.get(0).getId());
+			model.addAttribute("carpeta", carpetas.get(0));
+		}else {
+			msg = "0";
+		}
+		model.addAttribute("msgId", msg);
+		return "contabilidad/contabilidad :: #buscarCarpeta";
 	}
 	
 	@GetMapping("/buscarCarpetaCuentas")

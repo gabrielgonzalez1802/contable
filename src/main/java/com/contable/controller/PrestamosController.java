@@ -2,6 +2,7 @@ package com.contable.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,6 +42,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.contable.model.Abono;
 import com.contable.model.AbonoDetalle;
@@ -48,10 +50,12 @@ import com.contable.model.Amortizacion;
 import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
 import com.contable.model.Cuenta;
+import com.contable.model.DescuentoDetalle;
 import com.contable.model.DetalleMultiPrestamo;
 import com.contable.model.DetalleReporteAbono;
 import com.contable.model.Empresa;
 import com.contable.model.MoraDetalle;
+import com.contable.model.MotivoPrestamoAdicional;
 import com.contable.model.Nota;
 import com.contable.model.PagoTemp;
 import com.contable.model.Prestamo;
@@ -59,19 +63,23 @@ import com.contable.model.PrestamoAdicional;
 import com.contable.model.PrestamoDetalle;
 import com.contable.model.PrestamoDetalleMixto;
 import com.contable.model.PrestamoInteresDetalle;
+import com.contable.model.PrestamoTipo;
 import com.contable.model.Usuario;
 import com.contable.service.IAbonosDetallesService;
 import com.contable.service.IAbonosService;
 import com.contable.service.ICarpetasService;
 import com.contable.service.IClientesService;
 import com.contable.service.ICuentasService;
+import com.contable.service.IDescuentosDetallesService;
 import com.contable.service.IEmpresasService;
+import com.contable.service.IMotivosPrestamosAdicionalesService;
 import com.contable.service.INotasService;
 import com.contable.service.IPagosTempService;
 import com.contable.service.IPrestamosAdicionalesService;
 import com.contable.service.IPrestamosDetallesService;
 import com.contable.service.IPrestamosInteresesDetallesService;
 import com.contable.service.IPrestamosService;
+import com.contable.service.IPrestamosTiposService;
 import com.contable.util.Numero_Letras;
 import com.contable.util.Utileria;
 
@@ -123,6 +131,15 @@ public class PrestamosController {
 	@Autowired
 	private IEmpresasService serviceEmpresas;
 	
+	@Autowired
+	private IMotivosPrestamosAdicionalesService serviceMotivosPrestamosAdicionales;
+	
+	@Autowired
+	private IPrestamosTiposService servicePrestamosTipos;
+	
+	@Autowired
+	private IDescuentosDetallesService serviceDescuentosDetalles;
+	
 	private String tempFolder =  System.getProperty("java.io.tmpdir");
 	private String pathSeparator = System.getProperty("file.separator");
 	
@@ -146,16 +163,19 @@ public class PrestamosController {
 	public String agregarPrestamos(Model model, HttpSession session) {
 		Prestamo prestamo = new Prestamo();
 		Cliente cliente = new Cliente();
+		List<PrestamoTipo> prestamosTipos = servicePrestamosTipos.buscarTodos();
 		prestamo.setCuenta(new Cuenta());
 		Carpeta carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
 		List<Cuenta> cuentas = serviceCuentas.buscarPorCarpeta(carpeta);
 		if(!cuentas.isEmpty()) {
 			for (Cuenta cuenta : cuentas) {
-				cuenta.setBanco(cuenta.getBanco()+" - "+formato2d(cuenta.getMonto()));
+				BigDecimal monto = new BigDecimal(cuenta.getMonto());
+				cuenta.setBanco(cuenta.getBanco()+" - "+monto.toPlainString());
 			}
 		}
 		if((Integer)session.getAttribute("cliente")==0) {
 			model.addAttribute("prestamo",  new Prestamo());
+			model.addAttribute("prestamosTipos", prestamosTipos);
 			model.addAttribute("cliente", cliente);
 			model.addAttribute("carpeta", carpeta);
 			model.addAttribute("cuentas", cuentas);
@@ -166,6 +186,7 @@ public class PrestamosController {
 			cliente = serviceClientes.buscarPorId((Integer) session.getAttribute("cliente"));
 		}
 		model.addAttribute("cliente", cliente);
+		model.addAttribute("prestamosTipos", prestamosTipos);
 		model.addAttribute("carpeta", carpeta);
 		model.addAttribute("cuentas", cuentas);
 		model.addAttribute("tipoDocumentoAcctPrestamo", cliente.getTipoDocumento());
@@ -774,6 +795,8 @@ public class PrestamosController {
 		prestamo.setTotal_neto(total_neto >0 ? formato2d(total_neto) : total_neto);
 		servicePrestamos.guardar(prestamo);
 		
+		MotivoPrestamoAdicional motivoPrestamoAdicional = serviceMotivosPrestamosAdicionales.buscarPorMotivo("Gastos Cierre");
+		
 		//Guardamos los detalles de la amortizacion en el prestamo
 		if(!prestamo.getTipo().equals("2")) {
 			for (Amortizacion amortizacion : detalles) {
@@ -799,12 +822,12 @@ public class PrestamosController {
 			if(prestamo.getCantidad_pagos() > 0) {
 				double adicionales = prestamo.getGastos_cierre() / prestamo.getCantidad_pagos();
 				List<PrestamoDetalle> prestamosDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
-								
+												
 				for (int i = 0; i < prestamo.getCantidad_pagos(); i++) {
 					PrestamoAdicional prestamoAdicional = new PrestamoAdicional();
 					prestamoAdicional.setMonto(adicionales);
 					prestamoAdicional.setFecha(new Date());
-					prestamoAdicional.setMotivo("Gastos Cierre");
+					prestamoAdicional.setMotivo(motivoPrestamoAdicional);
 					prestamoAdicional.setPrestamo(prestamo);
 					prestamoAdicional.setPrestamoDetalle(prestamosDetalles.get(i));
 					prestamoAdicional.setNumeroCuota(prestamosDetalles.get(i).getNumero());
@@ -823,7 +846,7 @@ public class PrestamosController {
 					PrestamoAdicional prestamoAdicional = new PrestamoAdicional();
 					prestamoAdicional.setMonto(adicionales);
 					prestamoAdicional.setFecha(prestamo.getFecha());
-					prestamoAdicional.setMotivo("Gastos Cierre");
+					prestamoAdicional.setMotivo(motivoPrestamoAdicional);
 					prestamoAdicional.setPrestamo(prestamo);
 					prestamoAdicional.setUsuario(usuario);
 					prestamoAdicional.setNumeroCuota(i+1);
@@ -861,6 +884,22 @@ public class PrestamosController {
 		}
 		
 		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/getTipoPrestamo/{id}")
+	public ResponseEntity<String> getTipoPrestamo(HttpSession session, Model model, @PathVariable("id") Integer id) {
+		Prestamo prestamo = servicePrestamos.buscarPorId(id);
+		String response = "0";
+		if(prestamo!=null) {
+			response = prestamo.getPrestamoTipo().getTipo().toLowerCase();
+		}
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	@PostMapping("/cargarImagenes")
+	public ResponseEntity<String> cargarImagenes(@RequestParam("files") MultipartFile[] files){
+		System.out.println("aqui");
+		return new ResponseEntity<String>("", HttpStatus.ACCEPTED);
 	}
 	
 	@GetMapping("/detalleAmortizacion/{id}")
@@ -1139,7 +1178,7 @@ public class PrestamosController {
 					multiPrestamo.setMonto(prestamoAdicional.getMonto());
 					multiPrestamo.setDescuento_adicionales(prestamoAdicional.getDescuento_adicionales());
 					multiPrestamo.setMonto_pagado(prestamoAdicional.getMonto_pagado());
-					multiPrestamo.setMotivo(prestamoAdicional.getMotivo());
+					multiPrestamo.setMotivo(prestamoAdicional.getMotivo().getMotivo());
 					multiPrestamo.setNota(prestamoAdicional.getNota());
 					adicionales.add(multiPrestamo);
 				}
@@ -1162,7 +1201,7 @@ public class PrestamosController {
 					multiPrestamo.setMonto(adicionalCuota.getMonto());
 					multiPrestamo.setDescuento_adicionales(adicionalCuota.getDescuento_adicionales());
 					multiPrestamo.setMonto_pagado(adicionalCuota.getMonto_pagado());
-					multiPrestamo.setMotivo(adicionalCuota.getMotivo());
+					multiPrestamo.setMotivo(adicionalCuota.getMotivo().getMotivo());
 					multiPrestamo.setNota(adicionalCuota.getNota());
 					adicionales.add(multiPrestamo);
 				}
@@ -1300,7 +1339,7 @@ public class PrestamosController {
 						sumaMora += amortizacion.getMora();
 						sumaAbono += amortizacion.getAbono();
 						sumaBalance += amortizacion.getBalance();
-						sumaCargo += amortizacion.getCargo();
+						sumaCargo += amortizacion.getCargo()==null?0.0:amortizacion.getCargo();
 											
 					detalles.get(0).setCuota(formato2d(mora+interes));
 					detalles.get(0).setCapital(formato2d(capital));
@@ -1585,6 +1624,7 @@ public class PrestamosController {
 				}
 			}
 		}
+		
 		model.addAttribute("prestamoDetalles", prestamosDetallesMixto);
 		return "clientes/infoCliente :: #selectCuotaCargo";
 	}
@@ -1726,6 +1766,20 @@ public class PrestamosController {
 		Prestamo prestamo = servicePrestamos.buscarPorId(idPrestamo);
 		Integer response = 0;
 		
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		
+		Carpeta carpeta = new Carpeta();
+		
+		if(session.getAttribute("carpeta") != null) {
+			carpeta = serviceCarpetas.buscarPorId((int) session.getAttribute("carpeta"));
+		}else {
+			//Cargamos la principal
+			if(session.getAttribute("empresa")!=null) {
+				carpeta = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa")).get(0);
+			}
+		}
+		
 		if(prestamo.getTipo().equals("2")) {
 			//Interes
 			if(tipo == 1) {
@@ -1738,6 +1792,18 @@ public class PrestamosController {
 					PrestamoInteresDetalle prestamoInteresDetalle = detalles.get(0);
 					prestamoInteresDetalle.setDescuento_mora(prestamoInteresDetalle.getDescuento_mora() + monto);
 					servicePrestamosInteresesDetalles.guardar(prestamoInteresDetalle);
+					
+					DescuentoDetalle descuentoDetalle = new DescuentoDetalle();
+					descuentoDetalle.setCarpeta(carpeta);
+					descuentoDetalle.setEmpresa(empresa);
+					descuentoDetalle.setFecha(new Date());
+					descuentoDetalle.setCliente(prestamo.getCliente());
+					descuentoDetalle.setUsuario(usuario);
+					descuentoDetalle.setPrestamo(prestamo);
+					descuentoDetalle.setConcepto("mora");
+					descuentoDetalle.setTotalDescuento(monto);
+					serviceDescuentosDetalles.guardar(descuentoDetalle);
+					
 					response = 1;
 				}
 			}else if(tipo == 2) {
@@ -1745,6 +1811,16 @@ public class PrestamosController {
 				PrestamoAdicional adicional = servicePrestamosAdicionales.buscarPorId(cuota);
 				adicional.setDescuento_adicionales(adicional.getDescuento_adicionales() + monto);
 				servicePrestamosAdicionales.guardar(adicional);
+				DescuentoDetalle descuentoDetalle = new DescuentoDetalle();
+				descuentoDetalle.setCarpeta(carpeta);
+				descuentoDetalle.setEmpresa(empresa);
+				descuentoDetalle.setFecha(new Date());
+				descuentoDetalle.setCliente(prestamo.getCliente());
+				descuentoDetalle.setUsuario(usuario);
+				descuentoDetalle.setPrestamo(prestamo);
+				descuentoDetalle.setConcepto("adicionales");
+				descuentoDetalle.setTotalDescuento(monto);
+				serviceDescuentosDetalles.guardar(descuentoDetalle);
 				response = 1;
 				
 				if(formato2d(adicional.getMonto().doubleValue()) == formato2d(adicional.getDescuento_adicionales()+adicional.getMonto_pagado())) {
@@ -1764,20 +1840,34 @@ public class PrestamosController {
 //						double descuentoMoraInicio = disponible;
 						//Descontamos de las moras
 						if (disponible > 0) {
+							DescuentoDetalle descuentoDetalle = new DescuentoDetalle();
 							if (tempMora>0) {
 								if (disponible >= tempMora) {
 									if (disponible == tempMora) {
 										prestamoDetalle.setDescuento_mora(disponible + prestamoDetalle.getDescuento_mora());
+										descuentoDetalle.setTotalDescuento(disponible);
 										disponible = 0;
 									} else {
 										prestamoDetalle.setDescuento_mora(prestamoDetalle.getDescuento_mora()+tempMora);
+										descuentoDetalle.setTotalDescuento(tempMora);
 										disponible -= tempMora;
 									}
 								} else {
 									prestamoDetalle.setDescuento_mora(prestamoDetalle.getDescuento_mora() + disponible);
+									descuentoDetalle.setTotalDescuento(disponible);
 									disponible = -tempMora;
 								}
 //								double descuentoMoraFin = disponible;
+							}
+							if(descuentoDetalle.getTotalDescuento().doubleValue()>0) {
+								descuentoDetalle.setCarpeta(carpeta);
+								descuentoDetalle.setEmpresa(empresa);
+								descuentoDetalle.setFecha(new Date());
+								descuentoDetalle.setCliente(prestamo.getCliente());
+								descuentoDetalle.setUsuario(usuario);
+								descuentoDetalle.setPrestamo(prestamo);
+								descuentoDetalle.setConcepto("mora");
+								serviceDescuentosDetalles.guardar(descuentoDetalle);
 							}
 							servicePrestamosDetalles.guardar(prestamoDetalle);
 						}
@@ -1794,6 +1884,15 @@ public class PrestamosController {
 				
 				for (PrestamoAdicional adicional : adicionales) {
 					
+					DescuentoDetalle descuentoDetalle = new DescuentoDetalle();
+					descuentoDetalle.setCarpeta(carpeta);
+					descuentoDetalle.setEmpresa(empresa);
+					descuentoDetalle.setFecha(new Date());
+					descuentoDetalle.setCliente(prestamo.getCliente());
+					descuentoDetalle.setUsuario(usuario);
+					descuentoDetalle.setPrestamo(prestamo);
+					descuentoDetalle.setConcepto("adicionales");
+					
 					if(adicional!=null) {
 						montoTemp += adicional.getMonto()-adicional.getMonto_pagado()-adicional.getDescuento_adicionales();
 					}
@@ -1801,7 +1900,10 @@ public class PrestamosController {
 					if(montoTemp >= monto) {
 						double temp = monto;
 						adicional.setDescuento_adicionales(adicional.getDescuento_adicionales() + monto);
+						descuentoDetalle.setTotalDescuento(monto);
 						servicePrestamosAdicionales.guardar(adicional);
+						serviceDescuentosDetalles.guardar(descuentoDetalle);
+
 						response = 1;
 						monto-=temp;
 					}
@@ -1881,7 +1983,7 @@ public class PrestamosController {
 	@PostMapping("/guardarCargoCuota/")
 	@ResponseBody
 	public ResponseEntity<String> guardarCargoCuota(Model model, HttpSession session,
-			Integer idPrestamo, String motivo, String nota,
+			Integer idPrestamo, Integer motivo, String nota,
 			Double monto,  Integer cuota) {
 		Prestamo prestamo = servicePrestamos.buscarPorId(idPrestamo);
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -1911,9 +2013,11 @@ public class PrestamosController {
 			prestamoAdicional.setNumeroCuota(prestamoDetalle.getNumero());
 		}
 		
+		MotivoPrestamoAdicional motivoPrestamoAdicional = serviceMotivosPrestamosAdicionales.buscarPorId(motivo);
+		
 		prestamoAdicional.setNota(nota);
 		prestamoAdicional.setMonto(monto);
-		prestamoAdicional.setMotivo(motivo);
+		prestamoAdicional.setMotivo(motivoPrestamoAdicional);
 		prestamoAdicional.setPrestamo(prestamo);
 		prestamoAdicional.setUsuario(usuario);
 		servicePrestamosAdicionales.guardar(prestamoAdicional);
@@ -1958,6 +2062,15 @@ public class PrestamosController {
 	public ResponseEntity<String> guardarAbonoCuota(Model model, HttpSession session,
 			Integer idPrestamo, Double monto, Integer tipoCuota, HttpServletRequest request, 
             HttpServletResponse response) throws JRException, SQLException {
+		Carpeta carpeta = new Carpeta();
+		if(session.getAttribute("carpeta") != null) {
+			carpeta = serviceCarpetas.buscarPorId((int) session.getAttribute("carpeta"));
+		}else {
+			//Cargamos la principal
+			if(session.getAttribute("empresa")!=null) {
+				carpeta = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa")).get(0);
+			}
+		}
 		Prestamo prestamo = servicePrestamos.buscarPorId(idPrestamo);
 		monto = 0.0;
 		double abonoEfectivo = 0;
@@ -2011,6 +2124,7 @@ public class PrestamosController {
 				abono.setCheque(abonoCheque);
 				abono.setTransferencia_deposito(abonoDeposito);
 				abono.setEmpresa((Empresa) session.getAttribute("empresa"));
+				abono.setCarpeta(carpeta);
 				if(imagenCheque!=null) {
 					abono.setImagen_cheque(imagenCheque);
 				}
@@ -2068,7 +2182,7 @@ public class PrestamosController {
 											AbonoDetalle abonoDetalle = new AbonoDetalle();
 											abonoDetalle.setAbono(abono);
 											abonoDetalle.setConcepto("Cargo");
-											abonoDetalle.setDetalle(adicionales.getMotivo());
+											abonoDetalle.setDetalle(adicionales.getMotivo().getMotivo());
 											abonoDetalle.setMonto(pagadoCargoInicio-pagadoCargoFin);
 											abonoDetalle.setNumeroCuota(adicionales.getNumeroCuota());
 											serviceAbonosDetalles.guardar(abonoDetalle);
@@ -2197,7 +2311,7 @@ public class PrestamosController {
 									abonoDetalle.setAbono(abono);
 									abonoDetalle.setConcepto("Cargo");
 									abonoDetalle.setMonto(pagadoCargoInicio-pagadoCargoFin);
-									abonoDetalle.setDetalle(adicionalesTemp.getMotivo());
+									abonoDetalle.setDetalle(adicionalesTemp.getMotivo().getMotivo());
 									abonoDetalle.setNumeroCuota(adicionalesTemp.getNumeroCuota());
 									serviceAbonosDetalles.guardar(abonoDetalle);
 								}
@@ -2270,6 +2384,7 @@ public class PrestamosController {
 				abono.setCheque(abonoCheque);
 				abono.setTransferencia_deposito(abonoDeposito);
 				abono.setEmpresa((Empresa) session.getAttribute("empresa"));
+				abono.setCarpeta(carpeta);
 				if(imagenCheque!=null) {
 					abono.setImagen_cheque(imagenCheque);
 				}
@@ -2326,7 +2441,7 @@ public class PrestamosController {
 											AbonoDetalle abonoDetalle = new AbonoDetalle();
 											abonoDetalle.setAbono(abono);
 											abonoDetalle.setConcepto("Cargo");
-											abonoDetalle.setDetalle(adicionales.getMotivo());
+											abonoDetalle.setDetalle(adicionales.getMotivo().getMotivo());
 											abonoDetalle.setMonto(pagadoCargoInicio-pagadoCargoFin);
 											abonoDetalle.setNumeroCuota(adicionales.getNumeroCuota());
 											serviceAbonosDetalles.guardar(abonoDetalle);
@@ -2723,18 +2838,28 @@ public class PrestamosController {
 			}
 		}
 		
+		model.addAttribute("moneda", "");
 		model.addAttribute("item", "");
 		model.addAttribute("estado", "");
+		model.addAttribute("cliente", new Cliente());
 		model.addAttribute("carpeta", carpeta);
 		model.addAttribute("prestamos", prestamos);
 		return "prestamos/prestamosPendientes :: prestamosPendientes";
+	}
+	
+	@GetMapping("/cedulaClienteCobros/{id}")
+	public String cedulaClienteCobros(Model model, @PathVariable("id") Integer idCliente) {
+		Cliente cliente = serviceClientes.buscarPorId(idCliente);
+		model.addAttribute("cliente", cliente);
+		return "prestamos/prestamosPendientes :: #detalleCedulaCliente";
 	}
 	
 	@PostMapping("/prestamosPendientesFiltro")
 	public String prestamosPendientesFiltro(Model model, HttpSession session,
 			@RequestParam(required = false, name = "carpetaId") Integer carpetaId, 
 			@RequestParam(required = false, name = "estado") String estado,
-			@RequestParam(required = false, name = "item") String item) {
+			@RequestParam(required = false, name = "item") String item,
+			@RequestParam(required = false, name = "moneda") String moneda) {
 		Carpeta carpeta = new Carpeta();
 		
 		if(estado == null) {
@@ -2853,6 +2978,12 @@ public class PrestamosController {
 					prestamosTemp.setNumeroNota(0);
 				}
 			}
+		}
+		
+		if(moneda!="") {
+			filterList = filterList.stream().filter( p -> 
+			p.getMoneda().equalsIgnoreCase(moneda)
+					).collect(Collectors.toList());
 		}
 
 		model.addAttribute("prestamos", filterList);
