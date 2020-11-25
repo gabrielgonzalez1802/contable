@@ -138,6 +138,8 @@ public class ReportesController {
 	@GetMapping("/porCobrar")
 	public String porCobrar(Model model, HttpSession session) {
 		
+		prestamosReportesPendientes = new LinkedList<PrestamoReportePendiente>();
+		
 		Integer idCarpeta = null;
 		Carpeta carpeta = null;
 		
