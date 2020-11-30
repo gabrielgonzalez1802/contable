@@ -40,6 +40,10 @@ public class Cliente {
 	
 	private String nota;
 	
+	@OneToOne
+	@JoinColumn(name = "id_empresa")
+	private Empresa empresa;
+	
 	@Transient
 	private MultipartFile frontal;
 	
@@ -278,15 +282,24 @@ public class Cliente {
 		this.nota = nota;
 	}
 
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+
 	@Override
 	public String toString() {
 		return "Cliente [id=" + id + ", tipoDocumento=" + tipoDocumento + ", doctypeTemp=" + doctypeTemp + ", nombre="
 				+ nombre + ", cedula=" + cedula + ", rnc=" + rnc + ", direccion=" + direccion + ", telefono=" + telefono
 				+ ", celular=" + celular + ", fotoFrontal=" + fotoFrontal + ", fotoTrasera=" + fotoTrasera + ", nota="
-				+ nota + ", frontal=" + frontal + ", trasera=" + trasera + ", usuarioEliminado=" + usuarioEliminado
-				+ ", usuario_modificado=" + usuario_modificado + ", modificado=" + modificado + ", creado=" + creado
-				+ ", eliminado=" + eliminado + ", comprobanteFiscal=" + comprobanteFiscal + ", nombreEmpresa="
-				+ nombreEmpresa + ", direccionEmpresa=" + direccionEmpresa + ", telefonoEmpresa=" + telefonoEmpresa
-				+ ", estado=" + estado + ", usuario=" + usuario + "]";
+				+ nota + ", empresa=" + empresa + ", frontal=" + frontal + ", trasera=" + trasera
+				+ ", usuarioEliminado=" + usuarioEliminado + ", usuario_modificado=" + usuario_modificado
+				+ ", modificado=" + modificado + ", creado=" + creado + ", eliminado=" + eliminado
+				+ ", comprobanteFiscal=" + comprobanteFiscal + ", nombreEmpresa=" + nombreEmpresa
+				+ ", direccionEmpresa=" + direccionEmpresa + ", telefonoEmpresa=" + telefonoEmpresa + ", estado="
+				+ estado + ", usuario=" + usuario + "]";
 	}
 }

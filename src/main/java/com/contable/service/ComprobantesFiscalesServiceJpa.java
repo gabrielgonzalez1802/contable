@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.contable.model.ComprobanteFiscal;
+import com.contable.model.Empresa;
 import com.contable.repository.ComprobantesFiscalesRepository;
 
 @Service
@@ -37,6 +38,11 @@ public class ComprobantesFiscalesServiceJpa implements IComprobantesFiscalesServ
 	@Override
 	public List<ComprobanteFiscal> buscarTodos() {
 		return repo.findAll();
+	}
+
+	@Override
+	public List<ComprobanteFiscal> buscarPorEmpresa(Empresa empresa) {
+		return repo.findByEmpresa(empresa);
 	}
 
 }

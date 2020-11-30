@@ -1620,6 +1620,129 @@ $("#btnExitCarpetaContabilidad").click(function(e){
       });
 });	
 
+$("#btnEntradaDiarios").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#modalEntradaDiario").modal("show");
+	addEvents();
+});
+
+$("#indicioEd1").on("keyup", function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var valor = $("#indicioEd1").val();
+	$("#cuentaContableAuxiliarEd1").load("/cuentasContables/buscarContablesAuxiliar1",{
+			"valor":valor
+		},function(data){
+			console.log("Lista actualizada");
+		});
+});
+
+$("#indicioEd2").on("keyup", function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var valor = $("#indicioEd2").val();
+	$("#cuentaContableAuxiliarEd2").load("/cuentasContables/buscarContablesAuxiliar2",{
+			"valor":valor
+		},function(data){
+			console.log("Lista actualizada");
+		});
+});
+
+$("#btnGuardarEntradaDiario").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var monto = $("#montoEd").val();
+	var motivo = $("#motivoEd").val();
+	var cuenta1 = $("#cuentaContableAuxiliarEd1").val();
+	var cuenta2 = $("#cuentaContableAuxiliarEd2").val();
+	var tipo1 =  $("#tipoEd1").val();
+	var tipo2 =  $("#tipoEd2").val();
+	
+	if(!monto || !motivo || !cuenta1 || !cuenta2){
+		$("#modalEntradaDiario").modal("hide");
+		Swal.fire({
+			  title: 'Alerta!',
+			  text: "Todos los campos con '*' son requeridos",
+			  icon: 'warning',
+			  position : 'top',
+			  showCancelButton: false,
+			  confirmButtonColor: '#3085d6',
+			  confirmButtonText: 'Ok!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
+				  $("#modalEntradaDiario").modal("show");
+			  }
+			})
+	}else{
+		if(cuenta1 == cuenta2){
+			Swal.fire({
+				  title: 'Alerta!',
+				  text: "Las cuentas contables no pueden ser iguales",
+				  icon: 'warning',
+				  position : 'top',
+				  showCancelButton: false,
+				  confirmButtonColor: '#3085d6',
+				  confirmButtonText: 'Ok!'
+				}).then((result) => {
+				  if (result.isConfirmed) {
+					  $("#modalEntradaDiario").modal("show");
+				  }
+				})
+		}else{
+			$.post("/cuentasContables/guardarEntradaDiario",
+					 {
+						 "monto":monto,
+						 "motivo":motivo,
+						 "cuenta1":cuenta1,
+						 "cuenta2":cuenta2
+					 },function(data){
+							 if(data == "1"){
+									$("#modalEntradaDiario").modal("hide");
+									Swal.fire({
+										  title: 'Muy bien!',
+										  text: "Entrada creada correctamente",
+										  icon: 'success',
+										  position : 'top',
+										  showCancelButton: false,
+										  confirmButtonColor: '#3085d6',
+										  confirmButtonText: 'Ok!'
+										}).then((result) => {
+										  if (result.isConfirmed) {
+											  $("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
+												console.log("Contabilidad");
+												addEvents();
+											});
+										  }
+										})
+							 }else{
+								 $("#modalEntradaDiario").modal("hide");
+								 Swal.fire({
+									  title: 'Alerta!',
+									  text: "No se pudo guardar la entrada",
+									  icon: 'warning',
+									  position : 'top',
+									  showCancelButton: false,
+									  confirmButtonColor: '#3085d6',
+									  confirmButtonText: 'Ok!'
+									}).then((result) => {
+									  if (result.isConfirmed) {
+										  $("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
+												console.log("Contabilidad");
+												addEvents();
+											});
+									  }
+									})
+							 }
+							 $("#montoEd").val("");
+							 $("#motivoEd").val("");
+					 });
+		}
+	}
+	
+});
+
+
 $("#btnIniciarContabilidad").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
@@ -1906,6 +2029,17 @@ $("#agregarCuentaContable").click(function(e){
 			  }
 			})
 	}
+});
+
+$("#btnCuentaEnlace").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#modalCuentaEnlace").modal("show");
+});
+
+$("#btnGuardarCuentaEnlace").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
 });
 
 $("#btnGuardarUpdateCuentaContable").click(function(e){

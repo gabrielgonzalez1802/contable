@@ -1,6 +1,7 @@
 package com.contable.controller;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -19,6 +20,7 @@ import com.contable.model.Carpeta;
 import com.contable.model.CuentaContable;
 import com.contable.model.Empresa;
 import com.contable.model.EntradaDiario;
+import com.contable.model.Usuario;
 import com.contable.service.ICarpetasService;
 import com.contable.service.ICuentasContablesService;
 import com.contable.service.IEntradasDiariosService;
@@ -128,6 +130,84 @@ public class CuentasContablesController {
 		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipoEstado((Empresa) session.getAttribute("empresa"), "A", 0);
 		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
 		return "contabilidad/contabilidad :: #cuentaContableAuxiliar";
+	}
+	
+	@PostMapping("/buscarContablesAuxiliar1")
+	public String buscarContablesAuxiliar1(Model model, HttpSession session, String valor){
+		valor = valor.replace(" ", "");
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.
+				buscarPorEmpresaTipoEstadoAndContieneCodigo((Empresa) session.getAttribute("empresa"), "A", 1, valor);
+		model.addAttribute("cuentasContablesAuxiliaresIniciadas", cuentasContablesAuxiliares);
+		return "contabilidad/contabilidad :: #cuentaContableAuxiliarEd1";
+	}
+	
+	@PostMapping("/buscarContablesAuxiliar2")
+	public String buscarContablesAuxiliar2(Model model, HttpSession session, String valor){
+		valor = valor.replace(" ", "");
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.
+				buscarPorEmpresaTipoEstadoAndContieneCodigo((Empresa) session.getAttribute("empresa"), "A", 1, valor);
+		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
+		return "contabilidad/contabilidad :: #cuentaContableAuxiliarEd2";
+	}
+	
+	@PostMapping("/guardarEntradaDiario")
+	public ResponseEntity<String> guardarEntradaDiario(Model model, HttpSession session, BigDecimal monto,
+			String motivo, Integer cuenta1, Integer cuenta2){
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Carpeta carpeta = null;
+		
+		String response = "0";
+		
+		if(session.getAttribute("carpeta") != null) {
+			 carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
+		}else {
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, empresa);
+			if(!carpetas.isEmpty()) {
+				carpeta = carpetas.get(0);
+			}
+		}
+		
+		CuentaContable cuentaContable1 = serviceCuentasContables.buscarPorId(cuenta1);
+		CuentaContable cuentaContable2 = serviceCuentasContables.buscarPorId(cuenta2);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		
+		//Debito
+		EntradaDiario entradaDebito = new EntradaDiario();
+		entradaDebito.setCarpeta(carpeta);
+		entradaDebito.setEmpresa(empresa);
+		entradaDebito.setCredito(new BigDecimal(0.0));
+		entradaDebito.setCuentaContable(cuentaContable1);
+		entradaDebito.setDebito(monto);
+		entradaDebito.setDetalle(motivo);
+		entradaDebito.setFecha(new Date());
+		entradaDebito.setUsuario(usuario);
+		
+		serviceEntradasDiario.guardar(entradaDebito);
+		
+		//Credito
+		EntradaDiario entradaCredito = new EntradaDiario();
+		entradaCredito.setCarpeta(carpeta);
+		entradaCredito.setEmpresa(empresa);
+		entradaCredito.setCredito(monto);
+		entradaCredito.setCuentaContable(cuentaContable2);
+		entradaCredito.setDebito(new BigDecimal(0.0));
+		entradaCredito.setDetalle(motivo);
+		entradaCredito.setFecha(new Date());
+		entradaCredito.setUsuario(usuario);
+		
+		serviceEntradasDiario.guardar(entradaCredito);
+		
+		entradaDebito.setCuentaContableRef(entradaCredito.getCuentaContable());
+		entradaCredito.setCuentaContableRef(entradaDebito.getCuentaContable());
+
+		serviceEntradasDiario.guardar(entradaDebito);
+		serviceEntradasDiario.guardar(entradaCredito);
+		
+		if(entradaCredito.getId()!=null && entradaDebito.getId()!=null) {
+			response = "1";
+		}
+		
+		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
 	}
 	
 	@PostMapping("/modificar")

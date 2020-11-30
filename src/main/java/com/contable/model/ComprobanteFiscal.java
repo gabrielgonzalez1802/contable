@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -23,6 +25,10 @@ public class ComprobanteFiscal {
 	private String prefijo;
 	private Integer incluye_itbis;
 	private Integer valor_itbis;
+	
+	@OneToOne
+	@JoinColumn(name = "id_empresa")
+	private Empresa empresa;
 	
 	public Integer getId() {
 		return id;
@@ -90,11 +96,17 @@ public class ComprobanteFiscal {
 	public void setValor_itbis(Integer valor_itbis) {
 		this.valor_itbis = valor_itbis;
 	}
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
 	@Override
 	public String toString() {
 		return "ComprobanteFiscal [id=" + id + ", secuencia=" + secuencia + ", nombre=" + nombre + ", paga_itbis="
 				+ paga_itbis + ", secuencia_inicial=" + secuencia_inicial + ", secuencia_final=" + secuencia_final
 				+ ", secuencia_actual=" + secuencia_actual + ", rnc=" + rnc + ", prefijo=" + prefijo
-				+ ", incluye_itbis=" + incluye_itbis + ", valor_itbis=" + valor_itbis + "]";
+				+ ", incluye_itbis=" + incluye_itbis + ", valor_itbis=" + valor_itbis + ", empresa=" + empresa + "]";
 	}
 }

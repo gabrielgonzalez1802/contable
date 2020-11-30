@@ -41,7 +41,7 @@ public class EmpresasController {
 	public String agregarEmpresa(Model model) {
 		Empresa empresa = new Empresa();
 		model.addAttribute("empresa", empresa);
-		return "empresas/formEmpresas :: form";
+		return "empresas/form :: form";
 	}
 	
 	@PostMapping("/crear")

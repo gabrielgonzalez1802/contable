@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.contable.model.Cliente;
+import com.contable.model.Empresa;
 import com.contable.repository.ClientesRepository;
 import com.contable.service.IClientesService;
 
@@ -64,8 +65,27 @@ public class ClientesServiceJpa implements IClientesService{
 	}
 
 	@Override
+	public Cliente buscarPorOtroEmpresa(String item, Empresa empresa) {
+		return repo.findByTipoDocumentoAndCedulaAndEmpresa("otro", item, empresa);
+	}
+	
+	@Override
 	public List<Cliente> buscarPorNombre(String nombre) {
 		return repo.findByNombreContaining(nombre);
 	}
+	
+	@Override
+	public List<Cliente> buscarPorNombreEmpresa(String nombre, Empresa empresa) {
+		return repo.findByEmpresaAndNombreContaining(empresa, nombre);
+	}
 
+	@Override
+	public List<Cliente> buscarPorEmpresa(Empresa empresa) {
+		return repo.findByEmpresa(empresa);
+	}
+
+	@Override
+	public Cliente buscarPorCedulaEmpresa(String item, Empresa empresa) {
+		return repo.findByTipoDocumentoAndCedulaAndEmpresa("cedula", item, empresa);
+	}
 }

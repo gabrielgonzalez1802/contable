@@ -1,6 +1,7 @@
 package com.contable.model;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,6 +31,16 @@ public class EntradaDiario {
 	@OneToOne
 	@JoinColumn(name = "id_diario")
 	private Diario diario;
+	
+	@OneToOne
+	@JoinColumn(name = "id_cuenta_contable_ref")
+	private CuentaContable cuentaContableRef;
+	
+	@OneToOne
+	@JoinColumn(name = "id_usuario")
+	private Usuario usuario;
+	
+	private Date fecha;
 	
 	@OneToOne
 	@JoinColumn(name = "id_carpeta")
@@ -103,10 +114,34 @@ public class EntradaDiario {
 		this.empresa = empresa;
 	}
 
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
+	public Date getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(Date fecha) {
+		this.fecha = fecha;
+	}
+
+	public CuentaContable getCuentaContableRef() {
+		return cuentaContableRef;
+	}
+
+	public void setCuentaContableRef(CuentaContable cuentaContableRef) {
+		this.cuentaContableRef = cuentaContableRef;
+	}
+
 	@Override
 	public String toString() {
 		return "EntradaDiario [id=" + id + ", cuentaContable=" + cuentaContable + ", debito=" + debito + ", credito="
-				+ credito + ", detalle=" + detalle + ", diario=" + diario + ", carpeta=" + carpeta + ", empresa="
-				+ empresa + "]";
+				+ credito + ", detalle=" + detalle + ", diario=" + diario + ", cuentaContableRef=" + cuentaContableRef
+				+ ", usuario=" + usuario + ", fecha=" + fecha + ", carpeta=" + carpeta + ", empresa=" + empresa + "]";
 	}
 }

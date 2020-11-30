@@ -56,8 +56,9 @@ public class ClientesController {
 	private IMotivosPrestamosAdicionalesService serviceMotivosPrestamosAdicionales;
 
 	@GetMapping("/")
-	public String getListaClientes(Model model) {
-		List<Cliente> listaClientes = serviceClientes.buscarTodos().stream().filter(e -> e.getEstado() == 1)
+	public String getListaClientes(Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		List<Cliente> listaClientes = serviceClientes.buscarPorEmpresa(empresa).stream().filter(e -> e.getEstado() == 1)
 				.collect(Collectors.toList());
 		model.addAttribute("listaClientes", listaClientes);
 		return "clientes/listaClientes :: listaCliente";
@@ -101,23 +102,24 @@ public class ClientesController {
 	@PostMapping("/getInfoCliente")
 	public String getInfoCliente(Model model, Integer carpeta, String tipoDocumento, String item, HttpSession session) {
 		Cliente cliente = new Cliente();
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
 //		Integer idCarpeta = (Integer) session.getAttribute("carpeta");
 		Carpeta carpetaTemp = serviceCarpetas.buscarPorId(carpeta);
 		session.setAttribute("carpeta", carpetaTemp.getId());
 		model.addAttribute("carpeta", carpetaTemp);
 		if (tipoDocumento.equals("cedula")) {
-			cliente = serviceClientes.buscarPorCedula(item);
+			cliente = serviceClientes.buscarPorCedulaEmpresa(item, empresa);
 			if(cliente != null) {
 				session.setAttribute("cliente", cliente.getId());
 			}
 		}else if(tipoDocumento.equals("otro")){
-			cliente = serviceClientes.buscarPorOtro(item);
+			cliente = serviceClientes.buscarPorOtroEmpresa(item, empresa);
 			if(cliente != null) {
 				session.setAttribute("cliente", cliente.getId());
 			}
 		}else {
 			//busqueda por nombre
-			List<Cliente> clientes = serviceClientes.buscarPorNombre(item).stream().
+			List<Cliente> clientes = serviceClientes.buscarPorNombreEmpresa(item, empresa).stream().
 					filter(c -> c.getEstado() == 1).collect(Collectors.toList());
 			if(clientes.isEmpty()) {
 				cliente = null;
@@ -136,18 +138,13 @@ public class ClientesController {
 		
 		if(cliente == null) {
 			session.setAttribute("cliente", 0);
-//			List<Cliente> clientes = serviceClientes.buscarTodos().stream().filter(c -> c.getEstado() == 1)
-//					.collect(Collectors.toList());
-//			for (Cliente clienteTemp : clientes) {
-//				clienteTemp.setNombre(clienteTemp.getNombre() + " - " + clienteTemp.getCedula());
-//			}
-//			
 			model.addAttribute("tipoDocumentoAcct", "cedula");
 			model.addAttribute("msg", "No se encontro el cliente");
 			model.addAttribute("carpeta",carpetaTemp);
 			
 			return "clientes/buscarCliente :: buscarCliente"; 
 		}
+		
 		List<Prestamo> prestamos = servicePrestamos.buscarPorClienteCarpetaEmpresaPorFechaDesc(cliente, carpetaTemp, (Empresa) session.getAttribute("empresa"));
 		List<MotivoPrestamoAdicional> motivos = serviceMotivosPrestamosAdicionales.buscarTodos();
 		model.addAttribute("motivosCargos", motivos);
@@ -179,9 +176,10 @@ public class ClientesController {
 	}
 
 	@GetMapping("/agregar")
-	public String formularioCliente(Model model) {
+	public String formularioCliente(Model model, HttpSession session) {
 		Cliente cliente = new Cliente();
-		List<ComprobanteFiscal> comprobantesFiscales = serviceComprobantesFiscales.buscarTodos();
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		List<ComprobanteFiscal> comprobantesFiscales = serviceComprobantesFiscales.buscarPorEmpresa(empresa);
 		cliente.setDoctypeTemp("cedula");
 		model.addAttribute("cliente", cliente);
 		model.addAttribute("comprobantesFiscales", comprobantesFiscales);
@@ -208,11 +206,12 @@ public class ClientesController {
 	public String eliminarCliente(Model model, @PathVariable(name = "id") Integer id, HttpSession session) {
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		Cliente cliente = serviceClientes.buscarPorId(id);
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		cliente.setEliminado(new Date());
 		cliente.setEstado(0);
 		cliente.setUsuarioEliminado(usuario);
 		serviceClientes.guardar(cliente);
-		List<Cliente> listaClientes = serviceClientes.buscarTodos().stream().filter(e -> e.getEstado() == 1)
+		List<Cliente> listaClientes = serviceClientes.buscarPorEmpresa(empresa).stream().filter(e -> e.getEstado() == 1)
 				.collect(Collectors.toList());
 		model.addAttribute("listaClientes", listaClientes);
 		return "clientes/listaClientes :: listaCliente";
@@ -224,6 +223,7 @@ public class ClientesController {
 			HttpSession session) {
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		String response = "INSERT";
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		
 		if (cliente.getId() != null) {
 			response = "UPDATE";
@@ -234,10 +234,12 @@ public class ClientesController {
 			cliente.setCreado(originalCliente.getCreado());
 			cliente.setFotoFrontal(originalCliente.getFotoFrontal());
 			cliente.setFotoTrasera(originalCliente.getFotoTrasera());
+			cliente.setEmpresa(empresa);
 			if(cliente.getComprobanteFiscal().getId() == 0) {
 				cliente.setComprobanteFiscal(null);
 			}
 		} else {
+			cliente.setEmpresa(empresa);
 			cliente.setUsuario(usuario);
 			if(cliente.getComprobanteFiscal().getId() == 0) {
 				cliente.setComprobanteFiscal(null);

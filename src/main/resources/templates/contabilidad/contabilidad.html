@@ -200,6 +200,189 @@
     </div>
   </div> 
 		
+   <!-- Modal Entrada Diario -->         
+  <div class="modal" id="modalEntradaDiario">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Entrada Diario</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+        	<div class="row">
+        		<div class="col-md-4">
+					<label>Monto</label><span style="color:red;"> *</span>
+					<input type="number" min="0" placeholder="Monto" class="form-control" id="montoEd">
+        		</div>
+        		
+        		<div class="col-md-8">
+					<label>Motivo</label><span style="color:red;"> *</span>
+					<input type="text" placeholder="Motivo" class="form-control" id="motivoEd">
+				</div>
+        	</div>
+        	
+        	<br>
+        
+          	<div class="row">
+          		
+          		<div class="col-md-2">
+          			<label>&nbsp;</label>
+          			<input type="text" class="form-control" id="indicioEd1" placeholder="Codigo">
+          		</div>
+          	
+          		<div class="col-md-6">
+          			<label>Cuenta Contable</label><span style="color:red;"> *</span>
+          			<select id="cuentaContableAuxiliarEd1" class="form-control">
+          				<option th:each="cuentaContable : ${cuentasContablesAuxiliaresIniciadas}"
+          						th:value="${cuentaContable.id}" th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+          			</select>
+          		</div>
+          		
+          		<div class="col-md-4">
+          			<label>Tipo</label><span style="color:red;"> *</span>
+          			<input type="text" class="form-control" id="tipoEd1" value="Debito" disabled="disabled">
+          		</div>
+  
+			</div>
+			
+			<br>
+			
+			<div class="row">
+				<div class="col-md-2">
+          			<label>&nbsp;</label>
+          			<input type="text" class="form-control" id="indicioEd2" placeholder="Codigo">
+          		</div>
+			
+          		<div class="col-md-6">
+          			<label>Cuenta Contable</label><span style="color:red;"> *</span>
+          			<select id="cuentaContableAuxiliarEd2" class="form-control">
+          				<option th:each="cuentaContable : ${cuentasContablesAuxiliaresIniciadas}"
+          						th:value="${cuentaContable.id}" th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+          			</select>
+          		</div>
+          		
+          		<div class="col-md-4">
+          			<label>Tipo</label><span style="color:red;"> *</span>
+          			<input type="text" class="form-control" id="tipoEd2" value="Credito" disabled="disabled">
+          		</div>
+          	
+			</div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="btnGuardarEntradaDiario">Guardar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div> 
+  
+  <!-- Modal Cuenta Enlace -->         
+  <div class="modal" id="modalCuentaEnlace">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Cuenta de Enlace</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+
+			<h5>Prestamo</h5>
+
+          	<div class="row">
+          		
+          		<div class="col-md-2">
+          			<label>&nbsp;</label>
+          			<input type="text" class="form-control" placeholder="Codigo">
+          		</div>
+          	
+          		<div class="col-md-6">
+          			<label>Capital</label><span style="color:red;"> *</span>
+          			<select class="form-control">
+          				<option th:each="cuenta : ${cuentasContablesAuxiliaresGeneral}"
+          						th:value="${cuenta.id}" th:text="${cuenta.codigo} + ' ' + ${cuenta.nombreCuenta}"></option>
+          			</select>
+          		</div>
+          		
+			</div>
+			
+			<br>
+			
+			<div class="row">
+				<div class="col-md-2">
+          			<label>&nbsp;</label>
+          			<input type="text" class="form-control"  placeholder="Codigo">
+          		</div>
+			
+          		<div class="col-md-6">
+          			<label>Interes</label><span style="color:red;"> *</span>
+          			<select class="form-control">
+          				<option th:each="cuenta : ${cuentasContablesAuxiliaresGeneral}"
+          						th:value="${cuenta.id}" th:text="${cuenta.codigo} + ' ' + ${cuenta.nombreCuenta}"></option>
+          			</select>
+          		</div>
+          		
+          		<div class="col-md-4">
+          			<label>Tipo</label><span style="color:red;"> *</span>
+          			<input type="text" class="form-control" id="tipoEd2" value="Credito" disabled="disabled">
+          		</div>
+          	
+			</div>
+			
+			<br>
+			
+			<div class="row">
+				<div class="col-md-2">
+          			<label>&nbsp;</label>
+          			<input type="text" class="form-control"  placeholder="Codigo">
+          		</div>
+			
+          		<div class="col-md-6">
+          			<label>Gastos de cierre</label><span style="color:red;"> *</span>
+          			<select class="form-control">
+          				<option th:each="cuenta : ${cuentasContablesAuxiliaresGeneral}"
+          						th:value="${cuenta.id}" th:text="${cuenta.codigo} + ' ' + ${cuenta.nombreCuenta}"></option>
+          			</select>
+          		</div>
+          	
+			</div>
+			
+			<br>
+			
+			<div class="row">
+				<div class="col-md-2">
+          			<label>&nbsp;</label>
+          			<input type="text" class="form-control"  placeholder="Codigo">
+          		</div>
+			
+          		<div class="col-md-6">
+          			<label>Cobros adicionales</label><span style="color:red;"> *</span>
+          			<select class="form-control">
+          				<option th:each="cuenta : ${cuentasContablesAuxiliaresGeneral}"
+          						th:value="${cuenta.id}" th:text="${cuenta.codigo} + ' ' + ${cuenta.nombreCuenta}"></option>
+          			</select>
+          		</div>
+          	
+			</div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="btnGuardarCuentaEnlace">Guardar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div> 
 		
    <!-- Modal Iniciar Contabilidad -->         
   <div class="modal" id="modalCuentasAuxiliares">
@@ -276,7 +459,8 @@
 					    <div class="col-sm-8">
 							<button class="btn btn-primary" id="btnIniciarContabilidad"> Iniciar contabilidad </button>
 							<button class="btn btn-info" id="btnCrearCuentas"> Crear cuentas </button>
-							<button class="btn btn-success" id="btnEntrada diarios"> Entrada de diario </button>
+							<button class="btn btn-success" id="btnEntradaDiarios"> Entrada de diario </button>
+							<button class="btn btn-warning" id="btnCuentaEnlace"> Cuentas de enlace </button>
 						</div>
 					  </div>
 			

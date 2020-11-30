@@ -1,10 +1,8 @@
 package com.contable.controller;
 
 import java.math.BigDecimal;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
@@ -121,10 +119,14 @@ public class ContabilidadController {
 			newOrder.add(cuentasContables.get(i-1));
 		}
 
+		List<CuentaContable> cuentasContablesAuxiliaresGeneral = serviceCuentasContables.buscarPorEmpresaTipo(empresa, "A");
 		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipoEstado(empresa, "A", 0);
+		List<CuentaContable> cuentasContablesAuxiliaresIniciadas = serviceCuentasContables.buscarPorEmpresaTipoEstado(empresa, "A", 1);
 		model.addAttribute("carpeta", carpeta);
 		model.addAttribute("empresa", empresa);
+		model.addAttribute("cuentasContablesAuxiliaresGeneral", cuentasContablesAuxiliaresGeneral);
 		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
+		model.addAttribute("cuentasContablesAuxiliaresIniciadas", cuentasContablesAuxiliaresIniciadas);
 		model.addAttribute("cuentasContables", newOrder);
 		model.addAttribute("cuentaContable", new CuentaContable());
 		return "contabilidad/contabilidad :: contabilidad";
