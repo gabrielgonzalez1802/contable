@@ -1521,11 +1521,64 @@ $("#contabilidad").click(function(e){
 $("#tarjetaEntradaDiario").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
-//	$("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
-//		console.log("Contabilidad");
-//		addEvents();
-//	});
 	$("#modalEntradaDiarioDC").modal("show");
+});
+
+$("#agregarEntradaDiario").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$.post("/contabilidad/guardarEntradasDiario", function(data){
+		 if(data == "1"){
+			 $("#modalEntradaDiarioDC").modal("hide");
+				Swal.fire({
+					  title: 'Muy bien!',
+					  text: "Entradas creadas correctamente",
+					  icon: 'success',
+					  position : 'top',
+					  showCancelButton: false,
+					  confirmButtonColor: '#3085d6',
+					  confirmButtonText: 'Ok!'
+					}).then((result) => {
+					  if (result.isConfirmed) {
+						  $("#montoEntradaDiario").val("");
+						  $("#referenciaEntradaDiario").val("");
+						  $("#modalEntradaDiarioDC").modal("hide");
+						  $("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
+								console.log("Contabilidad");
+								addEvents();
+						  });
+					  }
+					})
+		 }else{
+			 $("#modalEntradaDiarioDC").modal("hide");
+				Swal.fire({
+					  title: 'Alerta!',
+					  text: "No se guardaron las entradas del diario",
+					  icon: 'warning',
+					  position : 'top',
+					  showCancelButton: false,
+					  confirmButtonColor: '#3085d6',
+					  confirmButtonText: 'Ok!'
+					}).then((result) => {
+					  if (result.isConfirmed) {
+						  $("#montoEntradaDiario").val("");
+						 $("#referenciaEntradaDiario").val("");
+						 $("#modalEntradaDiarioDC").modal("hide");
+					  }
+					})
+		 }
+	 });
+});
+
+$("#codigoEntradaDiario").on("keyup", function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var valor = $("#codigoEntradaDiario").val();
+	$("#cuentaContableAuxiliarEd").load("/cuentasContables/buscarContablesAuxiliarEntradaDiario",{
+			"valor":valor
+		},function(data){
+			console.log("Lista actualizada");
+		});
 });
 
 $("#agregarEntradaDiarioTemp").click(function(e){
@@ -1540,7 +1593,7 @@ $("#agregarEntradaDiarioTemp").click(function(e){
 		$("#modalEntradaDiarioDC").modal("hide");
 		Swal.fire({
 			  title: 'Alerta!',
-			  text: "Todos los campos con son requeridos",
+			  text: "Todos los campos son requeridos",
 			  icon: 'warning',
 			  position : 'top',
 			  showCancelButton: false,
@@ -1559,8 +1612,9 @@ $("#agregarEntradaDiarioTemp").click(function(e){
 				"cuentaContableId":cuentaContableId,
 				"tipo":tipo
 			},function(data){
-			console.log("Contabilidad");
-			addEvents();
+				$("#montoEntradaDiario").val("");
+				$("#referenciaEntradaDiario").val("");
+				addEvents();
 		});
 	}
 });
@@ -4185,6 +4239,12 @@ function eliminarToken(tokenId){
 function verCedula(idCliente){
 	$("#detalleCedulaCliente").load("/prestamos/cedulaClienteCobros/"+idCliente,function(data){
 		$("#modalVerCedulaCliente").modal("show");
+		addEvents();
+	});
+}
+
+function eliminarEntradaDiarioTemp(id){
+	$("#tablaEntradasTemp").load("/contabilidad/eliminarEntradasDiariosTemp/"+id,function(data){
 		addEvents();
 	});
 }

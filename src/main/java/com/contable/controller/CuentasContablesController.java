@@ -185,6 +185,15 @@ public class CuentasContablesController {
 		return "contabilidad/contabilidad :: #cobrosAdicionalesPrestamoCC";
 	}
 	
+	@PostMapping("/buscarContablesAuxiliarEntradaDiario")
+	public String buscarContablesAuxiliarEntradaDiario(Model model, HttpSession session, String valor){
+		valor = valor.replace(" ", "");
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.
+				buscarPorEmpresaTipoEstadoAndContieneCodigo((Empresa) session.getAttribute("empresa"), "A", 1, valor);
+		model.addAttribute("cuentasContablesAuxiliaresIniciadas", cuentasContablesAuxiliares);
+		return "contabilidad/contabilidad :: #cuentaContableAuxiliarEd";
+	}
+	
 	@PostMapping("/buscarContablesAuxiliar1")
 	public String buscarContablesAuxiliar1(Model model, HttpSession session, String valor){
 		valor = valor.replace(" ", "");

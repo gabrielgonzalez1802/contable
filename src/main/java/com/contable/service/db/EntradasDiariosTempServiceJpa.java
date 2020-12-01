@@ -53,4 +53,9 @@ public class EntradasDiariosTempServiceJpa implements IEntradasDiariosTempServic
 		repo.delete(entradaDiarioTemp);
 	}
 
+	@Override
+	public void eliminar(List<EntradaDiarioTemp> entradasDiariosTemp) {
+		repo.deleteAll(entradasDiariosTemp);
+	}
+
 }

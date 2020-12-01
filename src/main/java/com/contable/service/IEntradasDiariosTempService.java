@@ -14,4 +14,5 @@ public interface IEntradasDiariosTempService {
 	List<EntradaDiarioTemp> buscarPorEmpresaUsuario(Empresa empresa, Usuario usuario);
 	void guardar(EntradaDiarioTemp entradaDiarioTemp);
 	void eliminar(EntradaDiarioTemp entradaDiarioTemp);
+	void eliminar(List<EntradaDiarioTemp> entradasDiariosTemp);
 }

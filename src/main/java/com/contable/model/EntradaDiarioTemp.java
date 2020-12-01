@@ -41,6 +41,9 @@ public class EntradaDiarioTemp {
 	@OneToOne
 	@JoinColumn(name = "id_empresa")
 	private Empresa empresa;
+	
+	private BigDecimal debito;
+	private BigDecimal credito;
 
 	public Integer getId() {
 		return id;
@@ -114,10 +117,27 @@ public class EntradaDiarioTemp {
 		this.usuario = usuario;
 	}
 
+	public BigDecimal getDebito() {
+		return debito;
+	}
+
+	public void setDebito(BigDecimal debito) {
+		this.debito = debito;
+	}
+
+	public BigDecimal getCredito() {
+		return credito;
+	}
+
+	public void setCredio(BigDecimal credito) {
+		this.credito = credito;
+	}
+
 	@Override
 	public String toString() {
 		return "EntradaDiarioTemp [id=" + id + ", monto=" + monto + ", referencia=" + referencia + ", cuentaContable="
 				+ cuentaContable + ", tipo=" + tipo + ", balanceInicial=" + balanceInicial + ", balanceFinal="
-				+ balanceFinal + ", usuario=" + usuario + ", empresa=" + empresa + "]";
+				+ balanceFinal + ", usuario=" + usuario + ", empresa=" + empresa + ", debito=" + debito + ", credio="
+				+ credito + "]";
 	}
 }

@@ -1,12 +1,15 @@
 package com.contable.controller;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,6 +52,7 @@ public class ContabilidadController {
 	@GetMapping("/mostrarContabilidad")
 	public String mostrarContabilidad(Model model, HttpSession session) {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		Carpeta carpeta = null;
 		
 		if(session.getAttribute("carpeta") != null) {
@@ -166,6 +170,8 @@ public class ContabilidadController {
 			cuentaEnlaceAdicionales.setCuentaContable(new CuentaContable());
 		}
 		model.addAttribute("cobrosAdicionalesPrestamoEnlace", cuentaEnlaceAdicionales.getCuentaContable());
+		List<EntradaDiarioTemp> entradasTemp = serviceEntradasDiariosTemp.buscarPorEmpresaUsuario(empresa, usuario);
+		model.addAttribute("entradasTemp", entradasTemp);
 		return "contabilidad/contabilidad :: contabilidad";
 	}
 	
@@ -213,14 +219,77 @@ public class ContabilidadController {
 		entradaDiarioTemp.setMonto(monto);
 		entradaDiarioTemp.setReferencia(referencia);
 		entradaDiarioTemp.setTipo(tipo);
-		entradaDiarioTemp.setUsuario(usuario);
 		entradaDiarioTemp.setBalanceInicial(valor);
-		entradaDiarioTemp.setBalanceFinal(new BigDecimal(valor.doubleValue()+monto.doubleValue()));
+
+		if(tipo==1) {
+			//debito
+			entradaDiarioTemp.setDebito(monto);
+			entradaDiarioTemp.setCredio(new BigDecimal("0.0"));
+			entradaDiarioTemp.setBalanceFinal(new BigDecimal(valor.doubleValue()+monto.doubleValue()));
+		}else {
+			//credito
+			entradaDiarioTemp.setDebito(new BigDecimal("0.0"));
+			entradaDiarioTemp.setCredio(monto);
+			entradaDiarioTemp.setBalanceFinal(new BigDecimal(valor.doubleValue()-monto.doubleValue()));
+		}
+		
+		entradaDiarioTemp.setUsuario(usuario);
 		serviceEntradasDiariosTemp.guardar(entradaDiarioTemp);
 		
 		List<EntradaDiarioTemp> entradasTemp = serviceEntradasDiariosTemp.buscarPorEmpresaUsuario(empresa, usuario);
 		model.addAttribute("entradasTemp", entradasTemp);
 		return "contabilidad/contabilidad :: #tablaEntradasTemp";
+	}
+	
+	@GetMapping("/eliminarEntradasDiariosTemp/{id}")
+	String eliminarEntradasDiariosTemp(Model model, HttpSession session,
+			@PathVariable("id") Integer idEntradaDiarioTemp) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		
+		EntradaDiarioTemp entradaDiarioTemp = serviceEntradasDiariosTemp.buscarPorId(idEntradaDiarioTemp);
+		serviceEntradasDiariosTemp.eliminar(entradaDiarioTemp);
+
+		List<EntradaDiarioTemp> entradasTemp = serviceEntradasDiariosTemp.buscarPorEmpresaUsuario(empresa, usuario);
+		model.addAttribute("entradasTemp", entradasTemp);
+		return "contabilidad/contabilidad :: #tablaEntradasTemp";
+	}
+	
+	@PostMapping("/guardarEntradasDiario")
+	public ResponseEntity<String> guardarEntradasDiario(HttpSession session){
+		String response = "0";
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		Carpeta carpeta = null;
+		
+		if(session.getAttribute("carpeta") != null) {
+			 carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
+		}else {
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, empresa);
+			if(!carpetas.isEmpty()) {
+				carpeta = carpetas.get(0);
+			}
+		}
+		List<EntradaDiarioTemp> entradasTemp = serviceEntradasDiariosTemp.buscarPorEmpresaUsuario(empresa, usuario);
+		
+		if(!entradasTemp.isEmpty()) {
+			for (EntradaDiarioTemp entradaDiarioTemp : entradasTemp) {
+				EntradaDiario entradaDiario = new EntradaDiario();
+				entradaDiario.setCarpeta(carpeta);
+				entradaDiario.setCredito(entradaDiarioTemp.getCredito());
+				entradaDiario.setCuentaContable(entradaDiarioTemp.getCuentaContable());
+				entradaDiario.setDebito(entradaDiarioTemp.getDebito());
+				entradaDiario.setDetalle(entradaDiarioTemp.getReferencia());
+				entradaDiario.setEmpresa(empresa);
+				entradaDiario.setFecha(new Date());
+				entradaDiario.setUsuario(usuario);
+				serviceEntradasDiarios.guardar(entradaDiario);
+				response = "1";
+			}
+			serviceEntradasDiariosTemp.eliminar(entradasTemp);
+		}
+		
+		return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 	}
 	
 }
