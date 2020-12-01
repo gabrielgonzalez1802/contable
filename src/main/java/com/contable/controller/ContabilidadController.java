@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.contable.model.Carpeta;
@@ -18,10 +19,13 @@ import com.contable.model.CuentaContable;
 import com.contable.model.CuentaEnlace;
 import com.contable.model.Empresa;
 import com.contable.model.EntradaDiario;
+import com.contable.model.EntradaDiarioTemp;
+import com.contable.model.Usuario;
 import com.contable.service.ICarpetasService;
 import com.contable.service.ICuentasContablesService;
 import com.contable.service.ICuentasEnlacesService;
 import com.contable.service.IEntradasDiariosService;
+import com.contable.service.IEntradasDiariosTempService;
 
 @Controller
 @RequestMapping("/contabilidad")
@@ -38,6 +42,9 @@ public class ContabilidadController {
 	
 	@Autowired
 	private ICuentasEnlacesService serviceCuentasEnlaces;
+	
+	@Autowired
+	private IEntradasDiariosTempService serviceEntradasDiariosTemp;
 
 	@GetMapping("/mostrarContabilidad")
 	public String mostrarContabilidad(Model model, HttpSession session) {
@@ -183,6 +190,37 @@ public class ContabilidadController {
 		
 		model.addAttribute("cuentaContable", new CuentaContable());
 		return "contabilidad/contabilidad :: contabilidad";
+	}
+	
+	@PostMapping("/guardarTempEntradaDiario")
+	String guardarRegistrosTemporalesEntradaDiario(Model model, HttpSession session,
+			BigDecimal monto, String referencia, Integer cuentaContableId, Integer tipo) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		CuentaContable cuentaContable = serviceCuentasContables.buscarPorId(cuentaContableId);
+		
+		BigDecimal valor = new BigDecimal(0.0);
+		
+		List<EntradaDiarioTemp> entradasTempInit = serviceEntradasDiariosTemp.buscarPorEmpresaUsuario(empresa, usuario);
+		
+		if(!entradasTempInit.isEmpty()) {
+			valor = entradasTempInit.get(entradasTempInit.size()-1).getBalanceFinal();
+		}
+		
+		EntradaDiarioTemp entradaDiarioTemp = new EntradaDiarioTemp();
+		entradaDiarioTemp.setCuentaContable(cuentaContable);
+		entradaDiarioTemp.setEmpresa(empresa);
+		entradaDiarioTemp.setMonto(monto);
+		entradaDiarioTemp.setReferencia(referencia);
+		entradaDiarioTemp.setTipo(tipo);
+		entradaDiarioTemp.setUsuario(usuario);
+		entradaDiarioTemp.setBalanceInicial(valor);
+		entradaDiarioTemp.setBalanceFinal(new BigDecimal(valor.doubleValue()+monto.doubleValue()));
+		serviceEntradasDiariosTemp.guardar(entradaDiarioTemp);
+		
+		List<EntradaDiarioTemp> entradasTemp = serviceEntradasDiariosTemp.buscarPorEmpresaUsuario(empresa, usuario);
+		model.addAttribute("entradasTemp", entradasTemp);
+		return "contabilidad/contabilidad :: #tablaEntradasTemp";
 	}
 	
 }

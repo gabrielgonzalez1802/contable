@@ -1518,6 +1518,53 @@ $("#contabilidad").click(function(e){
 	});
 });
 
+$("#tarjetaEntradaDiario").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+//	$("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
+//		console.log("Contabilidad");
+//		addEvents();
+//	});
+	$("#modalEntradaDiarioDC").modal("show");
+});
+
+$("#agregarEntradaDiarioTemp").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var monto = $("#montoEntradaDiario").val();
+	var referencia = $("#referenciaEntradaDiario").val();
+	var cuentaContableId = $("#cuentaContableAuxiliarEd").val(); 
+	var tipo = $("#tipoEntradaDiario").val(); 
+	
+	if(!monto || !referencia || !cuentaContableId || !tipo){
+		$("#modalEntradaDiarioDC").modal("hide");
+		Swal.fire({
+			  title: 'Alerta!',
+			  text: "Todos los campos con son requeridos",
+			  icon: 'warning',
+			  position : 'top',
+			  showCancelButton: false,
+			  confirmButtonColor: '#3085d6',
+			  confirmButtonText: 'Ok!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
+				  $("#modalEntradaDiarioDC").modal("show");
+			  }
+			})
+	}else{
+		$("#tablaEntradasTemp").load("/contabilidad/guardarTempEntradaDiario",
+			{
+				"monto":monto,
+				"referencia":referencia,
+				"cuentaContableId":cuentaContableId,
+				"tipo":tipo
+			},function(data){
+			console.log("Contabilidad");
+			addEvents();
+		});
+	}
+});
+
 $("#btnCarpetaContabilidad").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
