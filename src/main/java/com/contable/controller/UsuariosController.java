@@ -113,20 +113,27 @@ public class UsuariosController {
 		String response = "0";
 		Usuario originalUser = serviceUsuarios.buscarPorId(usuario.getId());
 		//Verificamos que el usuario no exista
-		Usuario usuarioTemp = serviceUsuarios.buscarPorUsername(usuario.getUsername());
-		if(usuarioTemp != null) {
-			response = "2";
-		}else {
-			if(originalUser != null) {
-				originalUser.setUsername(usuario.getUsername());
-				originalUser.setNombre(usuario.getNombre());
+		if(usuario.getUsername().equals(originalUser.getUsername())) {
+			originalUser.setNombre(usuario.getNombre());
+			originalUser.setPerfil(usuario.getPerfil());
 //				usuarioTemp.setEstatus(usuario.getEstatus());	
-				serviceUsuarios.guardar(originalUser);
-				response = "1";
+			serviceUsuarios.guardar(originalUser);
+			response = "1";
+		}else {
+			Usuario usuarioTemp = serviceUsuarios.buscarPorUsername(usuario.getUsername());
+			if(usuarioTemp != null) {
+				response = "2";
 			}else {
-				response = "0";
+				if(originalUser != null) {
+					originalUser.setUsername(usuario.getUsername());
+					originalUser.setNombre(usuario.getNombre());
+//					usuarioTemp.setEstatus(usuario.getEstatus());	
+					serviceUsuarios.guardar(originalUser);
+					response = "1";
+				}
 			}
 		}
+		
 		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
 	}
 	

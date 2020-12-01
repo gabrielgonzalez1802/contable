@@ -1,19 +1,19 @@
 <ul th:fragment="sidebar" class="side-menu" style="">
 	<li class="side-item side-item-category">Main</li>
 
-	<li class="slide"><a class="side-menu__item" href="#"
+	<li class="slide" sec:authorize="hasAnyAuthority('Administrador','Super Administrador')"><a class="side-menu__item" href="#"
 		id="prestamos"> <i class="fas fa-hand-holding-usd side-menu__icon"></i>
 			<span class="side-menu__label">Prestamos</span></a></li>
 			
-	<li class="slide"><a class="side-menu__item" href="#"
+	<li class="slide" sec:authorize="hasAnyAuthority('Administrador','Super Administrador', 'Cobro')"><a class="side-menu__item" href="#"
 		id="cobros"> <i class="fas fa-coins side-menu__icon"></i>
 			<span class="side-menu__label">Cobros</span></a></li>
 			
-	<li class="slide"><a class="side-menu__item" href="#"
+	<li class="slide" sec:authorize="hasAnyAuthority('Administrador','Super Administrador', 'Cobro')"><a class="side-menu__item" href="#"
 		id="caja"> <i class="fas fa-money-check-alt side-menu__icon"></i>
 			<span class="side-menu__label">Caja</span></a></li>
 			
-	<li class="slide"><a class="side-menu__item" href="#"
+	<li class="slide" sec:authorize="hasAnyAuthority('Administrador','Super Administrador')"><a class="side-menu__item" href="#"
 		id="cuentas"> <i class="fas fa-file-invoice-dollar side-menu__icon"></i>
 			<span class="side-menu__label">Bancos</span></a></li>
 			
@@ -22,35 +22,35 @@
 <!-- 			<span class="side-menu__label">Legal</span> -->
 <!-- 	</a></li> -->
 	
-	<li class="slide"><a class="side-menu__item" href="#"
+	<li class="slide" sec:authorize="hasAnyAuthority('Administrador','Super Administrador', 'Contabilidad')"><a class="side-menu__item" href="#"
 		id="contabilidad"> <i class="fas fa-book side-menu__icon"></i>
 			<span class="side-menu__label">Contabilidad</span></a></li>
 			
-	<li class="slide"><a class="side-menu__item" href="#"
+	<li class="slide" sec:authorize="hasAnyAuthority('Administrador','Super Administrador')"><a class="side-menu__item" href="#"
 		id="contabilidad"> <i class="far fa-clipboard side-menu__icon"></i>
 			<span class="side-menu__label">Nomina</span></a></li>
 			
-	<li class="slide"><a class="side-menu__item" href="#"
+	<li class="slide" sec:authorize="hasAnyAuthority('Administrador','Super Administrador')"><a class="side-menu__item" href="#"
 		id="empleados"> <i class="fas fa-people-carry side-menu__icon"></i>
 			<span class="side-menu__label">Empleados</span></a></li>
 			
-	<li class="slide"><a class="side-menu__item" href="#"
+	<li class="slide" sec:authorize="hasAnyAuthority('Administrador','Super Administrador')"><a class="side-menu__item" href="#"
 		id="empresas"> <i class="fas fa-hotel side-menu__icon"></i>
 			<span class="side-menu__label">Empresa</span></a></li>		
 			
-	<li class="slide"><a class="side-menu__item" href="#"
+	<li class="slide" sec:authorize="hasAnyAuthority('Administrador','Super Administrador')"><a class="side-menu__item" href="#"
 		id="reportes"> <i class="far fa-file-pdf side-menu__icon"></i>
 			<span class="side-menu__label">Reportes</span></a></li>			
 			
-	<li class="slide"><a class="side-menu__item" href="#"
+	<li class="slide" sec:authorize="hasAnyAuthority('Administrador','Super Administrador')"><a class="side-menu__item" href="#"
 		id="usuarios"> <i class="fas fa-users side-menu__icon"></i>
 			<span class="side-menu__label">Usuarios</span></a></li>
 			
-	<li class="slide"><a class="side-menu__item" href="#"
+	<li class="slide" sec:authorize="hasAnyAuthority('Administrador','Super Administrador')"><a class="side-menu__item" href="#"
 		id="administracion"> <i class="fas fa-users-cog side-menu__icon"></i>
 		<span class="side-menu__label">Administracion</span></a></li> 		
 			
-	<li class="slide"><a class="side-menu__item" href="#"
+	<li class="slide" sec:authorize="hasAnyAuthority('Administrador','Super Administrador')"><a class="side-menu__item" href="#"
 		id="configuracion"> <i class="fas fa-cogs side-menu__icon"></i>
 		<span class="side-menu__label">Configuracion</span></a></li> 
 	

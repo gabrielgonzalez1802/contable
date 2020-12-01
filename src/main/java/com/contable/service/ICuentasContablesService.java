@@ -15,6 +15,7 @@ public interface ICuentasContablesService {
 	List<CuentaContable> buscarPorEmpresaIdCuentaControl(Empresa empresa, Integer idCuentaControl);
 	List<CuentaContable> buscarPorEmpresaNombreCuenta(Empresa empresa, String nombreCuenta);
 	List<CuentaContable> buscarPorEmpresaTipoEstado(Empresa empresa, String tipo, Integer estado);
+	List<CuentaContable> buscarPorEmpresaTipoAndContieneCodigo(Empresa attribute, String tipo, String valor);
 	List<CuentaContable> buscarPorEmpresaTipoEstadoAndContieneCodigo(Empresa empresa, String tipo, Integer estado, String codigo);
 	List<CuentaContable> buscarPorEmpresaCuentaControl(Empresa empresa, String cuentaControl);
 	List<CuentaContable> buscarPorEmpresaTipoCuentaControl(Empresa empresa, String tipo, String cuentaControl);

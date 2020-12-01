@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.contable.model.Carpeta;
 import com.contable.model.CuentaContable;
+import com.contable.model.CuentaEnlace;
 import com.contable.model.Empresa;
 import com.contable.model.EntradaDiario;
 import com.contable.service.ICarpetasService;
 import com.contable.service.ICuentasContablesService;
+import com.contable.service.ICuentasEnlacesService;
 import com.contable.service.IEntradasDiariosService;
 
 @Controller
@@ -33,6 +35,9 @@ public class ContabilidadController {
 	
 	@Autowired
 	private ICarpetasService serviceCarpetas;
+	
+	@Autowired
+	private ICuentasEnlacesService serviceCuentasEnlaces;
 
 	@GetMapping("/mostrarContabilidad")
 	public String mostrarContabilidad(Model model, HttpSession session) {
@@ -129,6 +134,31 @@ public class ContabilidadController {
 		model.addAttribute("cuentasContablesAuxiliaresIniciadas", cuentasContablesAuxiliaresIniciadas);
 		model.addAttribute("cuentasContables", newOrder);
 		model.addAttribute("cuentaContable", new CuentaContable());
+		//Cuenta de enlace	
+		CuentaEnlace capitalPrestamoEnlace = serviceCuentasEnlaces.buscarPorEmpresaTipoSeccionReferencia(empresa, "credito", "capital", "prestamos");
+		if(capitalPrestamoEnlace == null) {
+			capitalPrestamoEnlace = new CuentaEnlace();
+			capitalPrestamoEnlace.setCuentaContable(new CuentaContable());
+		}
+		model.addAttribute("capitalPrestamoEnlace", capitalPrestamoEnlace.getCuentaContable());
+		CuentaEnlace interesEnlace = serviceCuentasEnlaces.buscarPorEmpresaTipoSeccionReferencia(empresa, "credito", "interes", "prestamos");
+		if(interesEnlace == null) {
+			interesEnlace = new CuentaEnlace();
+			interesEnlace.setCuentaContable(new CuentaContable());
+		}
+		model.addAttribute("interesPrestamoEnlace", interesEnlace.getCuentaContable());
+		CuentaEnlace gastosCierreEnlace = serviceCuentasEnlaces.buscarPorEmpresaTipoSeccionReferencia(empresa, "credito", "gastosCierre", "prestamos");
+		if(gastosCierreEnlace == null) {
+			gastosCierreEnlace = new CuentaEnlace();
+			gastosCierreEnlace.setCuentaContable(new CuentaContable());
+		}
+		model.addAttribute("gastosCierrePrestamoEnlace", gastosCierreEnlace.getCuentaContable());
+		CuentaEnlace cuentaEnlaceAdicionales = serviceCuentasEnlaces.buscarPorEmpresaTipoSeccionReferencia(empresa, "credito", "adicionales", "prestamos");
+		if(cuentaEnlaceAdicionales == null) {
+			cuentaEnlaceAdicionales = new CuentaEnlace();
+			cuentaEnlaceAdicionales.setCuentaContable(new CuentaContable());
+		}
+		model.addAttribute("cobrosAdicionalesPrestamoEnlace", cuentaEnlaceAdicionales.getCuentaContable());
 		return "contabilidad/contabilidad :: contabilidad";
 	}
 	

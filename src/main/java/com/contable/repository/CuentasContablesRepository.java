@@ -20,4 +20,5 @@ public interface CuentasContablesRepository extends JpaRepository<CuentaContable
 	List<CuentaContable> findByEmpresaAndCuentaControl(Empresa empresa, String cuentaControl);
 	List<CuentaContable> findByEmpresaAndIdCuentaControl(Empresa empresa, Integer idCuentaControl);
 	List<CuentaContable> findByEmpresaAndTipoAndEstadoAndCodigoContaining(Empresa empresa, String tipo, Integer estado, String codigo);
+	List<CuentaContable> findByEmpresaAndTipoAndCodigoContaining(Empresa empresa, String tipo, String codigo);
 }

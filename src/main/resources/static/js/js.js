@@ -2040,6 +2040,112 @@ $("#btnCuentaEnlace").click(function(e){
 $("#btnGuardarCuentaEnlace").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
+	var capitalPrestamoCC = $("#capitalPrestamoCC").val();
+	var interesPrestamoCC = $("#interesPrestamoCC").val();
+	var gastosCierrePrestamoCC = $("#gastosCierrePrestamoCC").val();
+	var cobrosAdicionalesPrestamoCC = $("#cobrosAdicionalesPrestamoCC").val();
+	
+	if(!capitalPrestamoCC || !interesPrestamoCC || !gastosCierrePrestamoCC || !cobrosAdicionalesPrestamoCC){
+		 $("#modalCuentaEnlace").modal("hide");
+			Swal.fire({
+				  title: 'Alerta!',
+				  text: "Los campos con '*' no pueden estar vacios",
+				  icon: 'warning',
+				  position : 'top',
+				  showCancelButton: false,
+				  confirmButtonColor: '#3085d6',
+				  confirmButtonText: 'Ok!'
+				}).then((result) => {
+				  if (result.isConfirmed) {
+					$("#modalCuentaEnlace").modal("show");
+				  }
+				})
+	}else{
+		if(capitalPrestamoCC == interesPrestamoCC || capitalPrestamoCC == gastosCierrePrestamoCC || capitalPrestamoCC ==  cobrosAdicionalesPrestamoCC){
+			 $("#modalCuentaEnlace").modal("hide");
+			Swal.fire({
+				  title: 'Alerta!',
+				  text: "Las cuentas contables no pueden ser repetidas",
+				  icon: 'warning',
+				  position : 'top',
+				  showCancelButton: false,
+				  confirmButtonColor: '#3085d6',
+				  confirmButtonText: 'Ok!'
+				}).then((result) => {
+				  if (result.isConfirmed) {
+					$("#modalCuentaEnlace").modal("show");
+				  }
+				})
+		}else{
+			 $.post("/cuentasContables/guardarCuentaEnlace",{
+				 "capitalPrestamo":capitalPrestamoCC,
+				 "interesPrestamo":interesPrestamoCC,
+				 "gastosCierrePrestamo":gastosCierrePrestamoCC,
+				 "cobrosAdicionalesPrestamo":cobrosAdicionalesPrestamoCC
+			 },function(data){
+				 if(data == "1"){
+					 $("#modalCuentaEnlace").modal("hide");
+						Swal.fire({
+							  title: 'Muy Bien!',
+							  text: "Registros guardados",
+							  icon: 'success',
+							  position : 'top',
+							  showCancelButton: false,
+							  confirmButtonColor: '#3085d6',
+							  confirmButtonText: 'Ok!'
+							}).then((result) => {
+							  if (result.isConfirmed) {
+//								$("#modalCuentaEnlace").modal("show");
+							  }
+							})
+				 }
+			 });
+		}
+	}
+});
+
+$("#codigoCapitalPrestamoCC").on("keyup", function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var valor = $("#codigoCapitalPrestamoCC").val();
+	$("#capitalPrestamoCC").load("/cuentasContables/buscarContablesAuxiliarCapitalPrestamo",{
+			"valor":valor
+		},function(data){
+			console.log("Lista actualizada");
+		});
+});
+
+$("#codigoInteresPrestamoCC").on("keyup", function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var valor = $("#codigoInteresPrestamoCC").val();
+	$("#interesPrestamoCC").load("/cuentasContables/buscarContablesAuxiliarInteresPrestamo",{
+			"valor":valor
+		},function(data){
+			console.log("Lista actualizada");
+		});
+});
+
+$("#codigoGastosCierrePrestamoCC").on("keyup", function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var valor = $("#codigoGastosCierrePrestamoCC").val();
+	$("#gastosCierrePrestamoCC").load("/cuentasContables/buscarContablesAuxiliarGastosCierrePrestamo",{
+			"valor":valor
+		},function(data){
+			console.log("Lista actualizada");
+		});
+});
+
+$("#codigoCobrosAdicionalesPrestamoCC").on("keyup", function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var valor = $("#codigoCobrosAdicionalesPrestamoCC").val();
+	$("#cobrosAdicionalesPrestamoCC").load("/cuentasContables/buscarContablesAuxiliarCobrosAdicionalesPrestamo",{
+			"valor":valor
+		},function(data){
+			console.log("Lista actualizada");
+		});
 });
 
 $("#btnGuardarUpdateCuentaContable").click(function(e){

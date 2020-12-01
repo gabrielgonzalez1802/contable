@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.contable.model.Carpeta;
 import com.contable.model.CuentaContable;
+import com.contable.model.CuentaEnlace;
 import com.contable.model.Empresa;
 import com.contable.model.EntradaDiario;
 import com.contable.model.Usuario;
 import com.contable.service.ICarpetasService;
 import com.contable.service.ICuentasContablesService;
+import com.contable.service.ICuentasEnlacesService;
 import com.contable.service.IEntradasDiariosService;
 
 @Controller
@@ -37,6 +39,9 @@ public class CuentasContablesController {
 	
 	@Autowired
 	private ICarpetasService serviceCarpetas;
+	
+	@Autowired
+	private ICuentasEnlacesService serviceCuentasEnlaces;
 
 	@PostMapping("/crear")
 	public ResponseEntity<String> crear(Model model, HttpSession session, 
@@ -132,6 +137,54 @@ public class CuentasContablesController {
 		return "contabilidad/contabilidad :: #cuentaContableAuxiliar";
 	}
 	
+	@PostMapping("/buscarContablesAuxiliarCapitalPrestamo")
+	public String buscarContablesAuxiliarCapitalPrestamo(Model model, HttpSession session, String valor){
+		valor = valor.replace(" ", "");
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.
+				buscarPorEmpresaTipoAndContieneCodigo((Empresa) session.getAttribute("empresa"), "A", valor);
+		CuentaEnlace capitalPrestamoEnlace = new CuentaEnlace();
+		capitalPrestamoEnlace.setCuentaContable(new CuentaContable());
+		model.addAttribute("capitalPrestamoEnlace", capitalPrestamoEnlace);
+		model.addAttribute("cuentasContablesAuxiliaresGeneral", cuentasContablesAuxiliares);
+		return "contabilidad/contabilidad :: #capitalPrestamoCC";
+	}
+	
+	@PostMapping("/buscarContablesAuxiliarInteresPrestamo")
+	public String buscarContablesAuxiliarInteresPrestamo(Model model, HttpSession session, String valor){
+		valor = valor.replace(" ", "");
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.
+				buscarPorEmpresaTipoAndContieneCodigo((Empresa) session.getAttribute("empresa"), "A", valor);
+		CuentaEnlace interesPrestamoEnlace = new CuentaEnlace();
+		interesPrestamoEnlace.setCuentaContable(new CuentaContable());
+		model.addAttribute("interesPrestamoEnlace", interesPrestamoEnlace);
+		model.addAttribute("cuentasContablesAuxiliaresGeneral", cuentasContablesAuxiliares);
+		return "contabilidad/contabilidad :: #interesPrestamoCC";
+	}
+	
+	@PostMapping("/buscarContablesAuxiliarGastosCierrePrestamo")
+	public String buscarContablesAuxiliarGastosCierrePrestamo(Model model, HttpSession session, String valor){
+		valor = valor.replace(" ", "");
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.
+				buscarPorEmpresaTipoAndContieneCodigo((Empresa) session.getAttribute("empresa"), "A", valor);
+		CuentaEnlace gastosCierrePrestamoEnlace = new CuentaEnlace();
+		gastosCierrePrestamoEnlace.setCuentaContable(new CuentaContable());
+		model.addAttribute("gastosCierrePrestamoEnlace", gastosCierrePrestamoEnlace);
+		model.addAttribute("cuentasContablesAuxiliaresGeneral", cuentasContablesAuxiliares);
+		return "contabilidad/contabilidad :: #gastosCierrePrestamoCC";
+	}
+	
+	@PostMapping("/buscarContablesAuxiliarCobrosAdicionalesPrestamo")
+	public String buscarContablesAuxiliarCobrosAdicionalesPrestamo(Model model, HttpSession session, String valor){
+		valor = valor.replace(" ", "");
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.
+				buscarPorEmpresaTipoAndContieneCodigo((Empresa) session.getAttribute("empresa"), "A", valor);
+		CuentaEnlace cobrosAdicionalesPrestamoEnlace = new CuentaEnlace();
+		cobrosAdicionalesPrestamoEnlace.setCuentaContable(new CuentaContable());
+		model.addAttribute("cobrosAdicionalesPrestamoEnlace", cobrosAdicionalesPrestamoEnlace);
+		model.addAttribute("cuentasContablesAuxiliaresGeneral", cuentasContablesAuxiliares);
+		return "contabilidad/contabilidad :: #cobrosAdicionalesPrestamoCC";
+	}
+	
 	@PostMapping("/buscarContablesAuxiliar1")
 	public String buscarContablesAuxiliar1(Model model, HttpSession session, String valor){
 		valor = valor.replace(" ", "");
@@ -154,10 +207,10 @@ public class CuentasContablesController {
 	public ResponseEntity<String> guardarEntradaDiario(Model model, HttpSession session, BigDecimal monto,
 			String motivo, Integer cuenta1, Integer cuenta2){
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
-		Carpeta carpeta = null;
-		
 		String response = "0";
-		
+
+		Carpeta carpeta = null;
+				
 		if(session.getAttribute("carpeta") != null) {
 			 carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
 		}else {
@@ -205,6 +258,88 @@ public class CuentasContablesController {
 		
 		if(entradaCredito.getId()!=null && entradaDebito.getId()!=null) {
 			response = "1";
+		}
+		
+		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
+	}
+	
+	@PostMapping("/guardarCuentaEnlace")
+	public ResponseEntity<String> guardarCuentaEnlace(Model model, HttpSession session,
+			Integer cobrosAdicionalesPrestamo, Integer gastosCierrePrestamo,
+			Integer capitalPrestamo, Integer interesPrestamo){
+		String response = "1";		
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		
+		//Capital
+		
+		CuentaEnlace capitalEnlace = serviceCuentasEnlaces.buscarPorEmpresaTipoSeccionReferencia(empresa, "credito", "capital", "prestamos");
+		CuentaContable capitalCC = serviceCuentasContables.buscarPorId(capitalPrestamo);
+		
+		if(capitalEnlace == null) {
+			capitalEnlace = new CuentaEnlace();
+			capitalEnlace.setEmpresa(empresa);
+			capitalEnlace.setCuentaContable(capitalCC);
+			capitalEnlace.setReferencia("prestamos");
+			capitalEnlace.setSeccion("capital");
+			capitalEnlace.setTipo("credito");
+			serviceCuentasEnlaces.guardar(capitalEnlace);
+		}else {
+			capitalEnlace.setCuentaContable(capitalCC);
+			serviceCuentasEnlaces.guardar(capitalEnlace);
+		}
+		
+		//Interes
+		
+		CuentaEnlace interesEnlace = serviceCuentasEnlaces.buscarPorEmpresaTipoSeccionReferencia(empresa, "credito", "interes", "prestamos");
+		CuentaContable interesCC = serviceCuentasContables.buscarPorId(interesPrestamo);
+		
+		if(interesEnlace == null) {
+			interesEnlace = new CuentaEnlace();
+			interesEnlace.setEmpresa(empresa);
+			interesEnlace.setCuentaContable(interesCC);
+			interesEnlace.setReferencia("prestamos");
+			interesEnlace.setSeccion("interes");
+			interesEnlace.setTipo("credito");
+			serviceCuentasEnlaces.guardar(interesEnlace);
+		}else {
+			interesEnlace.setCuentaContable(interesCC);
+			serviceCuentasEnlaces.guardar(interesEnlace);
+		}
+		
+		//Gastos Cierre
+		
+		CuentaEnlace gastosCierreEnlace = serviceCuentasEnlaces.buscarPorEmpresaTipoSeccionReferencia(empresa, "credito", "gastosCierre", "prestamos");
+		CuentaContable gastosCierreCC = serviceCuentasContables.buscarPorId(gastosCierrePrestamo);
+		
+		if(gastosCierreEnlace == null) {
+			gastosCierreEnlace = new CuentaEnlace();
+			gastosCierreEnlace.setEmpresa(empresa);
+			gastosCierreEnlace.setCuentaContable(gastosCierreCC);
+			gastosCierreEnlace.setReferencia("prestamos");
+			gastosCierreEnlace.setSeccion("gastosCierre");
+			gastosCierreEnlace.setTipo("credito");
+			serviceCuentasEnlaces.guardar(gastosCierreEnlace);
+		}else {
+			gastosCierreEnlace.setCuentaContable(gastosCierreCC);
+			serviceCuentasEnlaces.guardar(gastosCierreEnlace);
+		}
+		
+		//Cobros Adicionales
+		
+		CuentaEnlace cuentaEnlaceAdicionales = serviceCuentasEnlaces.buscarPorEmpresaTipoSeccionReferencia(empresa, "credito", "adicionales", "prestamos");
+		CuentaContable cuentaContableAdicional = serviceCuentasContables.buscarPorId(cobrosAdicionalesPrestamo);
+		
+		if(cuentaEnlaceAdicionales == null) {
+			cuentaEnlaceAdicionales = new CuentaEnlace();
+			cuentaEnlaceAdicionales.setEmpresa(empresa);
+			cuentaEnlaceAdicionales.setCuentaContable(cuentaContableAdicional);
+			cuentaEnlaceAdicionales.setReferencia("prestamos");
+			cuentaEnlaceAdicionales.setSeccion("adicionales");
+			cuentaEnlaceAdicionales.setTipo("credito");
+			serviceCuentasEnlaces.guardar(cuentaEnlaceAdicionales);
+		}else {
+			cuentaEnlaceAdicionales.setCuentaContable(cuentaContableAdicional);
+			serviceCuentasEnlaces.guardar(cuentaEnlaceAdicionales);
 		}
 		
 		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
