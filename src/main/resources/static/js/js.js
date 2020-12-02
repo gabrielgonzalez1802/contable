@@ -1549,7 +1549,7 @@ $("#agregarEntradaDiario").click(function(e){
 						  });
 					  }
 					})
-		 }else{
+		 }else if(data == "0"){
 			 $("#modalEntradaDiarioDC").modal("hide");
 				Swal.fire({
 					  title: 'Alerta!',
@@ -1564,6 +1564,23 @@ $("#agregarEntradaDiario").click(function(e){
 						  $("#montoEntradaDiario").val("");
 						 $("#referenciaEntradaDiario").val("");
 						 $("#modalEntradaDiarioDC").modal("hide");
+					  }
+					})
+		 }else if(data == "2"){
+			 $("#modalEntradaDiarioDC").modal("hide");
+				Swal.fire({
+					  title: 'Alerta!',
+					  text: "Los totales deben ser iguales",
+					  icon: 'warning',
+					  position : 'top',
+					  showCancelButton: false,
+					  confirmButtonColor: '#3085d6',
+					  confirmButtonText: 'Ok!'
+					}).then((result) => {
+					  if (result.isConfirmed) {
+						  $("#montoEntradaDiario").val("");
+						 $("#referenciaEntradaDiario").val("");
+						 $("#modalEntradaDiarioDC").modal("show");
 					  }
 					})
 		 }

@@ -142,6 +142,41 @@ public class ContabilidadController {
 		model.addAttribute("empresa", empresa);
 		model.addAttribute("cuentasContablesAuxiliaresGeneral", cuentasContablesAuxiliaresGeneral);
 		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
+		
+		for (CuentaContable cuentaContableIni : cuentasContablesAuxiliaresIniciadas) {
+			//Verificamos el balance total de la cuenta contable
+			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableIni, empresa, carpeta);
+			double montoTotal = 0.0;
+			CuentaContable cuentaContableTemp = cuentaContableIni;
+			for (EntradaDiario entradaDiario : entradasDiarios) {
+				
+				BigDecimal montoT = entradaDiario.getCredito().subtract(entradaDiario.getDebito());
+				cuentaContableTemp.setMonto(montoT.doubleValue());
+				
+				if(cuentaContableTemp.getTipo().equals("C")) {
+					List<CuentaContable> cuentasContablesTemp = serviceCuentasContables.
+								buscarPorEmpresaCuentaControl(empresa, 
+										cuentaContableTemp.getCodigo());
+					
+					if(!cuentasContablesTemp.isEmpty()) {
+						Double montoTemp = 0.0;
+						for (CuentaContable cuentaContableTemp2 : cuentasContablesTemp) {
+							List<EntradaDiario> entradasDiariosTemp = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableTemp2, empresa, carpeta);
+							for (EntradaDiario entradaDiarioTemp2 : entradasDiariosTemp) {
+								montoTemp+=entradaDiarioTemp2.getCredito().subtract(entradaDiarioTemp2.getDebito()).doubleValue();
+							}
+							cuentaContableTemp.setMonto(montoTemp);
+						}
+					}
+				}
+				
+				montoTotal+=cuentaContableTemp.getMonto();
+				
+			}
+			
+			cuentaContableIni.setNombreCuenta(cuentaContableIni.getNombreCuenta()+" -- $ "+montoTotal);
+		}
+		
 		model.addAttribute("cuentasContablesAuxiliaresIniciadas", cuentasContablesAuxiliaresIniciadas);
 		model.addAttribute("cuentasContables", newOrder);
 		model.addAttribute("cuentaContable", new CuentaContable());
@@ -172,6 +207,18 @@ public class ContabilidadController {
 		model.addAttribute("cobrosAdicionalesPrestamoEnlace", cuentaEnlaceAdicionales.getCuentaContable());
 		List<EntradaDiarioTemp> entradasTemp = serviceEntradasDiariosTemp.buscarPorEmpresaUsuario(empresa, usuario);
 		model.addAttribute("entradasTemp", entradasTemp);
+		
+		double totalDebitoTemp = 0.0;
+		double totalCreditoTemp = 0.0;
+		
+		for (EntradaDiarioTemp entradaDiarioTemp : entradasTemp) {
+			totalDebitoTemp+=entradaDiarioTemp.getDebito().doubleValue();
+			totalCreditoTemp+=entradaDiarioTemp.getCredito().doubleValue();
+		}
+		
+		model.addAttribute("totalDebitoTemp", totalDebitoTemp);
+		model.addAttribute("totalCreditoTemp", totalCreditoTemp);
+		model.addAttribute("dif", totalDebitoTemp-totalCreditoTemp);
 		return "contabilidad/contabilidad :: contabilidad";
 	}
 	
@@ -203,6 +250,18 @@ public class ContabilidadController {
 			BigDecimal monto, String referencia, Integer cuentaContableId, Integer tipo) {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		
+		Carpeta carpeta = null;
+		
+		if(session.getAttribute("carpeta") != null) {
+			 carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
+		}else {
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, empresa);
+			if(!carpetas.isEmpty()) {
+				carpeta = carpetas.get(0);
+			}
+		}
+		
 		CuentaContable cuentaContable = serviceCuentasContables.buscarPorId(cuentaContableId);
 		
 		BigDecimal valor = new BigDecimal(0.0);
@@ -213,24 +272,54 @@ public class ContabilidadController {
 			valor = entradasTempInit.get(entradasTempInit.size()-1).getBalanceFinal();
 		}
 		
+		//Verificamos el balance inicial de la cuenta contable
+		List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContable, empresa, carpeta);
+		double montoTotal = 0.0;
+		for (EntradaDiario entradaDiario : entradasDiarios) {
+			
+			BigDecimal montoT = entradaDiario.getCredito().subtract(entradaDiario.getDebito());
+			cuentaContable.setMonto(montoT.doubleValue());
+			
+			if(cuentaContable.getTipo().equals("C")) {
+				List<CuentaContable> cuentasContablesTemp = serviceCuentasContables.
+							buscarPorEmpresaCuentaControl(empresa, 
+									cuentaContable.getCodigo());
+				
+				if(!cuentasContablesTemp.isEmpty()) {
+					Double montoTemp = 0.0;
+					for (CuentaContable cuentaContableTemp : cuentasContablesTemp) {
+						List<EntradaDiario> entradasDiariosTemp = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableTemp, empresa, carpeta);
+						for (EntradaDiario entradaDiarioTemp : entradasDiariosTemp) {
+							montoTemp+=entradaDiarioTemp.getCredito().subtract(entradaDiarioTemp.getDebito()).doubleValue();
+						}
+						cuentaContable.setMonto(montoTemp);
+					}
+				}
+			}
+			
+			montoTotal+=cuentaContable.getMonto();
+			
+		}
+		
 		EntradaDiarioTemp entradaDiarioTemp = new EntradaDiarioTemp();
 		entradaDiarioTemp.setCuentaContable(cuentaContable);
 		entradaDiarioTemp.setEmpresa(empresa);
 		entradaDiarioTemp.setMonto(monto);
 		entradaDiarioTemp.setReferencia(referencia);
 		entradaDiarioTemp.setTipo(tipo);
-		entradaDiarioTemp.setBalanceInicial(valor);
+//		entradaDiarioTemp.setBalanceInicial(valor);
+		entradaDiarioTemp.setBalanceInicial(new BigDecimal(montoTotal));
 
 		if(tipo==1) {
 			//debito
 			entradaDiarioTemp.setDebito(monto);
 			entradaDiarioTemp.setCredio(new BigDecimal("0.0"));
-			entradaDiarioTemp.setBalanceFinal(new BigDecimal(valor.doubleValue()+monto.doubleValue()));
+			entradaDiarioTemp.setBalanceFinal(new BigDecimal(entradaDiarioTemp.getBalanceInicial().doubleValue()+monto.doubleValue()));
 		}else {
 			//credito
 			entradaDiarioTemp.setDebito(new BigDecimal("0.0"));
 			entradaDiarioTemp.setCredio(monto);
-			entradaDiarioTemp.setBalanceFinal(new BigDecimal(valor.doubleValue()-monto.doubleValue()));
+			entradaDiarioTemp.setBalanceFinal(new BigDecimal(entradaDiarioTemp.getBalanceInicial().doubleValue()-monto.doubleValue()));
 		}
 		
 		entradaDiarioTemp.setUsuario(usuario);
@@ -238,6 +327,18 @@ public class ContabilidadController {
 		
 		List<EntradaDiarioTemp> entradasTemp = serviceEntradasDiariosTemp.buscarPorEmpresaUsuario(empresa, usuario);
 		model.addAttribute("entradasTemp", entradasTemp);
+		
+		double totalDebitoTemp = 0.0;
+		double totalCreditoTemp = 0.0;
+		
+		for (EntradaDiarioTemp entradaDiarioTemp2 : entradasTemp) {
+			totalDebitoTemp+=entradaDiarioTemp2.getDebito().doubleValue();
+			totalCreditoTemp+=entradaDiarioTemp2.getCredito().doubleValue();
+		}
+		
+		model.addAttribute("totalDebitoTemp", totalDebitoTemp);
+		model.addAttribute("totalCreditoTemp", totalCreditoTemp);
+		model.addAttribute("dif", totalDebitoTemp-totalCreditoTemp);
 		return "contabilidad/contabilidad :: #tablaEntradasTemp";
 	}
 	
@@ -252,6 +353,18 @@ public class ContabilidadController {
 
 		List<EntradaDiarioTemp> entradasTemp = serviceEntradasDiariosTemp.buscarPorEmpresaUsuario(empresa, usuario);
 		model.addAttribute("entradasTemp", entradasTemp);
+		
+		double totalDebitoTemp = 0.0;
+		double totalCreditoTemp = 0.0;
+		
+		for (EntradaDiarioTemp entradaDiarioTemp2 : entradasTemp) {
+			totalDebitoTemp+=entradaDiarioTemp2.getDebito().doubleValue();
+			totalCreditoTemp+=entradaDiarioTemp2.getCredito().doubleValue();
+		}
+		
+		model.addAttribute("totalDebitoTemp", totalDebitoTemp);
+		model.addAttribute("totalCreditoTemp", totalCreditoTemp);
+		model.addAttribute("dif", totalDebitoTemp-totalCreditoTemp);
 		return "contabilidad/contabilidad :: #tablaEntradasTemp";
 	}
 	
@@ -273,20 +386,34 @@ public class ContabilidadController {
 		List<EntradaDiarioTemp> entradasTemp = serviceEntradasDiariosTemp.buscarPorEmpresaUsuario(empresa, usuario);
 		
 		if(!entradasTemp.isEmpty()) {
+			double totalDebito = 0.0;
+			double totalCredito = 0.0;
+			//Verificamos que la suma de los debitos y creditos sean iguales
 			for (EntradaDiarioTemp entradaDiarioTemp : entradasTemp) {
-				EntradaDiario entradaDiario = new EntradaDiario();
-				entradaDiario.setCarpeta(carpeta);
-				entradaDiario.setCredito(entradaDiarioTemp.getCredito());
-				entradaDiario.setCuentaContable(entradaDiarioTemp.getCuentaContable());
-				entradaDiario.setDebito(entradaDiarioTemp.getDebito());
-				entradaDiario.setDetalle(entradaDiarioTemp.getReferencia());
-				entradaDiario.setEmpresa(empresa);
-				entradaDiario.setFecha(new Date());
-				entradaDiario.setUsuario(usuario);
-				serviceEntradasDiarios.guardar(entradaDiario);
-				response = "1";
+				totalDebito+=entradaDiarioTemp.getDebito().doubleValue();
+				totalCredito+=entradaDiarioTemp.getCredito().doubleValue();
 			}
-			serviceEntradasDiariosTemp.eliminar(entradasTemp);
+			
+			if(totalDebito == totalCredito) {
+				for (EntradaDiarioTemp entradaDiarioTemp : entradasTemp) {
+					EntradaDiario entradaDiario = new EntradaDiario();
+					entradaDiario.setCarpeta(carpeta);
+					entradaDiario.setCredito(entradaDiarioTemp.getCredito());
+					entradaDiario.setCuentaContable(entradaDiarioTemp.getCuentaContable());
+					entradaDiario.setDebito(entradaDiarioTemp.getDebito());
+					entradaDiario.setDetalle(entradaDiarioTemp.getReferencia());
+					entradaDiario.setEmpresa(empresa);
+					entradaDiario.setFecha(new Date());
+					entradaDiario.setUsuario(usuario);
+					entradaDiario.setBalanceInicial(entradaDiarioTemp.getBalanceInicial());
+					entradaDiario.setBalanceFinal(entradaDiarioTemp.getBalanceFinal());
+					serviceEntradasDiarios.guardar(entradaDiario);
+					response = "1";
+				}
+				serviceEntradasDiariosTemp.eliminar(entradasTemp);
+			}else {
+				response = "2";
+			}
 		}
 		
 		return new ResponseEntity<>(response, HttpStatus.ACCEPTED);

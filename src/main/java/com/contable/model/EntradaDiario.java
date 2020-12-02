@@ -3,6 +3,7 @@ package com.contable.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,6 +26,12 @@ public class EntradaDiario {
 	
 	private BigDecimal debito = new BigDecimal(0);
 	private BigDecimal credito = new BigDecimal(0);
+	
+	@Column(name = "balance_inicial")
+	private BigDecimal balanceInicial;
+	
+	@Column(name = "balance_final")
+	private BigDecimal balanceFinal;
 	
 	private String detalle;
 	
@@ -138,10 +145,27 @@ public class EntradaDiario {
 		this.cuentaContableRef = cuentaContableRef;
 	}
 
+	public BigDecimal getBalanceInicial() {
+		return balanceInicial;
+	}
+
+	public void setBalanceInicial(BigDecimal balanceInicial) {
+		this.balanceInicial = balanceInicial;
+	}
+
+	public BigDecimal getBalanceFinal() {
+		return balanceFinal;
+	}
+
+	public void setBalanceFinal(BigDecimal balanceFinal) {
+		this.balanceFinal = balanceFinal;
+	}
+
 	@Override
 	public String toString() {
 		return "EntradaDiario [id=" + id + ", cuentaContable=" + cuentaContable + ", debito=" + debito + ", credito="
-				+ credito + ", detalle=" + detalle + ", diario=" + diario + ", cuentaContableRef=" + cuentaContableRef
-				+ ", usuario=" + usuario + ", fecha=" + fecha + ", carpeta=" + carpeta + ", empresa=" + empresa + "]";
+				+ credito + ", balanceInicial=" + balanceInicial + ", balanceFinal=" + balanceFinal + ", detalle="
+				+ detalle + ", diario=" + diario + ", cuentaContableRef=" + cuentaContableRef + ", usuario=" + usuario
+				+ ", fecha=" + fecha + ", carpeta=" + carpeta + ", empresa=" + empresa + "]";
 	}
 }

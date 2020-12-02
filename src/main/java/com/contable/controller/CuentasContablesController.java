@@ -35,14 +35,14 @@ public class CuentasContablesController {
 	private ICuentasContablesService serviceCuentasContables;
 	
 	@Autowired
-	private IEntradasDiariosService serviceEntradasDiario;
+	private IEntradasDiariosService serviceEntradasDiarios;
 	
 	@Autowired
 	private ICarpetasService serviceCarpetas;
 	
 	@Autowired
 	private ICuentasEnlacesService serviceCuentasEnlaces;
-
+	
 	@PostMapping("/crear")
 	public ResponseEntity<String> crear(Model model, HttpSession session, 
 			String tipoCuenta, String grupoCuenta, String codigoCuenta, String nombreCuenta,
@@ -119,7 +119,7 @@ public class CuentasContablesController {
 		entradaDiario.setDetalle("inicio contable");
 		entradaDiario.setEmpresa(empresa);
 		entradaDiario.setCarpeta(carpeta);
-		serviceEntradasDiario.guardar(entradaDiario);
+		serviceEntradasDiarios.guardar(entradaDiario);
 		
 		if(entradaDiario.getId()!=null) {
 			response = "1";
@@ -188,8 +188,54 @@ public class CuentasContablesController {
 	@PostMapping("/buscarContablesAuxiliarEntradaDiario")
 	public String buscarContablesAuxiliarEntradaDiario(Model model, HttpSession session, String valor){
 		valor = valor.replace(" ", "");
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Carpeta carpeta = null;
+		
+		if(session.getAttribute("carpeta") != null) {
+			 carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
+		}else {
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, empresa);
+			if(!carpetas.isEmpty()) {
+				carpeta = carpetas.get(0);
+			}
+		}
 		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.
-				buscarPorEmpresaTipoEstadoAndContieneCodigo((Empresa) session.getAttribute("empresa"), "A", 1, valor);
+				buscarPorEmpresaTipoEstadoAndContieneCodigo(empresa, "A", 1, valor);
+		
+		for (CuentaContable cuentaContableIni : cuentasContablesAuxiliares) {
+			//Verificamos el balance total de la cuenta contable
+			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableIni, empresa, carpeta);
+			double montoTotal = 0.0;
+			CuentaContable cuentaContableTemp = cuentaContableIni;
+			for (EntradaDiario entradaDiario : entradasDiarios) {
+				
+				BigDecimal montoT = entradaDiario.getCredito().subtract(entradaDiario.getDebito());
+				cuentaContableTemp.setMonto(montoT.doubleValue());
+				
+				if(cuentaContableTemp.getTipo().equals("C")) {
+					List<CuentaContable> cuentasContablesTemp = serviceCuentasContables.
+								buscarPorEmpresaCuentaControl(empresa, 
+										cuentaContableTemp.getCodigo());
+					
+					if(!cuentasContablesTemp.isEmpty()) {
+						Double montoTemp = 0.0;
+						for (CuentaContable cuentaContableTemp2 : cuentasContablesTemp) {
+							List<EntradaDiario> entradasDiariosTemp = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableTemp2, empresa, carpeta);
+							for (EntradaDiario entradaDiarioTemp2 : entradasDiariosTemp) {
+								montoTemp+=entradaDiarioTemp2.getCredito().subtract(entradaDiarioTemp2.getDebito()).doubleValue();
+							}
+							cuentaContableTemp.setMonto(montoTemp);
+						}
+					}
+				}
+				
+				montoTotal+=cuentaContableTemp.getMonto();
+				
+			}
+			
+			cuentaContableIni.setNombreCuenta(cuentaContableIni.getNombreCuenta()+" -- $ "+montoTotal);
+		}
+		
 		model.addAttribute("cuentasContablesAuxiliaresIniciadas", cuentasContablesAuxiliares);
 		return "contabilidad/contabilidad :: #cuentaContableAuxiliarEd";
 	}
@@ -244,7 +290,7 @@ public class CuentasContablesController {
 		entradaDebito.setFecha(new Date());
 		entradaDebito.setUsuario(usuario);
 		
-		serviceEntradasDiario.guardar(entradaDebito);
+		serviceEntradasDiarios.guardar(entradaDebito);
 		
 		//Credito
 		EntradaDiario entradaCredito = new EntradaDiario();
@@ -257,13 +303,13 @@ public class CuentasContablesController {
 		entradaCredito.setFecha(new Date());
 		entradaCredito.setUsuario(usuario);
 		
-		serviceEntradasDiario.guardar(entradaCredito);
+		serviceEntradasDiarios.guardar(entradaCredito);
 		
 		entradaDebito.setCuentaContableRef(entradaCredito.getCuentaContable());
 		entradaCredito.setCuentaContableRef(entradaDebito.getCuentaContable());
 
-		serviceEntradasDiario.guardar(entradaDebito);
-		serviceEntradasDiario.guardar(entradaCredito);
+		serviceEntradasDiarios.guardar(entradaDebito);
+		serviceEntradasDiarios.guardar(entradaCredito);
 		
 		if(entradaCredito.getId()!=null && entradaDebito.getId()!=null) {
 			response = "1";

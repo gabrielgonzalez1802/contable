@@ -8,7 +8,7 @@
 	<div th:fragment="contabilidad">
 	
   <!-- Modal Entrada de Diario -->
-  <div class="modal" id="modalEntradaDiarioDC">
+  <div class="modal" id="modalEntradaDiarioDC" data-backdrop="static">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
       
@@ -96,6 +96,12 @@
 										 	 <td th:text="${entradaTemp.balanceFinal}"></td>
 										 	 <td> <button th:onclick="'eliminarEntradaDiarioTemp(\'' + ${entradaTemp.id} + '\');'" class="btn btn-danger"><i class="fas fa-trash"></i></button></td>
 										 </tr>
+										 <tr>
+										 	<td colspan="4"></td>
+										 	<td th:text="'Total Debito: ' + ${totalDebitoTemp}"></td>
+										 	<td th:text="'Total Credito: ' + ${totalCreditoTemp}"></td>
+										 	<td th:text="'Dif: ' + ${dif}"></td>
+										 </tr>
 									</tbody>
 								 </table>
 		                	  </div>
@@ -112,7 +118,7 @@
         <!-- Modal footer -->
         <div class="modal-footer">
 <!--           <button type="button" class="btn btn-success" id="eliminarEntradasTemp">Regresar</button> -->
-          <button type="button" class="btn btn-primary" data-dismiss="modal" id="agregarEntradaDiario">Agregar</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="agregarEntradaDiario">Guardar</button>
         </div>
         
       </div>
