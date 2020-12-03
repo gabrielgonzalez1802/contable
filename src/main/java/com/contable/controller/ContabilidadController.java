@@ -23,12 +23,14 @@ import com.contable.model.CuentaEnlace;
 import com.contable.model.Empresa;
 import com.contable.model.EntradaDiario;
 import com.contable.model.EntradaDiarioTemp;
+import com.contable.model.Producto;
 import com.contable.model.Usuario;
 import com.contable.service.ICarpetasService;
 import com.contable.service.ICuentasContablesService;
 import com.contable.service.ICuentasEnlacesService;
 import com.contable.service.IEntradasDiariosService;
 import com.contable.service.IEntradasDiariosTempService;
+import com.contable.service.IProductosService;
 
 @Controller
 @RequestMapping("/contabilidad")
@@ -48,6 +50,8 @@ public class ContabilidadController {
 	
 	@Autowired
 	private IEntradasDiariosTempService serviceEntradasDiariosTemp;
+	
+	private IProductosService serviceProductos;
 
 	@GetMapping("/mostrarContabilidad")
 	public String mostrarContabilidad(Model model, HttpSession session) {
@@ -219,6 +223,9 @@ public class ContabilidadController {
 		model.addAttribute("totalDebitoTemp", totalDebitoTemp);
 		model.addAttribute("totalCreditoTemp", totalCreditoTemp);
 		model.addAttribute("dif", totalDebitoTemp-totalCreditoTemp);
+		Producto producto = new Producto();
+		producto.setEmpresa(empresa);
+		model.addAttribute("producto", producto);
 		return "contabilidad/contabilidad :: contabilidad";
 	}
 	
@@ -418,5 +425,6 @@ public class ContabilidadController {
 		
 		return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 	}
+	
 	
 }

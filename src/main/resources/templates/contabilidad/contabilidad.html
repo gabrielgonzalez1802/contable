@@ -7,6 +7,233 @@
 <body>
 	<div th:fragment="contabilidad">
 	
+  <!-- Modal Agregar Productos -->
+  <div class="modal" id="modalAgregarProductos" data-backdrop="static">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Agregar Producto</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+           <form autocomplete="off" th:object="${producto}" id="formAddProduct">
+	        	<div class="row">
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Nombre</label><span style="color: red"> * </span>
+	        				<input type="text" th:field="*{nombre}" class="form-control" id="nombreProductoAdd" maxlength="50" placeholder="Nombre del Producto">
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Costo</label>
+	        				<input type="number" th:field="*{costo}" class="form-control" id="costoProductoAdd" min="0" placeholder="Costo">
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Precio de Venta</label>
+	        				<input type="number" th:field="*{precioVenta}" class="form-control" id="precioVentaProductoAdd" min="0" placeholder="Precio Venta">
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Tipo Activo</label><span style="color: red"> * </span>
+		        			<select id="activoFijoProductoAdd" th:field="*{activoFijo}" class="form-control">
+		        				<option value="1">Inventario</option>
+		        				<option value="2">Uso</option>
+		        			</select>
+		        		</div>	
+	        		</div>
+	        	</div>
+	        	
+	        	<br>
+	        	
+	        	<div class="row">
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Imagen</label>
+	        				<input type="file" th:field="*{imagenTemp}" class="form-control" id="imagenProductoAdd">
+	        			</div>
+	        		</div>
+	        	</div>
+	        	
+	        	<br>
+	        	
+	        	<div class="row">
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				 <button type="submit" class="btn btn-primary">Guardar</button>
+	        			</div>
+	        		</div>
+	        	</div>
+	        	
+        	</form>
+
+        </div>
+     
+        
+      </div>
+    </div>
+  </div>   
+  
+    <!-- Modal Modificar Productos -->
+  <div class="modal" id="modalModificarProductos" data-backdrop="static">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Modificar Producto</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+           <form autocomplete="off" th:object="${producto}" id="formUpdateProduct">
+	        	<div class="row">
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Nombre</label><span style="color: red"> * </span>
+	        				<input type="hidden" th:field="*{id}" id="idProductoUpdate">
+	        				<input type="text" th:field="*{nombre}" class="form-control" id="nombreProductoUpdate" maxlength="50" placeholder="Nombre del Producto">
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Costo</label>
+	        				<input type="number" th:field="*{costo}" class="form-control" id="costoProductoUpdate" min="0" placeholder="Costo">
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Precio de Venta</label>
+	        				<input type="number" th:field="*{precioVenta}" class="form-control" id="precioVentaProductoUpdate" min="0" placeholder="Precio Venta">
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Tipo Activo</label><span style="color: red"> * </span>
+		        			<select id="activoFijoProductoUpdate" th:field="*{activoFijo}" class="form-control">
+		        				<option value="1">Inventario</option>
+		        				<option value="2">Uso</option>
+		        			</select>
+		        		</div>	
+	        		</div>
+	        	</div>
+	        	
+	        	<br>
+	        	
+	        	<div class="row">
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Imagen</label>
+	        				<input type="file" th:field="*{imagenTemp}" class="form-control" id="imagenProductoUpdate">
+	        			</div>
+	        		</div>
+	        		<div class="col-md-2">
+	        		</div>
+	        		<div class="col-md-3">
+	        			<img th:if="${producto.imagen != null}" th:src="@{/logos/{img} (img=${producto.imagen} )}" style="width: 200px">
+						<img th:unless="${producto.imagen != null}" th:src="@{/img/no-image.png}" style="width: 200px">
+	        		</div>
+	        	</div>
+	        	
+	        	<br>
+	        	
+	        	<div class="row">
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        			     <button type="submit" class="btn btn-info" id="btnListaProductos">Lista Productos</button>
+	        				 <button type="submit" class="btn btn-primary">Guardar</button>
+	        			</div>
+	        		</div>
+	        	</div>
+	        	
+        	</form>
+
+        </div>
+     
+        
+      </div>
+    </div>
+  </div> 
+	
+  <!-- Modal Productos -->
+  <div class="modal" id="modalProductos" data-backdrop="static">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Productos </h4>
+          <div class="pull-right">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+          	 <button class="btn btn-primary" id="agregarProducto">Agregar</button>
+          </div>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+			<div class="row">
+					<div class="col-md-12">
+						<div id="tablaProductos">
+							<div class="table-responsive">
+			                   <table id="tabla" class="table mg-b-0 text-md-nowrap">
+									<thead style="background-color: #0162e8;height: 80px;">
+										<tr>
+										   <th style="background-color: #0162e8;color: #f3f3f3;padding-top: 10px;position: static">Nombre</th>
+										   <th style="background-color: #0162e8;color: #f3f3f3;padding-top: 10px;position: static">Costo</th>
+										   <th style="background-color: #0162e8;color: #f3f3f3;padding-top: 10px;position: static">Precio Venta</th>
+										   <th style="background-color: #0162e8;color: #f3f3f3;padding-top: 10px;position: static">Imagen</th>
+										   <th style="background-color: #0162e8;color: #f3f3f3;padding-top: 10px;position: static">Activo</th>
+										   <th style="background-color: #0162e8;color: #f3f3f3;padding-top: 10px;position: static"></th>
+										</tr>
+									 </thead>
+									<tbody>
+										 <tr th:each="producto : ${productos}">
+										 	 <td th:text="${producto.nombre}"></td>
+										 	 <td th:text="${producto.costo}"></td>
+										 	 <td th:text="${producto.precioVenta}"></td>
+										 	 <td>
+										 		 <img th:if="${producto.imagen != null}" th:src="@{/logos/{img} (img=${producto.imagen} )}" width="40px">
+										 		 <img th:unless="${producto.imagen != null}" th:src="@{/img/no-image.png}" width="40px">
+										 	 </td>
+										 	 <td th:if="${producto.activoFijo == 1}">Inventario</td>
+										 	 <td th:unless="${producto.activoFijo == 1}">Uso</td>
+										 	 <td>
+										 	 	<button th:onclick="'modificarProducto(\'' + ${producto.id} + '\');'" class="btn btn-success"><i class="fas fa-edit"></i></button> 
+										 	 	<button th:onclick="'eliminarProducto(\'' + ${producto.id} + '\');'" class="btn btn-danger"><i class="fas fa-trash"></i></button>
+										 	 </td>
+										 </tr>
+									</tbody>
+								 </table>
+		                	  </div>
+						</div>
+					</div>
+			</div>
+
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+<!--           <button type="button" class="btn btn-success" id="eliminarEntradasTemp">Regresar</button> -->
+        </div>
+        
+      </div>
+    </div>
+  </div>   
+	
   <!-- Modal Entrada de Diario -->
   <div class="modal" id="modalEntradaDiarioDC" data-backdrop="static">
     <div class="modal-dialog modal-xl">
@@ -451,7 +678,7 @@
           		
           		<div class="col-md-4">
           			<label>Tipo</label><span style="color:red;"> *</span>
-          			<input type="text" class="form-control" id="tipoEd2" value="Credito" disabled="disabled">
+          			<input type="text" class="form-control" id="tipoEd22" value="Credito" disabled="disabled">
           		</div>
           	
 			</div>
@@ -848,7 +1075,7 @@
 				  		
 				  		<div class="row">
 				  			 <div class="col-md-4 col-sm-4">
-						      <div class="card overflow-hidden sales-card bg-primary-gradient" style="height: 140px;">
+						      <div class="card overflow-hidden sales-card bg-primary-gradient" id="tarjetaInventarios" style="cursor:pointer;height: 140px;">
 			                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
 			                      	<span class="mb-3 tx-20 text-white">Inventarios </span>
 			                        <div class="float-right my-auto ml-auto">

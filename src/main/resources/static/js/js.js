@@ -1518,6 +1518,188 @@ $("#contabilidad").click(function(e){
 	});
 });
 
+$("#tarjetaInventarios").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#tablaProductos").load("/productos/listaProductos",function(data){
+		console.log("lista articulos");
+		$("#modalProductos").modal("show");
+		addEvents();
+	});
+});
+
+$("#btnListaProductos").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#modalModificarProductos").modal("hide");
+	$("#modalAgregarProductos").modal("hide");
+	$("#modalProductos").modal("show");
+});
+
+$("#agregarProducto").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#modalProductos").modal("hide");
+	$("#modalAgregarProductos").modal("show");
+});
+
+$("#formUpdateProduct").on("submit", function (e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	
+	var nombre =  $("#nombreProductoUpdate").val();
+	
+	if(!nombre){
+		$("#modalModificarProductos").modal("hide");
+		 Swal.fire({
+ 			  title: 'Alerta!',
+ 			  text: "Los campos con '*' son requeridos",
+ 			  icon: 'warning',
+ 			  position : 'top',
+ 			  showCancelButton: false,
+ 			  confirmButtonColor: '#3085d6',
+ 			  confirmButtonText: 'Ok!'
+ 			}).then((result) => {
+ 			  if (result.isConfirmed) {
+	             $("#modalModificarProductos").modal("show");
+ 			  }
+ 			})
+	}else{
+	       $.ajax({
+	            url: "/productos/modificar/",
+	            type: "POST",
+	            data: new FormData(this),
+	            enctype: 'multipart/form-data',
+	            processData: false,
+	            contentType: false,
+	            cache: false,
+	            success: function (res) {
+	            	$("#modalModificarProductos").modal("hide");
+		            if(res=="1"){
+			            Swal.fire({
+				  			  title: 'Muy bien!',
+				  			  text: "Registro modificado",
+				  			  icon: 'success',
+				  			  position : 'top',
+				  			  showCancelButton: false,
+				  			  confirmButtonColor: '#3085d6',
+				  			  confirmButtonText: 'Ok!'
+				  			}).then((result) => {
+				  			  if (result.isConfirmed) {
+				  	             $("#nombreProductoAdd").val("");
+					             $("#costoProductoAdd").val("");
+					             $("#precioVentaProductoAdd").val("");
+					             $("#imagenProductoAdd").val("");
+					             $("#modalAgregarProductos").modal("show");
+				  			  }
+				  			})
+					}else{
+						Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo Modificar el registro',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+					}
+
+//		               $("#contenido").load("/empresas/agregarEmpresa",function(data){
+		        		addEvents();
+//		        		});
+	            },
+	            error: function (err) {
+	                console.error(err);
+	                $("#modalModificarProductos").modal("hide");
+	                Swal.fire({
+						title : 'Error!',
+						text : 'No se pudo completar la operacion, intente mas tarde',
+						position : 'top',
+						icon : 'error',
+						confirmButtonText : 'Cool'
+					})
+	            }
+	        });
+	}
+});
+
+$("#formAddProduct").on("submit", function (e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	
+	var nombre =  $("#nombreProductoAdd").val();
+	
+	if(!nombre){
+		$("#modalAgregarProductos").modal("hide");
+		 Swal.fire({
+ 			  title: 'Alerta!',
+ 			  text: "Los campos con '*' son requeridos",
+ 			  icon: 'warning',
+ 			  position : 'top',
+ 			  showCancelButton: false,
+ 			  confirmButtonColor: '#3085d6',
+ 			  confirmButtonText: 'Ok!'
+ 			}).then((result) => {
+ 			  if (result.isConfirmed) {
+	             $("#modalAgregarProductos").modal("show");
+ 			  }
+ 			})
+	}else{
+	       $.ajax({
+	            url: "/productos/crear/",
+	            type: "POST",
+	            data: new FormData(this),
+	            enctype: 'multipart/form-data',
+	            processData: false,
+	            contentType: false,
+	            cache: false,
+	            success: function (res) {
+	            	$("#modalAgregarProductos").modal("hide");
+		            if(res=="1"){
+			            Swal.fire({
+				  			  title: 'Muy bien!',
+				  			  text: "Registro guardado",
+				  			  icon: 'success',
+				  			  position : 'top',
+				  			  showCancelButton: false,
+				  			  confirmButtonColor: '#3085d6',
+				  			  confirmButtonText: 'Ok!'
+				  			}).then((result) => {
+				  			  if (result.isConfirmed) {
+				  	             $("#nombreProductoAdd").val("");
+					             $("#costoProductoAdd").val("");
+					             $("#precioVentaProductoAdd").val("");
+					             $("#imagenProductoAdd").val("");
+					             $("#modalAgregarProductos").modal("show");
+				  			  }
+				  			})
+					}else{
+						Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo crear el registro',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+					}
+
+//		               $("#contenido").load("/empresas/agregarEmpresa",function(data){
+		        		addEvents();
+//		        		});
+	            },
+	            error: function (err) {
+	                console.error(err);
+	                Swal.fire({
+						title : 'Error!',
+						text : 'No se pudo completar la operacion, intente mas tarde',
+						position : 'top',
+						icon : 'error',
+						confirmButtonText : 'Cool'
+					})
+	            }
+	        });
+	}
+});
+
 $("#tarjetaEntradaDiario").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
@@ -4264,6 +4446,76 @@ function eliminarEntradaDiarioTemp(id){
 	$("#tablaEntradasTemp").load("/contabilidad/eliminarEntradasDiariosTemp/"+id,function(data){
 		addEvents();
 	});
+}
+
+function modificarProducto(id){
+	$("#modalProductos").modal("hide");
+	$("#formUpdateProduct").load("/productos/modificarProducto/"+id,function(data){
+		$("#modalModificarProductos").modal("show");
+		addEvents();
+	});
+}
+
+function eliminarProducto(id){
+	$("#modalProductos").modal("hide");
+	Swal.fire({
+		  title: 'Esta seguro?',
+		  text: "Esta accion es irreversible!",
+		  icon: 'warning',
+		  position: 'top',
+		  showCancelButton: true,
+		  confirmButtonColor: '#3085d6',
+		  cancelButtonColor: '#d33',
+		  confirmButtonText: 'Si, Eliminar!',
+		  cancelButtonText: 'Cancelar',
+		}).then((result) => {
+		  if (result.value) {
+		    Swal.fire({
+			  icon: 'success',
+			  title: 'Muy bien!',
+			  text: 'El registro se borrara.!',
+			  position: 'top'
+			})
+		    
+			 $.post("/productos/eliminarProducto",
+					 {
+						 "idProducto":id
+					},function(data){
+						 if(data == "1"){
+								Swal.fire({
+									title: 'Muy bien!',
+									text: "Registro eliminado",
+									icon: 'success',
+									position : 'top',
+									showCancelButton: false,
+									 confirmButtonColor: '#3085d6',
+									  confirmButtonText: 'Ok!'
+									}).then((result) => {
+									  if (result.isConfirmed) {
+										  $("#tablaProductos").load("/productos/listaProductos",function(data){
+												console.log("lista productos");
+												$("#modalProductos").modal("show");
+												addEvents();
+											});
+									  }
+							})
+						 }else{
+							 Swal.fire({
+								  icon: 'error',
+								  title: 'Error!',
+								  text: 'No se pudo borrar el registro!',
+								  position: 'top'
+								})
+						 }
+					});		
+		  }else{
+			  $("#tablaProductos").load("/productos/listaProductos",function(data){
+					console.log("lista productos");
+					$("#modalProductos").modal("show");
+					addEvents();
+				});
+		  }
+		})
 }
 
 function styleSeccionAll(){
