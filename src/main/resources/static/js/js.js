@@ -1518,14 +1518,237 @@ $("#contabilidad").click(function(e){
 	});
 });
 
+$("#tarjetaEnlaces").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/contabilidad/enlaces",function(data){
+		console.log("Enlaces");
+		addEvents();
+	});
+});
+
 $("#tarjetaInventarios").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
-	$("#tablaProductos").load("/productos/listaProductos",function(data){
+	
+	$("#contenido").load("/productos/listaProductos",function(data){
 		console.log("lista articulos");
 		$("#modalProductos").modal("show");
 		addEvents();
 	});
+});
+
+$("#regresarAContabilidad").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	styleSeccionAll();
+	$("#contenido").load("/contabilidad/mostrarContabilidad",function(data){
+		console.log("Contabilidad");
+		addEvents();
+	});
+});
+
+$("#ingresarProducto").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var id = $("#idSelectedProduct").val();
+	if(!id || id == ""){
+		Swal.fire({
+			title : 'Error!',
+			text : 'Debe seleccionar un producto',
+			position : 'top',
+			icon : 'error',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		
+		Swal.fire({
+			  title: 'Cantidad a ingresar',
+			  input: 'number',
+			  position : 'top',
+			  inputAttributes: {
+			    autocapitalize: 'off'
+			  },
+			  showCancelButton: true,
+			  confirmButtonText: 'Ingresar',
+			  cancelButtonColor: '#F44336',
+			  cancelButtonText: 'Cancelar',
+			  showLoaderOnConfirm: true,
+			  preConfirm: (cantidad) => {
+				  if(cantidad<0 || !cantidad){
+						Swal.fire({
+							title : 'Error!',
+							text : 'La cantidad debe ser mayor a 0',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'OK!'
+						})
+				  }else{
+					  $.post("/productos/modificarCantidad",
+						 {
+						  	"id":id,
+						  	"tipo":"entrada",
+							"cantidad":cantidad
+						},function(data){
+							Swal.fire({
+								title : 'Muy bien!',
+								text : 'Cantidad actualizada',
+								position : 'top',
+								icon : 'success',
+								confirmButtonText : 'OK!'
+							}) 
+							  $("#tablaProductos").load("/productos/listaProductosFragment",function(data){
+					            	 console.log("lista productos");
+					            	 $("#nombreInfoPoduct").val("");
+					            	 $("#costoInfoProduct").val(""); 
+					            	 $("#precioVentaInfoProduct").val("");
+					            	 $("#cantidadInfoProduct").val(""); 
+					            	 $("#tipoActivoInfoProduct").val("");
+					            	 $("#idSelectedProduct").val("");
+							    	 addEvents();
+					             });
+						});
+				  }
+			  }
+			});
+	}
+});
+
+$("#sacarProducto").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var id = $("#idSelectedProduct").val();
+	if(!id || id == ""){
+		Swal.fire({
+			title : 'Error!',
+			text : 'Debe seleccionar un producto',
+			position : 'top',
+			icon : 'error',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		
+		Swal.fire({
+			  title: 'Cantidad a retirar',
+			  input: 'number',
+			  position : 'top',
+			  inputAttributes: {
+			    autocapitalize: 'off'
+			  },
+			  showCancelButton: true,
+			  confirmButtonText: 'Retirar',
+			  cancelButtonColor: '#F44336',
+			  cancelButtonText: 'Cancelar',
+			  showLoaderOnConfirm: true,
+			  preConfirm: (cantidad) => {
+				  if(cantidad<0 || !cantidad){
+						Swal.fire({
+							title : 'Error!',
+							text : 'La cantidad debe ser mayor a 0',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'OK!'
+						})
+				  }else{
+					  $.post("/productos/modificarCantidad",
+						 {
+						  	"id":id,
+						  	"tipo":"salida",
+							"cantidad":cantidad
+						},function(data){
+							Swal.fire({
+								title : 'Muy bien!',
+								text : 'Cantidad actualizada',
+								position : 'top',
+								icon : 'success',
+								confirmButtonText : 'OK!'
+							}) 
+							$("#tablaProductos").load("/productos/listaProductosFragment",function(data){
+				            	 console.log("lista productos");
+				            	 $("#nombreInfoPoduct").val("");
+				            	 $("#costoInfoProduct").val(""); 
+				            	 $("#precioVentaInfoProduct").val("");
+				            	 $("#cantidadInfoProduct").val(""); 
+				            	 $("#tipoActivoInfoProduct").val("");
+				            	 $("#idSelectedProduct").val("");
+						    	 addEvents();
+				             });
+						});
+				  }
+			  }
+			});
+	}
+});
+
+$("#eliminarProducto").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var id = $("#idSelectedProduct").val();
+	if(!id || id == ""){
+		Swal.fire({
+			title : 'Error!',
+			text : 'Debe seleccionar un producto',
+			position : 'top',
+			icon : 'error',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		Swal.fire({
+			  title: 'Alerta!',
+			  text: "Esta seguro de eliminar el producto?",
+			  icon: 'warning',
+			  position : 'top',
+			  showCancelButton: true,
+			  cancelButtonColor: '#F44336',
+			  cancelButtonText: 'Cancelar',
+			  confirmButtonColor: '#3085d6',
+			  confirmButtonText: 'Ok!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
+				  $("#tablaProductos").load("/productos/deleteProductAndListFragment/"+id,function(data){
+		            	 console.log("lista productos");
+		            	 $("#nombreInfoPoduct").val("");
+		            	 $("#costoInfoProduct").val(""); 
+		            	 $("#precioVentaInfoProduct").val("");
+		            	 $("#cantidadInfoProduct").val(""); 
+		            	 $("#tipoActivoInfoProduct").val("");
+		            	 $("#idSelectedProduct").val("");
+				    	 addEvents();
+		             });
+			  }
+			})
+	}
+});
+
+$("#modificarProducto").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var id = $("#idSelectedProduct").val();
+	if(!id || id == ""){
+		Swal.fire({
+			title : 'Error!',
+			text : 'Debe seleccionar un producto',
+			position : 'top',
+			icon : 'error',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		$("#formUpdateProduct").load("/productos/modificarProducto/"+id,function(data){
+			var activoFijo = $("#activoFijoProductoUpdate").val();
+			if(activoFijo == 1){
+				//Inventario
+				$("#precioVentaProductoUpdate").show();
+				$("#lblPrecioVentaUpdate").show();
+			}else if(activoFijo == 2){
+				//activo fijo
+				$("#precioVentaProductoUpdate").hide();
+				$("#precioVentaProductoUpdate").val("0");
+				$("#lblPrecioVentaUpdate").hide();
+			}
+			$("#modalModificarProductos").modal("show");
+			addEvents();
+		});
+	}
 });
 
 $("#btnListaProductos").click(function(e){
@@ -1603,9 +1826,16 @@ $("#formUpdateProduct").on("submit", function (e) {
 						})
 					}
 
-//		               $("#contenido").load("/empresas/agregarEmpresa",function(data){
-		        		addEvents();
-//		        		});
+		            $("#tablaProductos").load("/productos/listaProductosFragment",function(data){
+		            	 console.log("lista productos");
+		            	 $("#nombreInfoPoduct").val("");
+		            	 $("#costoInfoProduct").val(""); 
+		            	 $("#precioVentaInfoProduct").val("");
+		            	 $("#cantidadInfoProduct").val(""); 
+		            	 $("#tipoActivoInfoProduct").val("");
+		            	 $("#idSelectedProduct").val("");
+				    	 addEvents();
+		             });
 	            },
 	            error: function (err) {
 	                console.error(err);
@@ -1619,6 +1849,78 @@ $("#formUpdateProduct").on("submit", function (e) {
 					})
 	            }
 	        });
+	}
+});
+
+$("#findByTipoProducto").change(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var nombreProducto = $("#findByNombreProducto").val();
+	var tipo = $("#findByTipoProducto").val();
+	$("#tablaProductos").load("/productos/listaProductosFragmentFindByAndPagination/",
+			{
+				"nombre": nombreProducto,
+				"tipo": tipo
+			},function(data){
+				$("#nombreInfoPoduct").val("");
+	           	 $("#costoInfoProduct").val(""); 
+	           	 $("#precioVentaInfoProduct").val("");
+	           	 $("#cantidadInfoProduct").val(""); 
+	          	 $("#tipoActivoInfoProduct").val("");
+	         	 $("#idSelectedProduct").val("");
+		    addEvents();
+	});
+});
+
+$("#findByNombreProducto").on("keyup", function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var nombreProducto = $("#findByNombreProducto").val();
+	var tipo = $("#findByTipoProducto").val();
+	
+	$("#tablaProductos").load("/productos/listaProductosFragmentFindByAndPagination/",
+			{
+				"nombre": nombreProducto,
+				"tipo": tipo
+			},function(data){
+				$("#nombreInfoPoduct").val("");
+	           	 $("#costoInfoProduct").val(""); 
+	           	 $("#precioVentaInfoProduct").val("");
+	           	 $("#cantidadInfoProduct").val(""); 
+	          	 $("#tipoActivoInfoProduct").val("");
+	         	 $("#idSelectedProduct").val("");
+		    addEvents();
+	});
+	
+});
+	
+$("#activoFijoProductoUpdate").change(function(e){
+
+	var activoFijo = $("#activoFijoProductoUpdate").val();
+	if(activoFijo == 1){
+		//Inventario
+		$("#precioVentaProductoUpdate").show();
+		$("#lblPrecioVentaUpdate").show();
+	}else if(activoFijo == 2){
+		//activo fijo
+		$("#precioVentaProductoUpdate").hide();
+		$("#precioVentaProductoUpdate").val("0");
+		$("#lblPrecioVentaUpdate").hide();
+	}
+});
+
+$("#activoFijoProductoAdd").change(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var activoFijo = $("#activoFijoProductoAdd").val();
+	if(activoFijo == 1){
+		//Inventario
+		$("#precioVentaProductoAdd").show();
+		$("#lblPrecioVentaAdd").show();
+	}else if(activoFijo == 2){
+		//activo fijo
+		$("#precioVentaProductoAdd").hide();
+		$("#lblPrecioVentaAdd").hide();
 	}
 });
 
@@ -1682,9 +1984,16 @@ $("#formAddProduct").on("submit", function (e) {
 						})
 					}
 
-//		               $("#contenido").load("/empresas/agregarEmpresa",function(data){
-		        		addEvents();
-//		        		});
+		             $("#tablaProductos").load("/productos/listaProductosFragment",function(data){
+		            	 console.log("lista productos");
+		            	 $("#nombreInfoPoduct").val("");
+		            	 $("#costoInfoProduct").val(""); 
+		            	 $("#precioVentaInfoProduct").val("");
+		            	 $("#cantidadInfoProduct").val(""); 
+		            	 $("#tipoActivoInfoProduct").val("");
+		            	 $("#idSelectedProduct").val("");
+				    	 addEvents();
+		             });
 	            },
 	            error: function (err) {
 	                console.error(err);
@@ -4289,6 +4598,13 @@ function eliminarDeduccion(id){
 		})
 }
 
+function selectProductInList(id){
+	$("#miniInfoProducto").load("/productos/miniInfoProduct/"+id,function(data){
+		$("#idSelectedProduct").val(id);
+		addEvents();
+	});
+}
+
 function modificarEmpresa(id){
 	$("#contenido").load("/empresas/modificarEmpresa/"+id,function(data){
 		ocultarDetalleAmortizacion();
@@ -4448,14 +4764,6 @@ function eliminarEntradaDiarioTemp(id){
 	});
 }
 
-function modificarProducto(id){
-	$("#modalProductos").modal("hide");
-	$("#formUpdateProduct").load("/productos/modificarProducto/"+id,function(data){
-		$("#modalModificarProductos").modal("show");
-		addEvents();
-	});
-}
-
 function eliminarProducto(id){
 	$("#modalProductos").modal("hide");
 	Swal.fire({
@@ -4516,6 +4824,52 @@ function eliminarProducto(id){
 				});
 		  }
 		})
+}
+
+function openModalImage(idProducto){
+	 $("#imagenProducto").load("/productos/getImagen/"+idProducto,function(data){
+		console.log("Imagen del producto");
+		$("#modalImageProduct").modal("show");
+		addEvents();
+	});
+}
+
+function previousPageProduct(item){
+	var page = "page="+item;
+	var nombreProducto = $("#findByNombreProducto").val();
+	var tipo = $("#findByTipoProducto").val();
+	$("#tablaProductos").load("/productos/listaProductosFragment?"+page,
+		{
+			"nombre": nombreProducto,
+			"tipo": tipo
+		},function(data){
+			$("#nombreInfoPoduct").val("");
+          	 $("#costoInfoProduct").val(""); 
+          	 $("#precioVentaInfoProduct").val("");
+          	 $("#cantidadInfoProduct").val(""); 
+         	 $("#tipoActivoInfoProduct").val("");
+        	 $("#idSelectedProduct").val("");
+			addEvents();
+	});
+}
+
+function nextPageProduct(item){
+	var page = "page="+item;
+	var nombreProducto = $("#findByNombreProducto").val();
+	var tipo = $("#findByTipoProducto").val();
+	$("#tablaProductos").load("/productos/listaProductosFragment?"+page,
+		{
+			"nombre": nombreProducto,
+			"tipo": tipo
+		},function(data){
+			$("#nombreInfoPoduct").val("");
+          	 $("#costoInfoProduct").val(""); 
+          	 $("#precioVentaInfoProduct").val("");
+          	 $("#cantidadInfoProduct").val(""); 
+         	 $("#tipoActivoInfoProduct").val("");
+        	 $("#idSelectedProduct").val("");
+			addEvents();
+	});
 }
 
 function styleSeccionAll(){

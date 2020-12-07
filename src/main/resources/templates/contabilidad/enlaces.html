@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:fragment="enlaces">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="row">
+					<div class="card-header">
+						<div class="card-head-row">
+							<b>Inventarios</b> &nbsp;
+							<div style="float: right;">
+								<select class="form-control">
+									<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
+											th:value="${cuentaContable.id}"
+											th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>		
+	</div>
+</body>
+</html>

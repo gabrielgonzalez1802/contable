@@ -21,10 +21,10 @@ public class Producto {
 	private Integer id;
 	
 	private String nombre;
-	private Double costo;
+	private Double costo = 0.0;
 	
 	@Column(name = "precio_venta")
-	private Double precioVenta;
+	private Double precioVenta = 0.0;
 	
 	private String imagen;
 	
@@ -35,8 +35,14 @@ public class Producto {
 	private Integer activoFijo;
 	
 	@OneToOne
+	@JoinColumn(name = "id_cuenta_contable")
+	private CuentaContable cuentaContable;
+	
+	@OneToOne
 	@JoinColumn(name = "id_empresa")
 	private Empresa empresa;
+	
+	private Integer cantidad = 0;
 
 	public Integer getId() {
 		return id;
@@ -102,10 +108,26 @@ public class Producto {
 		this.empresa = empresa;
 	}
 
+	public Integer getCantidad() {
+		return cantidad;
+	}
+
+	public void setCantidad(Integer cantidad) {
+		this.cantidad = cantidad;
+	}
+
+	public CuentaContable getCuentaContable() {
+		return cuentaContable;
+	}
+
+	public void setCuentaContable(CuentaContable cuentaContable) {
+		this.cuentaContable = cuentaContable;
+	}
+
 	@Override
 	public String toString() {
 		return "Producto [id=" + id + ", nombre=" + nombre + ", costo=" + costo + ", precioVenta=" + precioVenta
-				+ ", imagen=" + imagen + ", imagenTemp=" + imagenTemp + ", activoFijo=" + activoFijo + ", empresa="
-				+ empresa + "]";
+				+ ", imagen=" + imagen + ", imagenTemp=" + imagenTemp + ", activoFijo=" + activoFijo
+				+ ", cuentaContable=" + cuentaContable + ", empresa=" + empresa + ", cantidad=" + cantidad + "]";
 	}
 }

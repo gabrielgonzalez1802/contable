@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.contable.model.Empresa;
@@ -28,7 +30,7 @@ public class ProductosServiceJpa implements IProductosService{
 
 	@Override
 	public List<Producto> buscarPorEmpresa(Empresa empresa) {
-		return repo.findByEmpresa(empresa);
+		return repo.findByEmpresaOrderByNombre(empresa);
 	}
 
 	@Override
@@ -44,6 +46,27 @@ public class ProductosServiceJpa implements IProductosService{
 	@Override
 	public void eliminar(Producto producto) {
 		repo.delete(producto);
+	}
+
+	@Override
+	public Page<Producto> buscarPorEmpresa(Empresa empresa, Pageable pageable) {
+		return repo.findByEmpresaOrderByNombre(empresa, pageable);
+	}
+
+	@Override
+	public Page<Producto> buscarPorEmpresaActivoFijo(Empresa empresa, Integer activoFijo, Pageable pageable) {
+		return repo.findByEmpresaAndActivoFijoOrderByNombre(empresa, activoFijo, pageable);
+	}
+
+	@Override
+	public Page<Producto> buscarPorEmpresaActivoFijoContainingNombre(Empresa empresa, Integer activoFijo,
+			String nombre, Pageable pageable) {
+		return repo.findByEmpresaAndActivoFijoAndNombreContainingOrderByNombre(empresa, activoFijo, nombre, pageable);
+	}
+
+	@Override
+	public Page<Producto> buscarPorEmpresaContainingOrderByNombre(Empresa empresa, String nombre, Pageable pageable) {
+		return repo.findByEmpresaAndNombreContaining(empresa, nombre, pageable);
 	}
 
 }

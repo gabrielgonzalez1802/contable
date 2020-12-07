@@ -9,6 +9,7 @@ public interface ICuentasContablesService {
 	CuentaContable buscarPorId(Integer id);
 	List<CuentaContable> buscarPorEmpresaCodigo(Empresa empresa, String codigo);
 	List<CuentaContable> buscarPorEmpresaTipo(Empresa empresa, String tipo);
+	List<CuentaContable> buscarPorEmpresaTipoGrupoCuenta(Empresa empresa, String tipo, String grupoCuenta);
 	List<CuentaContable> buscarPorEmpresaTipoOrderByCodigo(Empresa empresa, String tipo);
 	List<CuentaContable> buscarPorEmpresaOrderByCodigoDesc(Empresa empresa);
 	List<CuentaContable> buscarPorEmpresaOrderByCodigoAsc(Empresa empresa);

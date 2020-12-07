@@ -97,4 +97,9 @@ public class CuentasContablesServiceJpa implements ICuentasContablesService{
 		return repo.findByEmpresaAndTipoAndCodigoContaining(empresa, tipo, valor);
 	}
 
+	@Override
+	public List<CuentaContable> buscarPorEmpresaTipoGrupoCuenta(Empresa empresa, String tipo, String grupoCuenta) {
+		return repo.findByEmpresaAndTipoAndGrupoCuenta(empresa, tipo, grupoCuenta);
+	}
+
 }

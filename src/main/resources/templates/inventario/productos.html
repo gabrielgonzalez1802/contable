@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:fragment="listaProductos">
+	
+ <!-- Modal Modificar Productos -->
+  <div class="modal" id="modalModificarProductos" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Modificar Producto</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+           <form autocomplete="off" th:object="${producto}" id="formUpdateProduct">
+	        	<div class="row">
+	        		<div class="col-md-9">
+	        			<div class="form-group">
+	        				<label>Nombre</label><span style="color: red"> * </span>
+	        				<input type="hidden" th:field="*{id}" id="idProductoUpdate">
+	        				<input type="text" th:field="*{nombre}" class="form-control" id="nombreProductoUpdate" maxlength="50" placeholder="Nombre del Producto">
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Tipo Activo</label><span style="color: red"> * </span>
+		        			<select id="activoFijoProductoUpdate" th:field="*{activoFijo}" class="form-control">
+		        				<option value="1">Inventario</option>
+		        				<option value="2">Activo fijo</option>
+		        			</select>
+		        		</div>	
+	        		</div>
+	        	</div>	
+	        	
+	        	<br>
+	        		
+	        	<div class="row">	
+	        	
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Cantidad</label>
+	        				<input type="number" disabled="disabled" th:field="*{cantidad}" class="form-control" id="cantidadProductoUpdate" min="0" placeholder="Cantidad">
+	        			</div>
+	        		</div>
+	        	
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Costo</label>
+	        				<input type="number" th:field="*{costo}" class="form-control" id="costoProductoUpdate" min="0" placeholder="Costo">
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Cuenta Contable</label>
+	        				<select id="cuentaContableUpdate" th:field="*{cuentaContable.id}" class="form-control">
+		        				<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
+											th:value="${cuentaContable.id}"
+											th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+		        			</select>
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label id="lblPrecioVentaUpdate">Precio de Venta</label>
+	        				<input type="number" th:field="*{precioVenta}" class="form-control" id="precioVentaProductoUpdate" min="0" placeholder="Precio Venta">
+	        			</div>
+	        		</div>
+	
+	        	</div>
+	        	
+	        	<br>
+	        	
+	        	<div class="row">
+	        		<div class="col-md-5">
+	        			<div class="form-group">
+	        				<label>Imagen</label>
+	        				<input type="file" th:field="*{imagenTemp}" class="form-control" id="imagenProductoUpdate">
+	        			</div>
+	        		</div>
+	        		<div class="col-md-3">
+	        		</div>
+	        		<div class="col-md-4">
+	        			<img th:if="${producto.imagen != null}" th:src="@{/logos/{img} (img=${producto.imagen} )}" style="width: 200px">
+						<img th:unless="${producto.imagen != null}" th:src="@{/img/no-image.png}" style="width: 200px">
+	        		</div>
+	        	</div>
+	        	
+	        	<div class="row">
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				 <button type="submit" class="btn btn-primary">Guardar</button>
+	        			</div>
+	        		</div>
+	        	</div>
+	        	
+        	</form>
+
+        </div>
+     
+        
+      </div>
+    </div>
+  </div> 	
+  
+  <!-- Modal ver imagen del producto -->
+  <div class="modal" id="modalImageProduct" data-backdrop="static">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Imagen</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+        
+        	<div class="container">
+			  <div class="row justify-content-center align-items-center minh-100">
+			    <div class="col-lg-12">
+			      	<div id="imagenProducto">
+		         		<img class="img-fluid rounded mx-auto d-block" th:if="${imagenProducto != null}" th:src="@{/logos/{img} (img=${imagenProducto} )}" width="300px">
+						<img class="img-fluid rounded mx-auto d-block" th:unless="${imagenProducto != null}" th:src="@{/img/no-image.png}" width="300px">
+		         	</div>
+			    </div>
+			  </div>
+			</div>
+        </div>
+      </div>
+    </div>
+  </div> 
+	
+<!-- Modal Agregar Productos -->
+  <div class="modal" id="modalAgregarProductos" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Agregar Producto</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+           <form autocomplete="off" th:object="${producto}" id="formAddProduct">
+	        	<div class="row">
+	        		<div class="col-md-9">
+	        			<div class="form-group">
+	        				<label>Nombre</label><span style="color: red"> * </span>
+	        				<input type="text" style="border-radius: 10px;" th:field="*{nombre}" class="form-control" id="nombreProductoAdd" maxlength="50" placeholder="Nombre del Producto">
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Tipo Activo</label><span style="color: red"> * </span>
+		        			<select id="activoFijoProductoAdd" th:field="*{activoFijo}" style="border-radius: 10px;" class="form-control">
+		        				<option value="1">Inventario</option>
+		        				<option value="2">Activo fijo</option>
+		        			</select>
+		        		</div>	
+	        		</div>
+	        	</div>
+	        	
+	        	<br>
+	        		
+	        	<div class="row">
+	        		<div class="col-md-2">
+	        			<div class="form-group">
+	        				<label>Cantidad</label>
+	        				<input type="number" style="border-radius: 10px;" th:field="*{cantidad}" class="form-control" id="cantidadProductoAdd" min="0" placeholder="Cantidad">
+	        			</div>
+	        		</div>
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Costo</label>
+	        				<input type="number" style="border-radius: 10px;" th:field="*{costo}" class="form-control" id="costoProductoAdd" min="0" placeholder="Costo">
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Cuenta Contable</label>
+	        				<select id="cuentaContableUpdate" th:field="*{cuentaContable.id}" class="form-control">
+		        				<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
+											th:value="${cuentaContable.id}"
+											th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+		        			</select>
+	        			</div>
+	        		</div>	
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label id="lblPrecioVentaAdd">Precio de Venta</label>
+	        				<input type="number" style="border-radius: 10px;" th:field="*{precioVenta}" class="form-control" id="precioVentaProductoAdd" min="0" placeholder="Precio Venta">
+	        			</div>
+	        		</div>
+	        	</div>
+	        	
+	        	<br>
+	        	
+	        	<div class="row">
+	        		<div class="col-md-12">
+	        			<div class="form-group">
+	        				<label>Imagen</label>
+	        				<input type="file" th:field="*{imagenTemp}" style="border-radius: 10px;" class="form-control" id="imagenProductoAdd">
+	        			</div>
+	        		</div>
+	        	</div>
+
+	        	<br>
+	        	
+	        	<div class="row">
+	        		<div class="col-md-12">
+	        			<div class="form-group">
+	        				<div style="float: right;">
+	        					 <button type="submit" style="border-radius: 10px;" class="btn btn-lg btn-primary">Guardar</button>
+	        				</div>
+	        			</div>
+	        		</div>
+	        	</div>
+        	</form>
+        </div>
+      </div>
+    </div>
+  </div> 
+	
+	
+		<div class="row">
+			<div class="col-md-12">
+				<div class="row">
+				<div class="col-md-9">
+					<div class="card-header">
+						<div class="card-head-row">
+							<h4>Productos</h4>
+						</div>
+					</div>
+
+					 <div class="row">
+						<div class="col-md-12">
+							 <div class="row">
+								<div class="col-md-6">
+									<input class="form-control" id="findByNombreProducto" placeholder="Nombre Producto" autocomplete="off">
+								</div>
+							
+								<div class="col-md-3">
+									<select class="form-control" id="findByTipoProducto">
+										<option value="">Todos</option>
+										<option value="1">Inventario</option>
+						       			<option value="2">Activo fijo</option>
+									</select>
+								</div>
+							</div>	
+						</div>
+					</div>
+					
+					<br>
+
+							<div class="card-body" style="padding-top: 0px;">
+								<div id="tablaProductos">
+									<input type="hidden" id="idSelectedProduct">
+									<div class="table-responsive">
+										<table class="table mg-b-0 text-md-nowrap">
+											<thead style="background-color: #e9ecef; height: 80px;">
+												<tr>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Nombre</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Costo</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Precio Venta</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Imagen</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Cantidad</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Total</th>	
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="producto : ${productos}" th:onclick="'selectProductInList(\'' + ${producto.id} + '\');'">
+													<td th:text="${producto.nombre}"></td>
+													<td th:text="${producto.costo}"></td>
+													<td th:text="${producto.precioVenta}"></td>
+													<td style="cursor: pointer;"><i th:onclick="'openModalImage(\'' + ${producto.id} + '\');'" style="font-size: 20px;" class="fas fa-image"></i></td>
+													<td th:text="${producto.cantidad}">Cantidad</td>
+													<td th:text="${producto.cantidad} * ${producto.costo}"></td>
+												</tr>
+												<tr>
+													<td colspan="4"></td>
+													<td style="font-weight: bold;">Total</td>
+													<td style="font-weight: bold;" th:text="${totalCostos}"></td>
+												</tr>
+										</tbody>
+									</table>
+								
+								<nav th:if="${productos.totalPages > 0}" aria-label="Page navigation example" >
+									<ul class="pagination">
+										<li class="page-item" th:if="${productos.hasPrevious()}">
+											<a class="page-link" style="cursor: pointer;" aria-label="Previous" th:onclick="'previousPageProduct(\'' + ${productos.number - 1} + '\');'">
+										        <span aria-hidden="true">&laquo;</span>
+										        <span class="sr-only">Anterior</span>
+										      </a>
+										 </li>     
+									<th:block th:each="i: ${#numbers.sequence(0, productos.totalPages - 1)}">
+								        <span th:if="${productos.number == i}" style="background-color: #c2c8d8;border: 1px solid #cdd7ef;" 
+								        class="page-link selected">[[${i}+1]]</span>
+								        <span th:unless="${productos.number == i}">
+								              <a class="page-link" style="cursor: pointer;" aria-label="Next" th:onclick="'nextPageProduct(\'' + ${i} + '\');'">
+										        <span aria-hidden="true">[[${i}+1]]</span>
+										        <span class="sr-only">[[${i}+1]]</span>
+										      </a>
+								        </span>
+								    </th:block>
+										<li class="page-item" th:if="${productos.hasNext()}">
+											<a class="page-link" style="cursor: pointer;" aria-label="Next" th:onclick="'nextPageProduct(\'' + ${productos.number + 1} + '\');'">
+										        <span aria-hidden="true">&raquo;</span>
+										        <span class="sr-only">Siguiente</span>
+										      </a>
+										</li>
+									</ul>
+								</nav>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="col-md-12">
+						<div id="miniInfoProducto">
+							<form autocomplete="off" th:object="${producto}" id="infoProduct">
+							     <div class="row">
+							     	 <div class="col-md-12">
+							        	<div class="form-group">
+	<!-- 						        		<label>Nombre</label><span style="color: red"> * </span> -->
+							        		<input type="hidden" th:field="*{id}" id="idInfoProduct">
+							        		<input type="text" th:field="*{nombre}" class="form-control" id="nombreInfoPoduct" maxlength="50" placeholder="Nombre del Producto" disabled="disabled">
+							        	</div>
+							        </div>
+							      </div>
+							      
+							      <div class="row">
+							     	 <div class="col-md-12">
+							        	<div class="form-group">
+	<!-- 						        		<label>Costo</label> -->
+							        		<input type="number" th:field="*{costo}" class="form-control" id="costoInfoProduct" placeholder="Costo" disabled="disabled">
+							        	</div>
+							        </div>
+							      </div>
+							      
+							      <div class="row">
+								      <div class="col-md-12">
+								        <div class="form-group">
+	<!-- 							        	<label>Precio de Venta</label> -->
+								        	<input type="number" th:field="*{precioVenta}" id="precioVentaInfoProduct" class="form-control"  placeholder="Precio Venta" disabled="disabled">
+								        </div>
+								      </div>
+							      </div>
+							      
+							      <div class="row">
+								      <div class="col-md-12">
+								        <div class="form-group">
+	<!-- 							        	<label>Cantidad</label> -->
+								        	<input type="number" th:field="*{cantidad}" id="cantidadInfoProduct" class="form-control"  placeholder="Cantidad" disabled="disabled">
+								        </div>
+								      </div>
+							      </div>
+							      
+							      <div class="row">
+							     	 <div class="col-md-12">
+	<!-- 						        	 <label>Tipo Activo</label><span style="color: red"> * </span> -->
+								       	  <input type="text" th:if="*{activoFijo == 1}" th:value="'inventario'" class="form-control" placeholder="Tipo Activo" id="tipoActivoInfoProduct" disabled="disabled">
+								       	  <input type="text" th:if="*{activoFijo == 2}" th:value="'Activo Fijo'" class="form-control" placeholder="Tipo Activo" id="tipoActivoInfoProduct" disabled="disabled">
+							        	  <input type="text" th:if="*{activoFijo == '' || activoFijo == null}" th:value="''" class="form-control" placeholder="Tipo Activo" id="tipoActivoInfoProduct" disabled="disabled">
+							         </div>
+							      </div>
+
+								 <div class="row">
+								      <div class="col-md-12">
+								       	<img id="agregarProducto" th:src="@{/img/agregar.png}" style="cursor:pointer;max-width: 100%;">	
+								       	<img id="modificarProducto" th:src="@{/img/editar.png}" style="cursor:pointer;max-width: 100%;">		        	
+								       </div>
+								        <div class="col-md-12">
+								       	<img id="ingresarProducto" th:src="@{/img/bandejaEntrada.png}" style="cursor:pointer;max-width: 100%;">	
+								       	<img id="sacarProducto" th:src="@{/img/bandejaSalida.png}" style="cursor:pointer;max-width: 100%;">		        	
+								        </div>
+								       <div class="col-md-12">
+								       	<img id="eliminarProducto" th:src="@{/img/eliminar.png}"  style="cursor:pointer;max-width: 100%;">	
+								       	<img id="regresarAContabilidad" th:src="@{/img/salir.png}"  style="cursor:pointer;max-width: 100%;">		        	
+							       	  </div>
+							    </div>
+					    	</form>
+						</div>
+					</div>    	 	
+				</div>
+			</div>
+		</div>
+	</div>		
+</div>
+</body>
+</html>

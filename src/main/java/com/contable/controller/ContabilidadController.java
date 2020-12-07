@@ -425,6 +425,13 @@ public class ContabilidadController {
 		
 		return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 	}
-	
+		
+	@GetMapping("/enlaces")
+	public String enlaces(Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipoGrupoCuenta(empresa, "A", "ACTIVOS");
+		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
+		return "contabilidad/enlaces :: enlaces";
+	}
 	
 }
