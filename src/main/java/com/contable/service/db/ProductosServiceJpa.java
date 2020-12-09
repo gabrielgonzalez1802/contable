@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.contable.model.CuentaContable;
 import com.contable.model.Empresa;
 import com.contable.model.Producto;
 import com.contable.repository.ProductosRepository;
@@ -67,6 +68,16 @@ public class ProductosServiceJpa implements IProductosService{
 	@Override
 	public Page<Producto> buscarPorEmpresaContainingOrderByNombre(Empresa empresa, String nombre, Pageable pageable) {
 		return repo.findByEmpresaAndNombreContaining(empresa, nombre, pageable);
+	}
+
+	@Override
+	public List<Producto> buscarPorEmpresaCuentaContable(Empresa empresa, CuentaContable cuentaContable) {
+		return repo.findByEmpresaAndCuentaContable(empresa, cuentaContable);
+	}
+
+	@Override
+	public List<Producto> buscarPorEmpresaActivosFijos(Empresa empresa, List<Integer> activosFijos) {
+		return repo.findByEmpresaAndActivoFijoIn(empresa, activosFijos);
 	}
 
 }

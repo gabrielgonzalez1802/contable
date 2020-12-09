@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:fragment="contabilidad">
+		<div class="card-body">
+			<div class="table-responsive">
+				<div class="table-responsive">
+					<table class="table mg-b-0 text-md-nowrap" id="">
+						<thead style="background-color: #0162e8; height: 80px;">
+							<tr>
+								<th></th>
+								<th style="color: #f3f3f3; padding-top: 10px;">Codigo</th>
+								<th style="color: #f3f3f3; padding-top: 10px;">Cuenta</th>
+								<th style="color: #f3f3f3; padding-top: 10px;">Control</th>
+								<th style="color: #f3f3f3; padding-top: 10px;">Tipo</th>
+								<th style="color: #f3f3f3; padding-top: 10px;">Valor</th>
+							</tr>
+						</thead>
+						<tbody>
+							<div th:each="cuentaContable : ${cuentasContables}">
+								<tr th:class="${cuentaContable.clase}">
+									<td>
+										<button
+											th:onclick="'mostrararHerencia(\'' + ${cuentaContable.id} + '\');'"
+											class="btn btn-info">
+											<i class="fas fa-plus"></i>
+										</button>
+									</td>
+									<td th:text="${cuentaContable.codigo}"></td>
+									<td th:text="${cuentaContable.nombreCuenta}"></td>
+									<td th:text="${cuentaContable.cuentaControl}"></td>
+									<td th:text="${cuentaContable.tipo}"></td>
+									<td th:text="${cuentaContable.monto}"></td>
+								</tr>
+							</div>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

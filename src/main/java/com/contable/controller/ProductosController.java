@@ -1,6 +1,7 @@
 package com.contable.controller;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -18,9 +19,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.contable.model.CompraProductoTemp;
 import com.contable.model.CuentaContable;
 import com.contable.model.Empresa;
 import com.contable.model.Producto;
+import com.contable.model.Usuario;
+import com.contable.service.IComprasProductosTempService;
 import com.contable.service.ICuentasContablesService;
 import com.contable.service.IProductosService;
 import com.contable.util.Utileria;
@@ -37,6 +41,9 @@ public class ProductosController {
 	
 	@Autowired
 	private ICuentasContablesService serviceCuentasContables;
+	
+	@Autowired
+	private IComprasProductosTempService serviceComprasProductosTemp;
 
 	@PostMapping("/crear")
 	public ResponseEntity<String> guardarProducto(Model model, Producto producto, HttpSession session){
@@ -81,6 +88,8 @@ public class ProductosController {
 			producto.setImagen(originalProducto.getImagen());
 		}
 		
+		producto.setCantidad(originalProducto.getCantidad());
+		
 		serviceProductos.guardar(producto);
 		if(producto.getId()!=null) {
 			response = "1";
@@ -113,7 +122,7 @@ public class ProductosController {
 	public String modificarProducto(Model model, HttpSession session, @PathVariable("id") Integer id) {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		Producto producto = serviceProductos.buscarPorId(id);
-		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipoGrupoCuenta(empresa, "A", "ACTIVOS");		
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipo(empresa, "A");			
 		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
 		model.addAttribute("producto", producto);
 		return "inventario/productos :: #formUpdateProduct";
@@ -124,7 +133,7 @@ public class ProductosController {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		double totalCostos = 0;
 		Page<Producto> productos = serviceProductos.buscarPorEmpresa(empresa, pageable);
-		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipoGrupoCuenta(empresa, "A", "ACTIVOS");		
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipo(empresa, "A");	
 		for (Producto producto : productos) {
 			totalCostos+= producto.getCosto()*producto.getCantidad();
 		}
@@ -228,6 +237,70 @@ public class ProductosController {
 		Producto producto = serviceProductos.buscarPorId(id);
 		model.addAttribute("producto", producto);
 		return "inventario/productos :: #miniInfoProducto";
+	}
+	
+	@PostMapping("/addProductosTempForCompras")
+	public String addProductosTempForCompras(Model model, HttpSession session,
+			Integer idProducto, Integer cantidad, Double costo, String txt) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Producto producto = serviceProductos.buscarPorId(idProducto);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		CompraProductoTemp compraProductoTemp = new CompraProductoTemp();
+		compraProductoTemp.setCantidad(cantidad);
+		compraProductoTemp.setCosto(costo);
+		compraProductoTemp.setEmpresa(empresa);
+		compraProductoTemp.setProducto(producto);
+		compraProductoTemp.setUsuario(usuario);
+		compraProductoTemp.setInfo(producto.getNombre()+" - "+txt);
+		compraProductoTemp.setCuentaContable(producto.getCuentaContable());
+		compraProductoTemp.setTotal(cantidad*costo);
+		serviceComprasProductosTemp.guardar(compraProductoTemp);
+		double totalProductoTemp = 0;
+		List<CompraProductoTemp> productosTemp = serviceComprasProductosTemp.buscarPorEmpresaUsuario(empresa, usuario);
+		for (CompraProductoTemp compraProducto : productosTemp) {
+			totalProductoTemp+=compraProducto.getCantidad()*compraProducto.getCosto();
+		}
+		model.addAttribute("totalProductoTemp" , totalProductoTemp);
+		model.addAttribute("productosTemps", productosTemp);
+		return "contabilidad/compras :: #tablaCompras";
+	}
+	
+	@GetMapping("/reloadProductsCompra/{tipos}")
+	public String reloadProductsCompra(Model model, HttpSession session, @PathVariable("tipos") Integer tipos) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		List<Integer> activosFijos = new LinkedList<>();
+		
+		if(tipos.intValue()==1) {
+			activosFijos.add(1);
+		}else if(tipos.intValue()==2) {
+			activosFijos.add(2);
+		}else if(tipos.intValue()==3) {
+			activosFijos.add(3);
+		}else if(tipos.intValue()==12) {
+			activosFijos.add(1);
+			activosFijos.add(2);
+		}else if(tipos.intValue()==13) {
+			activosFijos.add(1);
+			activosFijos.add(3);
+		}else if(tipos.intValue()==23) {
+			activosFijos.add(2);
+			activosFijos.add(3);
+		}
+		
+		List<Producto> productos = serviceProductos.buscarPorEmpresaActivosFijos(empresa, activosFijos);
+		model.addAttribute("productos", productos);
+		return "contabilidad/compras :: #productosSelectForCompra";
+	}
+	
+	@GetMapping("/deleteProductTemp/{id}")
+	public String deleteProductTemp(Model model, HttpSession session, @PathVariable("id") Integer id) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		CompraProductoTemp productoTemp = serviceComprasProductosTemp.buscarPorId(id);
+		serviceComprasProductosTemp.eliminar(productoTemp);
+		List<CompraProductoTemp> productosTemp = serviceComprasProductosTemp.buscarPorEmpresaUsuario(empresa, usuario);
+		model.addAttribute("productosTemps", productosTemp);
+		return "contabilidad/compras :: #tablaCompras";
 	}
 	
 	public double formato2d(double number) {

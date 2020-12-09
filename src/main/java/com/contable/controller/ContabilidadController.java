@@ -18,19 +18,29 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.contable.model.Carpeta;
+import com.contable.model.Compra;
+import com.contable.model.CompraProductoTemp;
 import com.contable.model.CuentaContable;
 import com.contable.model.CuentaEnlace;
 import com.contable.model.Empresa;
 import com.contable.model.EntradaDiario;
 import com.contable.model.EntradaDiarioTemp;
+import com.contable.model.FormaPago;
+import com.contable.model.Pago;
 import com.contable.model.Producto;
+import com.contable.model.Suplidor;
 import com.contable.model.Usuario;
 import com.contable.service.ICarpetasService;
+import com.contable.service.IComprasProductosTempService;
+import com.contable.service.IComprasService;
 import com.contable.service.ICuentasContablesService;
 import com.contable.service.ICuentasEnlacesService;
 import com.contable.service.IEntradasDiariosService;
 import com.contable.service.IEntradasDiariosTempService;
+import com.contable.service.IFormasPagosService;
+import com.contable.service.IPagosService;
 import com.contable.service.IProductosService;
+import com.contable.service.ISuplidoresService;
 
 @Controller
 @RequestMapping("/contabilidad")
@@ -51,7 +61,23 @@ public class ContabilidadController {
 	@Autowired
 	private IEntradasDiariosTempService serviceEntradasDiariosTemp;
 	
+	@Autowired
 	private IProductosService serviceProductos;
+	
+	@Autowired
+	private IComprasProductosTempService serviceComprasProductosTemp;
+	
+	@Autowired
+	private ISuplidoresService serviceSuplidores;
+	
+	@Autowired
+	private IComprasService serviceCompras;
+	
+	@Autowired
+	private IFormasPagosService serviceFormasPagos;
+	
+	@Autowired
+	private IPagosService servicePagos;
 
 	@GetMapping("/mostrarContabilidad")
 	public String mostrarContabilidad(Model model, HttpSession session) {
@@ -431,7 +457,105 @@ public class ContabilidadController {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipoGrupoCuenta(empresa, "A", "ACTIVOS");
 		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
+		List<FormaPago> formasPagos = serviceFormasPagos.buscarPorEmpresa(empresa);
+		model.addAttribute("formasPagos", formasPagos);
 		return "contabilidad/enlaces :: enlaces";
 	}
 	
+	@PostMapping("/agregarEnlace")
+	public ResponseEntity<String> agregarEnlace(Model model, HttpSession session, Integer cuentaContableId) {
+		String response = "0";
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		CuentaContable cuentaContable = serviceCuentasContables.buscarPorId(cuentaContableId);
+		FormaPago formaPago = new FormaPago();
+		formaPago.setCuentaContable(cuentaContable);
+		formaPago.setEmpresa(empresa);
+		
+		List<FormaPago>formasPagosTemp = serviceFormasPagos.buscarPorEmpresaCuentaContable(empresa, cuentaContable);
+		if(!formasPagosTemp.isEmpty()) {
+			response = "2";
+		}else {
+			serviceFormasPagos.guardar(formaPago);
+			if(formaPago.getId()!=null) {
+				response = "1";
+			}
+		}
+		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
+	}
+	
+	@PostMapping("/borrarEnlace")
+	public ResponseEntity<String> borrarEnlace(Model model, HttpSession session, Integer id) {
+		String response = "0";
+		FormaPago formaPago = serviceFormasPagos.buscarPorId(id);
+		serviceFormasPagos.eliminar(formaPago);
+		FormaPago formaPagoTemp = serviceFormasPagos.buscarPorId(id);
+		if(formaPagoTemp==null) {
+			response="1";
+		}
+		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
+	}
+	
+	@GetMapping("/mostrarEnlaces")
+	public String mostrarEnlaces(Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		List<FormaPago> formasPagos = serviceFormasPagos.buscarPorEmpresa(empresa);
+		model.addAttribute("formasPagos", formasPagos);
+		return "contabilidad/enlaces :: #tablaEnlaces";
+	}
+	
+	@GetMapping("/cuentasXPagar")
+	public String cuentasXPagar(Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		List<Compra> compras = serviceCompras.buscarPorEmpresa(empresa);
+		
+		for (Compra compra : compras) {
+			double balance = 0;
+			//Buscamos los pagos de las compras
+			List<Pago> pagos = servicePagos.buscarPorEmpresaCompra(empresa, compra);
+			for (Pago pago : pagos) {
+				balance+=pago.getMonto();
+			}
+			compra.setBalance(balance);
+		}
+		
+		List<CuentaContable> cuentasContablesEnlaces = new LinkedList<>();
+		
+		List<FormaPago> formasPagos = serviceFormasPagos.buscarPorEmpresa(empresa);
+		for (FormaPago formaPago : formasPagos) {
+			cuentasContablesEnlaces.add(formaPago.getCuentaContable());
+		}
+				
+		model.addAttribute("compras", compras);
+		model.addAttribute("dateAcct", new Date());
+		model.addAttribute("cuentasContablesEnlaces", cuentasContablesEnlaces);
+		return "contabilidad/cuentasXPagar :: cuentasXPagar";
+	}	
+	
+	@GetMapping("/compras")
+	public String compras(Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipo(empresa, "A");
+		List<Integer> activosFijos = new LinkedList<>();
+		activosFijos.add(1);
+		
+		double totalProductoTemp = 0;
+		
+		List<Producto> productos = serviceProductos.buscarPorEmpresaActivosFijos(empresa, activosFijos);
+		List<CompraProductoTemp> productosTemp = serviceComprasProductosTemp.buscarPorEmpresaUsuario(empresa, usuario);
+
+		for (CompraProductoTemp compraProducto : productosTemp) {
+			totalProductoTemp+=compraProducto.getCantidad()*compraProducto.getCosto();
+		}
+		
+		model.addAttribute("totalProductoTemp" , totalProductoTemp);
+		List<Suplidor> suplidores = serviceSuplidores.buscarPorEmpresa(empresa);
+		model.addAttribute("suplidores", suplidores);
+		model.addAttribute("productos" , productos);
+		model.addAttribute("fecha" , new Date());
+		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
+		model.addAttribute("producto", new Producto());
+		model.addAttribute("productosTemps", productosTemp);
+		return "contabilidad/compras :: compras";
+	}
 }

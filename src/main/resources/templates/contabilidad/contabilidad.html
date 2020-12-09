@@ -577,7 +577,7 @@
 					    <div class="col-sm-8">
 							<button class="btn btn-primary" id="btnIniciarContabilidad"> Iniciar contabilidad </button>
 							<button class="btn btn-info" id="btnCrearCuentas"> Crear cuentas </button>
-							<button class="btn btn-success" id="btnEntradaDiarios"> Entrada de diario </button>
+<!-- 							<button class="btn btn-success" id="btnEntradaDiarios"> Entrada de diario </button> -->
 							<button class="btn btn-warning" id="btnCuentaEnlace"> Cuentas de enlace </button>
 						</div>
 					  </div>
@@ -729,7 +729,7 @@
 			                    </div>
 						   </div>
 						    <div class="col-md-4 col-sm-4">
-						      <div class="card overflow-hidden sales-card bg-primary-gradient" style="height: 140px;">
+						      <div id="tarjetaCuentasXPagar" class="card overflow-hidden sales-card bg-primary-gradient" style="cursor:pointer;height: 140px;">
 			                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
 			                      	<span class="mb-3 tx-20 text-white">Cuentas x Pagar </span>
 			                        <div class="float-right my-auto ml-auto">
@@ -817,7 +817,7 @@
 			                    </div>
 						   </div>
 						    <div class="col-md-4 col-sm-4">
-						      <div class="card overflow-hidden sales-card bg-primary-gradient" style="height: 140px;">
+						      <div id="tarjetaCuentaContables" class="card overflow-hidden sales-card bg-primary-gradient" style="cursor:pointer;height: 140px;">
 			                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
 			                      	<span class="mb-3 tx-20 text-white">Cuentas Contables </span>
 			                        <div class="float-right my-auto ml-auto">
@@ -875,14 +875,41 @@
 			                    </div>
 						   </div>
 						   
+						   <div class="col-md-4 col-sm-4">
+						      <div class="card overflow-hidden sales-card bg-primary-gradient" id="tarjetaCompras" style="cursor:pointer;height: 140px;">
+			                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
+			                      	<span class="mb-3 tx-20 text-white">Compras </span>
+			                        <div class="float-right my-auto ml-auto">
+			                        <img alt="" th:src="@{/img/compras.png}" width="100px;">
+<!-- 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true"></i> -->
+			                        </div>
+			                        <input type="hidden" id="tipoPrestamoAcct">
+			                        <div class="pb-0 mt-0">
+			                          <div class="d-flex">
+			                            <div class="">
+			                              <h4  class="tx-18 font-weight-bold mb-1 text-white"><a style="cursor: pointer;" id="">  </a></h4>
+			                              <h4 class="tx-18 font-weight-bold mb-1 text-white"><a style="cursor: pointer;" id="">  </a></h4>
+			                               <p class="mb-0 tx-12 text-white op-7">Crear compras</p>
+			                               <p class="mb-0 tx-12 text-white op-7">Proveedores</p>
+			                            </div>
+			                            <span class="float-right my-auto ml-auto">
+<!-- 			                              <i class="fas fa-arrow-circle-up text-white"></i> -->
+			                              <span class="text-white op-7" style="font-size: 8px;"></span>
+			                            </span>
+			                          </div>
+			                        </div>
+			                      </div>
+			                      <span id="" class="pt-1"><canvas width="298" height="30" style="display: inline-block; width: 298.25px; height: 30px; vertical-align: top;"></canvas></span>
+			                    </div>
+						   </div>
+						   
 						    <div class="col-md-4 col-sm-4">
 						      <div class="card overflow-hidden sales-card bg-primary-gradient" id="tarjetaEnlaces" style="cursor:pointer;height: 140px;">
 			                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
 			                      	<span class="mb-3 tx-20 text-white">Enlaces </span>
 			                        <div class="float-right my-auto ml-auto">
 			                        <img alt="" th:src="@{/img/enlace.png}" width="100px;">
-<!-- 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true"></i> -->
-			                        </div>
+ 			                        </div> 
 			                        <input type="hidden" id="tipoPrestamoAcct">
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">
@@ -892,7 +919,6 @@
 			                               <p class="mb-0 tx-12 text-white op-7">Enlazar Cuentas</p>
 			                            </div>
 			                            <span class="float-right my-auto ml-auto">
-<!-- 			                              <i class="fas fa-arrow-circle-up text-white"></i> -->
 			                              <span class="text-white op-7" style="font-size: 8px;"></span>
 			                            </span>
 			                          </div>

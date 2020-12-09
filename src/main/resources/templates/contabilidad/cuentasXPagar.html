@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:fragment="cuentasXPagar">
+	
+<!-- Modal Pago Compra-->
+  <div class="modal" id="modalPagoCompra" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Pago</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+        	<form id="formPagoCompra">
+	          	<div class="row">
+	          	
+	          		<div class="col-md-3">
+					 	<div class="form-group">
+						   	<input type="date" th:value="${#dates.format(dateAcct, 'dd-MM-yyyy')}" class="form-control" id="fechaPagoCompra">
+						 </div>
+					</div>
+	          		
+					<div class="col-md-3">
+					 	<div class="form-group">
+						   	<input type="number" name="monto" class="form-control" placeholder="Monto" id="montoPagoCompra">
+						 </div>
+					</div>
+					
+					<div class="col-md-3">
+					 	<div class="form-group">
+						   	<select class="form-control" id="cuentaContableEnlace">
+						   		<option th:each="cuentaContableEnlace : ${cuentasContablesEnlaces}"
+						   				th:value="${cuentaContableEnlace.id}"
+						   				th:text="${cuentaContableEnlace.codigo} + ' ' + ${cuentaContableEnlace.nombreCuenta}"></option>
+						   	</select>
+						 </div>
+					</div>
+					
+					<div class="col-md-1">
+					 	<div class="form-group">
+						   	<button class="btn btn-primary" id="agregarPagoCompraTemp"> + </button>
+						 </div>
+					</div>
+				</div>
+			</form>
+			<br>
+			
+			<div class="row">
+<!-- 					<div class="col-md-3"> -->
+					
+<!-- 					</div> -->
+					
+					<div class="col-md-12">
+						<div id="tablaPagosCompraTemp">
+							<div class="table-responsive">
+			                   <table class="table mg-b-0 text-md-nowrap">
+									<thead style="background-color: #0162e8;height: 80px;">
+										<tr>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Monto</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;"></th>
+										</tr>
+									 </thead>
+									<tbody>
+<!-- 										 <tr th:each="entradaTemp : ${entradasTemp}"> -->
+<!-- 										 	 <td th:text="${entradaTemp.cuentaContable.codigo + ' ' + entradaTemp.cuentaContable.nombreCuenta}"></td> -->
+<!-- 										 	 <td th:text="${entradaTemp.referencia}"></td> -->
+<!-- 										 	 <td th:text="${entradaTemp.balanceInicial}"></td> -->
+<!-- 										 	 <td th:text="${entradaTemp.debito}"></td> -->
+<!-- 										 	 <td th:text="${entradaTemp.credito}"></td> -->
+<!-- 										 	 <td th:text="${entradaTemp.balanceFinal}"></td> -->
+<!-- 										 	 <td> <button th:onclick="'eliminarEntradaDiarioTemp(\'' + ${entradaTemp.id} + '\');'" class="btn btn-danger"><i class="fas fa-trash"></i></button></td> -->
+<!-- 										 </tr> -->
+<!-- 										 <tr> -->
+<!-- 										 	<td colspan="4"></td> -->
+<!-- 										 	<td th:text="'Total Debito: ' + ${totalDebitoTemp}"></td> -->
+<!-- 										 	<td th:text="'Total Credito: ' + ${totalCreditoTemp}"></td> -->
+<!-- 										 	<td th:text="'Dif: ' + ${dif}"></td> -->
+<!-- 										 </tr> -->
+									</tbody>
+								 </table>
+		                	  </div>
+						</div>
+					</div>
+					
+<!-- 					<div class="col-md-3"> -->
+					
+<!-- 					</div> -->
+			</div>
+
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+<!--           <button type="button" class="btn btn-success" id="eliminarEntradasTemp">Regresar</button> -->
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="agregarEntradaDiario">Guardar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div> 
+	
+		<div class="row">
+			<div class="col-md-12">
+						<div class="row">
+			<div class="col-md-12">
+				<div class="row">
+				<div class="col-md-12">
+					<div class="card-header">
+						<div class="card-head-row">
+							<h4>Cuentas x Pagar</h4>
+						</div>
+					</div>
+
+					 <div class="row">
+						<div class="col-md-12">
+							 <div class="row">
+								<div class="col-md-4">
+									<input class="form-control" id="findByNombreSuplidor" placeholder="Nombre Suplidor" autocomplete="off">
+								</div>
+							
+<!-- 								<div class="col-md-3"> -->
+<!-- 									<select class="form-control" id="findByTipoProducto"> -->
+<!-- 										<option value="">Todos</option> -->
+<!-- 										<option value="1">Inventario</option> -->
+<!-- 						       			<option value="2">Activo fijo</option> -->
+<!-- 									</select> -->
+<!-- 								</div> -->
+							</div>	
+						</div>
+					</div>
+					
+					<br>
+
+							<div class="card-body" style="padding-top: 0px;">
+								<div id="tablaCompras">
+									<div class="table-responsive">
+										<table class="table mg-b-0 text-md-nowrap">
+											<thead style="background-color: #e9ecef; height: 80px;">
+												<tr>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Fecha</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Suplidor</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Factura</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Comprobante</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">total</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">balance</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="compra : ${compras}">
+													<td th:text="${#dates.format(compra.fecha, 'dd-MM-yyyy')}"></td>
+													<td th:text="${compra.suplidor.nombre}"></td>
+													<td th:text="${compra.factura}"></td>
+													<td th:text="${compra.comprobante}"></td>
+													<td th:text="${compra.total}"></td>
+													<td th:text="${compra.balance}"></td>
+													<td>
+												        <a style="color: #fff;cursor: pointer;" th:onclick="'crearPago(\'' + ${compra.id} + '\');'" class="btn btn-primary btn-sm" role="button" title="Crear pago"><i class="fas fa-money-bill-wave" aria-hidden="true"></i></a>
+												    </td>
+												</tr>
+												<tr>
+													<td colspan="5"></td>
+													<td style="font-weight: bold;">Total Balance</td>
+													<td style="font-weight: bold;"></td>
+												</tr>
+										</tbody>
+									</table>
+								
+<!-- 								<nav th:if="${productos.totalPages > 0}" aria-label="Page navigation example" > -->
+<!-- 									<ul class="pagination"> -->
+<!-- 										<li class="page-item" th:if="${productos.hasPrevious()}"> -->
+<!-- 											<a class="page-link" style="cursor: pointer;" aria-label="Previous" th:onclick="'previousPageProduct(\'' + ${productos.number - 1} + '\');'"> -->
+<!-- 										        <span aria-hidden="true">&laquo;</span> -->
+<!-- 										        <span class="sr-only">Anterior</span> -->
+<!-- 										      </a> -->
+<!-- 										 </li>      -->
+<!-- 									<th:block th:each="i: ${#numbers.sequence(0, productos.totalPages - 1)}"> -->
+<!-- 								        <span th:if="${productos.number == i}" style="background-color: #c2c8d8;border: 1px solid #cdd7ef;"  -->
+<!-- 								        class="page-link selected">[[${i}+1]]</span> -->
+<!-- 								        <span th:unless="${productos.number == i}"> -->
+<!-- 								              <a class="page-link" style="cursor: pointer;" aria-label="Next" th:onclick="'nextPageProduct(\'' + ${i} + '\');'"> -->
+<!-- 										        <span aria-hidden="true">[[${i}+1]]</span> -->
+<!-- 										        <span class="sr-only">[[${i}+1]]</span> -->
+<!-- 										      </a> -->
+<!-- 								        </span> -->
+<!-- 								    </th:block> -->
+<!-- 										<li class="page-item" th:if="${productos.hasNext()}"> -->
+<!-- 											<a class="page-link" style="cursor: pointer;" aria-label="Next" th:onclick="'nextPageProduct(\'' + ${productos.number + 1} + '\');'"> -->
+<!-- 										        <span aria-hidden="true">&raquo;</span> -->
+<!-- 										        <span class="sr-only">Siguiente</span> -->
+<!-- 										      </a> -->
+<!-- 										</li> -->
+<!-- 									</ul> -->
+<!-- 								</nav> -->
+							</div>
+						</div>
+					</div>
+				</div>
+<!-- 				<div class="col-md-3"> -->
+<!-- 					<div class="col-md-12"> -->
+<!-- 						<div id="miniInfoProducto"> -->
+<!-- 							<form autocomplete="off" id="infoProduct"> -->
+<!-- 							     <div class="row"> -->
+<!-- 							     	 <div class="col-md-12"> -->
+<!-- 							        	<div class="form-group"> -->
+<!-- 	<!-- 						        		<label>Nombre</label><span style="color: red"> * </span> --> 
+<!-- 							        		<input type="hidden" id="idInfoProduct"> -->
+<!-- 							        		<input type="text" class="form-control" id="nombreInfoPoduct" maxlength="50" placeholder="Nombre del Producto" disabled="disabled"> -->
+<!-- 							        	</div> -->
+<!-- 							        </div> -->
+<!-- 							      </div> -->
+							      
+<!-- 							      <div class="row"> -->
+<!-- 							     	 <div class="col-md-12"> -->
+<!-- 							        	<div class="form-group"> -->
+<!-- 	<!-- 						        		<label>Costo</label> --> 
+<!-- 							        		<input type="number" class="form-control" id="costoInfoProduct" placeholder="Costo" disabled="disabled"> -->
+<!-- 							        	</div> -->
+<!-- 							        </div> -->
+<!-- 							      </div> -->
+							      
+<!-- 							      <div class="row"> -->
+<!-- 								      <div class="col-md-12"> -->
+<!-- 								        <div class="form-group"> -->
+<!-- 	<!-- 							        	<label>Precio de Venta</label> --> 
+<!-- 								        	<input type="number" id="precioVentaInfoProduct" class="form-control"  placeholder="Precio Venta" disabled="disabled"> -->
+<!-- 								        </div> -->
+<!-- 								      </div> -->
+<!-- 							      </div> -->
+							      
+<!-- 							      <div class="row"> -->
+<!-- 								      <div class="col-md-12"> -->
+<!-- 								        <div class="form-group"> -->
+<!-- 	<!-- 							        	<label>Cantidad</label> --> 
+<!-- 								        	<input type="number" id="cantidadInfoProduct" class="form-control"  placeholder="Cantidad" disabled="disabled"> -->
+<!-- 								        </div> -->
+<!-- 								      </div> -->
+<!-- 							      </div> -->
+							     
+<!-- 								 <div class="row"> -->
+<!-- 								      <div class="col-md-12"> -->
+<!-- 								       	<img id="crearCompras" th:src="@{/img/agregar.png}" style="cursor:pointer;max-width: 100%;">	 -->
+<!-- 								       	<img id="modificarProducto" th:src="@{/img/editar.png}" style="cursor:pointer;max-width: 100%;">		        	 -->
+<!-- 								       </div> -->
+<!-- 								       <div class="col-md-12"> -->
+<!-- 								       	<img id="agregarProveedor" th:src="@{/img/agregar3.png}" style="cursor:pointer;width: 96px;height: 96px;">	 -->
+<!-- 								       </div> -->
+<!-- 								       <div class="col-md-12"> -->
+<!-- 								       	<img id="eliminarProducto" th:src="@{/img/eliminar.png}"  style="cursor:pointer;max-width: 100%;">	 -->
+<!-- 								       	<img id="regresarAContabilidad" th:src="@{/img/salir.png}"  style="cursor:pointer;max-width: 100%;">		        	 -->
+<!-- 							       	  </div> -->
+<!-- 							    </div> -->
+<!-- 					    	</form> -->
+<!-- 						</div> -->
+<!-- 					</div>    	 	 -->
+<!-- 				</div> -->
+			</div>
+		</div>
+	</div>	
+			</div>
+		</div>		
+	</div>
+</body>
+</html>

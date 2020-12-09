@@ -8,6 +8,10 @@ function addEvents(){
 	var clienteSeleccionado = $("#clienteSeleccionado").select2({
 	    theme: 'bootstrap4',
 	});
+	
+	var productoSeleccionado = $("#productosSelectForCompra").select2({
+	    theme: 'bootstrap4',
+	});
 		
 	
 	if($("#tabla").length) {
@@ -1527,6 +1531,33 @@ $("#tarjetaEnlaces").click(function(e){
 	});
 });
 
+$("#tarjetaCuentasXPagar").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/contabilidad/cuentasXPagar",function(data){
+		console.log("Cuentas x Pagar");
+		addEvents();
+	});
+});
+
+$("#tarjetaCompras").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/contabilidad/compras",function(data){
+		console.log("Compras");
+		addEvents();
+	});
+});
+
+$("#tarjetaCuentaContables").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/cuentasContables/listaCuentasContables",function(data){
+		console.log("Cuentas contables");
+		addEvents();
+	});
+});
+
 $("#tarjetaInventarios").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
@@ -1538,6 +1569,57 @@ $("#tarjetaInventarios").click(function(e){
 	});
 });
 
+$("#agregarEnlace").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var cuentaContable = $("#cuentaContableAuxiliar").val();
+	if(cuentaContable!=""){
+		$("#tablaEnlaces").load("/contabilidad/agregarEnlace",
+			{
+				"cuentaContableId":cuentaContable
+			},function(data){
+				if(data == "1"){
+					$("#tablaEnlaces").load("/contabilidad/mostrarEnlaces",function(data){
+						addEvents();
+					});
+				}else if(data == "2"){
+					Swal.fire({
+						title : 'Advertencia!',
+						text : 'El enlace ya existe',
+						position : 'top',
+						icon : 'warning',
+						confirmButtonText : 'Cool'
+					})
+					$("#tablaEnlaces").load("/contabilidad/mostrarEnlaces",function(data){
+						addEvents();
+					});
+				}else{
+					Swal.fire({
+						title : 'Error!',
+						text : 'No se pudo crear el enlace',
+						position : 'top',
+						icon : 'error',
+						confirmButtonText : 'Cool'
+					})
+				}
+			});
+	}else{
+		Swal.fire({
+			title : 'Error!',
+			text : 'Debe seleccionar una cuenta contable',
+			position : 'top',
+			icon : 'error',
+			confirmButtonText : 'Cool'
+		})
+	}
+});
+
+$("#agregarProductoCompra").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#modalAgregarProductosCompras").modal("show");
+});
+
 $("#regresarAContabilidad").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
@@ -1546,6 +1628,20 @@ $("#regresarAContabilidad").click(function(e){
 		console.log("Contabilidad");
 		addEvents();
 	});
+});
+
+$("input[name='tipoProductoRadio']").change(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	 if($("#inventarioRadio").is(':checked')){
+		$("#productosSelectForCompra").load("/productos/reloadProductsCompra/"+1,function(data){
+			addEvents();
+		});
+    }else if($("#servicioRadio").is(':checked')){
+    	$("#productosSelectForCompra").load("/productos/reloadProductsCompra/"+23,function(data){
+			addEvents();
+		});
+    }
 });
 
 $("#ingresarProducto").click(function(e){
@@ -1744,6 +1840,10 @@ $("#modificarProducto").click(function(e){
 				$("#precioVentaProductoUpdate").hide();
 				$("#precioVentaProductoUpdate").val("0");
 				$("#lblPrecioVentaUpdate").hide();
+			}else if(activoFijo == 3){
+				//activo fijo
+				$("#precioVentaProductoUpdate").hide();
+				$("#lblPrecioVentaUpdate").hide();
 			}
 			$("#modalModificarProductos").modal("show");
 			addEvents();
@@ -1852,6 +1952,162 @@ $("#formUpdateProduct").on("submit", function (e) {
 	}
 });
 
+$('#productosSelectForCompra').on("select2:select", function(e) { 
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var producto = $("#productosSelectForCompra").val();
+	if(producto && producto!=''){
+		$.get("/cuentasContables/cuentaDelProducto/"+producto,function(data){
+			$("#cuentaContableCompra").val(data);
+			addEvents();
+		});
+	}else{
+		$("#cuentaContableCompra").val("");
+	}
+});
+
+$("#agregarItemsCompra").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var producto = $("#productosSelectForCompra").val();
+	var cantidad = $("#cantidadProductoCompra").val(); 
+	var costo = $("#costoProductoCompra").val(); 
+	var txt = $("#txtServicioConsumo").val(); 
+	//Producto, cantidad y costo requerido
+	if(producto != "" && cantidad != "" && costo != "" || txt != ""){
+		$("#tablaCompras").load("/productos/addProductosTempForCompras",
+			{
+				"idProducto": producto,
+				"cantidad": cantidad,
+				"costo": costo,
+				"txt": txt
+			},function(data){
+				addEvents();
+				$('#productosSelectForCompra').val('').trigger('change.select2');
+//				$('#productosSelectForCompra').select2('focus');
+				$("#cantidadProductoCompra").val(""); 
+				$("#costoProductoCompra").val(""); 
+			});
+	}else{
+		  Swal.fire({
+				title : 'Alerta!',
+				text : 'El producto, cantidad, referencia y costo son requeridos',
+				position : 'top',
+				icon : 'warning',
+				confirmButtonText : 'Cool'
+			})
+	}
+});
+
+$("#guardarCompra").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var totalPreCompra = $("#totalPreCompra").val();
+	var totalProductoTemp = $("#totalProductoTemp").text();
+	var fecha = $("#fechaCompra").val();
+	var suplidor = $("#selectSuplidorForProduct").val();
+	var factura = $("#facturaCompra").val();
+	var comprobante = $("#comprobanteCompra").val();
+	var tipo = $("#tipoCompra").val();
+	var subTotal = $("#subTotalCompra").val();
+	var itbis = $("#itbisCompra").val();
+	var cuentaContableId = $("#cuentaContableSelectForCompra").val();
+	if(parseFloat(totalPreCompra) == parseFloat(totalProductoTemp)){
+		$.post("/compras/guardarCompra",
+				 {
+					 "total":totalPreCompra,
+					 "fecha":fecha,
+					 "suplidor":suplidor,
+					 "factura":factura,
+					 "comprobante":comprobante,
+					 "tipo":tipo,
+					 "subTotal":subTotal,
+					 "itbis":itbis,
+					 "cuentaContableId":cuentaContableId,
+					 "tipo":tipo
+				 },function(data){
+					 if(data == "1"){
+						 Swal.fire({
+								title : 'Muy bien!',
+								text : 'Compra creada correctamente',
+								position : 'top',
+								icon : 'success',
+								confirmButtonText : 'Cool'
+							})
+							$("#contenido").load("/contabilidad/compras",function(data){
+								console.log("Compras");
+								addEvents();
+							});
+					 }else{
+						 Swal.fire({
+								title : 'Alerta!',
+								text : 'No se pudo guardar la compra',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+					 }
+				 });
+	}else{
+		 Swal.fire({
+			title : 'Alerta!',
+			text : 'Los totales deben coincidir para generar la compra',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'Cool'
+		})
+	}
+});
+
+$("#agregarSuplidor").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#modalAgregarSuplidor").modal("show");
+});
+
+$("#guardarSuplidor").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var nombre = $("#nombreSuplidor").val();
+	var telefono = $("#telefonoSuplidor").val();
+	var direccion = $("#direccionSuplidor").val();
+	var rnc = $("#rncSuplidor").val();
+	
+	if(!nombre || !telefono || !direccion || !rnc){
+		$("#modalAgregarSuplidor").modal("hide");
+		 Swal.fire({
+			  title: 'Alerta!',
+			  text: "Todos los campos son requeridos",
+			  icon: 'warning',
+			  position : 'top',
+			  showCancelButton: false,
+			  confirmButtonColor: '#3085d6',
+			  confirmButtonText: 'Ok!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
+	             $("#modalAgregarSuplidor").modal("show");
+			  }
+			})
+	}else{
+		$("#selectSuplidorForProduct").load("/suplidores/agregarSuplidorForCompra",
+			{
+				"nombre":nombre,
+				"telefono":telefono,
+				"direccion":direccion,
+				"rnc":rnc
+			},function(data){
+				console.log("Lista de suplidores actualizada");
+				$("#modalAgregarSuplidor").modal("hide");
+				$("#nombreSuplidor").val("");
+				$("#telefonoSuplidor").val("");
+				$("#direccionSuplidor").val("");
+				$("#rncSuplidor").val("");
+				addEvents();
+		});
+	}
+	
+});
+
 $("#findByTipoProducto").change(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
@@ -1895,7 +2151,6 @@ $("#findByNombreProducto").on("keyup", function(e) {
 });
 	
 $("#activoFijoProductoUpdate").change(function(e){
-
 	var activoFijo = $("#activoFijoProductoUpdate").val();
 	if(activoFijo == 1){
 		//Inventario
@@ -1905,6 +2160,10 @@ $("#activoFijoProductoUpdate").change(function(e){
 		//activo fijo
 		$("#precioVentaProductoUpdate").hide();
 		$("#precioVentaProductoUpdate").val("0");
+		$("#lblPrecioVentaUpdate").hide();
+	}else if(activoFijo == 3){
+		//activo fijo
+		$("#precioVentaProductoUpdate").hide();
 		$("#lblPrecioVentaUpdate").hide();
 	}
 });
@@ -1921,6 +2180,94 @@ $("#activoFijoProductoAdd").change(function(e){
 		//activo fijo
 		$("#precioVentaProductoAdd").hide();
 		$("#lblPrecioVentaAdd").hide();
+	}else if(activoFijo == 3){
+		//activo fijo
+		$("#precioVentaProductoAdd").hide();
+		$("#lblPrecioVentaAdd").hide();
+	}
+});
+
+$("#formAddProductCompra").on("submit", function (e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	
+	var nombre =  $("#nombreProductoAdd").val();
+	
+	if(!nombre){
+		$("#modalAgregarProductosCompras").modal("hide");
+		 Swal.fire({
+ 			  title: 'Alerta!',
+ 			  text: "Los campos con '*' son requeridos",
+ 			  icon: 'warning',
+ 			  position : 'top',
+ 			  showCancelButton: false,
+ 			  confirmButtonColor: '#3085d6',
+ 			  confirmButtonText: 'Ok!'
+ 			}).then((result) => {
+ 			  if (result.isConfirmed) {
+	             $("#modalAgregarProductosCompras").modal("show");
+ 			  }
+ 			})
+	}else{
+	       $.ajax({
+	            url: "/productos/crear/",
+	            type: "POST",
+	            data: new FormData(this),
+	            enctype: 'multipart/form-data',
+	            processData: false,
+	            contentType: false,
+	            cache: false,
+	            success: function (res) {
+	            	$("#modalAgregarProductosCompras").modal("hide");
+		            if(res=="1"){
+			            Swal.fire({
+				  			  title: 'Muy bien!',
+				  			  text: "Registro guardado",
+				  			  icon: 'success',
+				  			  position : 'top',
+				  			  showCancelButton: false,
+				  			  confirmButtonColor: '#3085d6',
+				  			  confirmButtonText: 'Ok!'
+				  			}).then((result) => {
+				  			  if (result.isConfirmed) {
+				  	             $("#nombreProductoAdd").val("");
+					             $("#costoProductoAdd").val("");
+					             $("#precioVentaProductoAdd").val("");
+					             $("#imagenProductoAdd").val("");
+					             $("#modalAgregarProductosCompras").modal("show");
+				  			  }
+				  			})
+					}else{
+						Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo crear el registro',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+					}
+
+		            if($("#inventarioRadio").is(':checked')){
+		        		$("#productosSelectForCompra").load("/productos/reloadProductsCompra/"+1,function(data){
+		        			addEvents();
+		        		});
+		            }else if($("#servicioRadio").is(':checked')){
+		            	$("#productosSelectForCompra").load("/productos/reloadProductsCompra/"+23,function(data){
+		        			addEvents();
+		        		});
+		            }
+	            },
+	            error: function (err) {
+	                console.error(err);
+	                Swal.fire({
+						title : 'Error!',
+						text : 'No se pudo completar la operacion, intente mas tarde',
+						position : 'top',
+						icon : 'error',
+						confirmButtonText : 'Cool'
+					})
+	            }
+	        });
 	}
 });
 
@@ -4832,6 +5179,62 @@ function openModalImage(idProducto){
 		$("#modalImageProduct").modal("show");
 		addEvents();
 	});
+}
+
+function eliminarProductoTemp(id){
+	$("#tablaCompras").load("/productos/deleteProductTemp/"+id,function(data){
+		addEvents();
+	});
+}
+
+function crearPago(id){
+	$("#modalPagoCompra").modal("show");
+}
+
+function eliminarEnlace(id){
+	Swal.fire({
+		  title: 'Esta seguro?',
+		  text: "Esta accion es irreversible!",
+		  icon: 'warning',
+		  position: 'top',
+		  showCancelButton: true,
+		  confirmButtonColor: '#3085d6',
+		  cancelButtonColor: '#d33',
+		  confirmButtonText: 'Si, Eliminar!',
+		  cancelButtonText: 'Cancelar',
+		}).then((result) => {
+		  if (result.value) {
+			 $.post("/contabilidad/borrarEnlace",
+					 {
+						 "id":id
+					},function(data){
+						 if(data == "1"){
+								Swal.fire({
+									title: 'Muy bien!',
+									text: "Registro eliminado",
+									icon: 'success',
+									position : 'top',
+									showCancelButton: false,
+									 confirmButtonColor: '#3085d6',
+									  confirmButtonText: 'Ok!'
+									}).then((result) => {
+									  if (result.isConfirmed) {
+											$("#tablaEnlaces").load("/contabilidad/mostrarEnlaces",function(data){
+												addEvents();
+											});
+									  }
+							})
+						 }else{
+							 Swal.fire({
+								  icon: 'error',
+								  title: 'Error!',
+								  text: 'No se pudo borrar el registro!',
+								  position: 'top'
+								})
+						 }
+					});		
+		  }
+		})
 }
 
 function previousPageProduct(item){

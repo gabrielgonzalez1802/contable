@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:fragment="compras">
+	
+  <!-- Modal Agregar suplidor -->
+  <div class="modal" id="modalAgregarSuplidor" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Agregar Suplidor</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+           <form autocomplete="off" id="formAddSuplidor">
+	        	<div class="row">
+	        		<div class="col-md-9">
+	        			<div class="form-group">
+	        				<label>Nombre</label>
+	        				<input type="text" style="border-radius: 10px;" class="form-control" id="nombreSuplidor" maxlength="100" placeholder="Nombre del Suplidor">
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Telefono</label>
+	        				<input type="text" style="border-radius: 10px;" class="form-control" id="telefonoSuplidor" maxlength="50" placeholder="Telefono del Suplidor">
+	        			</div>
+	        		</div>
+	        	</div>
+	        		        		
+	        	<div class="row">
+	        		<div class="col-md-9">
+	        			<div class="form-group">
+	        				<label>Direccion</label>
+	        				<input type="text" style="border-radius: 10px;" class="form-control" id="direccionSuplidor" placeholder="Direccion">
+	        			</div>
+	        		</div>
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>RNC</label>
+	        				<input type="text" style="border-radius: 10px;" class="form-control" id="rncSuplidor" placeholder="RNC">
+	        			</div>
+	        		</div>
+	        	</div>
+	        	
+	        	<div class="row">
+	        		<div class="col-md-12">
+	        			<div class="form-group">
+	        				<div style="float: right;">
+	        					 <button id="guardarSuplidor" style="border-radius: 10px;" class="btn btn-lg btn-primary">Guardar</button>
+	        				</div>
+	        			</div>
+	        		</div>
+	        	</div>
+        	</form>
+        </div>
+      </div>
+    </div>
+  </div>
+	
+		<!-- Modal Agregar Productos -->
+  <div class="modal" id="modalAgregarProductosCompras" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Agregar Producto</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+           <form autocomplete="off" th:object="${producto}" id="formAddProductCompra">
+	        	<div class="row">
+	        		<div class="col-md-9">
+	        			<div class="form-group">
+	        				<label>Nombre</label><span style="color: red"> * </span>
+	        				<input type="text" style="border-radius: 10px;" th:field="*{nombre}" class="form-control" id="nombreProductoAdd" maxlength="50" placeholder="Nombre del Producto">
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Tipo </label><span style="color: red"> * </span>
+		        			<select id="activoFijoProductoAdd" th:field="*{activoFijo}" style="border-radius: 10px;" class="form-control">
+		        				<option value="1">Inventario</option>
+		        				<option value="2">Activo fijo</option>
+		        				<option value="3">Otros</option>
+		        			</select>
+		        		</div>	
+	        		</div>
+	        	</div>
+	        	
+	        	<br>
+	        		
+	        	<div class="row">
+	        		<div class="col-md-2">
+	        			<div class="form-group">
+	        				<label>Cantidad</label>
+	        				<input type="number" style="border-radius: 10px;" th:field="*{cantidad}" class="form-control" id="cantidadProductoAdd" min="0" placeholder="Cantidad">
+	        			</div>
+	        		</div>
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Costo</label>
+	        				<input type="number" style="border-radius: 10px;" th:field="*{costo}" class="form-control" id="costoProductoAdd" min="0" placeholder="Costo">
+	        			</div>
+	        		</div>
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Cuenta Contable</label>
+	        				<select id="cuentaContableUpdate" th:field="*{cuentaContable.id}" class="form-control">
+		        				<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
+											th:value="${cuentaContable.id}"
+											th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+		        			</select>
+	        			</div>
+	        		</div>	
+	        		
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label id="lblPrecioVentaAdd">Precio de Venta</label>
+	        				<input type="number" style="border-radius: 10px;" th:field="*{precioVenta}" class="form-control" id="precioVentaProductoAdd" min="0" placeholder="Precio Venta">
+	        			</div>
+	        		</div>
+	        	</div>
+	        	
+	        	<br>
+	        	
+	        	<div class="row">
+	        		<div class="col-md-12">
+	        			<div class="form-group">
+	        				<label>Imagen</label>
+	        				<input type="file" th:field="*{imagenTemp}" style="border-radius: 10px;" class="form-control" id="imagenProductoAdd">
+	        			</div>
+	        		</div>
+	        	</div>
+
+	        	<br>
+	        	
+	        	<div class="row">
+	        		<div class="col-md-12">
+	        			<div class="form-group">
+	        				<div style="float: right;">
+	        					 <button type="submit" style="border-radius: 10px;" class="btn btn-lg btn-primary">Guardar</button>
+	        				</div>
+	        			</div>
+	        		</div>
+	        	</div>
+        	</form>
+        </div>
+      </div>
+    </div>
+  </div> 
+	
+		<div class="row">
+			<div class="col-md-12">
+						<div class="row">
+			<div class="col-md-12">
+				<div class="row">
+				<div class="col-md-12">
+					<div class="card-header">
+						<div class="card-head-row">
+							<h4>Compras</h4>
+						</div>
+					</div>
+
+					 <div class="row">
+						<div class="col-md-12">
+							 <div class="row">
+							 	
+							 	<div class="col-md-3">
+									<div class="form-group">
+										<input type="date" th:value="*{#dates.format(fecha, 'yyyy-MM-dd')}" class="form-control" id="fechaCompra" placeholder="fecha" autocomplete="off">
+									</div>
+								</div>
+							 
+								<div class="col-md-3">
+									<div class="form-group">
+										<select class="form-control" id="selectSuplidorForProduct">
+											<option value="">Seleccione el suplidor</option>
+											<option th:each="suplidor : ${suplidores}" 
+													th:value="${suplidor.id}" 
+													th:text="${suplidor.nombre}"></option>
+										</select>
+									</div>
+								</div>
+								
+								<div class="col-md-1">
+									<div class="form-group">
+										<button class="btn btn-primary" id="agregarSuplidor">+</button>
+									</div>
+								</div>
+								
+								<div class="col-md-2">
+									<div class="form-group">
+										<input class="form-control" id="facturaCompra" placeholder="Factura No" autocomplete="off">
+									</div>
+								</div>
+								
+								<div class="col-md-3">
+									<div class="form-group">
+										<input class="form-control" id="comprobanteCompra" placeholder="Comprobante No" autocomplete="off">
+									</div>
+								</div>
+							</div>	
+							
+					 <div class="row">
+							<div class="col-md-3">
+								<select class="form-control" id="tipoCompra">
+									<option value="1">Credito</option>
+						       		<option value="2">Contado</option>
+								</select>
+							</div>
+							
+							<div class="col-md-2">
+								<div class="form-group">
+									<input type="number" class="form-control" id="subTotalCompra" placeholder="SubTotal" autocomplete="off">
+								</div>
+							</div>
+							
+							<div class="col-md-2">
+								<div class="form-group">
+									<input type="number" class="form-control" id="itbisCompra" placeholder="ITBIS" autocomplete="off">
+								</div>
+							</div>
+							
+							<div class="col-md-2">
+								<div class="form-group">
+									<input type="number" class="form-control" id="totalPreCompra" placeholder="Total" autocomplete="off">
+								</div>
+							</div>
+							
+							<div class="col-md-3">
+								<div class="form-group">
+									 <select class="form-control" id="cuentaContableSelectForCompra">
+										<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
+												th:value="${cuentaContable.id}" 
+												th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+										</select>
+								</div>
+							</div>
+					</div>	
+					
+					 <div class="row">
+							<div class="col-md-3 my-1">
+							   	 <div class="form-check form-check-inline">
+							        <div class="custom-control custom-radio">
+									  <input type="radio" id="inventarioRadio" name="tipoProductoRadio" class="custom-control-input" checked="checked">
+									  <label class="custom-control-label" for="inventarioRadio">Inventario</label>
+									</div>
+								</div>	
+								<div class="form-check form-check-inline">
+									<div class="custom-control custom-radio">
+									  <input type="radio" id="servicioRadio" name="tipoProductoRadio" class="custom-control-input">
+									  <label class="custom-control-label" for="servicioRadio">Servicio o Consumo</label>
+									</div>
+							    </div>
+					   		 </div>
+					   		 
+					   		 
+					   		 <div class="col-md-3">
+								<input type="text" placeholder="Referencia" class="form-control" id="txtServicioConsumo" autocomplete="off">
+							</div>
+							
+							<div class="col-md-3">
+	 							<input type="text" value="" id="cuentaContableCompra" disabled="disabled" class="form-control">
+							</div>
+							
+							<div class="col-md-3">
+								<button class="btn btn-info" id="agregarProductoCompra">Nuevo producto</button>
+							</div>
+					</div>
+					
+					<div class="row">
+						<div class="col-md-5">
+							<select class="form-control" id="productosSelectForCompra">
+								<option value="">Seleccione</option>
+								<option th:each="producto : ${productos}" 
+										th:value="${producto.id}" 
+										th:text="${producto.nombre}"></option>
+							</select>
+						</div>
+						<div class="col-md-2">
+							<input type="number" min="0" placeholder="Cantidad" id="cantidadProductoCompra" class="form-control">
+						</div>
+						<div class="col-md-2">
+							<input type="number" min="0" placeholder="Costo" id="costoProductoCompra" class="form-control">
+						</div>
+						<div class="col-md-1">
+							<button class="btn btn-info" id="agregarItemsCompra">Agregar</button>
+						</div>
+						<div class="col-md-2">
+							<button class="btn btn-primary" id="guardarCompra">Guardar Compra</button>
+						</div>
+					</div>
+				</div>
+		<div class="col-md-12">		
+			<br>
+			<div class="card-body" style="padding-top: 0px;">
+				<div id="tablaCompras">
+					<input type="hidden" id="idSelectedProduct">
+						<div class="table-responsive">
+							<table class="table mg-b-0 text-md-nowrap">
+								<thead style="background-color: #0162e8;height: 80px;">
+									<tr>
+										<th style="background-color: #0162e8; color:#f3f3f3; padding-top: 10px; position: static">Nombre</th>
+										<th style="background-color: #0162e8; color:#f3f3f3; padding-top: 10px; position: static">Cantidad</th>
+										<th style="background-color: #0162e8; color:#f3f3f3; padding-top: 10px; position: static">Costo</th>
+										<th style="background-color: #0162e8; color:#f3f3f3; padding-top: 10px; position: static">Total</th>
+										<th style="background-color: #0162e8; color:#f3f3f3; padding-top: 10px; position: static">Cuenta Contable</th>			
+										<th style="background-color: #0162e8; color:#f3f3f3; padding-top: 10px; position: static"></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="productoTemp : ${productosTemps}">
+										<td th:text="${productoTemp.info}"></td>
+										<td th:text="${productoTemp.cantidad}"></td>
+										<td th:text="${productoTemp.costo}"></td>
+										<td th:text="${productoTemp.cantidad} * ${productoTemp.costo}"></td>
+										<td th:text="${productoTemp.producto.cuentaContable.codigo} + ' ' + ${productoTemp.producto.cuentaContable.nombreCuenta}"></td>
+										<td style="cursor: pointer;"><i th:onclick="'eliminarProductoTemp(\'' + ${productoTemp.id} + '\');'" style="font-size: 20px;color: red;" class="fas fa-trash"></i></td>
+									</tr>
+									<tr>
+										<td colspan="4"></td>
+										<td style="font-weight: bold; float: right;">Total</td>
+										<td id="totalProductoTemp" style="font-weight: bold;" th:text="${totalProductoTemp}"></td>
+									</tr>
+								</tbody>
+							</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>	
+			</div>
+		</div>		
+	</div>
+  </div>		
+</div>
+</body>
+</html>

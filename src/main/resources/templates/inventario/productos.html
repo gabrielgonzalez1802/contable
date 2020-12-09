@@ -32,10 +32,11 @@
 	        		
 	        		<div class="col-md-3">
 	        			<div class="form-group">
-	        				<label>Tipo Activo</label><span style="color: red"> * </span>
+	        				<label>Tipo </label><span style="color: red"> * </span>
 		        			<select id="activoFijoProductoUpdate" th:field="*{activoFijo}" class="form-control">
 		        				<option value="1">Inventario</option>
 		        				<option value="2">Activo fijo</option>
+		        				<option value="3">Otros</option>
 		        			</select>
 		        		</div>	
 	        		</div>
@@ -166,10 +167,11 @@
 	        		
 	        		<div class="col-md-3">
 	        			<div class="form-group">
-	        				<label>Tipo Activo</label><span style="color: red"> * </span>
+	        				<label>Tipo </label><span style="color: red"> * </span>
 		        			<select id="activoFijoProductoAdd" th:field="*{activoFijo}" style="border-radius: 10px;" class="form-control">
 		        				<option value="1">Inventario</option>
 		        				<option value="2">Activo fijo</option>
+		        				<option value="3">Otros</option>
 		        			</select>
 		        		</div>	
 	        		</div>
@@ -339,7 +341,6 @@
 							     <div class="row">
 							     	 <div class="col-md-12">
 							        	<div class="form-group">
-	<!-- 						        		<label>Nombre</label><span style="color: red"> * </span> -->
 							        		<input type="hidden" th:field="*{id}" id="idInfoProduct">
 							        		<input type="text" th:field="*{nombre}" class="form-control" id="nombreInfoPoduct" maxlength="50" placeholder="Nombre del Producto" disabled="disabled">
 							        	</div>
@@ -349,7 +350,6 @@
 							      <div class="row">
 							     	 <div class="col-md-12">
 							        	<div class="form-group">
-	<!-- 						        		<label>Costo</label> -->
 							        		<input type="number" th:field="*{costo}" class="form-control" id="costoInfoProduct" placeholder="Costo" disabled="disabled">
 							        	</div>
 							        </div>
@@ -358,7 +358,6 @@
 							      <div class="row">
 								      <div class="col-md-12">
 								        <div class="form-group">
-	<!-- 							        	<label>Precio de Venta</label> -->
 								        	<input type="number" th:field="*{precioVenta}" id="precioVentaInfoProduct" class="form-control"  placeholder="Precio Venta" disabled="disabled">
 								        </div>
 								      </div>
@@ -367,7 +366,6 @@
 							      <div class="row">
 								      <div class="col-md-12">
 								        <div class="form-group">
-	<!-- 							        	<label>Cantidad</label> -->
 								        	<input type="number" th:field="*{cantidad}" id="cantidadInfoProduct" class="form-control"  placeholder="Cantidad" disabled="disabled">
 								        </div>
 								      </div>
@@ -375,7 +373,6 @@
 							      
 							      <div class="row">
 							     	 <div class="col-md-12">
-	<!-- 						        	 <label>Tipo Activo</label><span style="color: red"> * </span> -->
 								       	  <input type="text" th:if="*{activoFijo == 1}" th:value="'inventario'" class="form-control" placeholder="Tipo Activo" id="tipoActivoInfoProduct" disabled="disabled">
 								       	  <input type="text" th:if="*{activoFijo == 2}" th:value="'Activo Fijo'" class="form-control" placeholder="Tipo Activo" id="tipoActivoInfoProduct" disabled="disabled">
 							        	  <input type="text" th:if="*{activoFijo == '' || activoFijo == null}" th:value="''" class="form-control" placeholder="Tipo Activo" id="tipoActivoInfoProduct" disabled="disabled">

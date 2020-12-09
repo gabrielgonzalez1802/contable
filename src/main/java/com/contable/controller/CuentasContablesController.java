@@ -2,6 +2,7 @@ package com.contable.controller;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -21,11 +22,15 @@ import com.contable.model.CuentaContable;
 import com.contable.model.CuentaEnlace;
 import com.contable.model.Empresa;
 import com.contable.model.EntradaDiario;
+import com.contable.model.EntradaIngresoContable;
+import com.contable.model.Producto;
 import com.contable.model.Usuario;
 import com.contable.service.ICarpetasService;
 import com.contable.service.ICuentasContablesService;
 import com.contable.service.ICuentasEnlacesService;
 import com.contable.service.IEntradasDiariosService;
+import com.contable.service.IEntradasIngresosContableService;
+import com.contable.service.IProductosService;
 
 @Controller
 @RequestMapping("/cuentasContables")
@@ -42,6 +47,152 @@ public class CuentasContablesController {
 	
 	@Autowired
 	private ICuentasEnlacesService serviceCuentasEnlaces;
+	
+	@Autowired
+	private IProductosService serviceProductos;
+	
+	@Autowired
+	private IEntradasIngresosContableService serviceEntradasIngresosContables;
+	
+	@GetMapping("/listaCuentasContables")
+	public String listaCuentasContables(Model model, HttpSession session){
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		Carpeta carpeta = null;
+		
+		if(session.getAttribute("carpeta") != null) {
+			 carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
+		}else {
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, empresa);
+			if(!carpetas.isEmpty()) {
+				carpeta = carpetas.get(0);
+			}
+		}
+		
+		List<CuentaContable> cuentasContables = serviceCuentasContables.buscarPorEmpresaOrderByCodigoDesc(empresa);
+		//String codigoPadre = "";
+
+		for (CuentaContable cuentaContable : cuentasContables) {
+//			if(cuentaContable.getCuentaControl()==null && cuentaContable.getTipo().equals("C")) {
+//				cuentaContable.setClase("padrecc ccpadre-"+cuentaContable.getCodigo()+" "+"cccode"+cuentaContable.getCodigo());
+//				codigoPadre = cuentaContable.getCodigo();
+//			}else if(cuentaContable.getCuentaControl()!=null && cuentaContable.getTipo().equals("C")) {
+//				cuentaContable.setClase("hijocc cchijo-"+cuentaContable.getCuentaControl()+" "+"cccode"+cuentaContable.getCodigo()+" "+"herencia-"+codigoPadre);
+//			}else if(cuentaContable.getCuentaControl()!=null && cuentaContable.getTipo().equals("A")) {
+//				cuentaContable.setClase("nietocc ccnieto-"+cuentaContable.getCuentaControl()+" "+"cccode"+cuentaContable.getCodigo()+" "+"herencia-"+codigoPadre);
+//			}
+			
+			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContable, empresa, carpeta);
+			for (EntradaDiario entradaDiario : entradasDiarios) {
+				BigDecimal monto = entradaDiario.getCredito().subtract(entradaDiario.getDebito());
+				cuentaContable.setMonto(monto.doubleValue());
+			}
+			
+			if(cuentaContable.getTipo().equals("C")) {
+				List<CuentaContable> cuentasContablesTemp = serviceCuentasContables.
+							buscarPorEmpresaCuentaControl(empresa, 
+									cuentaContable.getCodigo());
+				
+				if(!cuentasContablesTemp.isEmpty()) {
+					Double montoTemp = 0.0;
+					for (CuentaContable cuentaContableTemp : cuentasContablesTemp) {
+						List<EntradaDiario> entradasDiariosTemp = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableTemp, empresa, carpeta);
+						for (EntradaDiario entradaDiarioTemp : entradasDiariosTemp) {
+							montoTemp+=entradaDiarioTemp.getCredito().subtract(entradaDiarioTemp.getDebito()).doubleValue();
+						}
+						cuentaContable.setMonto(montoTemp);
+					}
+				}
+			}
+		}	
+		
+		for (CuentaContable cuentaContable2 : cuentasContables) {
+			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContable2, empresa, carpeta);
+			double valorInicial = 0.0;
+			for (EntradaDiario entradaDiario : entradasDiarios) {
+					valorInicial += entradaDiario.getCredito().doubleValue()-entradaDiario.getDebito().doubleValue();
+			}
+				
+			cuentaContable2.setMonto(valorInicial);
+			
+			//Toma el valor de los productos que coincida la cuenta contable (Compras)
+			List<EntradaIngresoContable> entradasIngresosContables = serviceEntradasIngresosContables.buscarPorEmpresaCuentaContable(empresa, cuentaContable2);
+			double costo = 0;
+			for (EntradaIngresoContable ingresosContables : entradasIngresosContables) {
+				costo += ingresosContables.getTotal();
+			}
+			cuentaContable2.setMonto(cuentaContable2.getMonto()+costo);
+		}
+			
+		for (CuentaContable cuentaContableTemp : cuentasContables) {
+
+			List<CuentaContable> cuentasTemp = serviceCuentasContables.
+						buscarPorEmpresaIdCuentaControl(empresa, cuentaContableTemp.getId());
+				
+			double valor = 0;
+							
+			for (CuentaContable cuentaContableTemp2 : cuentasTemp) {
+					valor += cuentaContableTemp2.getMonto();
+			}
+			
+			double valorFinal = cuentaContableTemp.getMonto() + valor;
+
+			cuentaContableTemp.setMonto(valorFinal);		
+		}
+	
+		List<CuentaContable> newOrder = new LinkedList<>();
+		
+		for (int i = cuentasContables.size(); i > 0; i--) {
+			newOrder.add(cuentasContables.get(i-1));
+		}
+
+		List<CuentaContable> cuentasContablesAuxiliaresGeneral = serviceCuentasContables.buscarPorEmpresaTipo(empresa, "A");
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipoEstado(empresa, "A", 0);
+		List<CuentaContable> cuentasContablesAuxiliaresIniciadas = serviceCuentasContables.buscarPorEmpresaTipoEstado(empresa, "A", 1);
+		model.addAttribute("carpeta", carpeta);
+		model.addAttribute("empresa", empresa);
+		model.addAttribute("cuentasContablesAuxiliaresGeneral", cuentasContablesAuxiliaresGeneral);
+		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
+		
+		for (CuentaContable cuentaContableIni : cuentasContablesAuxiliaresIniciadas) {
+			//Verificamos el balance total de la cuenta contable
+			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableIni, empresa, carpeta);
+			double montoTotal = 0.0;
+			CuentaContable cuentaContableTemp = cuentaContableIni;
+			for (EntradaDiario entradaDiario : entradasDiarios) {
+				
+				BigDecimal montoT = entradaDiario.getCredito().subtract(entradaDiario.getDebito());
+				cuentaContableTemp.setMonto(montoT.doubleValue());
+				
+				if(cuentaContableTemp.getTipo().equals("C")) {
+					List<CuentaContable> cuentasContablesTemp = serviceCuentasContables.
+								buscarPorEmpresaCuentaControl(empresa, 
+										cuentaContableTemp.getCodigo());
+					
+					if(!cuentasContablesTemp.isEmpty()) {
+						Double montoTemp = 0.0;
+						for (CuentaContable cuentaContableTemp2 : cuentasContablesTemp) {
+							List<EntradaDiario> entradasDiariosTemp = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableTemp2, empresa, carpeta);
+							for (EntradaDiario entradaDiarioTemp2 : entradasDiariosTemp) {
+								montoTemp+=entradaDiarioTemp2.getCredito().subtract(entradaDiarioTemp2.getDebito()).doubleValue();
+							}
+							cuentaContableTemp.setMonto(montoTemp);
+						}
+					}
+				}
+				
+				montoTotal+=cuentaContableTemp.getMonto();
+				
+			}
+			
+			cuentaContableIni.setNombreCuenta(cuentaContableIni.getNombreCuenta()+" -- $ "+montoTotal);
+		}
+		
+		model.addAttribute("cuentasContables", newOrder);
+		Producto producto = new Producto();
+		producto.setEmpresa(empresa);
+		return "contabilidad/cuentasContables :: contabilidad";
+	}
 	
 	@PostMapping("/crear")
 	public ResponseEntity<String> crear(Model model, HttpSession session, 
@@ -507,6 +658,16 @@ public class CuentasContablesController {
 		}
 	
 		return new ResponseEntity<String[]>(response, HttpStatus.ACCEPTED);
+	}
+	
+	@GetMapping("/cuentaDelProducto/{id}")
+	public ResponseEntity<String> cuentaDelProducto(Model model, HttpSession session, @PathVariable("id") Integer id) {
+		Producto producto = serviceProductos.buscarPorId(id);
+		String response = "";
+		if(producto!=null) {
+			response = producto.getCuentaContable().getCodigo()+" "+producto.getCuentaContable().getNombreCuenta();
+		}
+		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
 	}
 
 }
