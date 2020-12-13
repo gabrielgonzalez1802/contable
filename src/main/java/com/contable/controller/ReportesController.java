@@ -229,6 +229,11 @@ public class ReportesController {
 		return "impresiones/prestamos/listaPendientes :: listaPendientes";
 	}
 	
+//	@GetMapping("/pagosCompra")
+//	public String reportePagosCompra(Model model, HttpSession session) {
+//		return "impresiones/contabilidad/listaCompraPagos :: ";
+//	}
+	
 	@GetMapping("/listaPendientes")
 	public String listaPendientes(Model model, HttpSession session) throws ParseException {
 		model.addAttribute("empresa", (Empresa) session.getAttribute("empresa"));

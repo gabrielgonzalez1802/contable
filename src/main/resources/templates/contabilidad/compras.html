@@ -53,6 +53,54 @@
 	        	</div>
 	        	
 	        	<div class="row">
+	        		<div class="col-md-9">
+	        			<div class="form-group">
+	        				<label>Cuenta Contable</label>
+	        				<select id="cuentaContableSuplidor" class="form-control">
+		        				<option th:each="cuentaItbis : ${cuentasItbis}" 
+										th:value="${cuentaItbis.id}"
+										th:text="${cuentaItbis.cuentaContable.codigo} + ' ' + ${cuentaItbis.cuentaContable.nombreCuenta}"></option>
+	        				</select>
+	        			</div>
+	        		</div>
+	        		<div class="col-md-1">
+	        			<button style="margin-top: 30px;" class="btn btn-primary" id="agregarCuentaTempSuplidor">+</button>
+	        		</div>
+	        	</div>
+	        	
+	        	<div class="row">
+	        		<div class="col-md-12">
+						<div id="tablaCuentasTempSuplidor">
+							<div class="table-responsive">
+								<table class="table mg-b-0 text-md-nowrap">
+										<thead style="background-color: #0162e8;height: 80px;">
+											<tr>
+												<th style="background-color: #0162e8; color:#f3f3f3; padding-top: 10px; position: static">Cuenta Contable</th>
+												<th style="background-color: #0162e8; color:#f3f3f3; padding-top: 10px; position: static">Impuesto</th>		
+												<th style="background-color: #0162e8; color:#f3f3f3; padding-top: 10px; position: static"></th>
+											</tr>
+										</thead>
+										<tbody>
+										<tr th:each="cuentaTempSuplidor : ${cuentasTempSuplidores}">
+											<td th:text="${cuentaTempSuplidor.cuentaContable.codigo} + ' ' + ${cuentaTempSuplidor.cuentaContable.nombreCuenta}"></td>
+											<td th:text="${cuentaTempSuplidor.impuesto}"></td>
+											<td style="cursor: pointer;"><i th:onclick="'eliminarCuentaSuplidorTemp(\'' + ${cuentaTempSuplidor.id} + '\');'" style="font-size: 20px;color: red;" class="fas fa-trash"></i></td>
+										</tr>
+<!-- 										<tr> -->
+<!-- 											<td colspan="4"></td> -->
+<!-- 											<td style="font-weight: bold; float: right;">Total</td> -->
+<!-- 											<td id="totalProductoTemp" style="font-weight: bold;" th:text="${totalProductoTemp}"></td> -->
+<!-- 										</tr> -->
+										</tbody>
+								</table>
+							</div>
+						</div>
+	        		</div>
+	        	</div>
+	        	
+	        	<br>
+	        	
+	        	<div class="row">
 	        		<div class="col-md-12">
 	        			<div class="form-group">
 	        				<div style="float: right;">
@@ -170,25 +218,28 @@
 			<div class="col-md-12">
 				<div class="row">
 				<div class="col-md-12">
-					<div class="card-header">
-						<div class="card-head-row">
-							<h4>Compras</h4>
-						</div>
+				<div class="row">
+					<div class="col-md-12">
+<!-- 						<span style="font-size: 30px;font-weight: bold;">Compras</span> -->
+<!-- 						<div style="float: right;"> -->
+<!-- 							<img id="regresarAContabilidad" src="/img/salir.png" style="cursor:pointer;max-width: 70%;"> -->
+<!-- 						</div> -->
 					</div>
-
+				</div>	
+	
 					 <div class="row">
-						<div class="col-md-12">
+						<div class="col-md-9">
 							 <div class="row">
 							 	
 							 	<div class="col-md-3">
 									<div class="form-group">
-										<input type="date" th:value="*{#dates.format(fecha, 'yyyy-MM-dd')}" class="form-control" id="fechaCompra" placeholder="fecha" autocomplete="off">
+										<input type="date" style="border-radius: 10px;" th:value="*{#dates.format(fecha, 'yyyy-MM-dd')}" class="form-control" id="fechaCompra" placeholder="fecha" autocomplete="off">
 									</div>
 								</div>
 							 
 								<div class="col-md-3">
 									<div class="form-group">
-										<select class="form-control" id="selectSuplidorForProduct">
+										<select class="form-control" id="selectSuplidorForProduct" style="border-radius: 10px;">
 											<option value="">Seleccione el suplidor</option>
 											<option th:each="suplidor : ${suplidores}" 
 													th:value="${suplidor.id}" 
@@ -205,87 +256,82 @@
 								
 								<div class="col-md-2">
 									<div class="form-group">
-										<input class="form-control" id="facturaCompra" placeholder="Factura No" autocomplete="off">
+										<input type="number" style="border-radius: 10px;font-size: 25px;" th:value="${subTotal}" disabled="disabled" class="form-control" id="subTotalCompra" placeholder="SubTotal" autocomplete="off">
 									</div>
 								</div>
-								
+									
 								<div class="col-md-3">
 									<div class="form-group">
-										<input class="form-control" id="comprobanteCompra" placeholder="Comprobante No" autocomplete="off">
+										<input type="number" style="border-radius: 10px;font-size: 25px;" th:value="${total}" disabled="disabled" class="form-control" id="totalPreCompra" placeholder="Total" autocomplete="off">
 									</div>
 								</div>
-							</div>	
+							</div>
 							
 					 <div class="row">
-							<div class="col-md-3">
-								<select class="form-control" id="tipoCompra">
+							<div class="col-md-6">
+								<select style="border-radius: 10px;" class="form-control" id="tipoCompra">
 									<option value="1">Credito</option>
 						       		<option value="2">Contado</option>
 								</select>
 							</div>
 							
-							<div class="col-md-2">
+							<div class="col-md-6">
 								<div class="form-group">
-									<input type="number" class="form-control" id="subTotalCompra" placeholder="SubTotal" autocomplete="off">
-								</div>
-							</div>
-							
-							<div class="col-md-2">
-								<div class="form-group">
-									<input type="number" class="form-control" id="itbisCompra" placeholder="ITBIS" autocomplete="off">
-								</div>
-							</div>
-							
-							<div class="col-md-2">
-								<div class="form-group">
-									<input type="number" class="form-control" id="totalPreCompra" placeholder="Total" autocomplete="off">
-								</div>
-							</div>
-							
-							<div class="col-md-3">
-								<div class="form-group">
-									 <select class="form-control" id="cuentaContableSelectForCompra">
-										<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
-												th:value="${cuentaContable.id}" 
-												th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
-										</select>
+									<input class="form-control" style="border-radius: 10px;" id="facturaCompra" placeholder="Factura No" autocomplete="off">
 								</div>
 							</div>
 					</div>	
 					
 					 <div class="row">
-							<div class="col-md-3 my-1">
-							   	 <div class="form-check form-check-inline">
-							        <div class="custom-control custom-radio">
-									  <input type="radio" id="inventarioRadio" name="tipoProductoRadio" class="custom-control-input" checked="checked">
-									  <label class="custom-control-label" for="inventarioRadio">Inventario</label>
-									</div>
-								</div>	
-								<div class="form-check form-check-inline">
-									<div class="custom-control custom-radio">
-									  <input type="radio" id="servicioRadio" name="tipoProductoRadio" class="custom-control-input">
-									  <label class="custom-control-label" for="servicioRadio">Servicio o Consumo</label>
-									</div>
-							    </div>
-					   		 </div>
-					   		 
-					   		 
-					   		 <div class="col-md-3">
-								<input type="text" placeholder="Referencia" class="form-control" id="txtServicioConsumo" autocomplete="off">
+					 		<div class="col-md-3">
+								<div class="form-group">
+									<input class="form-control" style="border-radius: 10px;" id="comprobanteCompra" placeholder="Comprobante No" autocomplete="off">
+								</div>
 							</div>
 							
-							<div class="col-md-3">
-	 							<input type="text" value="" id="cuentaContableCompra" disabled="disabled" class="form-control">
+							<div class="col-md-5">
+								<div class="form-group">
+									 <select style="border-radius: 10px;" class="form-control" id="cuentaContableSelectForCompra">
+										<option th:each="cuentaProceso : ${cuentasProcesos}" 
+												th:value="${cuentaProceso.cuentaContable.id}" 
+												th:text="${cuentaProceso.cuentaContable.codigo} + ' ' + ${cuentaProceso.cuentaContable.nombreCuenta}"></option>
+										</select>
+								</div>
 							</div>
 							
-							<div class="col-md-3">
-								<button class="btn btn-info" id="agregarProductoCompra">Nuevo producto</button>
+							<div class="col-md-4">
+	 							<input type="text" style="border-radius: 10px;" value="" id="cuentaContableCompra" disabled="disabled" class="form-control">
 							</div>
 					</div>
 					
 					<div class="row">
-						<div class="col-md-5">
-							<select class="form-control" id="productosSelectForCompra">
+						<div class="col-md-6 my-2">
+							 <div class="form-check form-check-inline">
+							      <div class="custom-control custom-radio">
+								  <input type="radio" id="inventarioRadio" name="tipoProductoRadio" class="custom-control-input" checked="checked">
+								  <label class="custom-control-label" for="inventarioRadio">Inventario</label>
+								</div>
+							</div>	
+							<div class="form-check form-check-inline">
+								<div class="custom-control custom-radio">
+								  <input type="radio" id="servicioRadio" name="tipoProductoRadio" class="custom-control-input">
+								  <label class="custom-control-label" for="servicioRadio">Servicio o Consumo</label>
+								</div>
+							  </div>
+					   	 </div>
+					   	 <div class="col-md-3">
+							<button class="btn btn-info" id="agregarProductoCompra">Nuevo producto</button>
+						</div>
+						<div class="col-md-3">
+							<button class="btn btn-primary" id="guardarCompra">Guardar Compra</button>
+						</div>
+					</div>
+					
+					<br>
+					
+					<div class="row">
+						<div class="col-md-4">
+							<select style="border-radius: 10px;" class="form-control select2" id="productosSelectForCompra">
 								<option value="">Seleccione</option>
 								<option th:each="producto : ${productos}" 
 										th:value="${producto.id}" 
@@ -293,19 +339,39 @@
 							</select>
 						</div>
 						<div class="col-md-2">
-							<input type="number" min="0" placeholder="Cantidad" id="cantidadProductoCompra" class="form-control">
+							<input type="number" style="border-radius: 10px;" min="0" placeholder="Cantidad" id="cantidadProductoCompra" class="form-control">
 						</div>
 						<div class="col-md-2">
-							<input type="number" min="0" placeholder="Costo" id="costoProductoCompra" class="form-control">
+							<input type="number" style="border-radius: 10px;" min="0" placeholder="Costo" id="costoProductoCompra" class="form-control">
+						</div>
+						 <div class="col-md-3">
+							<input type="text" style="border-radius: 10px;" placeholder="Referencia" class="form-control" id="txtServicioConsumo" autocomplete="off">
 						</div>
 						<div class="col-md-1">
 							<button class="btn btn-info" id="agregarItemsCompra">Agregar</button>
 						</div>
-						<div class="col-md-2">
-							<button class="btn btn-primary" id="guardarCompra">Guardar Compra</button>
+					</div>
+				</div>
+				
+				<div class="col-md-3">
+					<div class="col-md-12">
+						<div id="cuentasDelSuplidor">
+							<div class="table-responsive">
+								<table class="table">
+								<tbody>
+									<tr th:each="cuentaDelSuplidor : ${cuentasDelSuplidor}">
+										<td class="oculto" style="display: none;" th:text="${cuentaDelSuplidor.cuentaContable.id}"></td>
+										<td th:text="${cuentaDelSuplidor.cuentaContable.nombreCuenta} + ' - ' + ${cuentaDelSuplidor.impuesto} + '%'"></td>
+										<td style="display: none;" class="valorImpuesto" th:text="${cuentaDelSuplidor.impuesto}"></td>
+										<td><input type="text" style="border-radius: 10px;" disabled="disabled" class="form-control impuesto" th:value="${cuentaDelSuplidor.valorPorcentajeItbis}"></td>
+									</tr>
+								</tbody>
+								</table>
+							</div>
 						</div>
 					</div>
 				</div>
+				
 		<div class="col-md-12">		
 			<br>
 			<div class="card-body" style="padding-top: 0px;">
@@ -328,12 +394,15 @@
 										<td th:text="${productoTemp.info}"></td>
 										<td th:text="${productoTemp.cantidad}"></td>
 										<td th:text="${productoTemp.costo}"></td>
-										<td th:text="${productoTemp.cantidad} * ${productoTemp.costo}"></td>
+										<td th:text="${productoTemp.total}"></td>
 										<td th:text="${productoTemp.producto.cuentaContable.codigo} + ' ' + ${productoTemp.producto.cuentaContable.nombreCuenta}"></td>
 										<td style="cursor: pointer;"><i th:onclick="'eliminarProductoTemp(\'' + ${productoTemp.id} + '\');'" style="font-size: 20px;color: red;" class="fas fa-trash"></i></td>
 									</tr>
 									<tr>
-										<td colspan="4"></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
 										<td style="font-weight: bold; float: right;">Total</td>
 										<td id="totalProductoTemp" style="font-weight: bold;" th:text="${totalProductoTemp}"></td>
 									</tr>

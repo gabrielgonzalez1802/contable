@@ -253,14 +253,14 @@ public class ProductosController {
 		compraProductoTemp.setUsuario(usuario);
 		compraProductoTemp.setInfo(producto.getNombre()+" - "+txt);
 		compraProductoTemp.setCuentaContable(producto.getCuentaContable());
-		compraProductoTemp.setTotal(cantidad*costo);
+		compraProductoTemp.setTotal(formato2d(cantidad*costo));
 		serviceComprasProductosTemp.guardar(compraProductoTemp);
 		double totalProductoTemp = 0;
 		List<CompraProductoTemp> productosTemp = serviceComprasProductosTemp.buscarPorEmpresaUsuario(empresa, usuario);
 		for (CompraProductoTemp compraProducto : productosTemp) {
-			totalProductoTemp+=compraProducto.getCantidad()*compraProducto.getCosto();
+			totalProductoTemp+=formato2d(compraProducto.getCantidad()*compraProducto.getCosto());
 		}
-		model.addAttribute("totalProductoTemp" , totalProductoTemp);
+		model.addAttribute("totalProductoTemp" , formato2d(totalProductoTemp));
 		model.addAttribute("productosTemps", productosTemp);
 		return "contabilidad/compras :: #tablaCompras";
 	}

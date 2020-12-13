@@ -38,8 +38,19 @@ public class FormasPagosServiceJpa implements IFormasPagosService {
 	}
 
 	@Override
+	public List<FormaPago> buscarPorEmpresaCuentaContableIdentificador(Empresa empresa, CuentaContable cuentaContable,
+			String identificador) {
+		return repo.findByEmpresaAndCuentaContableAndIdentificador(empresa, cuentaContable, identificador);
+	}
+	
+	@Override
 	public List<FormaPago> buscarPorEmpresaCuentaContable(Empresa empresa, CuentaContable cuentaContable) {
 		return repo.findByEmpresaAndCuentaContable(empresa, cuentaContable);
+	}
+	
+	@Override
+	public List<FormaPago> buscarPorEmpresaIdentificador(Empresa empresa, String identificador) {
+		return repo.findByEmpresaAndIdentificador(empresa, identificador);
 	}
 
 	@Override
@@ -51,5 +62,4 @@ public class FormasPagosServiceJpa implements IFormasPagosService {
 	public void eliminar(FormaPago formaPago) {
 		repo.delete(formaPago);
 	}
-
 }

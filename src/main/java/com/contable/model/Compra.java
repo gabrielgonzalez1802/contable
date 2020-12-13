@@ -9,7 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
 @Table(name = "compras")
@@ -30,11 +29,11 @@ public class Compra {
 	private Integer tipo;
 	
 	private Double subtotal = 0.0;
-	private Double itbis = 0.0;
 	private Double total = 0.0;
-	
-	@Transient
 	private Double balance = 0.0;
+	private Double retencion = 0.0;
+	
+	private Double abono = 0.0;
 	
 	@OneToOne
 	@JoinColumn(name = "id_cuenta_contable")
@@ -104,14 +103,6 @@ public class Compra {
 		this.subtotal = subtotal;
 	}
 
-	public Double getItbis() {
-		return itbis;
-	}
-
-	public void setItbis(Double itbis) {
-		this.itbis = itbis;
-	}
-
 	public Double getTotal() {
 		return total;
 	}
@@ -152,11 +143,27 @@ public class Compra {
 		this.balance = balance;
 	}
 
+	public Double getRetencion() {
+		return retencion;
+	}
+
+	public void setRetencion(Double retencion) {
+		this.retencion = retencion;
+	}
+
+	public Double getAbono() {
+		return abono;
+	}
+
+	public void setAbono(Double abono) {
+		this.abono = abono;
+	}
+
 	@Override
 	public String toString() {
 		return "Compra [id=" + id + ", fecha=" + fecha + ", suplidor=" + suplidor + ", factura=" + factura
-				+ ", comprobante=" + comprobante + ", tipo=" + tipo + ", subtotal=" + subtotal + ", itbis=" + itbis
-				+ ", total=" + total + ", balance=" + balance + ", cuentaContable=" + cuentaContable + ", empresa="
-				+ empresa + ", usuario=" + usuario + "]";
+				+ ", comprobante=" + comprobante + ", tipo=" + tipo + ", subtotal=" + subtotal + ", total=" + total
+				+ ", balance=" + balance + ", retencion=" + retencion + ", abono=" + abono + ", cuentaContable="
+				+ cuentaContable + ", empresa=" + empresa + ", usuario=" + usuario + "]";
 	}
 }

@@ -9,38 +9,33 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "formas_pago")
-public class FormaPago {
+@Table(name = "suplidores_cuentas_contables_temp")
+public class SuplidorCuentaContableTemp {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
-	@OneToOne
-	@JoinColumn(name = "id_empresa")
-	private Empresa empresa;
 	
 	@OneToOne
 	@JoinColumn(name = "id_cuenta_contable")
 	private CuentaContable cuentaContable;
 	
 	private Integer impuesto;
-
-	private String identificador;
 	
+	@OneToOne
+	@JoinColumn(name = "id_empresa")
+	private Empresa empresa;
+	
+	@OneToOne
+	@JoinColumn(name = "id_usuario")
+	private Usuario usuario;
+
 	public Integer getId() {
 		return id;
 	}
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public Empresa getEmpresa() {
-		return empresa;
-	}
-
-	public void setEmpresa(Empresa empresa) {
-		this.empresa = empresa;
 	}
 
 	public CuentaContable getCuentaContable() {
@@ -51,14 +46,6 @@ public class FormaPago {
 		this.cuentaContable = cuentaContable;
 	}
 
-	public String getIdentificador() {
-		return identificador;
-	}
-
-	public void setIdentificador(String identificador) {
-		this.identificador = identificador;
-	}
-
 	public Integer getImpuesto() {
 		return impuesto;
 	}
@@ -66,10 +53,26 @@ public class FormaPago {
 	public void setImpuesto(Integer impuesto) {
 		this.impuesto = impuesto;
 	}
-	
+
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
 	@Override
 	public String toString() {
-		return "FormaPago [id=" + id + ", empresa=" + empresa + ", cuentaContable=" + cuentaContable
-				+ ", identificador=" + identificador + "]";
+		return "SuplidorCuentaContableTemp [id=" + id + ", cuentaContable=" + cuentaContable + ", impuesto=" + impuesto
+				+ ", empresa=" + empresa + ", usuario=" + usuario + "]";
 	}
 }

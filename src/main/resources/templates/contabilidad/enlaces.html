@@ -8,20 +8,38 @@
 	<div th:fragment="enlaces">
 		<div class="row">
 			<div class="col-md-12">
+				<span style="font-size: 35px;font-weight: bold;">Cuentas de Enlace</span>
+				<div style="float: right;">
+					<img id="regresarAContabilidad" src="/img/salir.png" style="cursor:pointer;max-width: 70%;">
+				</div>
+			</div>
+		</div>	
+		<div class="row">
+			<div class="col-md-12">
 				<div class="row">
 					<div class="card-header">
 						<div class="card-head-row">
 							<h4>Forma de Pago</h4>
-<!-- 							<b>Inventarios</b> &nbsp; -->
-							<div style="float: left;">
-								<select class="form-control" id="cuentaContableAuxiliar">
-									<option value="">Seleccione</option>
-									<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
-											th:value="${cuentaContable.id}"
-											th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
-								</select>
-							</div>&nbsp;
-							<button class="btn btn-primary" id="agregarEnlace">Agregar</button>
+							<div class="row">
+								<div class="col-md-12">
+									 <div class="row">
+										<div class="col-md-5">
+											<select class="form-control select2" id="cuentaContableAuxiliar">
+												<option value="">Seleccione</option>
+												<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
+														th:value="${cuentaContable.id}"
+														th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+											</select>
+										</div>	
+										
+										<div class="col-md-3"></div>
+									
+										<div class="col-md-2">
+											<button class="btn btn-primary" id="agregarEnlace">Agregar</button>
+										</div>
+									</div>	
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>	
@@ -38,8 +56,8 @@
 											</thead>
 											<tbody>
 												<tr th:each="formaPago : ${formasPagos}">
-													<td th:text="${formaPago.cuentaContable.codigo} + ' ' + ${formaPago.cuentaContable.nombreCuenta}"></td>
-													<td>
+													<td th:if="${formaPago.identificador == 'formaPago'}" th:text="${formaPago.cuentaContable.codigo} + ' ' + ${formaPago.cuentaContable.nombreCuenta}"></td>
+													<td th:if="${formaPago.identificador == 'formaPago'}">
 												        <a style="color: #fff;cursor: pointer;" th:onclick="'eliminarEnlace(\'' + ${formaPago.id} + '\');'" class="btn btn-danger btn-sm" role="button" title="Eliminar"><i class="fas fa-trash" aria-hidden="true"></i></a>
 												    </td>
 												</tr>
@@ -51,6 +69,186 @@
 				</div>
 			</div>
 		</div>		
+		
+		<!-- Seccion II -->
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="row">
+					<div class="card-header">
+						<div class="card-head-row">
+							<h4>ITBIS</h4>
+							<div class="row">
+								<div class="col-md-12">
+									 <div class="row">
+										<div class="col-md-5">
+											<select class="form-control select2" id="cuentaContableAuxiliarItbis">
+												<option value="">Seleccione</option>
+												<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
+														th:value="${cuentaContable.id}"
+														th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+											</select>
+										</div>	
+										
+										<div class="col-md-1"></div>
+									
+										<div class="col-md-3">
+											<input type="number" min="0" class="form-control" placeholder="Impuesto" id="impuestoEnlace">
+										</div>
+										
+										<div class="col-md-2">
+											<button class="btn btn-primary" id="agregarEnlaceItbis">Agregar</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>	
+				<div class="row">
+						<div class="col-md-12">
+								<div id="tablaEnlacesItbis">
+									<div class="table-responsive">
+										<table class="table mg-b-0 text-md-nowrap">
+											<thead style="background-color: #e9ecef; height: 80px;">
+												<tr>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Cuenta Contable</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Impuesto</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="formaPago : ${formasPagos}">
+													<td th:if="${formaPago.identificador == 'itbis'}" th:text="${formaPago.cuentaContable.codigo} + ' ' + ${formaPago.cuentaContable.nombreCuenta}"></td>
+													<td th:if="${formaPago.identificador == 'itbis'}" th:text="${formaPago.impuesto}"></td>
+													<td th:if="${formaPago.identificador == 'itbis'}">
+												        <a style="color: #fff;cursor: pointer;" th:onclick="'eliminarEnlace(\'' + ${formaPago.id} + '\');'" class="btn btn-danger btn-sm" role="button" title="Eliminar"><i class="fas fa-trash" aria-hidden="true"></i></a>
+												    </td>
+												</tr>
+										</tbody>
+									</table>
+							</div>
+						</div>
+					</div>	
+				</div>
+			</div>
+		</div>	
+		
+		<!-- Seccion III -->
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="row">
+					<div class="card-header">
+						<div class="card-head-row">
+							<h4>Procesos</h4>
+								<div class="row">
+									<div class="col-md-12">
+										 <div class="row">
+											<div class="col-md-5">
+												<select class="form-control select2" id="cuentaContableAuxiliarProcesos">
+													<option value="">Seleccione</option>
+													<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
+															th:value="${cuentaContable.id}"
+															th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+												</select>
+											</div>	
+											
+											<div class="col-md-3"></div>
+										
+											<div class="col-md-2">
+												<button class="btn btn-primary" id="agregarEnlaceProcesos">Agregar</button>
+											</div>
+										</div>	
+									</div>
+								</div>
+						</div>
+					</div>
+				</div>	
+				<div class="row">
+						<div class="col-md-12">
+								<div id="tablaEnlacesProcesos">
+									<div class="table-responsive">
+										<table class="table mg-b-0 text-md-nowrap">
+											<thead style="background-color: #e9ecef; height: 80px;">
+												<tr>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Cuenta Contable</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="formaPago : ${formasPagos}">
+													<td th:if="${formaPago.identificador == 'procesos'}" th:text="${formaPago.cuentaContable.codigo} + ' ' + ${formaPago.cuentaContable.nombreCuenta}"></td>
+													<td th:if="${formaPago.identificador == 'procesos'}">
+												        <a style="color: #fff;cursor: pointer;" th:onclick="'eliminarEnlace(\'' + ${formaPago.id} + '\');'" class="btn btn-danger btn-sm" role="button" title="Eliminar"><i class="fas fa-trash" aria-hidden="true"></i></a>
+												    </td>
+												</tr>
+										</tbody>
+									</table>
+							</div>
+						</div>
+					</div>	
+				</div>
+			</div>
+		</div>	
+		
+		<!-- Seccion IV -->
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="row">
+					<div class="card-header">
+						<div class="card-head-row">
+							<h4>Retencion</h4>
+								<div class="row">
+									<div class="col-md-12">
+										 <div class="row">
+											<div class="col-md-5">
+												<select class="form-control select2" id="cuentaContableAuxiliarRetencion">
+													<option value="">Seleccione</option>
+													<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
+															th:value="${cuentaContable.id}"
+															th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+												</select>
+											</div>	
+											
+											<div class="col-md-3"></div>
+										
+											<div class="col-md-2">
+												<button class="btn btn-primary" id="agregarEnlaceRetencion">Agregar</button>
+											</div>
+										</div>	
+									</div>
+								</div>
+						</div>
+					</div>
+				</div>	
+				<div class="row">
+						<div class="col-md-12">
+								<div id="tablaEnlacesRetencion">
+									<div class="table-responsive">
+										<table class="table mg-b-0 text-md-nowrap">
+											<thead style="background-color: #e9ecef; height: 80px;">
+												<tr>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Cuenta Contable</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="formaPago : ${formasPagos}">
+													<td th:if="${formaPago.identificador == 'retencion'}" th:text="${formaPago.cuentaContable.codigo} + ' ' + ${formaPago.cuentaContable.nombreCuenta}"></td>
+													<td th:if="${formaPago.identificador == 'retencion'}">
+												        <a style="color: #fff;cursor: pointer;" th:onclick="'eliminarEnlace(\'' + ${formaPago.id} + '\');'" class="btn btn-danger btn-sm" role="button" title="Eliminar"><i class="fas fa-trash" aria-hidden="true"></i></a>
+												    </td>
+												</tr>
+										</tbody>
+									</table>
+							</div>
+						</div>
+					</div>	
+				</div>
+			</div>
+		</div>	
 	</div>
 </body>
 </html>

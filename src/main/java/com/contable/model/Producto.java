@@ -23,6 +23,8 @@ public class Producto {
 	private String nombre;
 	private Double costo = 0.0;
 	
+	private Integer exento = 0;
+	
 	@Column(name = "precio_venta")
 	private Double precioVenta = 0.0;
 	
@@ -124,10 +126,19 @@ public class Producto {
 		this.cuentaContable = cuentaContable;
 	}
 
+	public Integer getExento() {
+		return exento;
+	}
+
+	public void setExento(Integer exento) {
+		this.exento = exento;
+	}
+
 	@Override
 	public String toString() {
-		return "Producto [id=" + id + ", nombre=" + nombre + ", costo=" + costo + ", precioVenta=" + precioVenta
-				+ ", imagen=" + imagen + ", imagenTemp=" + imagenTemp + ", activoFijo=" + activoFijo
-				+ ", cuentaContable=" + cuentaContable + ", empresa=" + empresa + ", cantidad=" + cantidad + "]";
+		return "Producto [id=" + id + ", nombre=" + nombre + ", costo=" + costo + ", exento=" + exento
+				+ ", precioVenta=" + precioVenta + ", imagen=" + imagen + ", imagenTemp=" + imagenTemp + ", activoFijo="
+				+ activoFijo + ", cuentaContable=" + cuentaContable + ", empresa=" + empresa + ", cantidad=" + cantidad
+				+ "]";
 	}
 }

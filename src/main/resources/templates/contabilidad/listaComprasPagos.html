@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:fragment="listaCompraPagos">
+		<div class="card-body">
+			<div class="table-responsive">
+				<div class="table-responsive">
+					<table class="table mg-b-0 text-md-nowrap" id="">
+						<thead style="background-color: #0162e8; height: 80px;">
+							<tr>
+								<th style="color: #f3f3f3; padding-top: 10px;">Fecha</th>
+								<th style="color: #f3f3f3; padding-top: 10px;">Abonado a</th>
+								<th style="color: #f3f3f3; padding-top: 10px;">Monto</th>
+								<th style="color: #f3f3f3; padding-top: 10px;">Pagado desde</th>
+								<th style="color: #f3f3f3; padding-top: 10px;">Usuario</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="compraPago : ${comprasPagos}">
+								<td th:text="${#dates.format(compraPago.fecha, 'dd-MM-yyyy')}"></td>
+								<td th:text="${compraPago.compra.suplidor.nombre}"></td>
+								<td th:text="${compraPago.monto}"></td>
+								<td th:text="${compraPago.cuentaContable.codigo} + ' ' + ${compraPago.cuentaContable.nombreCuenta} + ' - ' + ${compraPago.referencia}"></td>
+								<td th:text="${compraPago.usuario.username}"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

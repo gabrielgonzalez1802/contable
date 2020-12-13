@@ -9,10 +9,13 @@ function addEvents(){
 	    theme: 'bootstrap4',
 	});
 	
-	var productoSeleccionado = $("#productosSelectForCompra").select2({
+//	var productoSeleccionado = $("#productosSelectForCompra").select2({
+//	    theme: 'bootstrap4',
+//	});
+	
+	$(".select2").select2({
 	    theme: 'bootstrap4',
 	});
-		
 	
 	if($("#tabla").length) {
 		if( $.fn.DataTable.isDataTable('#tabla') == false){
@@ -1569,14 +1572,24 @@ $("#tarjetaInventarios").click(function(e){
 	});
 });
 
+$("#agregarCuentaTempSuplidor").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var id = $("#cuentaContableSuplidor").val();
+	$("#tablaCuentasTempSuplidor").load("/contabilidad/guardarCuentaTempSuplidor/"+id,function(data){
+		addEvents();
+	});
+});
+
 $("#agregarEnlace").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
 	var cuentaContable = $("#cuentaContableAuxiliar").val();
 	if(cuentaContable!=""){
-		$("#tablaEnlaces").load("/contabilidad/agregarEnlace",
+		$.post("/contabilidad/agregarEnlace",
 			{
-				"cuentaContableId":cuentaContable
+				"cuentaContableId":cuentaContable,
+				"identificador": "formaPago"
 			},function(data){
 				if(data == "1"){
 					$("#tablaEnlaces").load("/contabilidad/mostrarEnlaces",function(data){
@@ -1612,6 +1625,308 @@ $("#agregarEnlace").click(function(e){
 			confirmButtonText : 'Cool'
 		})
 	}
+});
+
+$("#agregarEnlaceItbis").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var cuentaContable = $("#cuentaContableAuxiliarItbis").val();
+	var impuesto = $("#impuestoEnlace").val();
+	
+	if(!impuesto || impuesto < 0){
+		Swal.fire({
+			title : 'Advertencia!',
+			text : 'Debe ingresar el impuesto',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		if(cuentaContable!=""){
+			$.post("/contabilidad/agregarEnlace",
+				{
+					"cuentaContableId":cuentaContable,
+					"identificador": "itbis",
+					"impuesto":impuesto
+				},function(data){
+					if(data == "1"){
+						$("#tablaEnlacesItbis").load("/contabilidad/mostrarEnlacesItbis",function(data){
+							addEvents();
+						});
+					}else if(data == "2"){
+						Swal.fire({
+							title : 'Advertencia!',
+							text : 'El enlace ya existe',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+						$("#tablaEnlacesItbis").load("/contabilidad/mostrarEnlacesItbis",function(data){
+							addEvents();
+						});
+					}else{
+						Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo crear el enlace',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+					}
+				});
+		}else{
+			Swal.fire({
+				title : 'Error!',
+				text : 'Debe seleccionar una cuenta contable',
+				position : 'top',
+				icon : 'error',
+				confirmButtonText : 'Cool'
+			})
+		}
+	}
+});
+
+$("#agregarEnlaceProcesos").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var cuentaContable = $("#cuentaContableAuxiliarProcesos").val();
+	if(cuentaContable!=""){
+		$.post("/contabilidad/agregarEnlace",
+			{
+				"cuentaContableId":cuentaContable,
+				"identificador": "procesos"
+			},function(data){
+				if(data == "1"){
+					$("#tablaEnlacesProcesos").load("/contabilidad/mostrarEnlacesProcesos",function(data){
+						addEvents();
+					});
+				}else if(data == "2"){
+					Swal.fire({
+						title : 'Advertencia!',
+						text : 'El enlace ya existe',
+						position : 'top',
+						icon : 'warning',
+						confirmButtonText : 'Cool'
+					})
+					$("#tablaEnlacesProcesos").load("/contabilidad/mostrarEnlacesProcesos",function(data){
+						addEvents();
+					});
+				}else{
+					Swal.fire({
+						title : 'Error!',
+						text : 'No se pudo crear el enlace',
+						position : 'top',
+						icon : 'error',
+						confirmButtonText : 'Cool'
+					})
+				}
+			});
+	}else{
+		Swal.fire({
+			title : 'Error!',
+			text : 'Debe seleccionar una cuenta contable',
+			position : 'top',
+			icon : 'error',
+			confirmButtonText : 'Cool'
+		})
+	}
+});
+
+$("#agregarEnlaceRetencion").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var cuentaContable = $("#cuentaContableAuxiliarRetencion").val();
+	if(cuentaContable!=""){
+		$.post("/contabilidad/agregarEnlace",
+			{
+				"cuentaContableId":cuentaContable,
+				"identificador": "retencion"
+			},function(data){
+				if(data == "1"){
+					$("#tablaEnlacesRetencion").load("/contabilidad/mostrarEnlacesRetencion",function(data){
+						addEvents();
+					});
+				}else if(data == "2"){
+					Swal.fire({
+						title : 'Advertencia!',
+						text : 'El enlace ya existe',
+						position : 'top',
+						icon : 'warning',
+						confirmButtonText : 'Cool'
+					})
+					$("#tablaEnlacesProcesos").load("/contabilidad/mostrarEnlacesRetencion",function(data){
+						addEvents();
+					});
+				}else{
+					Swal.fire({
+						title : 'Error!',
+						text : 'No se pudo crear el enlace',
+						position : 'top',
+						icon : 'error',
+						confirmButtonText : 'Cool'
+					})
+				}
+			});
+	}else{
+		Swal.fire({
+			title : 'Error!',
+			text : 'Debe seleccionar una cuenta contable',
+			position : 'top',
+			icon : 'error',
+			confirmButtonText : 'Cool'
+		})
+	}
+});
+
+$("#agregarPagoCompraTemp").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var id = $("#idCompraCxP").val();
+	var fecha = $("#fechaPagoCompra").val();
+	var monto = $("#montoPagoCompra").val();
+	var cuentaContableId = $("#cuentaContableEnlace").val();
+	var referencia = $("#referenciaPagoCompra").val();
+	
+	if((!monto || monto<1) || !fecha || cuentaContableId=="" || !referencia){
+		$("#modalPagoCompra").modal('hide');
+			Swal.fire({
+			title: 'Alerta!',
+			text: "Todos los campos son requeridos",
+			icon: 'warning',
+			position : 'top',
+			showCancelButton: false,
+			 confirmButtonColor: '#3085d6',
+			  confirmButtonText: 'Ok!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
+				$("#modalPagoCompra").modal("show");
+			  }
+			});
+	}else{
+		 $.post("/compras/guardarPagoTemp",
+				 {
+				  	"id":id,
+				  	"fecha":fecha,
+					"monto":monto,
+					"cuentaContableId":cuentaContableId,
+					"referencia":referencia
+				},function(response){
+					if(response == 1){
+						$("#fechaPagoCompra").val("");
+						$("#montoPagoCompra").val("");
+						$("#referenciaPagoCompra").val("");
+						$("#cuentaContableEnlace option[value='']").attr("selected",true);
+						$("#tablaPagosCompraTemp").load("/compras/pagosTemporales/"+id,function(data){
+							addEvents();
+						});
+					}else{
+						Swal.fire({
+							title : 'Alerta!',
+							text : 'No se pudo crear el registro',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'OK!'
+						}) 
+					}
+				});
+	}
+});
+
+$("#agregarPagosCompra").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var id = $("#idCompraCxP").val();
+	var balance = $("#balanceCompra").val();
+	var balancePagos = $("#totalBalancePagoCompra").text(); 
+	if(parseFloat(balancePagos) > parseFloat(balance)){
+		$("#modalPagoCompra").modal("hide");
+		Swal.fire({
+			  title: 'Alerta!',
+			  text: "El monto total del abono no puede ser mayor al balance",
+			  icon: 'warning',
+			  position : 'top',
+			  showCancelButton: false,
+			  confirmButtonColor: '#3085d6',
+			  confirmButtonText: 'Ok!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
+				  $("#modalPagoCompra").modal("show");
+			  }
+			})
+	}else{
+		$.post("/compras/guardarPagos",
+			{
+				"id":id
+			},function(data){
+				if(data == 1){
+					$("#modalPagoCompra").modal("hide");
+					Swal.fire({
+						title : 'Muy bien!',
+						text : 'Pagos creados correctamente',
+						position : 'top',
+						icon : 'success',
+						confirmButtonText : 'OK!'
+					}) 
+					$("#idCompraCxP").val("");
+					$("#fechaInfoCompra").val("");
+					$("#suplidorInfoCompra").val("");
+					$("#facturaInfoCompra").val("");
+					$("#comprobanteInfoCompra").val("");
+					$("#totalInfoCompra").val("");
+					$("#retencionInfoCompra").val("");
+					$("#abonoInfoCompra").val("");
+					$("#balanceInfoCompra").val("");
+					$("#tablaCompras").load("/compras/listaCompras",function(data){
+						addEvents();
+					});
+				}else{
+					$("#modalPagoCompra").modal("hide");
+					Swal.fire({
+						  title: 'Alerta!',
+						  text: "No se pudo guardar los pagos",
+						  icon: 'warning',
+						  position : 'top',
+						  showCancelButton: false,
+						  confirmButtonColor: '#3085d6',
+						  confirmButtonText: 'Ok!'
+						}).then((result) => {
+						  if (result.isConfirmed) {
+							  $("#modalPagoCompra").modal("show");
+						  }
+						})
+				}
+			});
+	}
+});
+
+$("#crearPago").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var idCompra = $("#idCompraCxP").val();
+	if(idCompra != ""){
+		var balance = $("#balanceInfoCompra").val();
+		$("#balanceCompra").val(balance);
+		$("#tablaPagosCompraTemp").load("/compras/pagosTemporales/"+idCompra,function(data){
+			$("#modalPagoCompra").modal("show");
+			addEvents();
+		});
+	}else{
+		Swal.fire({
+			title : 'Alerta!',
+			text : 'Debe seleccionar una compra',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'OK!'
+		}) 
+	}
+});
+
+$("#reporteCompraPago").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/compras/reportePagosCompra",function(data){
+		addEvents();
+	});
 });
 
 $("#agregarProductoCompra").click(function(e){
@@ -1987,6 +2302,21 @@ $("#agregarItemsCompra").click(function(e){
 //				$('#productosSelectForCompra').select2('focus');
 				$("#cantidadProductoCompra").val(""); 
 				$("#costoProductoCompra").val(""); 
+				var suplidor = $("#selectSuplidorForProduct").val();
+				if(suplidor != ""){
+					$("#cuentasDelSuplidor").show();
+					$("#cuentasDelSuplidor").load("/suplidores/cuentasDelSuplidor/"+suplidor,
+						function(data){
+						$.get("/compras/totalesCompras/"+suplidor,
+								function(data){
+									$("#subTotalCompra").val(data[0]);
+									$("#totalPreCompra").val(data[1]);
+									addEvents();
+								});
+						});
+				}else{
+					$("#cuentasDelSuplidor").hide();
+				}
 			});
 	}else{
 		  Swal.fire({
@@ -1996,6 +2326,28 @@ $("#agregarItemsCompra").click(function(e){
 				icon : 'warning',
 				confirmButtonText : 'Cool'
 			})
+	}
+});
+
+$("#selectSuplidorForProduct").change(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var suplidor = $("#selectSuplidorForProduct").val();
+	if(suplidor != ""){
+		$("#cuentasDelSuplidor").show();
+		$("#cuentasDelSuplidor").load("/suplidores/cuentasDelSuplidor/"+suplidor,
+			function(data){
+				$.get("/compras/totalesCompras/"+suplidor,
+					function(data){
+						$("#subTotalCompra").val(data[0]);
+						$("#totalPreCompra").val(data[1]);
+						addEvents();
+					});
+			});
+	}else{
+		$("#subTotalCompra").val($("#totalProductoTemp").text());
+		$("#totalPreCompra").val($("#totalProductoTemp").text());
+		$("#cuentasDelSuplidor").hide();
 	}
 });
 
@@ -2010,53 +2362,71 @@ $("#guardarCompra").click(function(e){
 	var comprobante = $("#comprobanteCompra").val();
 	var tipo = $("#tipoCompra").val();
 	var subTotal = $("#subTotalCompra").val();
-	var itbis = $("#itbisCompra").val();
 	var cuentaContableId = $("#cuentaContableSelectForCompra").val();
-	if(parseFloat(totalPreCompra) == parseFloat(totalProductoTemp)){
-		$.post("/compras/guardarCompra",
-				 {
-					 "total":totalPreCompra,
-					 "fecha":fecha,
-					 "suplidor":suplidor,
-					 "factura":factura,
-					 "comprobante":comprobante,
-					 "tipo":tipo,
-					 "subTotal":subTotal,
-					 "itbis":itbis,
-					 "cuentaContableId":cuentaContableId,
-					 "tipo":tipo
-				 },function(data){
-					 if(data == "1"){
-						 Swal.fire({
-								title : 'Muy bien!',
-								text : 'Compra creada correctamente',
-								position : 'top',
-								icon : 'success',
-								confirmButtonText : 'Cool'
-							})
-							$("#contenido").load("/contabilidad/compras",function(data){
-								console.log("Compras");
-								addEvents();
-							});
-					 }else{
-						 Swal.fire({
-								title : 'Alerta!',
-								text : 'No se pudo guardar la compra',
-								position : 'top',
-								icon : 'warning',
-								confirmButtonText : 'Cool'
-							})
-					 }
-				 });
-	}else{
-		 Swal.fire({
-			title : 'Alerta!',
-			text : 'Los totales deben coincidir para generar la compra',
-			position : 'top',
-			icon : 'warning',
-			confirmButtonText : 'Cool'
-		})
-	}
+	
+	var impuestosAcct = [];
+	var valorImpuestosAcct = [];
+	var idCuentaContable = [];
+	
+	$('#cuentasDelSuplidor td input').each(function (i) {
+		  if($(this).hasClass("impuesto")){
+			  impuestosAcct.push($(this).val());
+		  }
+    });
+	
+	$('#cuentasDelSuplidor td').each(function (i) {
+		  if($(this).hasClass("oculto")){
+			  idCuentaContable.push($(this).text());
+		  }
+	});
+
+	$('#cuentasDelSuplidor td').each(function (i) {
+		  if($(this).hasClass("valorImpuesto")){
+			  valorImpuestosAcct.push($(this).text());
+		  }
+    });
+	
+	console.log(impuestosAcct);
+	console.log(valorImpuestosAcct);
+	console.log(idCuentaContable);
+		
+	$.post("/compras/guardarCompra",
+			 {
+				 "total":totalPreCompra,
+				 "fecha":fecha,
+				 "suplidor":suplidor,
+				 "factura":factura,
+				 "comprobante":comprobante,
+				 "tipo":tipo,
+				 "subTotal":subTotal,
+				 "cuentaContableId":cuentaContableId,
+				 "tipo":tipo,
+				 "impuestos":impuestosAcct.toString(),
+				 "valorImpuestos":valorImpuestosAcct.toString(),
+				 "idCuentaContable":idCuentaContable.toString()
+			 },function(data){
+				 if(data == "1"){
+					 Swal.fire({
+						title : 'Muy bien!',
+						text : 'Compra creada correctamente',
+						position : 'top',
+						icon : 'success',
+						confirmButtonText : 'Cool'
+					})
+					$("#contenido").load("/contabilidad/compras",function(data){
+						console.log("Compras");
+						addEvents();
+					});
+				}else{
+					Swal.fire({
+					title : 'Alerta!',
+					text : 'No se pudo guardar la compra',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			 }
+		});
 });
 
 $("#agregarSuplidor").click(function(e){
@@ -2102,7 +2472,16 @@ $("#guardarSuplidor").click(function(e){
 				$("#telefonoSuplidor").val("");
 				$("#direccionSuplidor").val("");
 				$("#rncSuplidor").val("");
-				addEvents();
+				Swal.fire({
+					title : 'Muy bien!',
+					text : 'Suplidor creado correctamente',
+					position : 'top',
+					icon : 'success',
+					confirmButtonText : 'Cool'
+				})
+				$("#tablaCuentasTempSuplidor").load("/suplidores/borrarSuplidoresTemp",function(data){
+					addEvents();
+				});
 		});
 	}
 	
@@ -4824,6 +5203,15 @@ function verNotas(id){
 	});
 }
 
+function eliminarPagoComprasTemp(id){
+	var idCompra = $("#idCompraCxP").val();
+	$.get("/compras/eliminarPagoTemp/"+id, function(data){
+		$("#tablaPagosCompraTemp").load("/compras/pagosTemporales/"+idCompra,function(data){
+			addEvents();
+		});
+	});
+}
+
 function eliminarPagoTemp(id){
 	$("#tablaPagos").load("/prestamos/eliminarPagoTemp/"+id, function(data){
 		montoTotalAbono();
@@ -4948,6 +5336,13 @@ function eliminarDeduccion(id){
 function selectProductInList(id){
 	$("#miniInfoProducto").load("/productos/miniInfoProduct/"+id,function(data){
 		$("#idSelectedProduct").val(id);
+		addEvents();
+	});
+}
+
+function selectCompraInList(id){
+	$("#miniInfoCompra").load("/compras/miniInfoCompra/"+id,function(data){
+		$("#idSelectedCompra").val(id);
 		addEvents();
 	});
 }
@@ -5173,6 +5568,12 @@ function eliminarProducto(id){
 		})
 }
 
+function eliminarCuentaSuplidorTemp(id){
+	$("#tablaCuentasTempSuplidor").load("/contabilidad/eliminarCuentaTempSuplidor/"+id,function(data){
+		addEvents();
+	});
+}
+
 function openModalImage(idProducto){
 	 $("#imagenProducto").load("/productos/getImagen/"+idProducto,function(data){
 		console.log("Imagen del producto");
@@ -5183,12 +5584,22 @@ function openModalImage(idProducto){
 
 function eliminarProductoTemp(id){
 	$("#tablaCompras").load("/productos/deleteProductTemp/"+id,function(data){
-		addEvents();
+		var suplidor = $("#selectSuplidorForProduct").val();
+		if(suplidor != ""){
+			$("#cuentasDelSuplidor").show();
+			$("#cuentasDelSuplidor").load("/suplidores/cuentasDelSuplidor/"+suplidor,
+				function(data){
+					$.get("/compras/totalesCompras/"+suplidor,
+						function(data){
+							$("#subTotalCompra").val(data[0]);
+							$("#totalPreCompra").val(data[1]);
+							addEvents();
+						});
+				});
+		}else{
+			$("#cuentasDelSuplidor").hide();
+		}
 	});
-}
-
-function crearPago(id){
-	$("#modalPagoCompra").modal("show");
 }
 
 function eliminarEnlace(id){
@@ -5219,8 +5630,14 @@ function eliminarEnlace(id){
 									  confirmButtonText: 'Ok!'
 									}).then((result) => {
 									  if (result.isConfirmed) {
-											$("#tablaEnlaces").load("/contabilidad/mostrarEnlaces",function(data){
-												addEvents();
+										  $("#tablaEnlacesItbis").load("/contabilidad/mostrarEnlacesItbis",function(data){
+												$("#tablaEnlaces").load("/contabilidad/mostrarEnlaces",function(data){
+													$("#tablaEnlacesProcesos").load("/contabilidad/mostrarEnlacesProcesos",function(data){
+														$("#tablaEnlacesRetencion").load("/contabilidad/mostrarEnlacesRetencion",function(data){
+															addEvents();
+														});
+													});
+												});
 											});
 									  }
 							})
