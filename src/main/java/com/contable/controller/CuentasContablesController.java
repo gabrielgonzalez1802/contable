@@ -147,12 +147,10 @@ public class CuentasContablesController {
 		}
 
 		List<CuentaContable> cuentasContablesAuxiliaresGeneral = serviceCuentasContables.buscarPorEmpresaTipo(empresa, "A");
-		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipoEstado(empresa, "A", 0);
 		List<CuentaContable> cuentasContablesAuxiliaresIniciadas = serviceCuentasContables.buscarPorEmpresaTipoEstado(empresa, "A", 1);
 		model.addAttribute("carpeta", carpeta);
 		model.addAttribute("empresa", empresa);
 		model.addAttribute("cuentasContablesAuxiliaresGeneral", cuentasContablesAuxiliaresGeneral);
-		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
 		
 		for (CuentaContable cuentaContableIni : cuentasContablesAuxiliaresIniciadas) {
 			//Verificamos el balance total de la cuenta contable
@@ -189,6 +187,7 @@ public class CuentasContablesController {
 		}
 		
 		model.addAttribute("cuentasContables", newOrder);
+		model.addAttribute("cuentaContable", new CuentaContable());
 		Producto producto = new Producto();
 		producto.setEmpresa(empresa);
 		return "contabilidad/cuentasContables :: contabilidad";
@@ -285,7 +284,7 @@ public class CuentasContablesController {
 	public String cuentasContablesAuxiliar(Model model, HttpSession session){
 		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipoEstado((Empresa) session.getAttribute("empresa"), "A", 0);
 		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
-		return "contabilidad/contabilidad :: #cuentaContableAuxiliar";
+		return "contabilidad/cuentasContables :: #cuentaContableAuxiliar";
 	}
 	
 	@PostMapping("/buscarContablesAuxiliarCapitalPrestamo")
@@ -604,7 +603,7 @@ public class CuentasContablesController {
 	public String modificarCuentaContable(Model model, @PathVariable("id") Integer id) {
 		CuentaContable cuentaContable = serviceCuentasContables.buscarPorId(id);
 		model.addAttribute("cuentaContable", cuentaContable);
-		return "contabilidad/contabilidad :: #editCuentaContable";
+		return "contabilidad/cuentasContables :: #editCuentaContable";
 	}
 	
 	@GetMapping("/mostrarCuentasContables")
@@ -618,7 +617,7 @@ public class CuentasContablesController {
 			}
 		}
 		model.addAttribute("cuentasContables", cuentasContables);
-		return "contabilidad/contabilidad :: #tablaCuentasContables";
+		return "contabilidad/cuentasContables :: #tablaCuentasContables";
 	}
 	
 	@GetMapping("/imprimirCuentasContables")

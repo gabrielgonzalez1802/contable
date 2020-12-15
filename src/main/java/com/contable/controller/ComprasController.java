@@ -124,6 +124,7 @@ public class ComprasController {
 		serviceCompras.guardar(compra);
 
 		if(compra.getId()!=null) {
+			//Cuentas contables de los productos
 			for (CompraProductoTemp compraProductoTemp : productosTemp) {
 				EntradaIngresoContable entradaIngresoContable = new EntradaIngresoContable();
 				entradaIngresoContable.setCompra(compra);
@@ -137,13 +138,26 @@ public class ComprasController {
 				entradaIngresoContable.setUsuario(usuario);
 				serviceEntradasIngresosContables.guardar(entradaIngresoContable);
 			}
+			
+			//Cuenta contable de la compra
+			if(cuentaContable!=null) {
+				EntradaIngresoContable entradaIngresoContable2 = new EntradaIngresoContable();
+				entradaIngresoContable2.setCompra(compra);
+				entradaIngresoContable2.setCuentaContable(cuentaContable);
+				entradaIngresoContable2.setEmpresa(empresa);
+				entradaIngresoContable2.setFecha(compra.getFecha());
+				entradaIngresoContable2.setTotal(total);
+				entradaIngresoContable2.setUsuario(usuario);
+				serviceEntradasIngresosContables.guardar(entradaIngresoContable2);
+			}
+
 			if(!impuestos.equals("")) {
 				String[] impuestosArray = impuestos.split(",");
 				valorImpuestos = valorImpuestos.replace("%", "");
 				String[] valorImpuestosArray = valorImpuestos.split(",");
 				String[] idCuentaContableArray = idCuentaContable.split(",");
 						
-				//guardamos los impuestos
+				//Guardamos los impuestos
 				for (int i = 0; i < valorImpuestosArray.length; i++) {
 					CompraItbis compraItbis = new CompraItbis();
 					compraItbis.setCompra(compra);
@@ -160,6 +174,18 @@ public class ComprasController {
 						}
 					}
 					serviceComprasItbis.guardar(compraItbis);
+					
+					//Cuenta contable del suplidor
+					if(compraItbis.getMontoItbis().doubleValue() > 0) {
+						EntradaIngresoContable entradaIngresoContable3 = new EntradaIngresoContable();
+						entradaIngresoContable3.setCompra(compra);
+						entradaIngresoContable3.setCuentaContable(compraItbis.getCuentaContable());
+						entradaIngresoContable3.setEmpresa(empresa);
+						entradaIngresoContable3.setFecha(compra.getFecha());
+						entradaIngresoContable3.setTotal(compraItbis.getMontoItbis());
+						entradaIngresoContable3.setUsuario(usuario);
+						serviceEntradasIngresosContables.guardar(entradaIngresoContable3);
+					}
 				}
 			}
 			serviceComprasProductosTemp.eliminar(productosTemp);

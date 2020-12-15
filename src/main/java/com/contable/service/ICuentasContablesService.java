@@ -7,6 +7,7 @@ import com.contable.model.Empresa;
 
 public interface ICuentasContablesService {
 	CuentaContable buscarPorId(Integer id);
+	List<CuentaContable> buscarPorEmpresa(Empresa empresa);
 	List<CuentaContable> buscarPorEmpresaCodigo(Empresa empresa, String codigo);
 	List<CuentaContable> buscarPorEmpresaTipo(Empresa empresa, String tipo);
 	List<CuentaContable> buscarPorEmpresaTipoGrupoCuenta(Empresa empresa, String tipo, String grupoCuenta);

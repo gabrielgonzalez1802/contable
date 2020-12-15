@@ -15,8 +15,10 @@ public interface IProductosService {
 	Page<Producto> buscarPorEmpresa(Empresa empresa, Pageable pageable);
 	List<Producto> buscarPorEmpresaCuentaContable(Empresa empresa, CuentaContable cuentaContable);
 	Page<Producto> buscarPorEmpresaContainingOrderByNombre(Empresa empresa, String nombre, Pageable pageable);
+	Page<Producto> buscarPorEmpresaNotInActivosFijosContainingOrderByNombre(Empresa empresa, List<Integer> activosFijos, String nombre, Pageable pageable);
 	List<Producto> buscarPorEmpresaActivoFijo(Empresa empresa, Integer activoFijo);
 	List<Producto> buscarPorEmpresaActivosFijos(Empresa empresa, List<Integer> activoFijo);
+	Page<Producto> buscarPorEmpresaListActivosFijos(Empresa empresa, List<Integer> activoFijo, Pageable pageable);
 	Page<Producto> buscarPorEmpresaActivoFijo(Empresa empresa, Integer activoFijo, Pageable pageable);
 	Page<Producto> buscarPorEmpresaActivoFijoContainingNombre(Empresa empresa, Integer activoFijo, String nombre, Pageable pageable);
 	void guardar(Producto producto);

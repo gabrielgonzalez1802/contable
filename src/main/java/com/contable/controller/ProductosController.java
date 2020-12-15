@@ -49,6 +49,11 @@ public class ProductosController {
 	public ResponseEntity<String> guardarProducto(Model model, Producto producto, HttpSession session){
 		String response = "0";
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		
+		if(producto.getCuentaContable().getId()==null) {
+			return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
+		}
+		
 		producto.setEmpresa(empresa);
 		if(!producto.getImagenTemp().isEmpty()) {
 			String nombreImagen = Utileria.guardarArchivo(producto.getImagenTemp(), ruta);
@@ -132,15 +137,18 @@ public class ProductosController {
 	public String listaProductos(Model model, HttpSession session, Pageable pageable) {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		double totalCostos = 0;
-		Page<Producto> productos = serviceProductos.buscarPorEmpresa(empresa, pageable);
-		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipo(empresa, "A");	
+		List<Integer> activosFijos = new LinkedList<>();
+		activosFijos.add(1);
+		activosFijos.add(2);
+		Page<Producto> productos = serviceProductos.buscarPorEmpresaListActivosFijos(empresa, activosFijos, pageable);
+		List<CuentaContable> cuentasContables = serviceCuentasContables.buscarPorEmpresa(empresa);	
 		for (Producto producto : productos) {
 			totalCostos+= producto.getCosto()*producto.getCantidad();
 		}
 		model.addAttribute("totalCostos",  formato2d(totalCostos));
 		model.addAttribute("productos", productos);
 		model.addAttribute("producto", new Producto());
-		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
+		model.addAttribute("cuentasContables", cuentasContables);
 		return "inventario/productos :: listaProductos";
 	}
 	
@@ -148,7 +156,10 @@ public class ProductosController {
 	public String listaProductosFragment(Model model, HttpSession session, Pageable pageable) {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		double totalCostos = 0;
-		Page<Producto> productos = serviceProductos.buscarPorEmpresa(empresa, pageable);
+		List<Integer> activosFijos = new LinkedList<>();
+		activosFijos.add(1);
+		activosFijos.add(2);
+		Page<Producto> productos = serviceProductos.buscarPorEmpresaListActivosFijos(empresa, activosFijos, pageable);
 		model.addAttribute("productos", productos);
 		for (Producto producto : productos) {
 			totalCostos+= producto.getCosto()*producto.getCantidad();
@@ -184,7 +195,9 @@ public class ProductosController {
 		Page<Producto> productos = null;
 		double totalCostos= 0;
 		if(tipo.equals("")) {
-			productos = serviceProductos.buscarPorEmpresaContainingOrderByNombre(empresa, nombre, pageable);
+			List<Integer> activosFijos = new LinkedList<>();
+			activosFijos.add(3);
+			productos = serviceProductos.buscarPorEmpresaNotInActivosFijosContainingOrderByNombre(empresa, activosFijos, nombre, pageable);
 		}else if(tipo.equals("1")){
 			productos = serviceProductos.buscarPorEmpresaActivoFijoContainingNombre(empresa, 1, nombre, pageable);
 		}else if(tipo.equals("2")) {

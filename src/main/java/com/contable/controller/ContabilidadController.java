@@ -172,12 +172,10 @@ public class ContabilidadController {
 		}
 
 		List<CuentaContable> cuentasContablesAuxiliaresGeneral = serviceCuentasContables.buscarPorEmpresaTipo(empresa, "A");
-		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipoEstado(empresa, "A", 0);
 		List<CuentaContable> cuentasContablesAuxiliaresIniciadas = serviceCuentasContables.buscarPorEmpresaTipoEstado(empresa, "A", 1);
 		model.addAttribute("carpeta", carpeta);
 		model.addAttribute("empresa", empresa);
 		model.addAttribute("cuentasContablesAuxiliaresGeneral", cuentasContablesAuxiliaresGeneral);
-		model.addAttribute("cuentasContablesAuxiliares", cuentasContablesAuxiliares);
 		
 		for (CuentaContable cuentaContableIni : cuentasContablesAuxiliaresIniciadas) {
 			//Verificamos el balance total de la cuenta contable
@@ -541,7 +539,7 @@ public class ContabilidadController {
 	@GetMapping("/cuentasXPagar")
 	public String cuentasXPagar(Model model, HttpSession session) {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
-		List<Compra> compras = serviceCompras.buscarPorEmpresa(empresa);
+		List<Compra> compras = serviceCompras.buscarPorEmpresaTotalMayorque(empresa, 0);
 		
 		List<FormaPago> cuentasContablesFormaPago = serviceFormasPagos.
 				buscarPorEmpresaIdentificador(empresa, "formaPago");
@@ -622,6 +620,8 @@ public class ContabilidadController {
 		List<FormaPago> cuentasItbis = serviceFormasPagos.buscarPorEmpresaIdentificador(empresa, "itbis");
 		List<SuplidorCuentaContableTemp> cuentasTempSuplidores =  serviceSuplidoresCuentasContablesTemp.buscarPorEmpresaUsuario(empresa, usuario);
 		
+		List<CuentaContable> cuentasContables = serviceCuentasContables.buscarPorEmpresa(empresa);
+		model.addAttribute("cuentasContables", cuentasContables);
 		model.addAttribute("cuentasTempSuplidores", cuentasTempSuplidores);
 		model.addAttribute("totalProductoTemp" , formato2d(totalProductoTemp));
 		List<Suplidor> suplidores = serviceSuplidores.buscarPorEmpresa(empresa);

@@ -19,6 +19,9 @@ public interface ProductosRepository extends JpaRepository<Producto, Integer>, P
 	Page<Producto> findByEmpresaOrderByNombre(Empresa empresa, Pageable pageable);
 	List<Producto> findByEmpresaAndActivoFijo(Empresa empresa, Integer activoFijo);
 	List<Producto> findByEmpresaAndActivoFijoIn(Empresa empresa, List<Integer> activosFijos);
+	Page<Producto> findByActivoFijoInAndEmpresa(List<Integer> activosFijos, Empresa empresa, Pageable pageable);
+	Page<Producto> findByEmpresaAndActivoFijoNotInAndNombreContainingOrderByNombre(Empresa empresa, List<Integer> activosFijos, String nombre,
+			Pageable pageable);
 	Page<Producto> findByEmpresaAndActivoFijoOrderByNombre(Empresa empresa, Integer activoFijo, Pageable pageable);
 	Page<Producto> findByEmpresaAndActivoFijoAndNombreContainingOrderByNombre(Empresa empresa, Integer activoFijo, String nombre, Pageable pageable);
 }

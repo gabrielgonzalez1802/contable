@@ -64,7 +64,7 @@
 	        			<div class="form-group">
 	        				<label>Cuenta Contable</label>
 	        				<select id="cuentaContableUpdate" th:field="*{cuentaContable.id}" class="form-control">
-		        				<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
+		        				<option th:each="cuentaContable : ${cuentasContables}" 
 											th:value="${cuentaContable.id}"
 											th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
 		        			</select>
@@ -196,8 +196,9 @@
 	        		<div class="col-md-3">
 	        			<div class="form-group">
 	        				<label>Cuenta Contable</label>
-	        				<select id="cuentaContableUpdate" th:field="*{cuentaContable.id}" class="form-control">
-		        				<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
+	        				<select id="cuentaContableAdd" th:field="*{cuentaContable.id}" class="form-control">
+		        				<option value="">Seleccione</option>
+		        				<option th:each="cuentaContable : ${cuentasContables}" 
 											th:value="${cuentaContable.id}"
 											th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
 		        			</select>
@@ -215,7 +216,16 @@
 	        	<br>
 	        	
 	        	<div class="row">
-	        		<div class="col-md-12">
+	        		<div class="col-md-3">
+	        			<div class="form-group">
+	        				<label>Exento</label>
+	        				<select class="form-control" style="border-radius: 10px;" th:field="*{exento}">
+	        					<option value="0">NO</option>
+	        					<option value="1">SI</option>
+	        				</select>
+	        			</div>
+	        		</div>
+	        		<div class="col-md-9">
 	        			<div class="form-group">
 	        				<label>Imagen</label>
 	        				<input type="file" th:field="*{imagenTemp}" style="border-radius: 10px;" class="form-control" id="imagenProductoAdd">

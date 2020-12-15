@@ -1,6 +1,6 @@
 // imprimirAbonoDetalle(2);
 function addEvents(){
-	
+		
 /************************************************** Configuraciones Iniciales **********************************************/
 	
     $('[data-toggle="tooltip"]').tooltip();
@@ -2571,82 +2571,103 @@ $("#formAddProductCompra").on("submit", function (e) {
 	e.stopImmediatePropagation();
 	
 	var nombre =  $("#nombreProductoAdd").val();
+	var cuentaContable = $("#cuentaContableAdd").val();
+	var activoFijo = $("#activoFijoProductoAdd").val();
 	
-	if(!nombre){
+	if(cuentaContable == ""){
 		$("#modalAgregarProductosCompras").modal("hide");
 		 Swal.fire({
- 			  title: 'Alerta!',
- 			  text: "Los campos con '*' son requeridos",
- 			  icon: 'warning',
- 			  position : 'top',
- 			  showCancelButton: false,
- 			  confirmButtonColor: '#3085d6',
- 			  confirmButtonText: 'Ok!'
- 			}).then((result) => {
- 			  if (result.isConfirmed) {
+			  title: 'Alerta!',
+			  text: "La cuenta contable es requerida",
+			  icon: 'warning',
+			  position : 'top',
+			  showCancelButton: false,
+			  confirmButtonColor: '#3085d6',
+			  confirmButtonText: 'Ok!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
 	             $("#modalAgregarProductosCompras").modal("show");
- 			  }
- 			})
+			  }
+			})
 	}else{
-	       $.ajax({
-	            url: "/productos/crear/",
-	            type: "POST",
-	            data: new FormData(this),
-	            enctype: 'multipart/form-data',
-	            processData: false,
-	            contentType: false,
-	            cache: false,
-	            success: function (res) {
-	            	$("#modalAgregarProductosCompras").modal("hide");
-		            if(res=="1"){
-			            Swal.fire({
-				  			  title: 'Muy bien!',
-				  			  text: "Registro guardado",
-				  			  icon: 'success',
-				  			  position : 'top',
-				  			  showCancelButton: false,
-				  			  confirmButtonColor: '#3085d6',
-				  			  confirmButtonText: 'Ok!'
-				  			}).then((result) => {
-				  			  if (result.isConfirmed) {
-				  	             $("#nombreProductoAdd").val("");
-					             $("#costoProductoAdd").val("");
-					             $("#precioVentaProductoAdd").val("");
-					             $("#imagenProductoAdd").val("");
-					             $("#modalAgregarProductosCompras").modal("show");
-				  			  }
-				  			})
-					}else{
-						Swal.fire({
+		if(!nombre){
+			$("#modalAgregarProductosCompras").modal("hide");
+			 Swal.fire({
+	 			  title: 'Alerta!',
+	 			  text: "Los campos con '*' son requeridos",
+	 			  icon: 'warning',
+	 			  position : 'top',
+	 			  showCancelButton: false,
+	 			  confirmButtonColor: '#3085d6',
+	 			  confirmButtonText: 'Ok!'
+	 			}).then((result) => {
+	 			  if (result.isConfirmed) {
+		             $("#modalAgregarProductosCompras").modal("show");
+	 			  }
+	 			})
+		}else{
+		       $.ajax({
+		            url: "/productos/crear/",
+		            type: "POST",
+		            data: new FormData(this),
+		            enctype: 'multipart/form-data',
+		            processData: false,
+		            contentType: false,
+		            cache: false,
+		            success: function (res) {
+		            	$("#modalAgregarProductosCompras").modal("hide");
+			            if(res=="1"){
+				            Swal.fire({
+					  			  title: 'Muy bien!',
+					  			  text: "Registro guardado",
+					  			  icon: 'success',
+					  			  position : 'top',
+					  			  showCancelButton: false,
+					  			  confirmButtonColor: '#3085d6',
+					  			  confirmButtonText: 'Ok!'
+					  			}).then((result) => {
+					  			  if (result.isConfirmed) {
+					  	             $("#nombreProductoAdd").val("");
+						             $("#costoProductoAdd").val("");
+						             $("#cantidadProductoAdd").val("");
+						             $("#precioVentaProductoAdd").val("");
+						             $("#imagenProductoAdd").val("");
+						             $("#cantidadProductoAdd").val(""); 
+						             $("#modalAgregarProductosCompras").modal("show");
+					  			  }
+					  			})
+						}else{
+							Swal.fire({
+								title : 'Error!',
+								text : 'No se pudo crear el registro',
+								position : 'top',
+								icon : 'error',
+								confirmButtonText : 'Cool'
+							})
+						}
+
+			            if($("#inventarioRadio").is(':checked')){
+			        		$("#productosSelectForCompra").load("/productos/reloadProductsCompra/"+1,function(data){
+			        			addEvents();
+			        		});
+			            }else if($("#servicioRadio").is(':checked')){
+			            	$("#productosSelectForCompra").load("/productos/reloadProductsCompra/"+23,function(data){
+			        			addEvents();
+			        		});
+			            }
+		            },
+		            error: function (err) {
+		                console.error(err);
+		                Swal.fire({
 							title : 'Error!',
-							text : 'No se pudo crear el registro',
+							text : 'No se pudo completar la operacion, intente mas tarde',
 							position : 'top',
 							icon : 'error',
 							confirmButtonText : 'Cool'
 						})
-					}
-
-		            if($("#inventarioRadio").is(':checked')){
-		        		$("#productosSelectForCompra").load("/productos/reloadProductsCompra/"+1,function(data){
-		        			addEvents();
-		        		});
-		            }else if($("#servicioRadio").is(':checked')){
-		            	$("#productosSelectForCompra").load("/productos/reloadProductsCompra/"+23,function(data){
-		        			addEvents();
-		        		});
 		            }
-	            },
-	            error: function (err) {
-	                console.error(err);
-	                Swal.fire({
-						title : 'Error!',
-						text : 'No se pudo completar la operacion, intente mas tarde',
-						position : 'top',
-						icon : 'error',
-						confirmButtonText : 'Cool'
-					})
-	            }
-	        });
+		        });
+		}
 	}
 });
 
@@ -2655,83 +2676,101 @@ $("#formAddProduct").on("submit", function (e) {
 	e.stopImmediatePropagation();
 	
 	var nombre =  $("#nombreProductoAdd").val();
+	var cuentaContable = $("#cuentaContableAdd").val();
 	
-	if(!nombre){
+	if(cuentaContable == ""){
 		$("#modalAgregarProductos").modal("hide");
 		 Swal.fire({
- 			  title: 'Alerta!',
- 			  text: "Los campos con '*' son requeridos",
- 			  icon: 'warning',
- 			  position : 'top',
- 			  showCancelButton: false,
- 			  confirmButtonColor: '#3085d6',
- 			  confirmButtonText: 'Ok!'
- 			}).then((result) => {
- 			  if (result.isConfirmed) {
+			  title: 'Alerta!',
+			  text: "La cuenta contable es requerida",
+			  icon: 'warning',
+			  position : 'top',
+			  showCancelButton: false,
+			  confirmButtonColor: '#3085d6',
+			  confirmButtonText: 'Ok!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
 	             $("#modalAgregarProductos").modal("show");
- 			  }
- 			})
+			  }
+			})
 	}else{
-	       $.ajax({
-	            url: "/productos/crear/",
-	            type: "POST",
-	            data: new FormData(this),
-	            enctype: 'multipart/form-data',
-	            processData: false,
-	            contentType: false,
-	            cache: false,
-	            success: function (res) {
-	            	$("#modalAgregarProductos").modal("hide");
-		            if(res=="1"){
-			            Swal.fire({
-				  			  title: 'Muy bien!',
-				  			  text: "Registro guardado",
-				  			  icon: 'success',
-				  			  position : 'top',
-				  			  showCancelButton: false,
-				  			  confirmButtonColor: '#3085d6',
-				  			  confirmButtonText: 'Ok!'
-				  			}).then((result) => {
-				  			  if (result.isConfirmed) {
-				  	             $("#nombreProductoAdd").val("");
-					             $("#costoProductoAdd").val("");
-					             $("#precioVentaProductoAdd").val("");
-					             $("#imagenProductoAdd").val("");
-					             $("#modalAgregarProductos").modal("show");
-				  			  }
-				  			})
-					}else{
-						Swal.fire({
+		if(!nombre){
+			$("#modalAgregarProductos").modal("hide");
+			 Swal.fire({
+	 			  title: 'Alerta!',
+	 			  text: "Los campos con '*' son requeridos",
+	 			  icon: 'warning',
+	 			  position : 'top',
+	 			  showCancelButton: false,
+	 			  confirmButtonColor: '#3085d6',
+	 			  confirmButtonText: 'Ok!'
+	 			}).then((result) => {
+	 			  if (result.isConfirmed) {
+		             $("#modalAgregarProductos").modal("show");
+	 			  }
+	 			})
+		}else{
+		       $.ajax({
+		            url: "/productos/crear/",
+		            type: "POST",
+		            data: new FormData(this),
+		            enctype: 'multipart/form-data',
+		            processData: false,
+		            contentType: false,
+		            cache: false,
+		            success: function (res) {
+		            	$("#modalAgregarProductos").modal("hide");
+			            if(res=="1"){
+				            Swal.fire({
+					  			  title: 'Muy bien!',
+					  			  text: "Registro guardado",
+					  			  icon: 'success',
+					  			  position : 'top',
+					  			  showCancelButton: false,
+					  			  confirmButtonColor: '#3085d6',
+					  			  confirmButtonText: 'Ok!'
+					  			}).then((result) => {
+					  			  if (result.isConfirmed) {
+					  	             $("#nombreProductoAdd").val("");
+						             $("#costoProductoAdd").val("");
+						             $("#precioVentaProductoAdd").val("");
+						             $("#imagenProductoAdd").val("");
+						             $("#modalAgregarProductos").modal("show");
+					  			  }
+					  			})
+						}else{
+							Swal.fire({
+								title : 'Error!',
+								text : 'No se pudo crear el registro',
+								position : 'top',
+								icon : 'error',
+								confirmButtonText : 'Cool'
+							})
+						}
+
+			             $("#tablaProductos").load("/productos/listaProductosFragment",function(data){
+			            	 console.log("lista productos");
+			            	 $("#nombreInfoPoduct").val("");
+			            	 $("#costoInfoProduct").val(""); 
+			            	 $("#precioVentaInfoProduct").val("");
+			            	 $("#cantidadInfoProduct").val(""); 
+			            	 $("#tipoActivoInfoProduct").val("");
+			            	 $("#idSelectedProduct").val("");
+					    	 addEvents();
+			             });
+		            },
+		            error: function (err) {
+		                console.error(err);
+		                Swal.fire({
 							title : 'Error!',
-							text : 'No se pudo crear el registro',
+							text : 'No se pudo completar la operacion, intente mas tarde',
 							position : 'top',
 							icon : 'error',
 							confirmButtonText : 'Cool'
 						})
-					}
-
-		             $("#tablaProductos").load("/productos/listaProductosFragment",function(data){
-		            	 console.log("lista productos");
-		            	 $("#nombreInfoPoduct").val("");
-		            	 $("#costoInfoProduct").val(""); 
-		            	 $("#precioVentaInfoProduct").val("");
-		            	 $("#cantidadInfoProduct").val(""); 
-		            	 $("#tipoActivoInfoProduct").val("");
-		            	 $("#idSelectedProduct").val("");
-				    	 addEvents();
-		             });
-	            },
-	            error: function (err) {
-	                console.error(err);
-	                Swal.fire({
-						title : 'Error!',
-						text : 'No se pudo completar la operacion, intente mas tarde',
-						position : 'top',
-						icon : 'error',
-						confirmButtonText : 'Cool'
-					})
-	            }
-	        });
+		            }
+		        });
+		}
 	}
 });
 

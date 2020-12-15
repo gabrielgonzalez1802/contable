@@ -80,4 +80,14 @@ public class ProductosServiceJpa implements IProductosService{
 		return repo.findByEmpresaAndActivoFijoIn(empresa, activosFijos);
 	}
 
+	@Override
+	public Page<Producto> buscarPorEmpresaListActivosFijos(Empresa empresa, List<Integer> activosFijos, Pageable pageable) {
+		return repo.findByActivoFijoInAndEmpresa(activosFijos, empresa, pageable);
+	}
+
+	@Override
+	public Page<Producto> buscarPorEmpresaNotInActivosFijosContainingOrderByNombre(Empresa empresa, List<Integer> activosFijos, String nombre,
+			Pageable pageable) {
+		return repo.findByEmpresaAndActivoFijoNotInAndNombreContainingOrderByNombre(empresa, activosFijos, nombre, pageable);
+	}
 }

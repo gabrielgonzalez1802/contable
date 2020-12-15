@@ -12,6 +12,7 @@ import com.contable.model.Suplidor;
 
 public interface ComprasServiceRepository extends JpaRepository<Compra, Integer> {
 	List<Compra> findByEmpresa(Empresa empresa);
+	List<Compra> findByEmpresaAndBalanceGreaterThan(Empresa empresa, double valor);
 	List<Compra> findByEmpresaAndCuentaContable(Empresa empresa, CuentaContable cuentaContable);
 	List<Compra> findByEmpresaAndCuentaContableAndSuplidor(Empresa empresa, CuentaContable cuentaContable, Suplidor suplidor);
 	List<Compra> findByEmpresaAndFechaBetween(Empresa empresa, Date desde, Date hasta);

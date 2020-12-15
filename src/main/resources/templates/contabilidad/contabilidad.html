@@ -125,199 +125,6 @@
     </div>
   </div>   
 	
-   <!-- Modal CUENTAS -->         
-  <div class="modal" id="modalModificarCuentas">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
-      
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Modificar cuenta</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-        
-        <!-- Modal body -->
-        <div class="modal-body">
-        	<div id="editCuentaContable">
-	        	<div class="row">
-					<div class="col-md-4">
-						<label>Codigo</label>
-						<input type="text" placeholder="Codigo" th:field="${cuentaContable.codigo}" id="editCodigoCuenta" maxlength="29" class="form-control">
-					</div>
-					<div class="col-md-4">
-						<label>Nombre</label>
-						<input type="text" placeholder="Nombre Cuenta" th:field="${cuentaContable.nombreCuenta}" class="form-control" id="editNombreCuenta">
-					</div>
-					<div class="col-md-4">
-						<label>Tipo</label>
-						<select class="form-control" id="editTipoCuenta" th:field="${cuentaContable.tipo}">
-							<option value="0">Seleccione</option>
-							<option value="A">Auxiliar</option>
-							<option value="C">Control</option>
-						</select>
-					</div>
-				</div>
-	
-				<br>
-				
-				<div class="row">
-					<div class="col-md-6">
-						<label>Cuenta Control</label>
-						<input type="hidden" id="idEditCuentaControlPrincipal" th:field="${cuentaContable.id}">
-						<input type="hidden" id="idEditCuentaControl" th:field="${cuentaContable.idCuentaControl}">
-						<input type="text" th:field="${cuentaContable.cuentaControl}" disabled="disabled" placeholder="Cuenta Control" class="form-control" id="editCuentaControl">
-					</div>
-					<div class="col-md-4">
-						<label>Grupo Cuenta</label>
-						<input type="text" th:field="${cuentaContable.grupoCuenta}" disabled="disabled" placeholder="Grupo Cuenta" class="form-control" id="editGrupoCuenta">
-					</div>
-					<div class="col-md-2">
-						<button class="btn btn-success btn-md" style="margin-top: 30px; font-size: 30px;" id="btnGuardarUpdateCuentaContable"> Modificar </button>
-					</div>
-				</div>
-        	</div>
-        	
-        	<br>
-        	
-        	<div class="row">
-				<div class="col-md-12">
-					<div id="">
-						<div class="table-responsive">
-			                   <table class="table mg-b-0 text-md-nowrap" id="tablaEditCuentasContables">
-									<thead style="background-color: #0162e8;height: 80px;">
-										<tr>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Codigo</th>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Cuenta</th>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Control</th>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Tipo</th>
-										   <th></th>
-										</tr>
-									 </thead>
-									<tbody>
-										 <tr th:each="cuentaContable : ${cuentasContables}">
-											 <td th:text="${cuentaContable.codigo}"></td>
-										 	 <td th:text="${cuentaContable.nombreCuenta}"></td>
-										 	 <td th:text="${cuentaContable.cuentaControl}"></td>
-										 	 <td th:text="${cuentaContable.tipo}"></td>
-											 <td>
-												  <button th:onclick="'modificarCuentaContable(\'' + ${cuentaContable.id} + '\');'" class="btn btn-info"><i class="fas fa-edit"></i></button>
-										 	 	  <button th:onclick="'eliminarCuentaContable(\'' + ${cuentaContable.id} + '\');'" class="btn btn-danger"><i class="fas fa-trash"></i></button>
-											 </td> 
-									 </tr> 
-								</tbody>
-							 </table>
-		                 </div>
-					</div>
-				</div>
-			</div>
-        </div>
-			
-        <!-- Modal footer -->
-        <div class="modal-footer">
-<!--           <button type="button" class="btn btn-success" id="btnGuardarUpdateCuentaContable" data-dismiss="modal">Guardar</button> -->
-        </div>
-        
-      </div>
-    </div>
-  </div> 
-	
- <!-- Modal Agregar Cuentas -->         
-  <div class="modal" id="modalCuentas">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
-      
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Agregar cuenta</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-        
-        <!-- Modal body -->
-        <div class="modal-body">
-          	<div class="row">
-				<div class="col-md-4">
-					<label>Codigo</label>
-					<input type="text" placeholder="Codigo" id="codigoCuenta" maxlength="29" class="form-control">
-				</div>
-				<div class="col-md-4">
-					<label>Nombre</label>
-					<input type="text" placeholder="Nombre Cuenta" class="form-control" id="nombreCuenta">
-				</div>
-				<div class="col-md-4">
-					<label>Tipo</label>
-					<select class="form-control" id="tipoCuenta">
-						<option value="0">Seleccione</option>
-						<option value="A">Auxiliar</option>
-						<option value="C">Control</option>
-					</select>
-				</div>
-			</div>
-
-			<br>
-			
-			<div class="row">
-				<div class="col-md-6">
-					<label>Cuenta Control</label>
-					<input type="hidden" id="idCuentaControl">
-					<input type="text" disabled="disabled" placeholder="Cuenta Control" class="form-control" id="cuentaControl">
-				</div>
-				<div class="col-md-4">
-					<label>Grupo Cuenta</label>
-					<input type="text" disabled="disabled" placeholder="Grupo Cuenta" class="form-control" id="grupoCuenta">
-				</div>
-				<div class="col-md-2">
-					<button class="btn btn-success btn-md" style="margin-top: 30px; font-size: 25px;" id="agregarCuentaContable"> Agregar </button>
-<!-- 					<button id="imprime">Imprimir</button> -->
-					<button id="imprime2" class="btn btn-info btn-md" style="margin-top: 30px; font-size: 25px;"><i class="fas fa-print"></i></button>
-				</div>
-			</div>
-			
-			<br>
-			
-			<div class="row">
-				<div class="col-md-12">
-					<div id="">
-						<div class="table-responsive">
-			                   <table class="table mg-b-0 text-md-nowrap" id="tablaCuentasContables">
-									<thead style="background-color: #0162e8;height: 80px;">
-										<tr>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Codigo</th>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Cuenta</th>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Control</th>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Tipo</th>
-										   <th></th>
-										</tr>
-									 </thead>
-									<tbody>
-										 <tr th:each="cuentaContable : ${cuentasContables}">
-											 <td th:text="${cuentaContable.codigo}"></td>
-										 	 <td th:text="${cuentaContable.nombreCuenta}"></td>
-										 	 <td th:text="${cuentaContable.cuentaControl}"></td>
-										 	 <td th:text="${cuentaContable.tipo}"></td>
-											 <td>
-												  <button th:onclick="'modificarCuentaContable(\'' + ${cuentaContable.id} + '\');'" class="btn btn-info"><i class="fas fa-edit"></i></button>
-										 	 	  <button th:onclick="'eliminarCuentaContable(\'' + ${cuentaContable.id} + '\');'" class="btn btn-danger"><i class="fas fa-trash"></i></button>
-											 </td> 
-									 </tr> 
-								</tbody>
-							 </table>
-		                 </div>
-					</div>
-				</div>
-			</div>
-			
-
-        </div>
-        
-        <!-- Modal footer -->
-        <div class="modal-footer">
-<!--           <button type="button" class="btn btn-success" data-dismiss="modal">Regresar</button> -->
-        </div>
-        
-      </div>
-    </div>
-  </div> 
-		
    <!-- Modal Entrada Diario -->         
   <div class="modal" id="modalEntradaDiario">
     <div class="modal-dialog modal-lg">
@@ -502,85 +309,38 @@
     </div>
   </div> 
 		
-   <!-- Modal Iniciar Contabilidad -->         
-  <div class="modal" id="modalCuentasAuxiliares">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
-      
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Iniciar Contabilidad</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-        
-        <!-- Modal body -->
-        <div class="modal-body">
-          	<div class="row">
-          		<div class="col-md-4">
-          			<label>Cuenta Contable</label>
-          			<select id="cuentaContableAuxiliar" class="form-control">
-          				<option th:each="cuentaContable : ${cuentasContablesAuxiliares}"
-          						th:value="${cuentaContable.id}" th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
-          			</select>
-          		</div>
-          		
-          		<div class="col-md-4">
-          			<label>Tipo</label>
-          			<select id="tipoCuentaAuxiliar" class="form-control">
-          				<option value="1">Debito</option>
-          				<option value="2">Credito</option>
-          			</select>
-          		</div>
-          	
-				<div class="col-md-4">
-					<label>Monto</label>
-					<input type="number" min="0" placeholder="Monto" class="form-control" id="montoCuentaAuxiliar">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="form-row align-items-center">
+			    <div class="col-sm-2 my-1" id="buscarCarpeta">
+					<label class="sr-only" for="">carpeta</label>
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<button style="width: 100%;" class="btn btn-success"
+								id="btnCarpetaContabilidad">
+								<i class="fas fa-search"></i>
+							</button>
+						</div>
+						<input type="hidden" th:value="${msgId}" id="msgId"> <input
+							type="hidden" th:value="${carpeta.id}" class="form-control"
+							id="carpetaId" placeholder="Carpeta" disabled="disabled">
+						<input type="text" th:value="${carpeta.nombre}"
+							class="form-control" id="carpeta" placeholder="Carpeta"
+							disabled="disabled">
+						<div th:if="${carpeta.principal != 1}" class="input-group-prepend">
+							<button style="width: 100%;" class="btn btn-danger"
+								id="btnExitCarpetaContabilidad">
+								<i class="fas fa-times"></i>
+							</button>
+						</div>
+					</div>
 				</div>
-			</div>
-        </div>
-        
-        <!-- Modal footer -->
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="btnGuardarInicioContable">Guardar</button>
-        </div>
-        
-      </div>
-    </div>
-  </div> 	
-	
-		<div class="row">
-			<div class="col-md-12">
-					<div class="form-row align-items-center">
-					    <div class="col-sm-2 my-1" id="buscarCarpeta">
-							<label class="sr-only" for="">carpeta</label>
-							<div class="input-group">
-								<div class="input-group-prepend">
-									<button style="width: 100%;" class="btn btn-success"
-										id="btnCarpetaContabilidad">
-										<i class="fas fa-search"></i>
-									</button>
-								</div>
-								<input type="hidden" th:value="${msgId}" id="msgId"> <input
-									type="hidden" th:value="${carpeta.id}" class="form-control"
-									id="carpetaId" placeholder="Carpeta" disabled="disabled">
-								<input type="text" th:value="${carpeta.nombre}"
-									class="form-control" id="carpeta" placeholder="Carpeta"
-									disabled="disabled">
-								<div th:if="${carpeta.principal != 1}" class="input-group-prepend">
-									<button style="width: 100%;" class="btn btn-danger"
-										id="btnExitCarpetaContabilidad">
-										<i class="fas fa-times"></i>
-									</button>
-								</div>
-							</div>
-						</div>
-					    <div class="col-sm-8">
-							<button class="btn btn-primary" id="btnIniciarContabilidad"> Iniciar contabilidad </button>
-							<button class="btn btn-info" id="btnCrearCuentas"> Crear cuentas </button>
-<!-- 							<button class="btn btn-success" id="btnEntradaDiarios"> Entrada de diario </button> -->
-<!-- 							<button class="btn btn-warning" id="btnCuentaEnlace"> Cuentas de enlace </button> -->
-						</div>
-					  </div>
+				<div class="col-sm-8">
+<!-- 				<button class="btn btn-info" id="btnCrearCuentas"> Crear cuentas </button> -->
+<!-- 				<button class="btn btn-success" id="btnEntradaDiarios"> Entrada de diario </button> -->
+<!-- 				<button class="btn btn-warning" id="btnCuentaEnlace"> Cuentas de enlace </button> -->
+				</div>
+			 </div>
 			
 			<div class="card">
 			 <div class="row">

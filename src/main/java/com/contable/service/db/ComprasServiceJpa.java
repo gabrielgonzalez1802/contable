@@ -65,5 +65,10 @@ public class ComprasServiceJpa implements IComprasService{
 	public void eliminar(Compra compra) {
 		repo.delete(compra);
 	}
+
+	@Override
+	public List<Compra> buscarPorEmpresaTotalMayorque(Empresa empresa, double valor) {
+		return repo.findByEmpresaAndBalanceGreaterThan(empresa, valor);
+	}
 	
 }
