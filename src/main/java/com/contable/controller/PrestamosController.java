@@ -282,6 +282,37 @@ public class PrestamosController {
 			servicePrestamosEntidades.eliminar(prestamoEntidad);
 		}
 		
+		// Buscamos las entradas ingresos contables null ASCENDENTE
+		List<EntradaIngresoContable> entradasIngresosContablesNullTemp = serviceEntradasIngresosContables
+				.buscarPorEmpresaBalanceContableNullASC(empresa);
+
+		if (!entradasIngresosContablesNullTemp.isEmpty()) {
+			for (EntradaIngresoContable entradaIngresoContableNull : entradasIngresosContablesNullTemp) {
+				double balanceContableTemp = 0;
+				// Buscamos las entradas ingresos contables anteriores con la cuenta contable de
+				// la iteracion
+				List<EntradaIngresoContable> entradasIngresosContablesXCCNotNUll = serviceEntradasIngresosContables
+						.buscarPorEmpresaCuentaContableBalanceContableNotNullMenorQueID(empresa,
+								entradaIngresoContableNull.getCuentaContable(), entradaIngresoContableNull.getId());
+				if (!entradasIngresosContablesXCCNotNUll.isEmpty()) {
+					for (EntradaIngresoContable entradaIngresoContableNotNull : entradasIngresosContablesXCCNotNUll) {
+						balanceContableTemp = entradaIngresoContableNotNull.getBalanceContable() == null ? 0
+								: entradaIngresoContableNotNull.getBalanceContable();
+						break;
+					}
+					entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+					entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+							+ entradaIngresoContableNull.getBalance());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+				} else {
+					entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+					entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+							+ entradaIngresoContableNull.getBalance());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+				}
+			}
+		}
+		
 		return new ResponseEntity<Integer>(response, HttpStatus.ACCEPTED);
 	}
 	

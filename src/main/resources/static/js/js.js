@@ -1525,6 +1525,49 @@ $("#contabilidad").click(function(e){
 	});
 });
 
+$("#codigoCuentaContable").on('keyup', function(e) { 
+	e.stopImmediatePropagation();
+	
+	var valor = $('#codigoCuentaContable').val();
+	var res = valor.match(/^[0-9-]+$/);
+		
+	if(res == null){
+		 $('#codigoCuentaContable').val(valor.substring(0, valor.length - 1));
+	}
+
+	var codigoCuenta = $("#codigoCuentaContable").val();
+	var nombreCuenta = "";
+	$("#nombreCuentaContable").val("");
+	
+	$.post("/cuentasContables/buscarCuentaContable",
+	{
+		"codigo":codigoCuenta,
+		"nombreCuenta":nombreCuenta
+	},function(data){
+		$("#tablaCuentasContablesGenerales").replaceWith(data);
+		addEvents();
+	});
+});
+
+$("#nombreCuentaContable").on('keyup', function(e) { 
+	e.stopImmediatePropagation();
+	
+	var valor = $('#nombreCuentaContable').val();
+	
+	var nombreCuenta = $("#nombreCuentaContable").val();
+	var codigoCuenta = "";
+	$("#codigoCuentaContable").val("");
+	
+	$.post("/cuentasContables/buscarCuentaContable",
+	{
+		"codigo":codigoCuenta,
+		"nombreCuenta":nombreCuenta
+	},function(data){
+		$("#tablaCuentasContablesGenerales").replaceWith(data);
+		addEvents();
+	});
+});
+
 $("#tarjetaEnlaces").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();

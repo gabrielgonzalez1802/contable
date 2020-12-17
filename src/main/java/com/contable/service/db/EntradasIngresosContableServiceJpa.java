@@ -88,4 +88,30 @@ public class EntradasIngresosContableServiceJpa implements IEntradasIngresosCont
 			List<CuentaContable> cuentasContables) {
 		return repo.findByEmpresaAndCuentaContableIn(empresa, cuentasContables);
 	}
+
+	@Override
+	public List<EntradaIngresoContable> buscarPorEmpresaBalanceContableNotNull(Empresa empresa) {
+		return repo.findByEmpresaAndBalanceContableIsNotNullOrderByIdDesc(empresa);
+	}
+
+	@Override
+	public List<EntradaIngresoContable> buscarPorEmpresaCuentaContableBalanceContableNotNull(Empresa empresa, CuentaContable cuentaContable) {
+		return repo.findByEmpresaAndCuentaContableAndBalanceContableIsNotNullOrderByIdDesc(empresa, cuentaContable);
+	}
+
+	@Override
+	public List<EntradaIngresoContable> buscarPorEmpresaBalanceContableNullDESC(Empresa empresa) {
+		return repo.findByEmpresaAndBalanceContableIsNullOrderByIdDesc(empresa);
+	}
+
+	@Override
+	public List<EntradaIngresoContable> buscarPorEmpresaBalanceContableNullASC(Empresa empresa) {
+		return repo.findByEmpresaAndBalanceContableIsNullOrderByIdAsc(empresa);
+	}
+
+	@Override
+	public List<EntradaIngresoContable> buscarPorEmpresaCuentaContableBalanceContableNotNullMenorQueID(Empresa empresa,
+			CuentaContable cuentaContable, Integer id) {
+		return repo.findByEmpresaAndCuentaContableAndBalanceContableIsNotNullAndIdLessThanOrderByIdDesc(empresa, cuentaContable, id);
+	}
 }

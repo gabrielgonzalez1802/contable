@@ -217,8 +217,8 @@
           		<div class="col-md-4">
           			<label>Tipo</label>
           			<select id="tipoCuentaAuxiliar" class="form-control">
-          				<option value="1">Debito</option>
-          				<option value="2">Credito</option>
+          				<option value="1">Ingresos</option>
+          				<option value="2">Egresos</option>
           			</select>
           		</div>
           	
@@ -241,13 +241,25 @@
   <button class="btn btn-primary" id="btnIniciarContabilidad"> Iniciar contabilidad </button>
   <button class="btn btn-info" id="btnCrearCuentas"> Crear cuentas </button>
   
+  <div class="col-md-12">
+   	<br>
+  	<div class="row">
+  		<div class="col-md-6">
+  			<input type="text" placeholder="Codigo Cuenta Contable" class="form-control" id="codigoCuentaContable">
+  		</div>
+  		<div class="col-md-6">
+ 			<input type="text" placeholder="Nombre Cuenta Contable" class="form-control" id="nombreCuentaContable">
+  		</div>
+  	</div>
+  </div>
+  
    <div class="card-body">
 	  <div class="table-responsive">
 		 <div class="table-responsive">
-			<table class="table mg-b-0 text-md-nowrap" id="">
+			<table class="table mg-b-0 text-md-nowrap" id="tablaCuentasContablesGenerales">
 				<thead style="background-color: #0162e8; height: 80px;">
 					<tr>
-						<th></th>
+<!-- 						<th></th> -->
 						<th style="color: #f3f3f3; padding-top: 10px;">Codigo</th>
 						<th style="color: #f3f3f3; padding-top: 10px;">Cuenta</th>
 						<th style="color: #f3f3f3; padding-top: 10px;">Control</th>
@@ -258,13 +270,13 @@
 					<tbody>
 						<div th:each="cuentaContable : ${cuentasContables}">
 							<tr th:class="${cuentaContable.clase}">
-								<td>
-									<button
-										th:onclick="'mostrararHerencia(\'' + ${cuentaContable.id} + '\');'"
-										class="btn btn-info">
-										<i class="fas fa-plus"></i>
-									</button>
-								</td>
+<!-- 								<td> -->
+<!-- 									<button -->
+<!-- 										th:onclick="'mostrararHerencia(\'' + ${cuentaContable.id} + '\');'" -->
+<!-- 										class="btn btn-info"> -->
+<!-- 										<i class="fas fa-plus"></i> -->
+<!-- 									</button> -->
+<!-- 								</td> -->
 								<td th:text="${cuentaContable.codigo}"></td>
 								<td th:text="${cuentaContable.nombreCuenta}"></td>
 								<td th:text="${cuentaContable.cuentaControl}"></td>

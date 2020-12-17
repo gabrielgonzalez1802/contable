@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
@@ -54,8 +55,12 @@ public class CuentasContablesController {
 	@Autowired
 	private IEntradasIngresosContableService serviceEntradasIngresosContables;
 	
+	private List<CuentaContable> orderCuentaContableTemp;
+	
 	@GetMapping("/listaCuentasContables")
 	public String listaCuentasContables(Model model, HttpSession session){
+		orderCuentaContableTemp = new LinkedList<>();
+		
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		Carpeta carpeta = null;
@@ -183,14 +188,35 @@ public class CuentasContablesController {
 				
 			}
 			
-			cuentaContableIni.setNombreCuenta(cuentaContableIni.getNombreCuenta()+" -- $ "+montoTotal);
+			cuentaContableIni.setNombreCuenta(cuentaContableIni.getNombreCuenta());
 		}
 		
+		orderCuentaContableTemp = newOrder;
 		model.addAttribute("cuentasContables", newOrder);
 		model.addAttribute("cuentaContable", new CuentaContable());
 		Producto producto = new Producto();
 		producto.setEmpresa(empresa);
 		return "contabilidad/cuentasContables :: contabilidad";
+	}
+	
+	@PostMapping("/buscarCuentaContable")
+	public String buscarCuentaContable(Model model, HttpSession session, String codigo, String nombreCuenta) {
+		
+		String codigoTemp = codigo.toUpperCase();
+		String nombreCuentaTemp = nombreCuenta.toUpperCase();
+		
+		List<CuentaContable> newOrderDefinitive = new LinkedList<>();
+		//Busqueda por codigo
+		if(nombreCuenta.equals("") && !codigo.equals("")) {
+			newOrderDefinitive = orderCuentaContableTemp.stream().filter(c -> c.getCodigo().toUpperCase().contains(codigoTemp)).collect(Collectors.toList());
+		}else if(nombreCuenta.equals("") && codigo.equals("")) {
+			newOrderDefinitive = orderCuentaContableTemp;
+		}else if(!nombreCuenta.equals("") && codigo.equals("")) {
+			newOrderDefinitive = orderCuentaContableTemp.stream().filter(c -> c.getNombreCuenta().toUpperCase().contains(nombreCuentaTemp)).collect(Collectors.toList());
+		}
+		
+		model.addAttribute("cuentasContables", newOrderDefinitive);
+		return "contabilidad/cuentasContables :: #tablaCuentasContablesGenerales";
 	}
 	
 	@PostMapping("/crear")
@@ -245,36 +271,61 @@ public class CuentasContablesController {
 	public ResponseEntity<String> iniciarContabilidad(Model model, HttpSession session,
 			Integer idCuentaContable, Integer tipo, Double monto){
 		CuentaContable cuentaContable = serviceCuentasContables.buscarPorId(idCuentaContable);
-		EntradaDiario entradaDiario = new EntradaDiario();
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
-		
-		Carpeta carpeta = null;
-		
-		if(session.getAttribute("carpeta") != null) {
-			 carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
-		}else {
-			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, empresa);
-			if(!carpetas.isEmpty()) {
-				carpeta = carpetas.get(0);
-			}
-		}
-		
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		String response = "0";
-		if(tipo == 1) {
-			entradaDiario.setDebito(new BigDecimal(monto));
-		}else if(tipo == 2){
-			entradaDiario.setCredito(new BigDecimal(monto));
-		}
-		entradaDiario.setCuentaContable(cuentaContable);
-		entradaDiario.setDetalle("inicio contable");
-		entradaDiario.setEmpresa(empresa);
-		entradaDiario.setCarpeta(carpeta);
-		serviceEntradasDiarios.guardar(entradaDiario);
+
+		EntradaIngresoContable entradaIngresoContable = new EntradaIngresoContable();
+		entradaIngresoContable.setFecha(new Date());
+		entradaIngresoContable.setInfo("inicio contable");
 		
-		if(entradaDiario.getId()!=null) {
+		if(tipo == 1) {
+			entradaIngresoContable.setTotal(monto);
+			entradaIngresoContable.setBalance(monto);
+		}else if(tipo == 2){
+			entradaIngresoContable.setTotal(monto*-1);
+			entradaIngresoContable.setBalance(monto*-1);
+		}
+		entradaIngresoContable.setEmpresa(empresa);
+		entradaIngresoContable.setCuentaContable(cuentaContable);
+		entradaIngresoContable.setUsuario(usuario);
+		serviceEntradasIngresosContables.guardar(entradaIngresoContable);
+		
+		if(entradaIngresoContable.getId()!=null) {
 			response = "1";
 			cuentaContable.setEstado(1);
 			serviceCuentasContables.guardar(cuentaContable);
+		}
+		
+		// Buscamos las entradas ingresos contables null ASCENDENTE
+		List<EntradaIngresoContable> entradasIngresosContablesNullTemp = serviceEntradasIngresosContables
+				.buscarPorEmpresaBalanceContableNullASC(empresa);
+
+		if (!entradasIngresosContablesNullTemp.isEmpty()) {
+			for (EntradaIngresoContable entradaIngresoContableNull : entradasIngresosContablesNullTemp) {
+				double balanceContableTemp = 0;
+				// Buscamos las entradas ingresos contables anteriores con la cuenta contable de
+				// la iteracion
+				List<EntradaIngresoContable> entradasIngresosContablesXCCNotNUll = serviceEntradasIngresosContables
+						.buscarPorEmpresaCuentaContableBalanceContableNotNullMenorQueID(empresa,
+								entradaIngresoContableNull.getCuentaContable(), entradaIngresoContableNull.getId());
+				if (!entradasIngresosContablesXCCNotNUll.isEmpty()) {
+					for (EntradaIngresoContable entradaIngresoContableNotNull : entradasIngresosContablesXCCNotNUll) {
+						balanceContableTemp = entradaIngresoContableNotNull.getBalanceContable() == null ? 0
+								: entradaIngresoContableNotNull.getBalanceContable();
+						break;
+					}
+					entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+					entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+							+ entradaIngresoContableNull.getBalance());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+				} else {
+					entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+					entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+							+ entradaIngresoContableNull.getBalance());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+				}
+			}
 		}
 		
 		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);

@@ -21,4 +21,10 @@ public interface EntradasIngresosContablesRepository extends JpaRepository<Entra
 	List<EntradaIngresoContable> findByEmpresaAndUsuario(Empresa empresa, Usuario usuario);
 	List<EntradaIngresoContable> findByEmpresaAndUsuarioAndCuentaContable(Empresa empresa, Usuario usuario, CuentaContable cuentaContable);
 	List<EntradaIngresoContable> findByEmpresaAndUsuarioAndFechaBetween(Empresa empresa, Usuario usuario, Date desde, Date hasta);
+	List<EntradaIngresoContable> findByEmpresaAndBalanceContableIsNotNullOrderByIdDesc(Empresa empresa);
+	List<EntradaIngresoContable> findByEmpresaAndCuentaContableAndBalanceContableIsNotNullOrderByIdDesc(Empresa empresa, CuentaContable cuentaContable);
+	List<EntradaIngresoContable> findByEmpresaAndBalanceContableIsNullOrderByIdAsc(Empresa empresa);
+	List<EntradaIngresoContable> findByEmpresaAndBalanceContableIsNullOrderByIdDesc(Empresa empresa);
+	List<EntradaIngresoContable> findByEmpresaAndCuentaContableAndBalanceContableIsNotNullAndIdLessThanOrderByIdDesc(Empresa empresa,
+			CuentaContable cuentaContable, Integer id);
 }

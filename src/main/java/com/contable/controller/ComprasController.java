@@ -114,8 +114,12 @@ public class ComprasController {
 		String response = "0";
 		double montoRetencion = 0;
 		double montoAbono = 0;
+		
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		
+		List<FormaPago> formPagosRetencion = serviceFormasPagos.buscarPorEmpresaIdentificador(empresa, "retencion");		
+		
 		CuentaContable cuentaContable = serviceCuentasContables.buscarPorId(cuentaContableId);
 		List<CompraProductoTemp> productosTemp = serviceComprasProductosTemp.buscarPorEmpresaUsuario(empresa, usuario);
 		Compra compra = new Compra();
@@ -136,7 +140,7 @@ public class ComprasController {
 		serviceCompras.guardar(compra);
 		
 		EntradaIngresoContable entradaIngresoContableCompra = new EntradaIngresoContable();
-
+		
 		if(compra.getId()!=null) {
 			//Cuentas contables de los productos
 			for (CompraProductoTemp compraProductoTemp : productosTemp) {
@@ -161,6 +165,8 @@ public class ComprasController {
 				entradaIngresoContableCompra.setEmpresa(empresa);
 				entradaIngresoContableCompra.setFecha(compra.getFecha());
 				entradaIngresoContableCompra.setTotal(total);
+				entradaIngresoContableCompra.setInfo("fact no "+factura+" - "+compra.getSuplidor().getNombre());
+				entradaIngresoContableCompra.setBalance(total);
 				entradaIngresoContableCompra.setUsuario(usuario);
 				serviceEntradasIngresosContables.guardar(entradaIngresoContableCompra);
 			}
@@ -199,6 +205,24 @@ public class ComprasController {
 						entradaIngresoContableSuplidor.setTotal(compraItbis.getMontoItbis());
 						entradaIngresoContableSuplidor.setBalance(compraItbis.getMontoItbis());
 						entradaIngresoContableSuplidor.setUsuario(usuario);
+						
+						boolean esRetencion = false;
+						
+						//Verificamos si la cuenta contable es de retencion
+						for (FormaPago formaPago : formPagosRetencion) {
+							if(formaPago.getCuentaContable().getId().intValue() == 
+									entradaIngresoContableSuplidor.getCuentaContable().getId().intValue()) {
+								esRetencion = true;
+								break;
+							}
+						}
+						
+						if(esRetencion) {
+							entradaIngresoContableSuplidor.setInfo("retencion impuesto - fact no "+factura+" - "+compra.getSuplidor().getNombre());
+						}else {
+							entradaIngresoContableSuplidor.setInfo("impuesto - fact no "+factura+" - "+compra.getSuplidor().getNombre());
+						}
+						
 						serviceEntradasIngresosContables.guardar(entradaIngresoContableSuplidor);
 					}
 				}
@@ -207,7 +231,6 @@ public class ComprasController {
 			response = "1";
 		}
 		
-		List<FormaPago> formPagosRetencion = serviceFormasPagos.buscarPorEmpresaIdentificador(empresa, "retencion");		
 		List<CompraItbis> comprasItbis = serviceComprasItbis.buscarPorCompra(compra);
 				
 		for (CompraItbis compraItbis : comprasItbis) {
@@ -238,6 +261,34 @@ public class ComprasController {
 			serviceEntradasIngresosContables.eliminar(tempIngresos);
 			serviceCompras.eliminar(compra);
 		}
+				
+		//Buscamos las entradas ingresos contables null ASCENDENTE
+		List<EntradaIngresoContable> entradasIngresosContablesNullTemp = serviceEntradasIngresosContables.
+				buscarPorEmpresaBalanceContableNullASC(empresa);
+		
+		if(!entradasIngresosContablesNullTemp.isEmpty()) {
+			for (EntradaIngresoContable entradaIngresoContableNull : entradasIngresosContablesNullTemp) {
+				double balanceContableTemp = 0;
+				//Buscamos las entradas ingresos contables anteriores con la cuenta contable de la iteracion
+				List<EntradaIngresoContable> entradasIngresosContablesXCCNotNUll = serviceEntradasIngresosContables.
+						buscarPorEmpresaCuentaContableBalanceContableNotNullMenorQueID(empresa, 
+								entradaIngresoContableNull.getCuentaContable(), entradaIngresoContableNull.getId());
+				if(!entradasIngresosContablesXCCNotNUll.isEmpty()) {
+					for (EntradaIngresoContable entradaIngresoContableNotNull : entradasIngresosContablesXCCNotNUll) {
+						balanceContableTemp = entradaIngresoContableNotNull.getBalanceContable()==null?0:entradaIngresoContableNotNull.getBalanceContable();
+						break;
+					}
+					entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+					entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()+entradaIngresoContableNull.getBalance());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+				}else {
+					entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+					entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()+entradaIngresoContableNull.getBalance());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+				}
+			}
+		}
+		
 		return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 	}
 	
@@ -481,7 +532,19 @@ public class ComprasController {
 			pago.setUsuario(usuario);
 			serviceComprasPagos.guardar(pago);
 			response=1;
+			
+			//Creamos el movimiento contable
+			EntradaIngresoContable entradaIngresoContableBanco = new EntradaIngresoContable();
+			entradaIngresoContableBanco.setFecha(compraPagoTemp.getFecha());
+			entradaIngresoContableBanco.setTotal(compraPagoTemp.getMonto()*-1.0);
+			entradaIngresoContableBanco.setBalance(compraPagoTemp.getMonto()*-1.0);
+			entradaIngresoContableBanco.setCuentaContable(compraPagoTemp.getCuentaContable());
+			entradaIngresoContableBanco.setUsuario(usuario);
+			entradaIngresoContableBanco.setEmpresa(empresa);
+			entradaIngresoContableBanco.setCompra(compra);
+			serviceEntradasIngresosContables.guardar(entradaIngresoContableBanco);
 		}
+		
 		List<CompraPago> comprasPagos = serviceComprasPagos.buscarPorEmpresaUsuarioCompra(empresa, usuario, compra);
 		double totalAbono = 0;
 		for (CompraPago compraPago : comprasPagos) {
@@ -502,6 +565,38 @@ public class ComprasController {
 			serviceEntradasIngresosContables.guardar(entradaIngresoContable);
 		}
 		
+		//Actualizacion contable
+		// Buscamos las entradas ingresos contables null ASCENDENTE
+		List<EntradaIngresoContable> entradasIngresosContablesNullTemp = serviceEntradasIngresosContables
+				.buscarPorEmpresaBalanceContableNullASC(empresa);
+
+		if (!entradasIngresosContablesNullTemp.isEmpty()) {
+			for (EntradaIngresoContable entradaIngresoContableNull : entradasIngresosContablesNullTemp) {
+				double balanceContableTemp = 0;
+				// Buscamos las entradas ingresos contables anteriores con la cuenta contable de
+				// la iteracion
+				List<EntradaIngresoContable> entradasIngresosContablesXCCNotNUll = serviceEntradasIngresosContables
+						.buscarPorEmpresaCuentaContableBalanceContableNotNullMenorQueID(empresa,
+								entradaIngresoContableNull.getCuentaContable(), entradaIngresoContableNull.getId());
+				if (!entradasIngresosContablesXCCNotNUll.isEmpty()) {
+					for (EntradaIngresoContable entradaIngresoContableNotNull : entradasIngresosContablesXCCNotNUll) {
+						balanceContableTemp = entradaIngresoContableNotNull.getBalanceContable() == null ? 0
+								: entradaIngresoContableNotNull.getBalanceContable();
+						break;
+					}
+					entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+					entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+							+ entradaIngresoContableNull.getBalance());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+				} else {
+					entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+					entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+							+ entradaIngresoContableNull.getBalance());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+				}
+			}
+		}
+				
 		return new ResponseEntity<Integer>(response, HttpStatus.ACCEPTED);
 	}
 	

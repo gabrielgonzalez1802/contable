@@ -2,6 +2,7 @@ package com.contable.model;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,6 +25,12 @@ public class EntradaIngresoContable {
 	private Double costo = 0.0;
 	private Double total = 0.0;
 	private Double balance = 0.0;
+	
+	@Column(name = "balance_contable")
+	private Double balanceContable;
+	
+	@Column(name = "balance_contable_inicial")
+	private Double balanceContableInicial;
 	
 	@OneToOne
 	@JoinColumn(name = "id_compra")
@@ -129,10 +136,27 @@ public class EntradaIngresoContable {
 		this.balance = balance;
 	}
 
+	public Double getBalanceContable() {
+		return balanceContable;
+	}
+
+	public void setBalanceContable(Double balanceContable) {
+		this.balanceContable = balanceContable;
+	}
+
+	public Double getBalanceContableInicial() {
+		return balanceContableInicial;
+	}
+
+	public void setBalanceContableInicial(Double balanceContableInicial) {
+		this.balanceContableInicial = balanceContableInicial;
+	}
+
 	@Override
 	public String toString() {
 		return "EntradaIngresoContable [id=" + id + ", fecha=" + fecha + ", info=" + info + ", cantidad=" + cantidad
-				+ ", costo=" + costo + ", total=" + total + ", balance=" + balance + ", compra=" + compra
+				+ ", costo=" + costo + ", total=" + total + ", balance=" + balance + ", balanceContable="
+				+ balanceContable + ", balanceContableInicial=" + balanceContableInicial + ", compra=" + compra
 				+ ", cuentaContable=" + cuentaContable + ", usuario=" + usuario + ", empresa=" + empresa + "]";
 	}
 }

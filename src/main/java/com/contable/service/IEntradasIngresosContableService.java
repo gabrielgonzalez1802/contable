@@ -19,6 +19,11 @@ public interface IEntradasIngresosContableService {
 	List<EntradaIngresoContable> buscarPorEmpresaUsuario(Empresa empresa, Usuario usuario);
 	List<EntradaIngresoContable> buscarPorEmpresaUsuarioCuentaContable(Empresa empresa, Usuario usuario, CuentaContable cuentaContable);
 	List<EntradaIngresoContable> buscarPorEmpresaUsuarioFechas(Empresa empresa, Usuario usuario, Date desde, Date hasta);
+	List<EntradaIngresoContable> buscarPorEmpresaBalanceContableNullASC(Empresa empresa);
+	List<EntradaIngresoContable> buscarPorEmpresaBalanceContableNullDESC(Empresa empresa);
+	List<EntradaIngresoContable> buscarPorEmpresaBalanceContableNotNull(Empresa empresa);
+	List<EntradaIngresoContable> buscarPorEmpresaCuentaContableBalanceContableNotNull(Empresa empresa, CuentaContable cuentaContable);
+	List<EntradaIngresoContable> buscarPorEmpresaCuentaContableBalanceContableNotNullMenorQueID(Empresa empresa, CuentaContable cuentaContable, Integer id);
 	void guardar(EntradaIngresoContable entradaIngresoContable);
 	void eliminar(EntradaIngresoContable entradaIngresoContable);
 	void eliminar(List<EntradaIngresoContable> entradasIngresosContables);
