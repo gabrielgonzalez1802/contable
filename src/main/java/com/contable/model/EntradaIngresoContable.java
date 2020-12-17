@@ -23,6 +23,7 @@ public class EntradaIngresoContable {
 	private Integer cantidad;
 	private Double costo = 0.0;
 	private Double total = 0.0;
+	private Double balance = 0.0;
 	
 	@OneToOne
 	@JoinColumn(name = "id_compra")
@@ -120,10 +121,18 @@ public class EntradaIngresoContable {
 		this.compra = compra;
 	}
 
+	public Double getBalance() {
+		return balance;
+	}
+
+	public void setBalance(Double balance) {
+		this.balance = balance;
+	}
+
 	@Override
 	public String toString() {
 		return "EntradaIngresoContable [id=" + id + ", fecha=" + fecha + ", info=" + info + ", cantidad=" + cantidad
-				+ ", costo=" + costo + ", total=" + total + ", compra=" + compra + ", cuentaContable=" + cuentaContable
-				+ ", usuario=" + usuario + ", empresa=" + empresa + "]";
+				+ ", costo=" + costo + ", total=" + total + ", balance=" + balance + ", compra=" + compra
+				+ ", cuentaContable=" + cuentaContable + ", usuario=" + usuario + ", empresa=" + empresa + "]";
 	}
 }

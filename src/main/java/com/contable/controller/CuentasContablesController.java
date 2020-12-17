@@ -119,7 +119,7 @@ public class CuentasContablesController {
 			List<EntradaIngresoContable> entradasIngresosContables = serviceEntradasIngresosContables.buscarPorEmpresaCuentaContable(empresa, cuentaContable2);
 			double costo = 0;
 			for (EntradaIngresoContable ingresosContables : entradasIngresosContables) {
-				costo += ingresosContables.getTotal();
+				costo += ingresosContables.getBalance();
 			}
 			cuentaContable2.setMonto(cuentaContable2.getMonto()+costo);
 		}

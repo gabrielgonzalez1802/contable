@@ -14,6 +14,8 @@ public interface IEntradasIngresosContableService {
 	List<EntradaIngresoContable> buscarPorEmpresa(Empresa empresa);
 	List<EntradaIngresoContable> buscarPorEmpresaCompra(Empresa empresa, Compra compra);
 	List<EntradaIngresoContable> buscarPorEmpresaCuentaContable(Empresa empresa, CuentaContable cuentaContable);
+	List<EntradaIngresoContable> buscarPorEmpresaCuentasContables(Empresa empresa, List<CuentaContable> cuentasContables);
+	List<EntradaIngresoContable> buscarPorEmpresaCompraCuentaContable(Empresa empresa, Compra compra, CuentaContable cuentaContable);
 	List<EntradaIngresoContable> buscarPorEmpresaUsuario(Empresa empresa, Usuario usuario);
 	List<EntradaIngresoContable> buscarPorEmpresaUsuarioCuentaContable(Empresa empresa, Usuario usuario, CuentaContable cuentaContable);
 	List<EntradaIngresoContable> buscarPorEmpresaUsuarioFechas(Empresa empresa, Usuario usuario, Date desde, Date hasta);

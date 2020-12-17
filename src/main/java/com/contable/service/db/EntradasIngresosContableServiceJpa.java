@@ -77,4 +77,15 @@ public class EntradasIngresosContableServiceJpa implements IEntradasIngresosCont
 		return repo.findByEmpresaAndCuentaContable(empresa, cuentaContable);
 	}
 
+	@Override
+	public List<EntradaIngresoContable> buscarPorEmpresaCompraCuentaContable(Empresa empresa, Compra compra,
+			CuentaContable cuentaContable) {
+		return repo.findByEmpresaAndCompraAndCuentaContable(empresa, compra, cuentaContable);
+	}
+
+	@Override
+	public List<EntradaIngresoContable> buscarPorEmpresaCuentasContables(Empresa empresa,
+			List<CuentaContable> cuentasContables) {
+		return repo.findByEmpresaAndCuentaContableIn(empresa, cuentasContables);
+	}
 }

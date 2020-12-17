@@ -50,10 +50,14 @@ import com.contable.model.Amortizacion;
 import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
 import com.contable.model.Cuenta;
+import com.contable.model.CuentaContable;
 import com.contable.model.DescuentoDetalle;
 import com.contable.model.DetalleMultiPrestamo;
 import com.contable.model.DetalleReporteAbono;
 import com.contable.model.Empresa;
+import com.contable.model.EntradaIngresoContable;
+import com.contable.model.FormaPago;
+import com.contable.model.Inversionista;
 import com.contable.model.MoraDetalle;
 import com.contable.model.MotivoPrestamoAdicional;
 import com.contable.model.Nota;
@@ -62,6 +66,7 @@ import com.contable.model.Prestamo;
 import com.contable.model.PrestamoAdicional;
 import com.contable.model.PrestamoDetalle;
 import com.contable.model.PrestamoDetalleMixto;
+import com.contable.model.PrestamoEntidad;
 import com.contable.model.PrestamoInteresDetalle;
 import com.contable.model.PrestamoTipo;
 import com.contable.model.Usuario;
@@ -69,14 +74,19 @@ import com.contable.service.IAbonosDetallesService;
 import com.contable.service.IAbonosService;
 import com.contable.service.ICarpetasService;
 import com.contable.service.IClientesService;
+import com.contable.service.ICuentasContablesService;
 import com.contable.service.ICuentasService;
 import com.contable.service.IDescuentosDetallesService;
 import com.contable.service.IEmpresasService;
+import com.contable.service.IEntradasIngresosContableService;
+import com.contable.service.IFormasPagosService;
+import com.contable.service.IInversionistasService;
 import com.contable.service.IMotivosPrestamosAdicionalesService;
 import com.contable.service.INotasService;
 import com.contable.service.IPagosTempService;
 import com.contable.service.IPrestamosAdicionalesService;
 import com.contable.service.IPrestamosDetallesService;
+import com.contable.service.IPrestamosEntidadesService;
 import com.contable.service.IPrestamosInteresesDetallesService;
 import com.contable.service.IPrestamosService;
 import com.contable.service.IPrestamosTiposService;
@@ -140,6 +150,21 @@ public class PrestamosController {
 	@Autowired
 	private IDescuentosDetallesService serviceDescuentosDetalles;
 	
+	@Autowired
+	private IInversionistasService serviceInversionistas;
+	
+	@Autowired
+	private IFormasPagosService serviceFormasPago;
+	
+	@Autowired
+	private ICuentasContablesService serviceCuentasContables;
+	
+	@Autowired
+	private IPrestamosEntidadesService servicePrestamosEntidades;
+	
+	@Autowired
+	private IEntradasIngresosContableService serviceEntradasIngresosContables;
+	
 	private String tempFolder =  System.getProperty("java.io.tmpdir");
 	private String pathSeparator = System.getProperty("file.separator");
 	
@@ -192,6 +217,80 @@ public class PrestamosController {
 		model.addAttribute("tipoDocumentoAcctPrestamo", cliente.getTipoDocumento());
 		model.addAttribute("prestamo",  new Prestamo());
 		return "prestamos/form :: form";
+	}
+	
+	@GetMapping("/prestamosPorPagar")
+	public String prestamosPorPagar(Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		List<Inversionista> inversionistas = serviceInversionistas.buscarTodos();
+		List<FormaPago> formasPagosEntidadEnlace = serviceFormasPago.buscarPorEmpresaIdentificador(empresa, "entidadEnlace");
+		List<FormaPago> formasPagosFormaPago = serviceFormasPago.buscarPorEmpresaIdentificador(empresa, "formaPago");
+		List<PrestamoEntidad> prestamosEntidades = servicePrestamosEntidades.buscarPorEmpresa(empresa);
+		model.addAttribute("inversionistas", inversionistas);
+		model.addAttribute("formasPagosEntidadEnlace", formasPagosEntidadEnlace);
+		model.addAttribute("formasPagosFormaPago", formasPagosFormaPago);
+		model.addAttribute("fecha", new Date());
+		model.addAttribute("prestamosEntidades", prestamosEntidades);
+		return "contabilidad/prestamosXPagar :: prestamosXPagar";
+	}
+	
+	@PostMapping("/guardarPrestamoEntidad")
+	public ResponseEntity<Integer> guardarPrestamoEntidad(HttpSession session, Integer idInversionista, 
+			Integer idCuentaContableEntidad, Double monto, Double tasa, Integer idCuentaContableFormaPago,
+			String fecha) throws ParseException{
+		Integer response = 0;
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		
+		Inversionista inversionista = serviceInversionistas.buscarPorId(idInversionista);
+		CuentaContable cuentaContableEntidad = serviceCuentasContables.buscarPorId(idCuentaContableEntidad);
+		CuentaContable cuentaContableFormaPago = serviceCuentasContables.buscarPorId(idCuentaContableFormaPago);
+		
+		PrestamoEntidad prestamoEntidad = new PrestamoEntidad();
+		prestamoEntidad.setEmpresa(empresa);
+		prestamoEntidad.setFecha(formatter.parse(fecha));
+		prestamoEntidad.setInversionista(inversionista);
+		prestamoEntidad.setMonto(monto);
+		prestamoEntidad.setTasa(tasa);
+		prestamoEntidad.setBalance(monto);
+		servicePrestamosEntidades.guardar(prestamoEntidad);
+		
+		EntradaIngresoContable entradaIngresoContableEntidad = new EntradaIngresoContable();
+		entradaIngresoContableEntidad.setBalance(monto);
+		entradaIngresoContableEntidad.setCuentaContable(cuentaContableEntidad);
+		entradaIngresoContableEntidad.setEmpresa(empresa);
+		entradaIngresoContableEntidad.setFecha(prestamoEntidad.getFecha());
+		entradaIngresoContableEntidad.setTotal(monto);
+		entradaIngresoContableEntidad.setUsuario(usuario);
+		serviceEntradasIngresosContables.guardar(entradaIngresoContableEntidad);
+		
+		EntradaIngresoContable entradaIngresoContableFormaPago = new EntradaIngresoContable();
+		entradaIngresoContableFormaPago.setBalance(monto);
+		entradaIngresoContableFormaPago.setCuentaContable(cuentaContableFormaPago);
+		entradaIngresoContableFormaPago.setEmpresa(empresa);
+		entradaIngresoContableFormaPago.setFecha(prestamoEntidad.getFecha());
+		entradaIngresoContableFormaPago.setTotal(monto);
+		entradaIngresoContableFormaPago.setUsuario(usuario);
+		serviceEntradasIngresosContables.guardar(entradaIngresoContableFormaPago);
+		
+		if(prestamoEntidad.getId()!=null && entradaIngresoContableEntidad.getId()!=null && 
+				entradaIngresoContableFormaPago.getId()!=null) {
+			response = 1;
+		}else {
+			serviceEntradasIngresosContables.eliminar(entradaIngresoContableFormaPago);
+			serviceEntradasIngresosContables.eliminar(entradaIngresoContableEntidad);
+			servicePrestamosEntidades.eliminar(prestamoEntidad);
+		}
+		
+		return new ResponseEntity<Integer>(response, HttpStatus.ACCEPTED);
+	}
+	
+	@GetMapping("/actualizarListaPrestamosEntidades")
+	public String actualizarListaPrestamosEntidades(Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		List<PrestamoEntidad> prestamosEntidades = servicePrestamosEntidades.buscarPorEmpresa(empresa);
+		model.addAttribute("prestamosEntidades", prestamosEntidades);
+		return "contabilidad/prestamosXPagar :: #tablaPrestamosEntidades";
 	}
 	
 	@GetMapping("/actualizarCarpeta")

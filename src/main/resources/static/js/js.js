@@ -1543,6 +1543,15 @@ $("#tarjetaCuentasXPagar").click(function(e){
 	});
 });
 
+$("#tarjetaCuentasXCobrar").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/contabilidad/cuentasXCobrar",function(data){
+		console.log("Cuentas x Cobrar");
+		addEvents();
+	});
+});
+
 $("#tarjetaCompras").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
@@ -1570,6 +1579,36 @@ $("#tarjetaInventarios").click(function(e){
 		$("#modalProductos").modal("show");
 		addEvents();
 	});
+});
+
+$("#itbisPorPagar").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	
+	$("#contenido").load("/contabilidad/listaItbisXPagar",function(data){
+		addEvents();
+	});
+});
+
+$("#comprasPorPagar").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	
+	$("#contenido").load("/contabilidad/cuentasXPagar",function(data){
+		console.log("Cuentas x Pagar");
+		addEvents();
+	});
+});
+
+$("#verificarCuenta").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	
+//	$("#contenido").load("/productos/listaProductos",function(data){
+//		console.log("lista articulos");
+		$("#modalVerificarCuenta").modal("show");
+		addEvents();
+//	});
 });
 
 $("#agregarCuentaTempSuplidor").click(function(e){
@@ -1778,6 +1817,52 @@ $("#agregarEnlaceRetencion").click(function(e){
 	}
 });
 
+$("#agregarEnlaceEntidadEnlace").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var cuentaContable = $("#cuentaContableAuxiliarEntidadEnlace").val();
+	if(cuentaContable!=""){
+		$.post("/contabilidad/agregarEnlace",
+			{
+				"cuentaContableId":cuentaContable,
+				"identificador": "entidadEnlace"
+			},function(data){
+				if(data == "1"){
+					$("#tablaEnlacesEntidadEnlace").load("/contabilidad/mostrarEnlacesEntidadEnlace",function(data){
+						addEvents();
+					});
+				}else if(data == "2"){
+					Swal.fire({
+						title : 'Advertencia!',
+						text : 'El enlace ya existe',
+						position : 'top',
+						icon : 'warning',
+						confirmButtonText : 'Cool'
+					})
+					$("#tablaEnlacesEntidadEnlace").load("/contabilidad/mostrarEnlacesEntidadEnlace",function(data){
+						addEvents();
+					});
+				}else{
+					Swal.fire({
+						title : 'Error!',
+						text : 'No se pudo crear el enlace',
+						position : 'top',
+						icon : 'error',
+						confirmButtonText : 'Cool'
+					})
+				}
+			});
+	}else{
+		Swal.fire({
+			title : 'Error!',
+			text : 'Debe seleccionar una cuenta contable',
+			position : 'top',
+			icon : 'error',
+			confirmButtonText : 'Cool'
+		})
+	}
+});
+
 $("#agregarPagoCompraTemp").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
@@ -1832,6 +1917,188 @@ $("#agregarPagoCompraTemp").click(function(e){
 	}
 });
 
+$("#prestamosPorPagar").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/prestamos/prestamosPorPagar",function(data){
+		console.log("Prestamos por pagar");
+		addEvents();
+	});
+});
+
+$("#guardarPrestamoEntidad").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var idInversionista = $("#inversionistaPrestamoEntidad").val();
+	var idCuentaContableEntidad = $("#cuentaContablePrestamoEntidad").val();
+	var monto = $("#montoPrestamoEntidad").val();
+	var tasa = $("#tasaPrestamoEntidad").val();
+	var idCuentaContableFormaPago = $("#cuentaContableFormaPago").val();
+	var fecha = $("#fechaPrestamoEntidad").val();
+	
+	if(idCuentaContableEntidad == "" || idCuentaContableFormaPago == "" || idInversionista == "" || !fecha){
+		$("#modalPrestamoEntidad").modal('hide');
+		Swal.fire({
+		title: 'Alerta!',
+		text: "Todos los campos son requeridos",
+		icon: 'warning',
+		position : 'top',
+		showCancelButton: false,
+		 confirmButtonColor: '#3085d6',
+		  confirmButtonText: 'Ok!'
+		}).then((result) => {
+		  if (result.isConfirmed) {
+			$("#modalPrestamoEntidad").modal("show");
+		  }
+		});
+	}else{
+		if((!monto || monto<0) || (!tasa || tasa<0)){
+			$("#modalPrestamoEntidad").modal('hide');
+			Swal.fire({
+			title: 'Alerta!',
+			text: "Los montos deben ser valores numericos positivos",
+			icon: 'warning',
+			position : 'top',
+			showCancelButton: false,
+			 confirmButtonColor: '#3085d6',
+			  confirmButtonText: 'Ok!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
+				$("#modalPrestamoEntidad").modal("show");
+			  }
+			});
+		}else{
+			$.post("/prestamos/guardarPrestamoEntidad",
+			{
+				"idInversionista":idInversionista,
+				"idCuentaContableEntidad":idCuentaContableEntidad,
+				"monto":monto,
+				"tasa":tasa,
+				"idCuentaContableFormaPago":idCuentaContableFormaPago,
+				"fecha":fecha
+			},function(response){
+				if(response == 1){
+					$("#modalPrestamoEntidad").modal('hide');
+					Swal.fire({
+					title: 'Muy bien!',
+					text: "Registro guardado",
+					icon: 'success',
+					position : 'top',
+					showCancelButton: false,
+					 confirmButtonColor: '#3085d6',
+					  confirmButtonText: 'Ok!'
+					}).then((result) => {
+					  if (result.isConfirmed) {
+						 $("#inversionistaPrestamoEntidad option[value='']").attr("selected",true);
+						 $("#cuentaContablePrestamoEntidad option[value='']").attr("selected",true);
+						 $("#cuentaContableFormaPago option[value='']").attr("selected",true);
+						 $("#montoPrestamoEntidad").val("");
+						 $("#tasaPrestamoEntidad").val("");
+						$("#modalPrestamoEntidad").modal("show");
+						$("#tablaPrestamosEntidades").load("/prestamos/actualizarListaPrestamosEntidades",function(data){
+							addEvents();
+						});
+					  }
+					});
+				}else{
+					$("#modalPrestamoEntidad").modal('hide');
+					Swal.fire({
+					title: 'Alerta!',
+					text: "No se pudo guardar el registro",
+					icon: 'warning',
+					position : 'top',
+					showCancelButton: false,
+					 confirmButtonColor: '#3085d6',
+					  confirmButtonText: 'Ok!'
+					}).then((result) => {
+					  if (result.isConfirmed) {
+						$("#modalPrestamoEntidad").modal("show");
+					  }
+					});
+				}
+			});
+		}
+	}
+});
+
+$("#agregarInversionista").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#modalInversionista").modal("show");
+});
+
+$("#guardarInversionista").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var nombre = $("#nombreInversionista").val();
+	var telefono = $("#telefonoInversionista").val();
+	var direccion = $("#direccionInversionista").val();
+	
+	if(!nombre){
+		$("#modalInversionista").modal("hide");
+		 Swal.fire({
+			  title: 'Alerta!',
+			  text: "El nombre es requerido",
+			  icon: 'warning',
+			  position : 'top',
+			  showCancelButton: false,
+			  confirmButtonColor: '#3085d6',
+			  confirmButtonText: 'Ok!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
+	             $("#modalInversionista").modal("show");
+			  }
+			})
+	}else{
+		$.post("/contabilidad/agregarInversionista",{
+			"nombre": nombre,
+			"telefono": telefono,
+			"direccion": direccion
+		},function(data){
+			if(data == 1){
+				$("#modalInversionista").modal("hide");
+				 Swal.fire({
+					  title: 'Muy bien!',
+					  text: "Registro guardado",
+					  icon: 'success',
+					  position : 'top',
+					  showCancelButton: false,
+					  confirmButtonColor: '#3085d6',
+					  confirmButtonText: 'Ok!'
+					}).then((result) => {
+					  if (result.isConfirmed) {
+						 $("#nombreInversionista").val("");
+						 $("#telefonoInversionista").val("");
+						 $("#direccionInversionista").val("");
+			             $("#modalInversionista").modal("show");
+					  }
+					})
+			}else{
+				$("#modalInversionista").modal("hide");
+				 Swal.fire({
+					  title: 'Alerta!',
+					  text: "No se pudo guardar el registro",
+					  icon: 'warning',
+					  position : 'top',
+					  showCancelButton: false,
+					  confirmButtonColor: '#3085d6',
+					  confirmButtonText: 'Ok!'
+					}).then((result) => {
+					  if (result.isConfirmed) {
+			             $("#modalInversionista").modal("show");
+					  }
+					})
+			}
+		});
+	}
+});
+
+$("#agregarPrestamoEntidad").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#modalPrestamoEntidad").modal("show");
+});
+
 $("#agregarPagosCompra").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
@@ -1877,7 +2144,9 @@ $("#agregarPagosCompra").click(function(e){
 					$("#abonoInfoCompra").val("");
 					$("#balanceInfoCompra").val("");
 					$("#tablaCompras").load("/compras/listaCompras",function(data){
-						addEvents();
+						$("#tablaVerificarCuenta").load("/compras/actualizarTablaVerificarCuenta",function(data){
+							addEvents();
+						});
 					});
 				}else{
 					$("#modalPagoCompra").modal("hide");
@@ -5673,7 +5942,9 @@ function eliminarEnlace(id){
 												$("#tablaEnlaces").load("/contabilidad/mostrarEnlaces",function(data){
 													$("#tablaEnlacesProcesos").load("/contabilidad/mostrarEnlacesProcesos",function(data){
 														$("#tablaEnlacesRetencion").load("/contabilidad/mostrarEnlacesRetencion",function(data){
-															addEvents();
+															$("#tablaEnlacesEntidadEnlace").load("/contabilidad/mostrarEnlacesEntidadEnlace",function(data){
+																addEvents();
+															});
 														});
 													});
 												});

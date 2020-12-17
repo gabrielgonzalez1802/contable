@@ -1,8 +1,10 @@
 package com.contable.controller;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.contable.model.Carpeta;
 import com.contable.model.Compra;
 import com.contable.model.CompraItbis;
 import com.contable.model.CompraPago;
@@ -25,17 +28,20 @@ import com.contable.model.CompraPagoTemp;
 import com.contable.model.CompraProductoTemp;
 import com.contable.model.CuentaContable;
 import com.contable.model.Empresa;
+import com.contable.model.EntradaDiario;
 import com.contable.model.EntradaIngresoContable;
 import com.contable.model.FormaPago;
 import com.contable.model.Suplidor;
 import com.contable.model.SuplidorCuentaContable;
 import com.contable.model.Usuario;
+import com.contable.service.ICarpetasService;
 import com.contable.service.IComprasItbisService;
 import com.contable.service.IComprasPagosService;
 import com.contable.service.IComprasPagosTempService;
 import com.contable.service.IComprasProductosTempService;
 import com.contable.service.IComprasService;
 import com.contable.service.ICuentasContablesService;
+import com.contable.service.IEntradasDiariosService;
 import com.contable.service.IEntradasIngresosContableService;
 import com.contable.service.IFormasPagosService;
 import com.contable.service.ISuplidoresCuentasContablesService;
@@ -75,12 +81,18 @@ public class ComprasController {
 	@Autowired
 	private IComprasPagosService serviceComprasPagos;
 	
+	@Autowired
+	private ICarpetasService serviceCarpetas;
+	
+	@Autowired
+	private IEntradasDiariosService serviceEntradasDiarios;
+	
 	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	
 	@GetMapping("/listaCompras")
 	public String listaCompras(Model model, HttpSession session) {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
-		List<Compra> compras = serviceCompras.buscarPorEmpresa(empresa);
+		List<Compra> compras = serviceCompras.buscarPorEmpresaTotalMayorque(empresa, 0);
 		double totalBalance = 0;
 		model.addAttribute("compras", compras);
 		for (Compra compra : compras) {
@@ -122,33 +134,35 @@ public class ComprasController {
 		compra.setTotal(total);
 		compra.setBalance(total);
 		serviceCompras.guardar(compra);
+		
+		EntradaIngresoContable entradaIngresoContableCompra = new EntradaIngresoContable();
 
 		if(compra.getId()!=null) {
 			//Cuentas contables de los productos
 			for (CompraProductoTemp compraProductoTemp : productosTemp) {
-				EntradaIngresoContable entradaIngresoContable = new EntradaIngresoContable();
-				entradaIngresoContable.setCompra(compra);
-				entradaIngresoContable.setCantidad(compraProductoTemp.getCantidad());
-				entradaIngresoContable.setCosto(compraProductoTemp.getCosto());
-				entradaIngresoContable.setCuentaContable(compraProductoTemp.getCuentaContable());
-				entradaIngresoContable.setEmpresa(empresa);
-				entradaIngresoContable.setFecha(compra.getFecha());
-				entradaIngresoContable.setInfo(compraProductoTemp.getInfo());
-				entradaIngresoContable.setTotal(compraProductoTemp.getTotal());
-				entradaIngresoContable.setUsuario(usuario);
-				serviceEntradasIngresosContables.guardar(entradaIngresoContable);
+				EntradaIngresoContable entradaIngresoContableProducto = new EntradaIngresoContable();
+				entradaIngresoContableProducto.setCompra(compra);
+				entradaIngresoContableProducto.setCantidad(compraProductoTemp.getCantidad());
+				entradaIngresoContableProducto.setCosto(compraProductoTemp.getCosto());
+				entradaIngresoContableProducto.setCuentaContable(compraProductoTemp.getCuentaContable());
+				entradaIngresoContableProducto.setEmpresa(empresa);
+				entradaIngresoContableProducto.setFecha(compra.getFecha());
+				entradaIngresoContableProducto.setInfo(compraProductoTemp.getInfo());
+				entradaIngresoContableProducto.setTotal(compraProductoTemp.getTotal());
+				entradaIngresoContableProducto.setBalance(compraProductoTemp.getTotal());
+				entradaIngresoContableProducto.setUsuario(usuario);
+				serviceEntradasIngresosContables.guardar(entradaIngresoContableProducto);
 			}
 			
 			//Cuenta contable de la compra
 			if(cuentaContable!=null) {
-				EntradaIngresoContable entradaIngresoContable2 = new EntradaIngresoContable();
-				entradaIngresoContable2.setCompra(compra);
-				entradaIngresoContable2.setCuentaContable(cuentaContable);
-				entradaIngresoContable2.setEmpresa(empresa);
-				entradaIngresoContable2.setFecha(compra.getFecha());
-				entradaIngresoContable2.setTotal(total);
-				entradaIngresoContable2.setUsuario(usuario);
-				serviceEntradasIngresosContables.guardar(entradaIngresoContable2);
+				entradaIngresoContableCompra.setCompra(compra);
+				entradaIngresoContableCompra.setCuentaContable(cuentaContable);
+				entradaIngresoContableCompra.setEmpresa(empresa);
+				entradaIngresoContableCompra.setFecha(compra.getFecha());
+				entradaIngresoContableCompra.setTotal(total);
+				entradaIngresoContableCompra.setUsuario(usuario);
+				serviceEntradasIngresosContables.guardar(entradaIngresoContableCompra);
 			}
 
 			if(!impuestos.equals("")) {
@@ -177,14 +191,15 @@ public class ComprasController {
 					
 					//Cuenta contable del suplidor
 					if(compraItbis.getMontoItbis().doubleValue() > 0) {
-						EntradaIngresoContable entradaIngresoContable3 = new EntradaIngresoContable();
-						entradaIngresoContable3.setCompra(compra);
-						entradaIngresoContable3.setCuentaContable(compraItbis.getCuentaContable());
-						entradaIngresoContable3.setEmpresa(empresa);
-						entradaIngresoContable3.setFecha(compra.getFecha());
-						entradaIngresoContable3.setTotal(compraItbis.getMontoItbis());
-						entradaIngresoContable3.setUsuario(usuario);
-						serviceEntradasIngresosContables.guardar(entradaIngresoContable3);
+						EntradaIngresoContable entradaIngresoContableSuplidor = new EntradaIngresoContable();
+						entradaIngresoContableSuplidor.setCompra(compra);
+						entradaIngresoContableSuplidor.setCuentaContable(compraItbis.getCuentaContable());
+						entradaIngresoContableSuplidor.setEmpresa(empresa);
+						entradaIngresoContableSuplidor.setFecha(compra.getFecha());
+						entradaIngresoContableSuplidor.setTotal(compraItbis.getMontoItbis());
+						entradaIngresoContableSuplidor.setBalance(compraItbis.getMontoItbis());
+						entradaIngresoContableSuplidor.setUsuario(usuario);
+						serviceEntradasIngresosContables.guardar(entradaIngresoContableSuplidor);
 					}
 				}
 			}
@@ -194,7 +209,7 @@ public class ComprasController {
 		
 		List<FormaPago> formPagosRetencion = serviceFormasPagos.buscarPorEmpresaIdentificador(empresa, "retencion");		
 		List<CompraItbis> comprasItbis = serviceComprasItbis.buscarPorCompra(compra);
-		
+				
 		for (CompraItbis compraItbis : comprasItbis) {
 			for (FormaPago formaPago : formPagosRetencion) {
 				//Verificamos si la compra tiene cuenta contable de retencion
@@ -204,6 +219,10 @@ public class ComprasController {
 			}
 		}
 		
+		//Actualizamos el balance de Entrada ingreso contable
+		entradaIngresoContableCompra.setBalance(entradaIngresoContableCompra.getTotal()-montoRetencion);
+		serviceEntradasIngresosContables.guardar(entradaIngresoContableCompra);
+				
 		List<CompraPago> abonos = serviceComprasPagos.buscarPorEmpresaCompra(empresa, compra);
 		for (CompraPago compraPago : abonos) {
 			montoAbono+=compraPago.getMonto();
@@ -220,6 +239,147 @@ public class ComprasController {
 			serviceCompras.eliminar(compra);
 		}
 		return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+	}
+	
+	@GetMapping("/actualizarTablaVerificarCuenta")
+	public String actualizarTablaVerificarCuenta(Model model, HttpSession session) {
+		//Calculo del balance de la cuenta contable
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Carpeta carpeta = null;
+		
+		List<FormaPago> cuentasProcesos = serviceFormasPagos.buscarPorEmpresaIdentificador(empresa, "procesos");
+		
+		if(session.getAttribute("carpeta") != null) {
+			 carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
+		}else {
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, empresa);
+			if(!carpetas.isEmpty()) {
+				carpeta = carpetas.get(0);
+			}
+		}
+		
+		List<CuentaContable> cuentasContables = serviceCuentasContables.buscarPorEmpresaOrderByCodigoDesc(empresa);
+		//String codigoPadre = "";
+
+		for (CuentaContable cuentaContable : cuentasContables) {
+
+			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContable, empresa, carpeta);
+			for (EntradaDiario entradaDiario : entradasDiarios) {
+				BigDecimal monto = entradaDiario.getCredito().subtract(entradaDiario.getDebito());
+				cuentaContable.setMonto(monto.doubleValue());
+			}
+			
+			if(cuentaContable.getTipo().equals("C")) {
+				List<CuentaContable> cuentasContablesTemp = serviceCuentasContables.
+							buscarPorEmpresaCuentaControl(empresa, 
+									cuentaContable.getCodigo());
+				
+				if(!cuentasContablesTemp.isEmpty()) {
+					Double montoTemp = 0.0;
+					for (CuentaContable cuentaContableTemp : cuentasContablesTemp) {
+						List<EntradaDiario> entradasDiariosTemp = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableTemp, empresa, carpeta);
+						for (EntradaDiario entradaDiarioTemp : entradasDiariosTemp) {
+							montoTemp+=entradaDiarioTemp.getCredito().subtract(entradaDiarioTemp.getDebito()).doubleValue();
+						}
+						cuentaContable.setMonto(montoTemp);
+					}
+				}
+			}
+		}	
+		
+		for (CuentaContable cuentaContable2 : cuentasContables) {
+			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContable2, empresa, carpeta);
+			double valorInicial = 0.0;
+			for (EntradaDiario entradaDiario : entradasDiarios) {
+					valorInicial += entradaDiario.getCredito().doubleValue()-entradaDiario.getDebito().doubleValue();
+			}
+				
+			cuentaContable2.setMonto(valorInicial);
+			
+			//Toma el valor de los productos que coincida la cuenta contable (Compras)
+			List<EntradaIngresoContable> entradasIngresosContables = serviceEntradasIngresosContables.buscarPorEmpresaCuentaContable(empresa, cuentaContable2);
+			double costo = 0;
+			for (EntradaIngresoContable ingresosContables : entradasIngresosContables) {
+				costo += ingresosContables.getBalance();
+			}
+			cuentaContable2.setMonto(cuentaContable2.getMonto()+costo);
+		}
+			
+		for (CuentaContable cuentaContableTemp : cuentasContables) {
+
+			List<CuentaContable> cuentasTemp = serviceCuentasContables.
+						buscarPorEmpresaIdCuentaControl(empresa, cuentaContableTemp.getId());
+				
+			double valor = 0;
+							
+			for (CuentaContable cuentaContableTemp2 : cuentasTemp) {
+					valor += cuentaContableTemp2.getMonto();
+			}
+			
+			double valorFinal = cuentaContableTemp.getMonto() + valor;
+
+			cuentaContableTemp.setMonto(valorFinal);		
+		}
+	
+		List<CuentaContable> newOrder = new LinkedList<>();
+		
+		for (int i = cuentasContables.size(); i > 0; i--) {
+			newOrder.add(cuentasContables.get(i-1));
+		}
+
+		List<CuentaContable> cuentasContablesAuxiliaresIniciadas = serviceCuentasContables.buscarPorEmpresaTipoEstado(empresa, "A", 1);
+		
+		for (CuentaContable cuentaContableIni : cuentasContablesAuxiliaresIniciadas) {
+			//Verificamos el balance total de la cuenta contable
+			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableIni, empresa, carpeta);
+			double montoTotal = 0.0;
+			CuentaContable cuentaContableTemp = cuentaContableIni;
+			for (EntradaDiario entradaDiario : entradasDiarios) {
+				
+				BigDecimal montoT = entradaDiario.getCredito().subtract(entradaDiario.getDebito());
+				cuentaContableTemp.setMonto(montoT.doubleValue());
+				
+				if(cuentaContableTemp.getTipo().equals("C")) {
+					List<CuentaContable> cuentasContablesTemp = serviceCuentasContables.
+								buscarPorEmpresaCuentaControl(empresa, 
+										cuentaContableTemp.getCodigo());
+					
+					if(!cuentasContablesTemp.isEmpty()) {
+						Double montoTemp = 0.0;
+						for (CuentaContable cuentaContableTemp2 : cuentasContablesTemp) {
+							List<EntradaDiario> entradasDiariosTemp = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableTemp2, empresa, carpeta);
+							for (EntradaDiario entradaDiarioTemp2 : entradasDiariosTemp) {
+								montoTemp+=entradaDiarioTemp2.getCredito().subtract(entradaDiarioTemp2.getDebito()).doubleValue();
+							}
+							cuentaContableTemp.setMonto(montoTemp);
+						}
+					}
+				}
+				
+				montoTotal+=cuentaContableTemp.getMonto();
+				
+			}
+			
+			cuentaContableIni.setNombreCuenta(cuentaContableIni.getNombreCuenta()+" -- $ "+montoTotal);
+		}
+		
+		Double totalBalanceCuentaCompra = 0.0;
+		
+		for (CuentaContable cuentaContable : newOrder) {
+			for (FormaPago cuentaProceso : cuentasProcesos) {
+				if(cuentaContable.getId().intValue() == cuentaProceso.getCuentaContable().getId()) {
+					CuentaContable cuentaContableTemp = cuentaProceso.getCuentaContable();
+					cuentaContableTemp.setMonto(cuentaContable.getMonto());
+					cuentaProceso.setCuentaContable(cuentaContableTemp);
+					totalBalanceCuentaCompra+=cuentaContable.getMonto();
+				}
+			}
+		}
+				
+		//Fin calculo del balance
+		model.addAttribute("totalBalanceCuentaCompra", totalBalanceCuentaCompra);
+		model.addAttribute("cuentasProcesos", cuentasProcesos);
+		return "contabilidad/cuentasXPagar :: #tablaVerificarCuenta";
 	}
 	
 	@GetMapping("/totalesCompras/{id}")
@@ -307,6 +467,7 @@ public class ComprasController {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		Compra compra = serviceCompras.buscarPorId(id);
 		Integer response = 0;
+		double totalAbonoTemp = 0;
 		List<CompraPagoTemp> pagosTemp = serviceComprasPagosTemp.buscarPorEmpresaUsuarioCompra(empresa, usuario, compra);
 		for (CompraPagoTemp compraPagoTemp : pagosTemp) {
 			CompraPago pago = new CompraPago();
@@ -315,6 +476,7 @@ public class ComprasController {
 			pago.setEmpresa(empresa);
 			pago.setFecha(compraPagoTemp.getFecha());
 			pago.setMonto(compraPagoTemp.getMonto());
+			totalAbonoTemp+=compraPagoTemp.getMonto();
 			pago.setReferencia(compraPagoTemp.getReferencia());
 			pago.setUsuario(usuario);
 			serviceComprasPagos.guardar(pago);
@@ -330,6 +492,16 @@ public class ComprasController {
 			serviceCompras.guardar(compraTemp);
 		}
 		serviceComprasPagosTemp.eliminar(pagosTemp);
+		
+		//Actualizamos el balance de la entrada ingreso contable
+		List<EntradaIngresoContable> entradasIngresoContable = serviceEntradasIngresosContables.
+				buscarPorEmpresaCompraCuentaContable(empresa, compra, compra.getCuentaContable());
+		
+		for (EntradaIngresoContable entradaIngresoContable : entradasIngresoContable) {
+			entradaIngresoContable.setBalance(entradaIngresoContable.getBalance().doubleValue()-totalAbonoTemp);
+			serviceEntradasIngresosContables.guardar(entradaIngresoContable);
+		}
+		
 		return new ResponseEntity<Integer>(response, HttpStatus.ACCEPTED);
 	}
 	

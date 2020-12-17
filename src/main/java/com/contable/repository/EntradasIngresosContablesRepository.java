@@ -14,6 +14,9 @@ import com.contable.model.Usuario;
 public interface EntradasIngresosContablesRepository extends JpaRepository<EntradaIngresoContable, Integer> {
 	List<EntradaIngresoContable> findByEmpresa(Empresa empresa);
 	List<EntradaIngresoContable> findByEmpresaAndCompra(Empresa empresa,Compra compra);
+	List<EntradaIngresoContable> findByEmpresaAndCompraAndCuentaContable(Empresa empresa, Compra compra,
+			CuentaContable cuentaContable);
+	List<EntradaIngresoContable> findByEmpresaAndCuentaContableIn(Empresa empresa, List<CuentaContable> cuentasContables);
 	List<EntradaIngresoContable> findByEmpresaAndCuentaContable(Empresa empresa, CuentaContable cuentaContable);
 	List<EntradaIngresoContable> findByEmpresaAndUsuario(Empresa empresa, Usuario usuario);
 	List<EntradaIngresoContable> findByEmpresaAndUsuarioAndCuentaContable(Empresa empresa, Usuario usuario, CuentaContable cuentaContable);

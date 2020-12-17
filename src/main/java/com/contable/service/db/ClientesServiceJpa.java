@@ -88,4 +88,9 @@ public class ClientesServiceJpa implements IClientesService{
 	public Cliente buscarPorCedulaEmpresa(String item, Empresa empresa) {
 		return repo.findByTipoDocumentoAndCedulaAndEmpresa("cedula", item, empresa);
 	}
+
+	@Override
+	public List<Cliente> buscarPorEmpresaEstado(Empresa empresa, Integer estado) {
+		return repo.findByEmpresaAndEstado(empresa, estado);
+	}
 }

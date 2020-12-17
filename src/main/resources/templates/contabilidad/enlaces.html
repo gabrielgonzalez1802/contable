@@ -249,6 +249,64 @@
 				</div>
 			</div>
 		</div>	
+		
+		<!-- Seccion V -->
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="row">
+					<div class="card-header">
+						<div class="card-head-row">
+							<h4>Entidad Enlace</h4>
+								<div class="row">
+									<div class="col-md-12">
+										 <div class="row">
+											<div class="col-md-5">
+												<select class="form-control select2" id="cuentaContableAuxiliarEntidadEnlace">
+													<option value="">Seleccione</option>
+													<option th:each="cuentaContable : ${cuentasContablesAuxiliares}" 
+															th:value="${cuentaContable.id}"
+															th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+												</select>
+											</div>	
+											
+											<div class="col-md-3"></div>
+										
+											<div class="col-md-2">
+												<button class="btn btn-primary" id="agregarEnlaceEntidadEnlace">Agregar</button>
+											</div>
+										</div>	
+									</div>
+								</div>
+						</div>
+					</div>
+				</div>	
+				<div class="row">
+						<div class="col-md-12">
+								<div id="tablaEnlacesEntidadEnlace">
+									<div class="table-responsive">
+										<table class="table mg-b-0 text-md-nowrap">
+											<thead style="background-color: #e9ecef; height: 80px;">
+												<tr>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Cuenta Contable</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="formaPago : ${formasPagos}">
+													<td th:if="${formaPago.identificador == 'entidadEnlace'}" th:text="${formaPago.cuentaContable.codigo} + ' ' + ${formaPago.cuentaContable.nombreCuenta}"></td>
+													<td th:if="${formaPago.identificador == 'entidadEnlace'}">
+												        <a style="color: #fff;cursor: pointer;" th:onclick="'eliminarEnlace(\'' + ${formaPago.id} + '\');'" class="btn btn-danger btn-sm" role="button" title="Eliminar"><i class="fas fa-trash" aria-hidden="true"></i></a>
+												    </td>
+												</tr>
+										</tbody>
+									</table>
+							</div>
+						</div>
+					</div>	
+				</div>
+			</div>
+		</div>	
 	</div>
 </body>
 </html>

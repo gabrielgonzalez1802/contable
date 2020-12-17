@@ -107,24 +107,69 @@
       </div>
     </div>
   </div> 
+  
+ <!-- Modal Verificar Cuenta-->
+<div class="modal" id="modalVerificarCuenta" data-backdrop="static">
+   <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Informaci&oacute;n de la cuenta</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+			<div class="row">
+				<div class="col-md-12">
+					<div id="tablaVerificarCuenta">
+						<div class="table-responsive">
+			                  <table class="table mg-b-0 text-md-nowrap">
+								<thead style="background-color: #0162e8;height: 80px;">
+									<tr>
+									   <th style="color: #f3f3f3;padding-top: 10px;">Cuenta Contable</th>
+									   <th style="color: #f3f3f3;padding-top: 10px;">Balance</th>
+									   <th style="color: #f3f3f3;padding-top: 10px;"></th>
+									</tr>
+								 </thead>
+								<tbody>
+									<tr th:each="cuenta : ${cuentasProcesos}">
+										<td th:text="${cuenta.cuentaContable.codigo + ' ' + cuenta.cuentaContable.nombreCuenta}"></td>
+										<td th:text="${cuenta.cuentaContable.monto}"></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td style="font-weight: bold;" th:text="'Total: ' + ${totalBalanceCuentaCompra}"></td>
+									</tr>
+								</tbody>
+							 </table>
+		                </div>
+					</div>
+				</div>
+			</div>
+        </div>
+      </div>
+    </div>
+  </div>   
 	
 <div class="row">
 	<div class="col-md-12">
 			<div class="row">
 			   <div class="col-md-9">
 					<div class="card-header">
-						<div class="card-head-row">
-							<h4>Cuentas x Pagar</h4>
-						</div>
+						<button class="btn btn-primary" id="comprasPorPagar">Cuentas x pagar</button>
+						<button class="btn btn-primary" id="itbisPorPagar">Itbis</button>
+						<button class="btn btn-primary" id="prestamosPorPagar">Prestamos x pagar</button>
 					</div>
 
 					 <div class="row">
 						<div class="col-md-12">
 							 <div class="row">
-								<div class="col-md-4">
-									<input type="hidden" id="idSelectedCompra">
-									<input class="form-control" id="findByNombreSuplidor" placeholder="Nombre Suplidor" autocomplete="off">
-								</div>
+<!-- 								<div class="col-md-4"> -->
+<!-- 									<input type="hidden" id="idSelectedCompra"> -->
+<!-- 									<input class="form-control" id="findByNombreSuplidor" placeholder="Nombre Suplidor" autocomplete="off"> -->
+<!-- 								</div> -->
 							</div>	
 						</div>
 					</div>
@@ -164,6 +209,10 @@
 												</tr>
 										</tbody>
 									</table>
+								
+									<div style="float: right;color: blue;cursor: pointer;" id="verificarCuenta">
+										Verificar Cuenta <i class="fa fa-eye"></i>
+									</div>
 								
 <!-- 								<nav th:if="${productos.totalPages > 0}" aria-label="Page navigation example" > -->
 <!-- 									<ul class="pagination"> -->
@@ -268,9 +317,9 @@
 							
 							<div class="row">
 								<div class="col-md-12">
-								   <img id="crearPago" th:src="@{/img/agregar.png}" style="cursor:pointer;max-width: 100%;">	
-								   <img id="regresarAContabilidad" th:src="@{/img/salir.png}"  style="cursor:pointer;max-width: 100%;">		        	
-								   <img id="reporteCompraPago" th:src="@{/img/report2.png}" style="cursor:pointer;max-width: 100%;">		        	
+								   <img id="crearPago" th:src="@{/img/dinero.png}" style="cursor:pointer;max-width: 100%;">	
+								   <img id="reporteCompraPago" th:src="@{/img/reporte1.png}" style="cursor:pointer;max-width: 100%;">		        	
+								   <img id="regresarAContabilidad" th:src="@{/img/salir.png}"  style="cursor:pointer;max-width: 30%;">		        	
 								</div>
 <!-- 								<div class="col-md-12"> -->
 <!-- 								   <img id="eliminarProducto" th:src="@{/img/eliminar.png}"  style="cursor:pointer;max-width: 100%;">	 -->

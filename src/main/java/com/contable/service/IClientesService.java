@@ -16,6 +16,7 @@ public interface IClientesService {
 	Cliente buscarPorOtroEmpresa(String item, Empresa empresa);
 	List<Cliente> buscarPorNombre(String nombre);
 	List<Cliente> buscarPorNombreEmpresa(String nombre, Empresa empresa);
+	List<Cliente> buscarPorEmpresaEstado(Empresa empresa, Integer estado);
 	void guardar(Cliente cliente);
 	void eliminar(Integer idCliente);
 	void eliminar(Cliente cliente);

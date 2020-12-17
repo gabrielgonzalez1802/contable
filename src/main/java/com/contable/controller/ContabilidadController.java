@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.contable.model.Carpeta;
+import com.contable.model.Cliente;
 import com.contable.model.Compra;
 import com.contable.model.CompraProductoTemp;
 import com.contable.model.CuentaContable;
@@ -26,20 +27,25 @@ import com.contable.model.CuentaEnlace;
 import com.contable.model.Empresa;
 import com.contable.model.EntradaDiario;
 import com.contable.model.EntradaDiarioTemp;
+import com.contable.model.EntradaIngresoContable;
 import com.contable.model.FormaPago;
+import com.contable.model.Inversionista;
 import com.contable.model.Pago;
 import com.contable.model.Producto;
 import com.contable.model.Suplidor;
 import com.contable.model.SuplidorCuentaContableTemp;
 import com.contable.model.Usuario;
 import com.contable.service.ICarpetasService;
+import com.contable.service.IClientesService;
 import com.contable.service.IComprasProductosTempService;
 import com.contable.service.IComprasService;
 import com.contable.service.ICuentasContablesService;
 import com.contable.service.ICuentasEnlacesService;
 import com.contable.service.IEntradasDiariosService;
 import com.contable.service.IEntradasDiariosTempService;
+import com.contable.service.IEntradasIngresosContableService;
 import com.contable.service.IFormasPagosService;
+import com.contable.service.IInversionistasService;
 import com.contable.service.IPagosService;
 import com.contable.service.IProductosService;
 import com.contable.service.ISuplidoresCuentasContablesTempService;
@@ -83,8 +89,17 @@ public class ContabilidadController {
 	private IPagosService servicePagos;
 	
 	@Autowired
+	private IEntradasIngresosContableService serviceEntradasIngresosContables;
+	
+	@Autowired
 	private ISuplidoresCuentasContablesTempService serviceSuplidoresCuentasContablesTemp;
-
+	
+	@Autowired
+	private IClientesService serviceClientes;
+	
+	@Autowired
+	private IInversionistasService serviceInversionistas;
+	
 	@GetMapping("/mostrarContabilidad")
 	public String mostrarContabilidad(Model model, HttpSession session) {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
@@ -536,6 +551,14 @@ public class ContabilidadController {
 		return "contabilidad/enlaces :: #tablaEnlacesRetencion";
 	}
 	
+	@GetMapping("/mostrarEnlacesEntidadEnlace")
+	public String mostrarEnlacesEntidadEnlace(Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		List<FormaPago> formasPagos = serviceFormasPagos.buscarPorEmpresaIdentificador(empresa, "entidadEnlace");
+		model.addAttribute("formasPagos", formasPagos);
+		return "contabilidad/enlaces :: #tablaEnlacesEntidadEnlace";
+	}
+	
 	@GetMapping("/cuentasXPagar")
 	public String cuentasXPagar(Model model, HttpSession session) {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
@@ -543,6 +566,8 @@ public class ContabilidadController {
 		
 		List<FormaPago> cuentasContablesFormaPago = serviceFormasPagos.
 				buscarPorEmpresaIdentificador(empresa, "formaPago");
+		
+		List<FormaPago> cuentasProcesos = serviceFormasPagos.buscarPorEmpresaIdentificador(empresa, "procesos");
 		
 		double totalBalance =0;
 		
@@ -555,6 +580,141 @@ public class ContabilidadController {
 		compra.setUsuario(new Usuario());
 		compra.setSuplidor(new Suplidor());
 		
+		//Calculo del balance de la cuenta contable
+		
+		Carpeta carpeta = null;
+		
+		if(session.getAttribute("carpeta") != null) {
+			 carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
+		}else {
+			List<Carpeta> carpetas = serviceCarpetas.buscarTipoCarpetaEmpresa(1, empresa);
+			if(!carpetas.isEmpty()) {
+				carpeta = carpetas.get(0);
+			}
+		}
+		
+		List<CuentaContable> cuentasContables = serviceCuentasContables.buscarPorEmpresaOrderByCodigoDesc(empresa);
+		//String codigoPadre = "";
+
+		for (CuentaContable cuentaContable : cuentasContables) {
+
+			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContable, empresa, carpeta);
+			for (EntradaDiario entradaDiario : entradasDiarios) {
+				BigDecimal monto = entradaDiario.getCredito().subtract(entradaDiario.getDebito());
+				cuentaContable.setMonto(monto.doubleValue());
+			}
+			
+			if(cuentaContable.getTipo().equals("C")) {
+				List<CuentaContable> cuentasContablesTemp = serviceCuentasContables.
+							buscarPorEmpresaCuentaControl(empresa, 
+									cuentaContable.getCodigo());
+				
+				if(!cuentasContablesTemp.isEmpty()) {
+					Double montoTemp = 0.0;
+					for (CuentaContable cuentaContableTemp : cuentasContablesTemp) {
+						List<EntradaDiario> entradasDiariosTemp = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableTemp, empresa, carpeta);
+						for (EntradaDiario entradaDiarioTemp : entradasDiariosTemp) {
+							montoTemp+=entradaDiarioTemp.getCredito().subtract(entradaDiarioTemp.getDebito()).doubleValue();
+						}
+						cuentaContable.setMonto(montoTemp);
+					}
+				}
+			}
+		}	
+		
+		for (CuentaContable cuentaContable2 : cuentasContables) {
+			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContable2, empresa, carpeta);
+			double valorInicial = 0.0;
+			for (EntradaDiario entradaDiario : entradasDiarios) {
+					valorInicial += entradaDiario.getCredito().doubleValue()-entradaDiario.getDebito().doubleValue();
+			}
+				
+			cuentaContable2.setMonto(valorInicial);
+			
+			//Toma el valor de los productos que coincida la cuenta contable (Compras)
+			List<EntradaIngresoContable> entradasIngresosContables = serviceEntradasIngresosContables.buscarPorEmpresaCuentaContable(empresa, cuentaContable2);
+			double costo = 0;
+			for (EntradaIngresoContable ingresosContables : entradasIngresosContables) {
+				costo += ingresosContables.getBalance();
+			}
+			cuentaContable2.setMonto(cuentaContable2.getMonto()+costo);
+		}
+			
+		for (CuentaContable cuentaContableTemp : cuentasContables) {
+
+			List<CuentaContable> cuentasTemp = serviceCuentasContables.
+						buscarPorEmpresaIdCuentaControl(empresa, cuentaContableTemp.getId());
+				
+			double valor = 0;
+							
+			for (CuentaContable cuentaContableTemp2 : cuentasTemp) {
+					valor += cuentaContableTemp2.getMonto();
+			}
+			
+			double valorFinal = cuentaContableTemp.getMonto() + valor;
+
+			cuentaContableTemp.setMonto(valorFinal);		
+		}
+	
+		List<CuentaContable> newOrder = new LinkedList<>();
+		
+		for (int i = cuentasContables.size(); i > 0; i--) {
+			newOrder.add(cuentasContables.get(i-1));
+		}
+
+		List<CuentaContable> cuentasContablesAuxiliaresIniciadas = serviceCuentasContables.buscarPorEmpresaTipoEstado(empresa, "A", 1);
+		
+		for (CuentaContable cuentaContableIni : cuentasContablesAuxiliaresIniciadas) {
+			//Verificamos el balance total de la cuenta contable
+			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableIni, empresa, carpeta);
+			double montoTotal = 0.0;
+			CuentaContable cuentaContableTemp = cuentaContableIni;
+			for (EntradaDiario entradaDiario : entradasDiarios) {
+				
+				BigDecimal montoT = entradaDiario.getCredito().subtract(entradaDiario.getDebito());
+				cuentaContableTemp.setMonto(montoT.doubleValue());
+				
+				if(cuentaContableTemp.getTipo().equals("C")) {
+					List<CuentaContable> cuentasContablesTemp = serviceCuentasContables.
+								buscarPorEmpresaCuentaControl(empresa, 
+										cuentaContableTemp.getCodigo());
+					
+					if(!cuentasContablesTemp.isEmpty()) {
+						Double montoTemp = 0.0;
+						for (CuentaContable cuentaContableTemp2 : cuentasContablesTemp) {
+							List<EntradaDiario> entradasDiariosTemp = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContableTemp2, empresa, carpeta);
+							for (EntradaDiario entradaDiarioTemp2 : entradasDiariosTemp) {
+								montoTemp+=entradaDiarioTemp2.getCredito().subtract(entradaDiarioTemp2.getDebito()).doubleValue();
+							}
+							cuentaContableTemp.setMonto(montoTemp);
+						}
+					}
+				}
+				
+				montoTotal+=cuentaContableTemp.getMonto();
+				
+			}
+			
+			cuentaContableIni.setNombreCuenta(cuentaContableIni.getNombreCuenta()+" -- $ "+montoTotal);
+		}
+		
+		Double totalBalanceCuentaCompra = 0.0;
+		
+		for (CuentaContable cuentaContable : newOrder) {
+			for (FormaPago cuentaProceso : cuentasProcesos) {
+				if(cuentaContable.getId().intValue() == cuentaProceso.getCuentaContable().getId()) {
+					CuentaContable cuentaContableTemp = cuentaProceso.getCuentaContable();
+					cuentaContableTemp.setMonto(cuentaContable.getMonto());
+					cuentaProceso.setCuentaContable(cuentaContableTemp);
+					totalBalanceCuentaCompra+=cuentaContable.getMonto();
+				}
+			}
+		}
+				
+		//Fin calculo del balance
+		
+		model.addAttribute("totalBalanceCuentaCompra", totalBalanceCuentaCompra);
+		model.addAttribute("cuentasProcesos", cuentasProcesos);
 		model.addAttribute("compras", compras);
 		model.addAttribute("compra", compra);
 		model.addAttribute("dateAcct", new Date());
@@ -562,6 +722,53 @@ public class ContabilidadController {
 		model.addAttribute("totalBalance", totalBalance);
 		return "contabilidad/cuentasXPagar :: cuentasXPagar";
 	}	
+	
+	@GetMapping("/cuentasXCobrar")
+	public String cuentasXCobrar(Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+//		List<Cliente> clientes = serviceClientes.buscarPorEmpresaEstado(empresa, 1);
+		return "contabilidad/cuentasXCobrar :: cuentasXCobrar";
+	}	
+	
+	@GetMapping("/listaItbisXPagar")
+	public String listaItbisXPagar(Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		List<FormaPago> formasPagoItbis = serviceFormasPagos.buscarPorEmpresaIdentificador(empresa, "itbis");
+		
+		List<EntradaIngresoContable> entradasTemp = new LinkedList<>();
+		
+		for (FormaPago formaPago : formasPagoItbis) {
+			double monto = 0;
+			CuentaContable cuentaContableTemp = new CuentaContable();
+			List<EntradaIngresoContable> entradasIngresosContables = serviceEntradasIngresosContables.
+					buscarPorEmpresaCuentaContable(empresa, formaPago.getCuentaContable());
+			for (EntradaIngresoContable entradaIngresoContable : entradasIngresosContables) {
+				monto+=entradaIngresoContable.getBalance();
+				cuentaContableTemp = entradaIngresoContable.getCuentaContable();
+			}
+			EntradaIngresoContable entradaTemp = new EntradaIngresoContable();
+			entradaTemp.setBalance(monto);
+			entradaTemp.setCuentaContable(cuentaContableTemp);
+			entradasTemp.add(entradaTemp);
+		}
+		model.addAttribute("entradas", entradasTemp);
+		return "contabilidad/itbisXPagar :: itbisXPagar";
+	}
+	
+	@PostMapping("/agregarInversionista")
+	public ResponseEntity<Integer> agregarInversionista(HttpSession session, String nombre, String telefono, 
+			String direccion) {
+		Integer response = 0;
+		Inversionista inversionista = new Inversionista();
+		inversionista.setNombre(nombre);
+		inversionista.setDireccion(direccion);
+		inversionista.setTelefono(telefono);
+		serviceInversionistas.guardar(inversionista);
+		if(inversionista.getId()!=null) {
+			response = 1;
+		}
+		return new ResponseEntity<Integer>(response, HttpStatus.ACCEPTED);
+	}
 	
 	@GetMapping("/guardarCuentaTempSuplidor/{id}")
 	public String guardarCuentaTempSuplidor(Model model, HttpSession session, 
