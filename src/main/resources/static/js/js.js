@@ -1577,6 +1577,94 @@ $("#tarjetaEnlaces").click(function(e){
 	});
 });
 
+$("#tarjetaLibros").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/contabilidad/libros",function(data){
+		console.log("libros");
+		addEvents();
+	});
+});
+
+$("#fechaDesdeLibro").on('input', function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var desde = $("#fechaDesdeLibro").val();
+	var hasta = $("#fechaHastaLibro").val();
+	var cuentaContableId = $("#selectCuentaContablelibros").val();
+	if(!desde || !hasta){
+		Swal.fire({
+			title : 'Alerta!',
+			text : 'Las fechas son requeridas',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		$("#tablaLibroDiario").load("/contabilidad/buscarLibroDiario",
+		{
+			"cuentaContableId":cuentaContableId,
+			"desde":desde,
+			"hasta":hasta
+		},function(data){
+			addEvents();
+		});
+	}
+});
+
+$("#fechaHastaLibro").on('input', function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var desde = $("#fechaDesdeLibro").val();
+	var hasta = $("#fechaHastaLibro").val();
+	var cuentaContableId = $("#selectCuentaContablelibros").val();
+	
+	if(!desde || !hasta){
+		Swal.fire({
+			title : 'Alerta!',
+			text : 'Las fechas son requeridas',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		$("#tablaLibroDiario").load("/contabilidad/buscarLibroDiario",
+		{
+			"cuentaContableId":cuentaContableId,
+			"desde":desde,
+			"hasta":hasta
+		},function(data){
+			addEvents();
+		});
+	}
+});
+
+$("#selectCuentaContablelibros").on('change', function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var desde = $("#fechaDesdeLibro").val();
+	var hasta = $("#fechaHastaLibro").val();
+	var cuentaContableId = $("#selectCuentaContablelibros").val();
+	if(!desde || !hasta){
+		Swal.fire({
+			title : 'Alerta!',
+			text : 'Las fechas son requeridas',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		$("#tablaLibroDiario").load("/contabilidad/buscarLibroDiario",
+		{
+			"cuentaContableId":cuentaContableId,
+			"desde":desde,
+			"hasta":hasta
+		},function(data){
+			addEvents();
+		});
+	}
+});
+
 $("#tarjetaCuentasXPagar").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();

@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.contable.model.Compra;
 import com.contable.model.CuentaContable;
@@ -13,6 +15,13 @@ import com.contable.model.Usuario;
 
 public interface EntradasIngresosContablesRepository extends JpaRepository<EntradaIngresoContable, Integer> {
 	List<EntradaIngresoContable> findByEmpresa(Empresa empresa);
+	List<EntradaIngresoContable> findByEmpresaAndFecha(Empresa empresa, Date fecha);
+	
+	@Query("FROM EntradaIngresoContable WHERE id_empresa = :idEmpresa AND fecha = CURRENT_DATE()")
+	List<EntradaIngresoContable> buscarPorEmpresaIdCurrentDate(@Param("idEmpresa") Integer idEmpresa);
+	
+	List<EntradaIngresoContable> findByEmpresaAndCuentaContableAndFechaBetween(Empresa empresa, CuentaContable cuentaContable, Date desde, Date hasta);
+	List<EntradaIngresoContable> findByEmpresaAndFechaBetween(Empresa empresa, Date desde, Date hasta);
 	List<EntradaIngresoContable> findByEmpresaAndCompra(Empresa empresa,Compra compra);
 	List<EntradaIngresoContable> findByEmpresaAndCompraAndCuentaContable(Empresa empresa, Compra compra,
 			CuentaContable cuentaContable);

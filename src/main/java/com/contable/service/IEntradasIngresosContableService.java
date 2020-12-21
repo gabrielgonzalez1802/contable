@@ -12,8 +12,12 @@ import com.contable.model.Usuario;
 public interface IEntradasIngresosContableService {
 	EntradaIngresoContable buscarPorId(Integer id);
 	List<EntradaIngresoContable> buscarPorEmpresa(Empresa empresa);
+	List<EntradaIngresoContable> buscarPorEmpresaFecha(Empresa empresa, Date date);
+	List<EntradaIngresoContable> buscarPorEmpresaFechaBetween(Empresa empresa, Date desde, Date hasta);
+	List<EntradaIngresoContable> buscarPorEmpresaFechaCurrent(Empresa empresa);
 	List<EntradaIngresoContable> buscarPorEmpresaCompra(Empresa empresa, Compra compra);
 	List<EntradaIngresoContable> buscarPorEmpresaCuentaContable(Empresa empresa, CuentaContable cuentaContable);
+	List<EntradaIngresoContable> buscarPorEmpresaCuentaContableFechas(Empresa empresa, CuentaContable cuentaContable, Date desde, Date hasta);
 	List<EntradaIngresoContable> buscarPorEmpresaCuentasContables(Empresa empresa, List<CuentaContable> cuentasContables);
 	List<EntradaIngresoContable> buscarPorEmpresaCompraCuentaContable(Empresa empresa, Compra compra, CuentaContable cuentaContable);
 	List<EntradaIngresoContable> buscarPorEmpresaUsuario(Empresa empresa, Usuario usuario);

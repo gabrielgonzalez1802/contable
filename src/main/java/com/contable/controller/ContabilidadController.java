@@ -1,6 +1,8 @@
 package com.contable.controller;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -99,6 +101,8 @@ public class ContabilidadController {
 	
 	@Autowired
 	private IInversionistasService serviceInversionistas;
+	
+    private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	
 	@GetMapping("/mostrarContabilidad")
 	public String mostrarContabilidad(Model model, HttpSession session) {
@@ -470,7 +474,35 @@ public class ContabilidadController {
 		
 		return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 	}
-		
+	
+	@GetMapping("/libros")
+	public String libros(Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		List<CuentaContable> cuentasContablesAuxiliares = serviceCuentasContables.buscarPorEmpresaTipo(empresa, "A");
+		List<EntradaIngresoContable> entradasIngresosContables = serviceEntradasIngresosContables.
+				buscarPorEmpresaFechaCurrent(empresa);
+		model.addAttribute("entradasIngresosContables", entradasIngresosContables);
+		model.addAttribute("cuentasContables", cuentasContablesAuxiliares);
+		model.addAttribute("fecha", new Date());
+		return "contabilidad/libros :: libros";
+	}
+	
+	@PostMapping("/buscarLibroDiario")
+	public String buscarLibroDiario(Model model, HttpSession session, String desde, String hasta, String cuentaContableId) throws ParseException {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		Date fechaDesde = formatter.parse(desde);
+		Date fechaHasta = formatter.parse(hasta);
+		List<EntradaIngresoContable> entradasIngresosContables = new LinkedList<>();
+		if(cuentaContableId == null || cuentaContableId.equals("")) {
+			entradasIngresosContables = serviceEntradasIngresosContables.buscarPorEmpresaFechaBetween(empresa, fechaDesde, fechaHasta);
+		}else {
+			CuentaContable cuentaContable = serviceCuentasContables.buscarPorId(Integer.parseInt(cuentaContableId));
+			entradasIngresosContables = serviceEntradasIngresosContables.buscarPorEmpresaCuentaContableFechas(empresa, cuentaContable, fechaDesde, fechaHasta);
+		}
+		model.addAttribute("entradasIngresosContables", entradasIngresosContables);
+		return "contabilidad/libros :: #tablaLibroDiario";
+	}
+	
 	@GetMapping("/enlaces")
 	public String enlaces(Model model, HttpSession session) {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");

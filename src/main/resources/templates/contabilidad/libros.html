@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:fragment="libros">
+		<div class="row">
+			<div class="col-md-12">
+				<span style="font-size: 35px;font-weight: bold;">Libros</span>
+				<div style="float: right;">
+					<img id="regresarAContabilidad" src="/img/salir.png" style="cursor:pointer;max-width: 70%;">
+				</div>
+			</div>
+		</div>	
+		<div class="row">
+			<div class="col-md-12">
+				<div class="row">
+					<div class="card-header">
+						<div class="card-head-row">
+							<div class="row">
+								<div class="col-md-5">
+									<select class="form-control select2" id="selectCuentaContablelibros" style="border-radius: 10px;">
+										<option value="">Seleccione la cuenta contable</option>
+										<option th:each="cuentaContable : ${cuentasContables}" 
+												th:value="${cuentaContable.id}" 
+												th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
+									</select>
+								</div>
+								<div class="col-md-1">
+								</div>
+								<div class="col-md-3">
+									<input type="date" class="form-control" id="fechaDesdeLibro" style="border-radius: 10px;" th:value="${#dates.format(fecha, 'yyyy-MM-dd')}">
+								</div>
+								<div class="col-md-3">
+									<input type="date" class="form-control" id="fechaHastaLibro" style="border-radius: 10px;" th:value="${#dates.format(fecha, 'yyyy-MM-dd')}">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>	
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div id="tablaLibroDiario">
+					<div class="table-responsive">
+						<table class="table mg-b-0 text-md-nowrap">
+							<thead style="background-color: #0162e8;">
+								<tr>
+									<th style="color: #f3f3f3; padding-top: 10px;">Fecha</th>
+									<th style="color: #f3f3f3; padding-top: 10px;">Cuenta Contable</th>
+									<th style="color: #f3f3f3; padding-top: 10px;">Referencia</th>
+									<th style="color: #f3f3f3; padding-top: 10px;">Balance Inicial</th>
+									<th style="color: #f3f3f3; padding-top: 10px;">Transaccion</th>
+									<th style="color: #f3f3f3; padding-top: 10px;">Balance Final</th>
+									<th style="color: #f3f3f3; padding-top: 10px;">Usuario</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="entradaContable : ${entradasIngresosContables}">
+									<td th:text="${#dates.format(entradaContable.fecha, 'dd-MM-yyyy')}"></td>
+									<td th:text="${entradaContable.cuentaContable.codigo + ' ' + entradaContable.cuentaContable.nombreCuenta}"></td>
+									<td th:text="${entradaContable.info}"></td>
+									<td th:text="${entradaContable.balanceContableInicial}"></td>
+									<td th:text="${entradaContable.balance}"></td>
+									<td th:text="${entradaContable.balanceContable}"></td>
+									<td th:text="${entradaContable.usuario.username}"></td>
+<!-- 									<td> -->
+<!-- 										<button -->
+<!-- 											th:onclick="'eliminarEntradaDiarioTemp(\'' + ${entradaTemp.id} + '\');'" -->
+<!-- 											class="btn btn-danger"> -->
+<!-- 											<i class="fas fa-trash"></i> -->
+<!-- 										</button> -->
+<!-- 									</td> -->
+								</tr>
+<!-- 								<tr> -->
+<!-- 									<td colspan="4"></td> -->
+<!-- 									<td th:text="'Total Debito: ' + ${totalDebitoTemp}"></td> -->
+<!-- 									<td th:text="'Total Credito: ' + ${totalCreditoTemp}"></td> -->
+<!-- 									<td th:text="'Dif: ' + ${dif}"></td> -->
+<!-- 								</tr> -->
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
