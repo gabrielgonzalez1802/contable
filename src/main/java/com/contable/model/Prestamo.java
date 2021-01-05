@@ -45,8 +45,31 @@ public class Prestamo {
 	private String tipo;
 	
 	@OneToOne
+	@JoinColumn(name = "id_cuenta_contable_capital")
+	private CuentaContable cuentaContableCapital;
+	
+	@OneToOne
+	@JoinColumn(name = "id_cuenta_contable_interes")
+	private CuentaContable cuentaContableInteres;
+	
+	@OneToOne
+	@JoinColumn(name = "id_cuenta_contable_mora")
+	private CuentaContable cuentaContableMora;
+	
+	@OneToOne
+	@JoinColumn(name = "id_cuenta_contable_adicional")
+	private CuentaContable cuentaContableAdicional;
+	
+	@OneToOne
+	@JoinColumn(name = "id_cuenta_contable_forma_pago")
+	private CuentaContable cuentaContableFormaPago;
+	
+	@OneToOne
 	@JoinColumn(name = "id_prestamo_tipo")
 	private PrestamoTipo prestamoTipo;
+	
+	@Transient
+	private Integer idCuentaBancoTemp;
 	
 	private Integer dias_gracia = 0;
 	private Double monto = 0.0;
@@ -96,7 +119,9 @@ public class Prestamo {
 	
 	@Column(name = "capital_pagado")
 	private Double capitalPagado = 0.0;
-
+	
+	
+	
 	public Integer getId() {
 		return id;
 	}
@@ -384,18 +409,70 @@ public class Prestamo {
 		this.prestamoTipo = prestamoTipo;
 	}
 
+	public CuentaContable getCuentaContableCapital() {
+		return cuentaContableCapital;
+	}
+
+	public void setCuentaContableCapital(CuentaContable cuentaContableCapital) {
+		this.cuentaContableCapital = cuentaContableCapital;
+	}
+
+	public CuentaContable getCuentaContableInteres() {
+		return cuentaContableInteres;
+	}
+
+	public void setCuentaContableInteres(CuentaContable cuentaContableInteres) {
+		this.cuentaContableInteres = cuentaContableInteres;
+	}
+
+	public CuentaContable getCuentaContableMora() {
+		return cuentaContableMora;
+	}
+
+	public void setCuentaContableMora(CuentaContable cuentaContableMora) {
+		this.cuentaContableMora = cuentaContableMora;
+	}
+
+	public CuentaContable getCuentaContableAdicional() {
+		return cuentaContableAdicional;
+	}
+
+	public void setCuentaContableAdicional(CuentaContable cuentaContableAdicional) {
+		this.cuentaContableAdicional = cuentaContableAdicional;
+	}
+
+	public CuentaContable getCuentaContableFormaPago() {
+		return cuentaContableFormaPago;
+	}
+
+	public void setCuentaContableFormaPago(CuentaContable cuentaContableFormaPago) {
+		this.cuentaContableFormaPago = cuentaContableFormaPago;
+	}
+
+	public Integer getIdCuentaBancoTemp() {
+		return idCuentaBancoTemp;
+	}
+
+	public void setIdCuentaBancoTemp(Integer idCuentaBancoTemp) {
+		this.idCuentaBancoTemp = idCuentaBancoTemp;
+	}
+
 	@Override
 	public String toString() {
 		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", empresa=" + empresa
 				+ ", idClienteTemp=" + idClienteTemp + ", idCarpetaTemp=" + idCarpetaTemp + ", idCuentaTemp="
-				+ idCuentaTemp + ", fechaTemp=" + fechaTemp + ", tipo=" + tipo + ", prestamoTipo=" + prestamoTipo
-				+ ", dias_gracia=" + dias_gracia + ", monto=" + monto + ", pagos=" + pagos + ", tasa=" + tasa
-				+ ", codigo=" + codigo + ", forma_pago=" + forma_pago + ", valor_cuota=" + valor_cuota + ", mora="
-				+ mora + ", observacion=" + observacion + ", balance=" + balance + ", valor_interes=" + valor_interes
-				+ ", ultimoPago=" + ultimoPago + ", fecha_cron=" + fecha_cron + ", numeroNota=" + numeroNota
-				+ ", usuario=" + usuario + ", estado=" + estado + ", moneda=" + moneda + ", carpeta=" + carpeta
-				+ ", cuenta=" + cuenta + ", total_cuota=" + total_cuota + ", total_capital=" + total_capital
-				+ ", total_interes=" + total_interes + ", total_neto=" + total_neto + ", gastos_cierre=" + gastos_cierre
-				+ ", cantidad_pagos=" + cantidad_pagos + ", capitalPagado=" + capitalPagado + "]";
+				+ idCuentaTemp + ", fechaTemp=" + fechaTemp + ", tipo=" + tipo + ", cuentaContableCapital="
+				+ cuentaContableCapital + ", cuentaContableInteres=" + cuentaContableInteres + ", cuentaContableMora="
+				+ cuentaContableMora + ", cuentaContableAdicional=" + cuentaContableAdicional
+				+ ", cuentaContableFormaPago=" + cuentaContableFormaPago + ", prestamoTipo=" + prestamoTipo
+				+ ", idCuentaBancoTemp=" + idCuentaBancoTemp + ", dias_gracia=" + dias_gracia + ", monto=" + monto
+				+ ", pagos=" + pagos + ", tasa=" + tasa + ", codigo=" + codigo + ", forma_pago=" + forma_pago
+				+ ", valor_cuota=" + valor_cuota + ", mora=" + mora + ", observacion=" + observacion + ", balance="
+				+ balance + ", valor_interes=" + valor_interes + ", ultimoPago=" + ultimoPago + ", fecha_cron="
+				+ fecha_cron + ", numeroNota=" + numeroNota + ", usuario=" + usuario + ", estado=" + estado
+				+ ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta + ", total_cuota=" + total_cuota
+				+ ", total_capital=" + total_capital + ", total_interes=" + total_interes + ", total_neto=" + total_neto
+				+ ", gastos_cierre=" + gastos_cierre + ", cantidad_pagos=" + cantidad_pagos + ", capitalPagado="
+				+ capitalPagado + "]";
 	}
 }

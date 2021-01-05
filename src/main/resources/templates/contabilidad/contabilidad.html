@@ -8,204 +8,195 @@
 <div th:fragment="contabilidad">  
 
   <!-- Modal Entrada de Diario -->
-  <div class="modal" id="modalEntradaDiarioDC" data-backdrop="static">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
+<!--   <div class="modal" id="modalEntradaDiarioDC" data-backdrop="static"> -->
+<!--     <div class="modal-dialog modal-xl"> -->
+<!--       <div class="modal-content"> -->
       
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Procesos Bancarios</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
+<!--         Modal Header -->
+<!--         <div class="modal-header"> -->
+<!--           <h4 class="modal-title">Procesos Bancarios</h4> -->
+<!--           <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+<!--         </div> -->
         
-        <!-- Modal body -->
-        <div class="modal-body">
-        	<form id="formEntradaDiario">
-	          	<div class="row">
-					<div class="col-md-3">
-					 	<div class="form-group">
-						   	<input type="number" name="monto" class="form-control" placeholder="Monto" id="montoEntradaDiario">
-						 </div>
-					</div>
+<!--         Modal body -->
+<!--         <div class="modal-body"> -->
+<!--         	<form id="formEntradaDiario"> -->
+<!-- 	          	<div class="row"> -->
+<!-- 					<div class="col-md-3"> -->
+<!-- 					 	<div class="form-group"> -->
+<!-- 						   	<input type="number" name="monto" class="form-control" placeholder="Monto" id="montoEntradaDiario"> -->
+<!-- 						 </div> -->
+<!-- 					</div> -->
 					
-					<div class="col-md-1">
-					 	<div class="form-group">
-						   	<button class="btn btn-primary" id="agregarEntradaDiarioTemp"> + </button>
-						 </div>
-					</div>
+<!-- 					<div class="col-md-1"> -->
+<!-- 					 	<div class="form-group"> -->
+<!-- 						   	<button class="btn btn-primary" id="agregarEntradaDiarioTemp"> + </button> -->
+<!-- 						 </div> -->
+<!-- 					</div> -->
 												
-					<div class="col-md-8">
-					 	<div class="form-group">
-						   	<input type="text" placeholder="Referencia" id="referenciaEntradaDiario" class="form-control">
-						 </div>
-					</div>
-				</div>
-				<br>
-				<div class="row">
-					<div class="col-md-2">
-						<input type="text" placeholder="Codigo" id="codigoEntradaDiario" class="form-control">
-					</div>
+<!-- 					<div class="col-md-8"> -->
+<!-- 					 	<div class="form-group"> -->
+<!-- 						   	<input type="text" placeholder="Referencia" id="referenciaEntradaDiario" class="form-control"> -->
+<!-- 						 </div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 				<br> -->
+<!-- 				<div class="row"> -->
+<!-- 					<div class="col-md-2"> -->
+<!-- 						<input type="text" placeholder="Codigo" id="codigoEntradaDiario" class="form-control"> -->
+<!-- 					</div> -->
 					
-					<div class="col-md-7">
-					 	<div class="form-group">
-						   	<select id="cuentaContableAuxiliarEd" class="form-control">
-		          				<option th:each="cuentaContable : ${cuentasContablesAuxiliaresIniciadas}"
-		          						th:value="${cuentaContable.id}" th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
-		          			</select>
-						 </div>
-					</div>
-					<div class="col-md-3">
-					 	<div class="form-group">
-						   	<select id="tipoEntradaDiario" class="form-control">
-		          				<option value="1">Debito</option>
-		          				<option value="2">Credito</option>
-		          			</select>
-						 </div>
-					</div>
-				</div>
-			</form>
-			<br>
+<!-- 					<div class="col-md-7"> -->
+<!-- 					 	<div class="form-group"> -->
+<!-- 						   	<select id="cuentaContableAuxiliarEd" class="form-control"> -->
+<!-- 		          				<option th:each="cuentaContable : ${cuentasContablesAuxiliaresIniciadas}" -->
+<!-- 		          						th:value="${cuentaContable.id}" th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option> -->
+<!-- 		          			</select> -->
+<!-- 						 </div> -->
+<!-- 					</div> -->
+<!-- 					<div class="col-md-3"> -->
+<!-- 					 	<div class="form-group"> -->
+<!-- 						   	<select id="tipoEntradaDiario" class="form-control"> -->
+<!-- 		          				<option value="1">Debito</option> -->
+<!-- 		          				<option value="2">Credito</option> -->
+<!-- 		          			</select> -->
+<!-- 						 </div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 			</form> -->
+<!-- 			<br> -->
 			
-			<div class="row">
-<!-- 					<div class="col-md-3"> -->
-					
+<!-- 			<div class="row"> -->
+<!-- 					<div class="col-md-12"> -->
+<!-- 						<div id="tablaEntradasTemp"> -->
+<!-- 							<div class="table-responsive"> -->
+<!-- 			                   <table class="table mg-b-0 text-md-nowrap"> -->
+<!-- 									<thead style="background-color: #0162e8;height: 80px;"> -->
+<!-- 										<tr> -->
+<!-- 										   <th style="color: #f3f3f3;padding-top: 10px;">Cuenta</th> -->
+<!-- 										   <th style="color: #f3f3f3;padding-top: 10px;">Referencia</th> -->
+<!-- 										   <th style="color: #f3f3f3;padding-top: 10px;">Balance Inicial</th> -->
+<!-- 										   <th style="color: #f3f3f3;padding-top: 10px;">Debito</th> -->
+<!-- 										   <th style="color: #f3f3f3;padding-top: 10px;">Credito</th> -->
+<!-- 										   <th style="color: #f3f3f3;padding-top: 10px;">Balance Final</th> -->
+<!-- 										   <th style="color: #f3f3f3;padding-top: 10px;"></th> -->
+<!-- 										</tr> -->
+<!-- 									 </thead> -->
+<!-- 									<tbody> -->
+<!-- 										 <tr th:each="entradaTemp : ${entradasTemp}"> -->
+<!-- 										 	 <td th:text="${entradaTemp.cuentaContable.codigo + ' ' + entradaTemp.cuentaContable.nombreCuenta}"></td> -->
+<!-- 										 	 <td th:text="${entradaTemp.referencia}"></td> -->
+<!-- 										 	 <td th:text="${entradaTemp.balanceInicial}"></td> -->
+<!-- 										 	 <td th:text="${entradaTemp.debito}"></td> -->
+<!-- 										 	 <td th:text="${entradaTemp.credito}"></td> -->
+<!-- 										 	 <td th:text="${entradaTemp.balanceFinal}"></td> -->
+<!-- 										 	 <td> <button th:onclick="'eliminarEntradaDiarioTemp(\'' + ${entradaTemp.id} + '\');'" class="btn btn-danger"><i class="fas fa-trash"></i></button></td> -->
+<!-- 										 </tr> -->
+<!-- 										 <tr> -->
+<!-- 										 	<td colspan="4"></td> -->
+<!-- 										 	<td th:text="'Total Debito: ' + ${totalDebitoTemp}"></td> -->
+<!-- 										 	<td th:text="'Total Credito: ' + ${totalCreditoTemp}"></td> -->
+<!-- 										 	<td th:text="'Dif: ' + ${dif}"></td> -->
+<!-- 										 </tr> -->
+<!-- 									</tbody> -->
+<!-- 								 </table> -->
+<!-- 		                	  </div> -->
+<!-- 						</div> -->
 <!-- 					</div> -->
-					
-					<div class="col-md-12">
-						<div id="tablaEntradasTemp">
-							<div class="table-responsive">
-			                   <table class="table mg-b-0 text-md-nowrap">
-									<thead style="background-color: #0162e8;height: 80px;">
-										<tr>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Cuenta</th>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Referencia</th>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Balance Inicial</th>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Debito</th>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Credito</th>
-										   <th style="color: #f3f3f3;padding-top: 10px;">Balance Final</th>
-										   <th style="color: #f3f3f3;padding-top: 10px;"></th>
-										</tr>
-									 </thead>
-									<tbody>
-										 <tr th:each="entradaTemp : ${entradasTemp}">
-										 	 <td th:text="${entradaTemp.cuentaContable.codigo + ' ' + entradaTemp.cuentaContable.nombreCuenta}"></td>
-										 	 <td th:text="${entradaTemp.referencia}"></td>
-										 	 <td th:text="${entradaTemp.balanceInicial}"></td>
-										 	 <td th:text="${entradaTemp.debito}"></td>
-										 	 <td th:text="${entradaTemp.credito}"></td>
-										 	 <td th:text="${entradaTemp.balanceFinal}"></td>
-										 	 <td> <button th:onclick="'eliminarEntradaDiarioTemp(\'' + ${entradaTemp.id} + '\');'" class="btn btn-danger"><i class="fas fa-trash"></i></button></td>
-										 </tr>
-										 <tr>
-										 	<td colspan="4"></td>
-										 	<td th:text="'Total Debito: ' + ${totalDebitoTemp}"></td>
-										 	<td th:text="'Total Credito: ' + ${totalCreditoTemp}"></td>
-										 	<td th:text="'Dif: ' + ${dif}"></td>
-										 </tr>
-									</tbody>
-								 </table>
-		                	  </div>
-						</div>
-					</div>
-					
-<!-- 					<div class="col-md-3"> -->
-					
-<!-- 					</div> -->
-			</div>
-
-        </div>
+<!-- 			</div> -->
+<!--         </div> -->
         
-        <!-- Modal footer -->
-        <div class="modal-footer">
-<!--           <button type="button" class="btn btn-success" id="eliminarEntradasTemp">Regresar</button> -->
-          <button type="button" class="btn btn-primary" data-dismiss="modal" id="agregarEntradaDiario">Guardar</button>
-        </div>
+<!--         Modal footer -->
+<!--         <div class="modal-footer"> -->
+<!-- <!--           <button type="button" class="btn btn-success" id="eliminarEntradasTemp">Regresar</button> -->
+<!--           <button type="button" class="btn btn-primary" data-dismiss="modal" id="agregarEntradaDiario">Guardar</button> -->
+<!--         </div> -->
         
-      </div>
-    </div>
-  </div>   
+<!--       </div> -->
+<!--     </div> -->
+<!--   </div>    -->
 	
    <!-- Modal Entrada Diario -->         
-  <div class="modal" id="modalEntradaDiario">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
+<!--   <div class="modal" id="modalEntradaDiario"> -->
+<!--     <div class="modal-dialog modal-lg"> -->
+<!--       <div class="modal-content"> -->
       
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Entrada Diario</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
+<!--         Modal Header -->
+<!--         <div class="modal-header"> -->
+<!--           <h4 class="modal-title">Entrada Diario</h4> -->
+<!--           <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+<!--         </div> -->
         
-        <!-- Modal body -->
-        <div class="modal-body">
-        	<div class="row">
-        		<div class="col-md-4">
-					<label>Monto</label><span style="color:red;"> *</span>
-					<input type="number" min="0" placeholder="Monto" class="form-control" id="montoEd">
-        		</div>
+<!--         Modal body -->
+<!--         <div class="modal-body"> -->
+<!--         	<div class="row"> -->
+<!--         		<div class="col-md-4"> -->
+<!-- 					<label>Monto</label><span style="color:red;"> *</span> -->
+<!-- 					<input type="number" min="0" placeholder="Monto" class="form-control" id="montoEd"> -->
+<!--         		</div> -->
         		
-        		<div class="col-md-8">
-					<label>Motivo</label><span style="color:red;"> *</span>
-					<input type="text" placeholder="Motivo" class="form-control" id="motivoEd">
-				</div>
-        	</div>
+<!--         		<div class="col-md-8"> -->
+<!-- 					<label>Motivo</label><span style="color:red;"> *</span> -->
+<!-- 					<input type="text" placeholder="Motivo" class="form-control" id="motivoEd"> -->
+<!-- 				</div> -->
+<!--         	</div> -->
         	
-        	<br>
+<!--         	<br> -->
         
-          	<div class="row">
+<!--           	<div class="row"> -->
           		
-          		<div class="col-md-2">
-          			<label>&nbsp;</label>
-          			<input type="text" class="form-control" id="indicioEd1" placeholder="Codigo">
-          		</div>
+<!--           		<div class="col-md-2"> -->
+<!--           			<label>&nbsp;</label> -->
+<!--           			<input type="text" class="form-control" id="indicioEd1" placeholder="Codigo"> -->
+<!--           		</div> -->
           	
-          		<div class="col-md-6">
-          			<label>Cuenta Contable</label><span style="color:red;"> *</span>
-          			<select id="cuentaContableAuxiliarEd1" class="form-control">
-          				<option th:each="cuentaContable : ${cuentasContablesAuxiliaresIniciadas}"
-          						th:value="${cuentaContable.id}" th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
-          			</select>
-          		</div>
+<!--           		<div class="col-md-6"> -->
+<!--           			<label>Cuenta Contable</label><span style="color:red;"> *</span> -->
+<!--           			<select id="cuentaContableAuxiliarEd1" class="form-control"> -->
+<!--           				<option th:each="cuentaContable : ${cuentasContablesAuxiliaresIniciadas}" -->
+<!--           						th:value="${cuentaContable.id}" th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option> -->
+<!--           			</select> -->
+<!--           		</div> -->
           		
-          		<div class="col-md-4">
-          			<label>Tipo</label><span style="color:red;"> *</span>
-          			<input type="text" class="form-control" id="tipoEd1" value="Debito" disabled="disabled">
-          		</div>
+<!--           		<div class="col-md-4"> -->
+<!--           			<label>Tipo</label><span style="color:red;"> *</span> -->
+<!--           			<input type="text" class="form-control" id="tipoEd1" value="Debito" disabled="disabled"> -->
+<!--           		</div> -->
   
-			</div>
+<!-- 			</div> -->
 			
-			<br>
+<!-- 			<br> -->
 			
-			<div class="row">
-				<div class="col-md-2">
-          			<label>&nbsp;</label>
-          			<input type="text" class="form-control" id="indicioEd2" placeholder="Codigo">
-          		</div>
+<!-- 			<div class="row"> -->
+<!-- 				<div class="col-md-2"> -->
+<!--           			<label>&nbsp;</label> -->
+<!--           			<input type="text" class="form-control" id="indicioEd2" placeholder="Codigo"> -->
+<!--           		</div> -->
 			
-          		<div class="col-md-6">
-          			<label>Cuenta Contable</label><span style="color:red;"> *</span>
-          			<select id="cuentaContableAuxiliarEd2" class="form-control">
-          				<option th:each="cuentaContable : ${cuentasContablesAuxiliaresIniciadas}"
-          						th:value="${cuentaContable.id}" th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option>
-          			</select>
-          		</div>
+<!--           		<div class="col-md-6"> -->
+<!--           			<label>Cuenta Contable</label><span style="color:red;"> *</span> -->
+<!--           			<select id="cuentaContableAuxiliarEd2" class="form-control"> -->
+<!--           				<option th:each="cuentaContable : ${cuentasContablesAuxiliaresIniciadas}" -->
+<!--           						th:value="${cuentaContable.id}" th:text="${cuentaContable.codigo} + ' ' + ${cuentaContable.nombreCuenta}"></option> -->
+<!--           			</select> -->
+<!--           		</div> -->
           		
-          		<div class="col-md-4">
-          			<label>Tipo</label><span style="color:red;"> *</span>
-          			<input type="text" class="form-control" id="tipoEd2" value="Credito" disabled="disabled">
-          		</div>
+<!--           		<div class="col-md-4"> -->
+<!--           			<label>Tipo</label><span style="color:red;"> *</span> -->
+<!--           			<input type="text" class="form-control" id="tipoEd2" value="Credito" disabled="disabled"> -->
+<!--           		</div> -->
           	
-			</div>
-        </div>
+<!-- 			</div> -->
+<!--         </div> -->
         
-        <!-- Modal footer -->
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="btnGuardarEntradaDiario">Guardar</button>
-        </div>
+<!--         Modal footer -->
+<!--         <div class="modal-footer"> -->
+<!--           <button type="button" class="btn btn-primary" id="btnGuardarEntradaDiario">Guardar</button> -->
+<!--         </div> -->
         
-      </div>
-    </div>
-  </div> 
+<!--       </div> -->
+<!--     </div> -->
+<!--   </div>  -->
   
   <!-- Modal Cuenta Enlace -->         
   <div class="modal" id="modalCuentaEnlace">
@@ -346,10 +337,10 @@
 			 <div class="row">
 				  	<div class="col-md-12">
 				  		<div class="row">
-				  		   <div class="col-md-4 col-sm-4">
-						      <div id="tarjetaEntradaDiario" class="card overflow-hidden sales-card bg-primary-gradient" style="cursor:pointer;height: 140px;">
+				  			 <div class="col-md-4 col-sm-4">
+						      <div id="tarjetaProcesosBancarios" class="card overflow-hidden sales-card bg-primary-gradient" style="cursor:pointer;height: 140px;">
 			                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0">
-			                      	<span class="mb-3 tx-20 text-white">Entrada de Diario </span>
+			                      	<span class="mb-3 tx-20 text-white">Procesos Bancarios </span>
 			                        <div class="float-right my-auto ml-auto">
 			                        <img alt="" th:src="@{/img/efectivo.png}" width="100px;">
 <!-- 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true"></i> -->
@@ -372,7 +363,34 @@
 			                      </div>
 			                      <span id="" class="pt-1"><canvas width="298" height="30" style="display: inline-block; width: 298.25px; height: 30px; vertical-align: top;"></canvas></span>
 			                    </div>
-						   </div>
+						  	 </div>
+<!-- 				  		   <div class="col-md-4 col-sm-4"> -->
+<!-- 						      <div id="tarjetaEntradaDiario" class="card overflow-hidden sales-card bg-primary-gradient" style="cursor:pointer;height: 140px;"> -->
+<!-- 			                      <div class="pl-3 pt-3 pr-3 pb-2 pt-0"> -->
+<!-- 			                      	<span class="mb-3 tx-20 text-white">Entrada de Diario </span> -->
+<!-- 			                        <div class="float-right my-auto ml-auto"> -->
+<!-- 			                        <img alt="" th:src="@{/img/efectivo.png}" width="100px;"> -->
+<!-- <!-- 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true"></i> --> 
+<!-- 			                        </div> -->
+<!-- 			                        <input type="hidden" id="tipoPrestamoAcct"> -->
+<!-- 			                        <div class="pb-0 mt-0"> -->
+<!-- 			                          <div class="d-flex"> -->
+<!-- 			                            <div class=""> -->
+<!-- 			                              <h4  class="tx-18 font-weight-bold mb-1 text-white"><a style="cursor: pointer;" id="">  </a></h4> -->
+<!-- 			                              <h4 class="tx-18 font-weight-bold mb-1 text-white"><a style="cursor: pointer;" id="">  </a></h4> -->
+<!-- 			                               <p class="mb-0 tx-12 text-white op-7">Debito </p> -->
+<!-- 			                               <p class="mb-0 tx-12 text-white op-7">Credito </p> -->
+<!-- 			                            </div> -->
+<!-- 			                            <span class="float-right my-auto ml-auto"> -->
+<!-- <!-- 			                              <i class="fas fa-arrow-circle-up text-white"></i> --> 
+<!-- 			                              <span class="text-white op-7" style="font-size: 8px;"></span> -->
+<!-- 			                            </span> -->
+<!-- 			                          </div> -->
+<!-- 			                        </div> -->
+<!-- 			                      </div> -->
+<!-- 			                      <span id="" class="pt-1"><canvas width="298" height="30" style="display: inline-block; width: 298.25px; height: 30px; vertical-align: top;"></canvas></span> -->
+<!-- 			                    </div> -->
+<!-- 						   </div> -->
 						    
 						    <div class="col-md-4 col-sm-4">
 						      <div class="card overflow-hidden sales-card bg-primary-gradient" style="height: 140px;">
@@ -410,7 +428,7 @@
 			                        <img alt="" th:src="@{/img/libros.png}" width="100px;">
 <!-- 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true"></i> -->
 			                        </div>
-			                        <input type="hidden" id="tipoPrestamoAcct">
+<!-- 			                        <input type="hidden" id="tipoPrestamoAcct"> -->
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">
 			                            <div class="">
@@ -441,7 +459,7 @@
 			                        <img alt="" th:src="@{/img/nomina.png}" width="100px;">
 <!-- 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true"></i> -->
 			                        </div>
-			                        <input type="hidden" id="tipoPrestamoAcct">
+<!-- 			                        <input type="hidden" id="tipoPrestamoAcct"> -->
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">
 			                            <div class="">
@@ -469,7 +487,7 @@
 			                        <img alt="" th:src="@{/img/dinero.png}" width="100px;">
 <!-- 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true"></i> -->
 			                        </div>
-			                        <input type="hidden" id="tipoPrestamoAcct">
+<!-- 			                        <input type="hidden" id="tipoPrestamoAcct"> -->
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">
 			                            <div class="">
@@ -496,7 +514,7 @@
 			                        	<img alt="" th:src="@{/img/calculadora.png}" width="100px;">
 <!-- 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true"></i> -->
 			                        </div>
-			                        <input type="hidden" id="tipoPrestamoAcct">
+<!-- 			                        <input type="hidden" id="tipoPrestamoAcct"> -->
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">
 			                            <div class="">
@@ -526,7 +544,7 @@
 			                        <img alt="" th:src="@{/img/reporte2.png}" width="100px;">
 <!-- 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true"></i> -->
 			                        </div>
-			                        <input type="hidden" id="tipoPrestamoAcct">
+<!-- 			                        <input type="hidden" id="tipoPrestamoAcct"> -->
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">
 			                            <div class="">
@@ -556,7 +574,7 @@
 			                        <img alt="" th:src="@{/img/reporte1.png}" width="100px;">
 <!-- 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true"></i> -->
 			                        </div>
-			                        <input type="hidden" id="tipoPrestamoAcct">
+<!-- 			                        <input type="hidden" id="tipoPrestamoAcct"> -->
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">
 			                            <div class="">
@@ -584,7 +602,7 @@
 			                        	<img alt="" th:src="@{/img/contabilidad.png}" width="100px;">
 <!-- 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true"></i> -->
 			                        </div>
-			                        <input type="hidden" id="tipoPrestamoAcct">
+<!-- 			                        <input type="hidden" id="tipoPrestamoAcct"> -->
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">
 			                            <div class="">
@@ -615,7 +633,7 @@
 			                        <img alt="" th:src="@{/img/inventario.png}" width="100px;">
 <!-- 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true"></i> -->
 			                        </div>
-			                        <input type="hidden" id="tipoPrestamoAcct">
+<!-- 			                        <input type="hidden" id="tipoPrestamoAcct"> -->
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">
 			                            <div class="">
@@ -643,7 +661,7 @@
 			                        <img alt="" th:src="@{/img/compras.png}" width="100px;">
 <!-- 			                          <i class="fas fa-search" style="color: #fff;cursor: pointer;" aria-hidden="true"></i> -->
 			                        </div>
-			                        <input type="hidden" id="tipoPrestamoAcct">
+<!-- 			                        <input type="hidden" id="tipoPrestamoAcct"> -->
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">
 			                            <div class="">
@@ -670,7 +688,7 @@
 			                        <div class="float-right my-auto ml-auto">
 			                        <img alt="" th:src="@{/img/enlace.png}" width="100px;">
  			                        </div> 
-			                        <input type="hidden" id="tipoPrestamoAcct">
+<!-- 			                        <input type="hidden" id="tipoPrestamoAcct"> -->
 			                        <div class="pb-0 mt-0">
 			                          <div class="d-flex">
 			                            <div class="">

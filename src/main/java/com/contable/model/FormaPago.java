@@ -1,5 +1,6 @@
 package com.contable.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,6 +27,9 @@ public class FormaPago {
 	private Integer impuesto;
 
 	private String identificador;
+	
+	@Column(name = "tasa_cambio")
+	private String tasaCambio;
 	
 	public Integer getId() {
 		return id;
@@ -66,10 +70,18 @@ public class FormaPago {
 	public void setImpuesto(Integer impuesto) {
 		this.impuesto = impuesto;
 	}
-	
+
+	public String getTasaCambio() {
+		return tasaCambio;
+	}
+
+	public void setTasaCambio(String tasaCambio) {
+		this.tasaCambio = tasaCambio;
+	}
+
 	@Override
 	public String toString() {
-		return "FormaPago [id=" + id + ", empresa=" + empresa + ", cuentaContable=" + cuentaContable
-				+ ", identificador=" + identificador + "]";
+		return "FormaPago [id=" + id + ", empresa=" + empresa + ", cuentaContable=" + cuentaContable + ", impuesto="
+				+ impuesto + ", identificador=" + identificador + ", tasaCambio=" + tasaCambio + "]";
 	}
 }

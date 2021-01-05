@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:fragment="procesosBancarios">
+		<div class="row">
+			<div class="col-md-12">
+				<span style="font-size: 35px;font-weight: bold;">Procesos Bancarios</span>
+				<div style="float: right;">
+					<img id="regresarAContabilidad" src="/img/salir.png" style="cursor:pointer;max-width: 70%;padding-bottom: 10px;">
+				</div>
+			</div>
+		</div>	
+		<div class="row">
+			<div class="col-md-12">
+				 <form>
+					<div class="row">
+					 	<div class="col-md-5">
+						 	<div class="form-group">
+							   	<select id="cuentaContableAuxiliarPB" class="form-control select2" required="required">
+							   		<option value="">Seleccione</option>
+				          			<option th:each="formaPago : ${formasPagos}"
+				          					th:value="${formaPago.id}" 
+				          						th:text="${formaPago.cuentaContable.codigo} + ' ' + ${formaPago.cuentaContable.nombreCuenta} + ' - ' + ${formaPago.tasaCambio}"></option>
+				          		</select>
+							 </div>
+						</div>
+						
+						<i class="fas fa-angle-double-right" style="padding-top: 10px;"></i>
+							
+						<div class="col-md-5">
+						 	<div class="form-group">
+							   	<select id="cuentaContableAuxiliar2PB" class="form-control select2" required="required">
+							   		<option value="">Seleccione</option>
+				          			<option th:each="formaPago : ${formasPagos}"
+				          					th:value="${formaPago.id}" 
+				          					th:text="${formaPago.cuentaContable.codigo} + ' ' + ${formaPago.cuentaContable.nombreCuenta} + ' - ' + ${formaPago.tasaCambio}"></option>
+				          		</select>
+							 </div>
+						</div>
+					</div>	
+					<div class="row">
+						<div class="col-md-3">
+						 	<div class="form-group">
+							   	<input type="number" name="monto" class="form-control" placeholder="Monto" id="montoProcesoBancario">
+							 </div>
+						</div>
+						<div class="col-md-3">
+						 	<div class="form-group">
+							   	<input type="number" style="display: none;" placeholder="Tasa" id="tasaProcesoBancario" min="0" autocomplete="off" class="form-control" required="required">
+							 </div>
+						</div>
+						<div class="col-md-3">
+						 	<div class="form-group">
+							   	<input type="number" placeholder="Total" disabled="disabled" id="totalTempProcesoBancario" autocomplete="off" class="form-control">
+							 </div>
+						</div>
+						<div class="col-md-1">
+						 	<div class="form-group">
+							   	<button class="btn btn-primary" id="addProcesoBancarioTemp"> + </button>
+							 </div>
+						</div>	
+						<div class="col-md-2">
+						 	<div class="form-group">
+							   	<button class="btn btn-primary" id="guardarProcesoBancario">Guardar</button>
+							 </div>
+						</div>		
+					</div>
+				</form>
+				<div class="row">
+					<div class="col-md-12">
+						<div id="tablaProcesosBancariosTemp">
+							<div class="table-responsive">
+			                   <table class="table mg-b-0 text-md-nowrap">
+									<thead style="background-color: #0162e8;height: 80px;">
+										<tr>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Desde</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Hasta</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Monto</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Tasa</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;">Total</th>
+										   <th style="color: #f3f3f3;padding-top: 10px;"></th>
+										</tr>
+									 </thead>
+									<tbody>
+										 <tr th:each="procesoBancarioTemp : ${procesosBancariosTemp}">
+										 	 <td th:text="${procesoBancarioTemp.formaPagoDesde.cuentaContable.codigo + ' ' + procesoBancarioTemp.formaPagoDesde.cuentaContable.nombreCuenta + ' - ' + procesoBancarioTemp.formaPagoDesde.tasaCambio}"></td>
+										     <td th:text="${procesoBancarioTemp.formaPagoHasta.cuentaContable.codigo + ' ' + procesoBancarioTemp.formaPagoHasta.cuentaContable.nombreCuenta + ' - ' + procesoBancarioTemp.formaPagoHasta.tasaCambio}"></td>
+										 	 <td th:text="${procesoBancarioTemp.monto}"></td>
+										 	 <td th:text="${procesoBancarioTemp.tasa}"></td>
+										 	 <td th:text="${procesoBancarioTemp.total}"></td>
+										 	 <td> <button th:onclick="'eliminarProcesoBancarioTemp(\'' + ${procesoBancarioTemp.id} + '\');'" class="btn btn-danger"><i class="fas fa-trash"></i></button></td>
+										 </tr>
+<!-- 										 <tr> -->
+<!-- 										 	<td colspan="4"></td> -->
+<!-- 										 	<td th:text="'Total Debito: ' + ${totalDebitoTemp}"></td> -->
+<!-- 										 	<td th:text="'Total Credito: ' + ${totalCreditoTemp}"></td> -->
+<!-- 										 	<td th:text="'Dif: ' + ${dif}"></td> -->
+<!-- 										 </tr> -->
+									</tbody>
+								 </table>
+		                	  </div>
+						</div>
+					</div>	
+				</div>
+			</div>
+		</div>		
+	</div>
+</body>
+</html>

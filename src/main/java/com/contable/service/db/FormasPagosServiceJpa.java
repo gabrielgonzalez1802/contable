@@ -44,6 +44,18 @@ public class FormasPagosServiceJpa implements IFormasPagosService {
 	}
 	
 	@Override
+	public List<FormaPago> buscarPorEmpresaCuentaContableIdentificadorTasaCambio(Empresa empresa,
+			CuentaContable cuentaContable, String identificador, String tasaCambio) {
+		return repo.findByEmpresaAndCuentaContableAndIdentificadorAndTasaCambio(empresa, cuentaContable, identificador, tasaCambio);
+	}
+	
+	@Override
+	public List<FormaPago> buscarPorEmpresaIdentificadorTasaCambio(Empresa empresa, String identificador,
+			String tasaCambio) {
+		return repo.findByEmpresaAndIdentificadorAndTasaCambio(empresa, identificador, tasaCambio);
+	}
+	
+	@Override
 	public List<FormaPago> buscarPorEmpresaCuentaContable(Empresa empresa, CuentaContable cuentaContable) {
 		return repo.findByEmpresaAndCuentaContable(empresa, cuentaContable);
 	}

@@ -135,4 +135,10 @@ public class EntradasIngresosContableServiceJpa implements IEntradasIngresosCont
 			CuentaContable cuentaContable, Date desde, Date hasta) {
 		return repo.findByEmpresaAndCuentaContableAndFechaBetween(empresa, cuentaContable, desde, hasta);
 	}
+
+	@Override
+	public List<EntradaIngresoContable> buscarPorEmpresaUsuarioNULLCuentaContableFechaCurrent(Empresa empresa,
+			CuentaContable cuentaContable) {
+		return repo.buscarPorEmpresaUsuarioNULLCuentaContableFechaCurrent(empresa.getId(), cuentaContable.getId());
+	}
 }

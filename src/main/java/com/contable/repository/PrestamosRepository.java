@@ -11,6 +11,17 @@ import com.contable.model.Empresa;
 import com.contable.model.Prestamo;
 
 public interface PrestamosRepository extends JpaRepository<Prestamo, Integer>{
+	List<Prestamo> findByEmpresaAndEstado(Empresa empresa, Integer estado);
+	List<Prestamo> findByEstadoNotIn(List<Integer> estados);
+	List<Prestamo> findByEmpresaAndEstadoNotIn(Empresa empresa, List<Integer> estados);
+	List<Prestamo> findByEmpresaAndMonedaAndEstadoNotIn(Empresa empresa, String moneda, List<Integer> estados);
+	List<Prestamo> findByClienteAndCarpetaAndEmpresaAndMonedaAndEstadoNotIn(Cliente cliente, Carpeta carpeta,
+			Empresa empresa, String moneda, List<Integer> estados);
+	List<Prestamo> findByCarpetaAndEmpresaAndMonedaAndEstadoNotIn(Carpeta carpeta, Empresa empresa, String moneda,
+			List<Integer> estados);
+	List<Prestamo> findByCarpetaAndEmpresaAndEstado(Carpeta carpeta, Empresa empresa, Integer estado);
+	List<Prestamo> findByClienteAndCarpetaAndEmpresaAndEstado(Cliente cliente, Carpeta carpeta, Empresa empresa,
+			Integer estado);
 	List<Prestamo> findByEstado(Integer estado);
 	List<Prestamo> findByCliente(Cliente cliente);
 	List<Prestamo> findByFecha(Date fecha);

@@ -105,4 +105,47 @@ public class PrestamosServiceJpa implements IPrestamosService{
 		return repo.findByCarpetaAndEmpresa(carpeta, empresa);
 	}
 
+	@Override
+	public List<Prestamo> buscarPorEmpresaEstado(Empresa empresa, Integer estado) {
+		return repo.findByEmpresaAndEstado(empresa, estado);
+	}
+
+	@Override
+	public List<Prestamo> buscarPorCarpetaEmpresaEstado(Carpeta carpeta, Empresa empresa, Integer estado) {
+		return repo.findByCarpetaAndEmpresaAndEstado(carpeta, empresa, estado);
+	}
+
+	@Override
+	public List<Prestamo> buscarPorClienteCarpetaEmpresaEstado(Cliente cliente, Carpeta carpeta, Empresa empresa,
+			Integer estado) {
+		return repo.findByClienteAndCarpetaAndEmpresaAndEstado(cliente, carpeta, empresa, estado);
+	}
+
+	@Override
+	public List<Prestamo> buscarPorEstadoNotIn(List<Integer> estados) {
+		return repo.findByEstadoNotIn(estados);
+	}
+
+	@Override
+	public List<Prestamo> buscarPorEmpresaEstadoNotIn(Empresa empresa, List<Integer> estados) {
+		return repo.findByEmpresaAndEstadoNotIn(empresa, estados);
+	}
+
+	@Override
+	public List<Prestamo> buscarPorEmpresaMonedaEstadoNotIn(Empresa empresa, String moneda, List<Integer> estados) {
+		return repo.findByEmpresaAndMonedaAndEstadoNotIn(empresa, moneda, estados);
+	}
+
+	@Override
+	public List<Prestamo> buscarPorClienteCarpetaEmpresaMonedaEstadoNotIn(Cliente cliente, Carpeta carpeta,
+			Empresa empresa, String moneda, List<Integer> estados) {
+		return repo.findByClienteAndCarpetaAndEmpresaAndMonedaAndEstadoNotIn(cliente, carpeta, empresa, moneda, estados);
+	}
+
+	@Override
+	public List<Prestamo> buscarPorCarpetaEmpresaMonedaEstadoNotIn(Carpeta carpeta, Empresa empresa, String moneda,
+			List<Integer> estados) {
+		return repo.findByCarpetaAndEmpresaAndMonedaAndEstadoNotIn(carpeta, empresa, moneda, estados);
+	}
+
 }

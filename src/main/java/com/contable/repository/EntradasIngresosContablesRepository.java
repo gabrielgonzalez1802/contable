@@ -20,6 +20,9 @@ public interface EntradasIngresosContablesRepository extends JpaRepository<Entra
 	@Query("FROM EntradaIngresoContable WHERE id_empresa = :idEmpresa AND fecha = CURRENT_DATE()")
 	List<EntradaIngresoContable> buscarPorEmpresaIdCurrentDate(@Param("idEmpresa") Integer idEmpresa);
 	
+	@Query("FROM EntradaIngresoContable WHERE id_empresa = :idEmpresa AND id_usuario IS NULL AND id_cuenta_contable = :idCuentaContable AND  fecha = CURRENT_DATE()")
+	List<EntradaIngresoContable> buscarPorEmpresaUsuarioNULLCuentaContableFechaCurrent(@Param("idEmpresa") Integer idEmpresa, @Param("idCuentaContable") Integer idCuentaContable);
+	
 	List<EntradaIngresoContable> findByEmpresaAndCuentaContableAndFechaBetween(Empresa empresa, CuentaContable cuentaContable, Date desde, Date hasta);
 	List<EntradaIngresoContable> findByEmpresaAndFechaBetween(Empresa empresa, Date desde, Date hasta);
 	List<EntradaIngresoContable> findByEmpresaAndCompra(Empresa empresa,Compra compra);

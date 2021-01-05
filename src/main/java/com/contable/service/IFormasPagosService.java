@@ -13,6 +13,8 @@ public interface IFormasPagosService {
 	List<FormaPago> buscarPorCuentaContable(CuentaContable cuentaContable);
 	List<FormaPago> buscarPorEmpresaCuentaContable(Empresa empresa, CuentaContable cuentaContable);
 	List<FormaPago> buscarPorEmpresaCuentaContableIdentificador(Empresa empresa, CuentaContable cuentaContable, String identificador);
+	List<FormaPago> buscarPorEmpresaCuentaContableIdentificadorTasaCambio(Empresa empresa, CuentaContable cuentaContable, String identificador, String tasaCambio);
+	List<FormaPago> buscarPorEmpresaIdentificadorTasaCambio(Empresa empresa, String identificador, String tasaCambio);
 	void guardar(FormaPago formaPago);
 	void eliminar(FormaPago formaPago);
 }

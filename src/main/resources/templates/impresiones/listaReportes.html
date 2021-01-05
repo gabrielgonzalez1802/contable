@@ -127,7 +127,7 @@
   
   <!--  Modal Impresion Abono -->
   <div class="modal" id="modalImpresionAbono">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
       <div class="modal-content">
       
         <div class="modal-header">
@@ -137,14 +137,14 @@
         
         <div class="modal-body">
           	<div class="row">
-					<div class="col-md-3">
+					<div class="col-md-2">
 					 	<div class="form-group">
 					 		<label>Desde <span style="color: red;"></span> </label>
 						   	<input type="date" class="form-control" id="AbonoDesdeImpresion" required="required">
 						 </div>
 					</div>
 					
-					<div class="col-md-3">
+					<div class="col-md-2">
 					 	<div class="form-group">
 					 		<label>Hasta <span style="color: red;"></span></label>
 						   	<input type="date" class="form-control" id="AbonoHastaImpresion" required="required">
@@ -161,6 +161,16 @@
 					 					th:text="${cliente.nombre}"></option>
 					 		</select>
 					 	</div>
+					</div>
+					
+					<div class="col-md-2">
+					 	<div class="form-group">
+					 		<label>Moneda <span style="color: red;"></span></label>
+						   	<select class="form-control" id="monedaAbonoImpresion">
+						   		<option value="pesos">Peso</option>
+						   		<option value="dolar">Dolar</option>
+						   	</select>
+						 </div>
 					</div>
 					
 					<div class="col-md-3">

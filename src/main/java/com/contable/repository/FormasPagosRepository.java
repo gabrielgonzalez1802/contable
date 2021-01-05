@@ -13,5 +13,7 @@ public interface FormasPagosRepository extends JpaRepository<FormaPago, Integer>
 	List<FormaPago> findByEmpresaAndIdentificador(Empresa empresa, String identificador);
 	List<FormaPago> findByCuentaContable(CuentaContable cuentaContable);
 	List<FormaPago> findByEmpresaAndCuentaContableAndIdentificador(Empresa empresa, CuentaContable cuentaContable, String identificador);
+	List<FormaPago> findByEmpresaAndCuentaContableAndIdentificadorAndTasaCambio(Empresa empresa, CuentaContable cuentaContable, String identificador, String tasaCambio);
+	List<FormaPago> findByEmpresaAndIdentificadorAndTasaCambio(Empresa empresa, String identificador, String tasaCambio);
 	List<FormaPago> findByEmpresaAndCuentaContable(Empresa empresa, CuentaContable cuentaContable);
 }

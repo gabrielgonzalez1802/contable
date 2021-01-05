@@ -148,7 +148,9 @@ public class CuentasContablesController {
 		List<CuentaContable> newOrder = new LinkedList<>();
 		
 		for (int i = cuentasContables.size(); i > 0; i--) {
-			newOrder.add(cuentasContables.get(i-1));
+			CuentaContable cuentaTemp = cuentasContables.get(i-1);
+			cuentaTemp.setMonto(formato2d(cuentaTemp.getMonto()));
+			newOrder.add(cuentaTemp);
 		}
 
 		List<CuentaContable> cuentasContablesAuxiliaresGeneral = serviceCuentasContables.buscarPorEmpresaTipo(empresa, "A");
@@ -718,6 +720,12 @@ public class CuentasContablesController {
 			response = producto.getCuentaContable().getCodigo()+" "+producto.getCuentaContable().getNombreCuenta();
 		}
 		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
+	}
+	
+	public double formato2d(double number) {
+		number = Math.round(number * 100);
+		number = number/100;
+		return number;
 	}
 
 }

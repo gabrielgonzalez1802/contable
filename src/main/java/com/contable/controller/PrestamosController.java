@@ -186,6 +186,7 @@ public class PrestamosController {
 	
 	@GetMapping("/agregar")
 	public String agregarPrestamos(Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		Prestamo prestamo = new Prestamo();
 		Cliente cliente = new Cliente();
 		List<PrestamoTipo> prestamosTipos = servicePrestamosTipos.buscarTodos();
@@ -210,11 +211,15 @@ public class PrestamosController {
 		}else {
 			cliente = serviceClientes.buscarPorId((Integer) session.getAttribute("cliente"));
 		}
+		
+		List<FormaPago> formasPagos = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "formaPago", "peso");
+		model.addAttribute("formasPagos", formasPagos);
 		model.addAttribute("cliente", cliente);
 		model.addAttribute("prestamosTipos", prestamosTipos);
 		model.addAttribute("carpeta", carpeta);
 		model.addAttribute("cuentas", cuentas);
 		model.addAttribute("tipoDocumentoAcctPrestamo", cliente.getTipoDocumento());
+		
 		model.addAttribute("prestamo",  new Prestamo());
 		return "prestamos/form :: form";
 	}
@@ -232,6 +237,22 @@ public class PrestamosController {
 		model.addAttribute("fecha", new Date());
 		model.addAttribute("prestamosEntidades", prestamosEntidades);
 		return "contabilidad/prestamosXPagar :: prestamosXPagar";
+	}
+	
+	@PostMapping("/listaPorMoneda")
+	public String listaPorMoneda(String moneda, Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		String tasaCambio = "";
+		
+		if(moneda.equalsIgnoreCase("pesos")) {
+			tasaCambio = "peso";
+		}else if(moneda.equalsIgnoreCase("dolar")){
+			tasaCambio = "dolar";
+		}
+		
+		List<FormaPago> formasPagos = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "formaPago", tasaCambio);
+		model.addAttribute("formasPagos", formasPagos);
+		return "prestamos/form :: #formaPagoPrestamoFormaPago";
 	}
 	
 	@PostMapping("/guardarPrestamoEntidad")
@@ -702,13 +723,20 @@ public class PrestamosController {
 		double total_neto = 0;
 		Integer response = 0;
 		
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat formato2 = new SimpleDateFormat("dd/MM/yyyy");
-				
+		
+		List<FormaPago> formasPagoCapital = serviceFormasPago.buscarPorEmpresaIdentificador(empresa, "enlaceCapital");
+		List<FormaPago> formasPagoInteres = serviceFormasPago.buscarPorEmpresaIdentificador(empresa, "enlaceInteres");
+//		List<FormaPago> formasPagoMora = serviceFormasPago.buscarPorEmpresaIdentificador(empresa, "enlaceMora");
+		List<FormaPago> formasPagoAdicional = serviceFormasPago.buscarPorEmpresaIdentificador(empresa, "enlaceAdicional");
+		List<FormaPago> formasPagoFormaPago = serviceFormasPago.buscarPorEmpresaIdentificador(empresa, "formaPago");		
+		
 		List<Amortizacion> detalles = new LinkedList<>();
 		
-		prestamo.setEmpresa((Empresa) session.getAttribute("empresa"));
+		prestamo.setEmpresa(empresa);
 		
 		if (prestamo.getPagos() != 0) {
 
@@ -1009,6 +1037,230 @@ public class PrestamosController {
 					detalleTemp.setCapital(detalleTemp.getCapital()+montoTemp);
 					detalleTemp.setInteres(detalleTemp.getInteres()-montoTemp);
 					servicePrestamosDetalles.guardar(detalleTemp);
+				}
+			}
+		}
+		
+		//Setea la cuenta contable del capital
+		if(prestamo.getMoneda().equalsIgnoreCase("pesos")) {
+			List<FormaPago> formasPagoCapitalPeso = formasPagoCapital.stream().filter(f -> f.getTasaCambio().equalsIgnoreCase("peso")).collect(Collectors.toList());
+			if(!formasPagoCapitalPeso.isEmpty()) {
+				prestamo.setCuentaContableCapital(formasPagoCapitalPeso.get(0).getCuentaContable());
+			}
+		}else if(prestamo.getMoneda().equalsIgnoreCase("dolar")) {
+			List<FormaPago> formasPagoCapitalDolar = formasPagoCapital.stream().filter(f -> f.getTasaCambio().equalsIgnoreCase("dolar")).collect(Collectors.toList());
+			if(!formasPagoCapitalDolar.isEmpty()) {
+				prestamo.setCuentaContableCapital(formasPagoCapitalDolar.get(0).getCuentaContable());
+			}
+		}
+		
+		//Setea la cuenta contable de la forma de pago
+		if(prestamo.getMoneda().equalsIgnoreCase("pesos")) {
+			List<FormaPago> formasPagoPeso = formasPagoFormaPago.stream().filter(f -> f.getTasaCambio().equalsIgnoreCase("peso")).collect(Collectors.toList());
+			if(!formasPagoPeso.isEmpty()) {
+				prestamo.setCuentaContableFormaPago(formasPagoPeso.get(0).getCuentaContable());
+			}
+		}else if(prestamo.getMoneda().equalsIgnoreCase("dolar")) {
+			List<FormaPago> formasPagoDolar = formasPagoFormaPago.stream().filter(f -> f.getTasaCambio().equalsIgnoreCase("dolar")).collect(Collectors.toList());
+			if(!formasPagoDolar.isEmpty()) {
+				prestamo.setCuentaContableFormaPago(formasPagoDolar.get(0).getCuentaContable());
+			}
+		}
+		
+		
+		prestamo.setCuentaContableFormaPago(serviceCuentasContables.buscarPorId(prestamo.getIdCuentaBancoTemp()));
+		
+		//Caso de bancos: Afecta 2 cuentas contables
+		EntradaIngresoContable entradaIngresoContableBanco = new EntradaIngresoContable();
+		entradaIngresoContableBanco.setCuentaContable(prestamo.getCuentaContableFormaPago());
+		entradaIngresoContableBanco.setEmpresa(empresa);
+		entradaIngresoContableBanco.setFecha(prestamo.getFecha());
+		entradaIngresoContableBanco.setTotal(prestamo.getMonto()*-1.0);
+		entradaIngresoContableBanco.setBalance(prestamo.getMonto()*-1.0);
+		entradaIngresoContableBanco.setUsuario(usuario);
+		entradaIngresoContableBanco.setTipo("egreso");
+		entradaIngresoContableBanco.setInfo("prestamo "+prestamo.getCodigo()+" - "+prestamo.getCliente().getNombre());
+		serviceEntradasIngresosContables.guardar(entradaIngresoContableBanco);
+		
+		EntradaIngresoContable entradaIngresoContableBancoEgreso = new EntradaIngresoContable();
+		entradaIngresoContableBancoEgreso.setCuentaContable(prestamo.getCuentaContableCapital());
+		entradaIngresoContableBancoEgreso.setEmpresa(empresa);
+		entradaIngresoContableBancoEgreso.setFecha(prestamo.getFecha());
+		entradaIngresoContableBancoEgreso.setTotal(prestamo.getMonto());
+		entradaIngresoContableBancoEgreso.setBalance(prestamo.getMonto());
+		entradaIngresoContableBancoEgreso.setUsuario(usuario);
+		entradaIngresoContableBancoEgreso.setTipo("ingreso");
+		entradaIngresoContableBancoEgreso.setInfo("prestamo "+prestamo.getCodigo()+" - "+prestamo.getCliente().getNombre());
+		serviceEntradasIngresosContables.guardar(entradaIngresoContableBancoEgreso);
+		
+		//Setea la cuenta contable del interes
+		if(prestamo.getMoneda().equalsIgnoreCase("pesos")) {
+			List<FormaPago> formasPagoInteresPeso = formasPagoInteres.stream().filter(f -> f.getTasaCambio().equalsIgnoreCase("peso")).collect(Collectors.toList());
+			if(!formasPagoInteresPeso.isEmpty()) {
+				prestamo.setCuentaContableInteres(formasPagoInteresPeso.get(0).getCuentaContable());
+			}
+		}else if(prestamo.getMoneda().equalsIgnoreCase("dolar")) {
+			List<FormaPago> formasPagoInteresPeso = formasPagoInteres.stream().filter(f -> f.getTasaCambio().equalsIgnoreCase("dolar")).collect(Collectors.toList());
+			if(!formasPagoInteresPeso.isEmpty()) {
+				prestamo.setCuentaContableInteres(formasPagoInteresPeso.get(0).getCuentaContable());
+			}
+		}
+		
+		if(prestamo.getGastos_cierre()!=null && prestamo.getGastos_cierre().doubleValue()>0) {
+			//Setea la cuenta contable de los adicionales
+			if(prestamo.getMoneda().equalsIgnoreCase("pesos")) {
+				List<FormaPago> formasPagoMoraAdicional = formasPagoAdicional.stream().filter(f -> f.getTasaCambio().equalsIgnoreCase("peso")).collect(Collectors.toList());
+				if(!formasPagoMoraAdicional.isEmpty()) {
+					prestamo.setCuentaContableAdicional(formasPagoMoraAdicional.get(0).getCuentaContable());
+				}
+			}else if(prestamo.getMoneda().equalsIgnoreCase("dolar")) {
+				List<FormaPago> formasPagoMoraAdicional = formasPagoAdicional.stream().filter(f -> f.getTasaCambio().equalsIgnoreCase("dolar")).collect(Collectors.toList());
+				if(!formasPagoMoraAdicional.isEmpty()) {
+					prestamo.setCuentaContableAdicional(formasPagoMoraAdicional.get(0).getCuentaContable());
+				}
+			}
+		}
+		
+		//////////////////////////////////// Calculo del detalle de amortizacion en el prestamo ///////////////////////////
+		
+		if(!prestamo.getTipo().equals("2")) {
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
+			List<Amortizacion> detallesAmort = new LinkedList<>();
+			List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorPrestamo(prestamo);
+
+			//Cuotas
+			
+			int count = 0;
+			double mora = 0;
+			double interes = 0;
+			double capitalAmort = 0;
+
+			List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
+			
+			detallesAmort = new LinkedList<>();
+			for (PrestamoDetalle prestamoDetalle : prestamoDetalles) {
+				
+				List<PrestamoAdicional> adicionales = servicePrestamosAdicionales.buscarPorPrestamoNumeroCuota(prestamoDetalle.getPrestamo(), prestamoDetalle.getNumero());
+
+				Amortizacion amortizacion = new Amortizacion();
+				
+				double cargo = 0;
+				
+				count++;
+				String estado = "Normal";
+				if(prestamoDetalle.getEstado()==2) {
+					estado = "Atraso";
+				}else if(prestamoDetalle.getEstado()==1) {
+					estado = "Saldo";
+				}
+				
+				double cargoPagadoTemp = 0;
+				double descuentoAdicionales = 0;
+				double descuentoCargo = 0;
+				
+				if(!adicionales.isEmpty()) {
+					for (PrestamoAdicional adicionalTemp : adicionales) {
+						cargo+=adicionalTemp.getMonto()-adicionalTemp.getMonto_pagado();
+						cargoPagadoTemp+=adicionalTemp.getMonto_pagado();
+						descuentoAdicionales+=adicionalTemp.getDescuento_adicionales();
+					}
+					amortizacion.setCargo(cargo);
+					descuentoCargo = amortizacion.getCargo()-descuentoAdicionales;
+					amortizacion.setCargo(formato2d(cargo-descuentoAdicionales));
+				}
+				
+				double abono = prestamoDetalle.getCapital_pagado()+prestamoDetalle.getInteres_pagado()+prestamoDetalle.getMora_pagada()+cargoPagadoTemp;
+				
+				double descuentoAdicional = 0;
+				
+				List<PrestamoAdicional> adicionalTemp = servicePrestamosAdicionales
+						.buscarPorPrestamoNumeroCuota(prestamo, prestamoDetalle.getNumero());
+				for (PrestamoAdicional adicional : adicionalTemp) {
+					descuentoAdicional += adicional.getDescuento_adicionales();
+				}
+
+				amortizacion.setDescuento(formato2d(prestamoDetalle.getDescuento_mora()+descuentoAdicional));
+				
+				amortizacion.setAbono(formato2d(abono));
+				amortizacion.setId(prestamoDetalle.getId());
+				amortizacion.setFecha(sdf.format(prestamoDetalle.getFechaGenerada()));
+				amortizacion.setCuota(prestamoDetalle.getCuota());
+				amortizacion.setTipo(Integer.parseInt(prestamoDetalle.getPrestamo().getTipo()));
+				amortizacion.setCapital(formato2d(prestamoDetalle.getCapital()-prestamoDetalle.getCapital_pagado()));
+				amortizacion.setInteres(formato2d(prestamoDetalle.getInteres()-prestamoDetalle.getInteres_pagado()));
+				amortizacion.setSaldo(formato2d(prestamoDetalle.getBalance()));
+				amortizacion.setNumero(prestamoDetalle.getNumero());
+				amortizacion.setMora(formato2d(prestamoDetalle.getMora()-prestamoDetalle.getMora_pagada()-prestamoDetalle.getDescuento_mora()));
+				amortizacion.setEstado(prestamoDetalle.getEstado_cuota());
+				amortizacion.setAtraso(prestamoDetalle.getDias_atraso());
+				amortizacion.setBalance(formato2d((amortizacion.getCapital()==null?0:amortizacion.getCapital()) + (amortizacion.getInteres()==null?0:amortizacion.getInteres()) + (amortizacion.getMora()==null?0:amortizacion.getMora()) + (amortizacion.getCargo()==null?0:amortizacion.getCargo())));
+				detallesAmort.add(amortizacion);
+			}
+		
+
+			double sumaCapital = 0;
+			double montoCuota = 0;
+			double sumaMoraTemp = 0;
+			double sumaInteres = 0;
+			double sumaCargos = 0;
+			double sumaAbonoCuota = 0;
+			double sumaDescuento = 0;
+			double sumaTotales = 0;
+			
+			for (Amortizacion detalle : detallesAmort) {
+				sumaInteres+=detalle.getInteres()==null?0:detalle.getInteres();
+			}
+			
+			EntradaIngresoContable entradaIngresoContableInteresIngreso = new EntradaIngresoContable();
+			entradaIngresoContableInteresIngreso.setCuentaContable(prestamo.getCuentaContableInteres());
+			entradaIngresoContableInteresIngreso.setEmpresa(empresa);
+			entradaIngresoContableInteresIngreso.setFecha(prestamo.getFecha());
+			entradaIngresoContableInteresIngreso.setTotal(sumaInteres);
+			entradaIngresoContableInteresIngreso.setBalance(sumaInteres);
+			entradaIngresoContableInteresIngreso.setUsuario(usuario);
+			entradaIngresoContableInteresIngreso.setInfo("interes por prestamo "+prestamo.getCodigo()+" - "+prestamo.getCliente().getNombre());
+			serviceEntradasIngresosContables.guardar(entradaIngresoContableInteresIngreso);
+		}
+		
+		//Ingreso contable de adiconales (Todos los casos)
+		EntradaIngresoContable entradaIngresoContableAdicionalesIngreso = new EntradaIngresoContable();
+		entradaIngresoContableAdicionalesIngreso.setCuentaContable(prestamo.getCuentaContableAdicional());
+		entradaIngresoContableAdicionalesIngreso.setEmpresa(empresa);
+		entradaIngresoContableAdicionalesIngreso.setFecha(prestamo.getFecha());
+		entradaIngresoContableAdicionalesIngreso.setTotal(prestamo.getGastos_cierre());
+		entradaIngresoContableAdicionalesIngreso.setBalance(prestamo.getGastos_cierre());
+		entradaIngresoContableAdicionalesIngreso.setUsuario(usuario);
+		entradaIngresoContableAdicionalesIngreso.setInfo("otros cargos por prestamo "+prestamo.getCodigo()+" - "+prestamo.getCliente().getNombre());
+		serviceEntradasIngresosContables.guardar(entradaIngresoContableAdicionalesIngreso);
+
+		//Actualizacion contable
+		// Buscamos las entradas ingresos contables null ASCENDENTE
+		List<EntradaIngresoContable> entradasIngresosContablesNullTemp = serviceEntradasIngresosContables
+				.buscarPorEmpresaBalanceContableNullASC(empresa);
+
+		if (!entradasIngresosContablesNullTemp.isEmpty()) {
+			for (EntradaIngresoContable entradaIngresoContableNull : entradasIngresosContablesNullTemp) {
+				double balanceContableTemp = 0;
+				// Buscamos las entradas ingresos contables anteriores con la cuenta contable de
+				// la iteracion
+				List<EntradaIngresoContable> entradasIngresosContablesXCCNotNUll = serviceEntradasIngresosContables
+						.buscarPorEmpresaCuentaContableBalanceContableNotNullMenorQueID(empresa,
+								entradaIngresoContableNull.getCuentaContable(), entradaIngresoContableNull.getId());
+				if (!entradasIngresosContablesXCCNotNUll.isEmpty()) {
+					for (EntradaIngresoContable entradaIngresoContableNotNull : entradasIngresosContablesXCCNotNUll) {
+						balanceContableTemp = entradaIngresoContableNotNull.getBalanceContable() == null ? 0
+								: entradaIngresoContableNotNull.getBalanceContable();
+						break;
+					}
+					entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+					entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+							+ entradaIngresoContableNull.getBalance());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+				} else {
+					entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+					entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+							+ entradaIngresoContableNull.getBalance());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
 				}
 			}
 		}
@@ -1895,6 +2147,7 @@ public class PrestamosController {
 			Integer idPrestamo, Double monto, Integer tipo, Integer cuota) {
 		Prestamo prestamo = servicePrestamos.buscarPorId(idPrestamo);
 		Integer response = 0;
+		Double montoMovContable = monto;
 		
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -2045,6 +2298,83 @@ public class PrestamosController {
 				}
 			}
 		}
+		
+		if(response == 1) {
+			
+			List<FormaPago> formasPago = new LinkedList<>();
+			
+			if(tipo == 1) {
+				//Mora
+				if(prestamo.getMoneda().equalsIgnoreCase("pesos")) {
+					formasPago = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceMora", "peso");
+				}else if(prestamo.getMoneda().equalsIgnoreCase("dolar")) {
+					formasPago = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceMora", "dolar");
+				}
+				//Ingreso contable de adiconales (Todos los casos)
+				EntradaIngresoContable entradaIngresoContableMoraEgreso = new EntradaIngresoContable();
+				if(!formasPago.isEmpty()) {
+					entradaIngresoContableMoraEgreso.setCuentaContable(formasPago.get(0).getCuentaContable());
+				}
+				entradaIngresoContableMoraEgreso.setEmpresa(empresa);
+				entradaIngresoContableMoraEgreso.setFecha(new Date());
+				entradaIngresoContableMoraEgreso.setTotal(montoMovContable*-1.0);
+				entradaIngresoContableMoraEgreso.setBalance(montoMovContable*-1.0);
+				entradaIngresoContableMoraEgreso.setUsuario(usuario);
+				entradaIngresoContableMoraEgreso.setInfo("descuento de mora - prestamo "+prestamo.getCodigo()+" - "+prestamo.getCliente().getNombre());
+				serviceEntradasIngresosContables.guardar(entradaIngresoContableMoraEgreso);
+			}else if(tipo == 2) {
+				//Adicionales
+				if(prestamo.getMoneda().equalsIgnoreCase("pesos")) {
+					formasPago = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceAdicional", "peso");
+				}else if(prestamo.getMoneda().equalsIgnoreCase("dolar")) {
+					formasPago = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceAdicional", "dolar");
+				}
+				//Ingreso contable de adiconales (Todos los casos)
+				EntradaIngresoContable entradaIngresoContableAdicionalesEgreso = new EntradaIngresoContable();
+				if(!formasPago.isEmpty()) {
+					entradaIngresoContableAdicionalesEgreso.setCuentaContable(formasPago.get(0).getCuentaContable());
+				}
+				entradaIngresoContableAdicionalesEgreso.setEmpresa(empresa);
+				entradaIngresoContableAdicionalesEgreso.setFecha(new Date());
+				entradaIngresoContableAdicionalesEgreso.setTotal(montoMovContable*-1.0);
+				entradaIngresoContableAdicionalesEgreso.setBalance(montoMovContable*-1.0);
+				entradaIngresoContableAdicionalesEgreso.setUsuario(usuario);
+				entradaIngresoContableAdicionalesEgreso.setInfo("descuento a otros cargos - prestamo "+prestamo.getCodigo()+" - "+prestamo.getCliente().getNombre());
+				serviceEntradasIngresosContables.guardar(entradaIngresoContableAdicionalesEgreso);
+			}
+			
+			//Actualizacion contable
+			// Buscamos las entradas ingresos contables null ASCENDENTE
+			List<EntradaIngresoContable> entradasIngresosContablesNullTemp = serviceEntradasIngresosContables
+					.buscarPorEmpresaBalanceContableNullASC(empresa);
+
+			if (!entradasIngresosContablesNullTemp.isEmpty()) {
+				for (EntradaIngresoContable entradaIngresoContableNull : entradasIngresosContablesNullTemp) {
+					double balanceContableTemp = 0;
+					// Buscamos las entradas ingresos contables anteriores con la cuenta contable de
+					// la iteracion
+					List<EntradaIngresoContable> entradasIngresosContablesXCCNotNUll = serviceEntradasIngresosContables
+							.buscarPorEmpresaCuentaContableBalanceContableNotNullMenorQueID(empresa,
+									entradaIngresoContableNull.getCuentaContable(), entradaIngresoContableNull.getId());
+					if (!entradasIngresosContablesXCCNotNUll.isEmpty()) {
+						for (EntradaIngresoContable entradaIngresoContableNotNull : entradasIngresosContablesXCCNotNUll) {
+							balanceContableTemp = entradaIngresoContableNotNull.getBalanceContable() == null ? 0
+									: entradaIngresoContableNotNull.getBalanceContable();
+							break;
+						}
+						entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+						entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+								+ entradaIngresoContableNull.getBalance());
+						serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+					} else {
+						entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+						entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+								+ entradaIngresoContableNull.getBalance());
+						serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+					}
+				}
+			}
+		}
 
 		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
 	}
@@ -2115,6 +2445,7 @@ public class PrestamosController {
 	public ResponseEntity<String> guardarCargoCuota(Model model, HttpSession session,
 			Integer idPrestamo, Integer motivo, String nota,
 			Double monto,  Integer cuota) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		Prestamo prestamo = servicePrestamos.buscarPorId(idPrestamo);
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		PrestamoAdicional prestamoAdicional = new PrestamoAdicional();
@@ -2154,6 +2485,63 @@ public class PrestamosController {
 		if(prestamoAdicional.getId()!=null) {
 			response = 1;
 		}
+		
+		List<FormaPago> formasPago = new LinkedList<>();
+		
+		if(prestamo.getMoneda().equalsIgnoreCase("pesos")) {
+			formasPago = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceAdicional", "peso");
+		}else if(prestamo.getMoneda().equalsIgnoreCase("dolar")) {
+			formasPago = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceAdicional", "dolar");
+		}
+		
+		if(response == 1) {
+			//Entrada contable
+			//Ingreso contable de adiconales (Todos los casos)
+			EntradaIngresoContable entradaIngresoContableAdicionalesIngreso = new EntradaIngresoContable();
+			if(!formasPago.isEmpty()) {
+				entradaIngresoContableAdicionalesIngreso.setCuentaContable(formasPago.get(0).getCuentaContable());
+			}
+			entradaIngresoContableAdicionalesIngreso.setEmpresa(empresa);
+			entradaIngresoContableAdicionalesIngreso.setFecha(new Date());
+			entradaIngresoContableAdicionalesIngreso.setTotal(monto);
+			entradaIngresoContableAdicionalesIngreso.setBalance(monto);
+			entradaIngresoContableAdicionalesIngreso.setUsuario(usuario);
+			entradaIngresoContableAdicionalesIngreso.setInfo("otros cargos por prestamo "+prestamo.getCodigo()+" - "+prestamo.getCliente().getNombre());
+			serviceEntradasIngresosContables.guardar(entradaIngresoContableAdicionalesIngreso);
+
+			//Actualizacion contable
+			// Buscamos las entradas ingresos contables null ASCENDENTE
+			List<EntradaIngresoContable> entradasIngresosContablesNullTemp = serviceEntradasIngresosContables
+					.buscarPorEmpresaBalanceContableNullASC(empresa);
+
+			if (!entradasIngresosContablesNullTemp.isEmpty()) {
+				for (EntradaIngresoContable entradaIngresoContableNull : entradasIngresosContablesNullTemp) {
+					double balanceContableTemp = 0;
+					// Buscamos las entradas ingresos contables anteriores con la cuenta contable de
+					// la iteracion
+					List<EntradaIngresoContable> entradasIngresosContablesXCCNotNUll = serviceEntradasIngresosContables
+							.buscarPorEmpresaCuentaContableBalanceContableNotNullMenorQueID(empresa,
+									entradaIngresoContableNull.getCuentaContable(), entradaIngresoContableNull.getId());
+					if (!entradasIngresosContablesXCCNotNUll.isEmpty()) {
+						for (EntradaIngresoContable entradaIngresoContableNotNull : entradasIngresosContablesXCCNotNUll) {
+							balanceContableTemp = entradaIngresoContableNotNull.getBalanceContable() == null ? 0
+									: entradaIngresoContableNotNull.getBalanceContable();
+							break;
+						}
+						entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+						entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+								+ entradaIngresoContableNull.getBalance());
+						serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+					} else {
+						entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+						entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+								+ entradaIngresoContableNull.getBalance());
+						serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+					}
+				}
+			}
+		}
+
 		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
 	}
 	
@@ -2716,12 +3104,12 @@ public class PrestamosController {
 		
 		//Borramos los pagos temp
 		servicePagosTemp.eliminar(pagosTemp);
-				
+						
 		return new ResponseEntity<>(abonoGuardado.getId().toString(), HttpStatus.OK);
 	}
 
 	@GetMapping("/imprimirDetalleAbono/{id}")
-	private void imprimirDetalleAbono(@PathVariable(name = "id") Integer id, HttpServletRequest request,
+	private void imprimirDetalleAbono(@PathVariable(name = "id") Integer id, HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) throws JRException, SQLException {
 		
 		Abono abonoGuardado = serviceAbonos.buscarPorId(id);
@@ -2732,9 +3120,9 @@ public class PrestamosController {
 		
 		double totalCapital = 0.0;
 
-//		Empresa empresa = abonoGuardado.getEmpresa();
+		Empresa empresa = abonoGuardado.getEmpresa();
 		
-		Empresa empresa = serviceEmpresas.buscarPorId(1);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		
 		List<AbonoDetalle> abonosDetalles = serviceAbonosDetalles.buscarPorAbonoOrderByCuota(abonoGuardado);
 		
@@ -2847,29 +3235,109 @@ public class PrestamosController {
 		
 		tempFolder += pathSeparator;
 		
+		String moneda = abonoGuardado.getPrestamo().getMoneda();
+		
+		if(moneda.equalsIgnoreCase("pesos")) {
+			moneda = "peso";
+		}
+		
+		List<FormaPago> formasPagoCapital = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceCapital", moneda);
+		List<FormaPago> formasPagoInteres = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceInteres", moneda);
+		List<FormaPago> formasPagoMoras = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceMora", moneda);
+		List<FormaPago> formasPagoCargos = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceAdicional", moneda);
+		
+		//Creamos los registros contables
+		for (DetalleReporteAbono detalleReporteAbono : detalleReporteAbonos) {
+			if(detalleReporteAbono.getPagoCapital()>0) {
+				if(!formasPagoCapital.isEmpty()) {
+					EntradaIngresoContable entradaIngresoContable = new EntradaIngresoContable();
+					entradaIngresoContable.setTotal(detalleReporteAbono.getPagoCapital()*-1.0);
+					entradaIngresoContable.setBalance(detalleReporteAbono.getPagoCapital()*-1.0);
+					entradaIngresoContable.setCuentaContable(formasPagoCapital.get(0).getCuentaContable());
+					entradaIngresoContable.setEmpresa(empresa);
+					entradaIngresoContable.setUsuario(usuario);
+					entradaIngresoContable.setFecha(new Date());
+					entradaIngresoContable.setInfo("abono a capital del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContable);
+				}
+			}
+			
+			if(detalleReporteAbono.getPagoCargos()>0) {
+				if(!formasPagoCargos.isEmpty()) {
+					EntradaIngresoContable entradaIngresoContable = new EntradaIngresoContable();
+					entradaIngresoContable.setTotal(detalleReporteAbono.getPagoCargos()*-1.0);
+					entradaIngresoContable.setBalance(detalleReporteAbono.getPagoCargos()*-1.0);
+					entradaIngresoContable.setCuentaContable(formasPagoCargos.get(0).getCuentaContable());
+					entradaIngresoContable.setEmpresa(empresa);
+					entradaIngresoContable.setUsuario(usuario);
+					entradaIngresoContable.setFecha(new Date());
+					entradaIngresoContable.setInfo("abono adicionales del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContable);
+				}
+			}
+			
+			if(detalleReporteAbono.getPagoInteres()>0) {
+				if(!formasPagoCargos.isEmpty()) {
+					EntradaIngresoContable entradaIngresoContable = new EntradaIngresoContable();
+					entradaIngresoContable.setTotal(detalleReporteAbono.getPagoInteres()*-1.0);
+					entradaIngresoContable.setBalance(detalleReporteAbono.getPagoInteres()*-1.0);
+					entradaIngresoContable.setCuentaContable(formasPagoInteres.get(0).getCuentaContable());
+					entradaIngresoContable.setEmpresa(empresa);
+					entradaIngresoContable.setUsuario(usuario);
+					entradaIngresoContable.setFecha(new Date());
+					entradaIngresoContable.setInfo("abono a interes del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContable);
+				}
+			}
+			
+			if(detalleReporteAbono.getPagoMoras()>0) {
+				if(!formasPagoCargos.isEmpty()) {
+					EntradaIngresoContable entradaIngresoContable = new EntradaIngresoContable();
+					entradaIngresoContable.setTotal(detalleReporteAbono.getPagoMoras()*-1.0);
+					entradaIngresoContable.setBalance(detalleReporteAbono.getPagoMoras()*-1.0);
+					entradaIngresoContable.setCuentaContable(formasPagoMoras.get(0).getCuentaContable());
+					entradaIngresoContable.setEmpresa(empresa);
+					entradaIngresoContable.setUsuario(usuario);
+					entradaIngresoContable.setFecha(new Date());
+					entradaIngresoContable.setInfo("abono a moras del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
+					serviceEntradasIngresosContables.guardar(entradaIngresoContable);
+				}
+			}
+			
+			// Buscamos las entradas ingresos contables null ASCENDENTE
+			List<EntradaIngresoContable> entradasIngresosContablesNullTemp = serviceEntradasIngresosContables
+					.buscarPorEmpresaBalanceContableNullASC(empresa);
+
+			if (!entradasIngresosContablesNullTemp.isEmpty()) {
+				for (EntradaIngresoContable entradaIngresoContableNull : entradasIngresosContablesNullTemp) {
+					double balanceContableTemp = 0;
+					// Buscamos las entradas ingresos contables anteriores con la cuenta contable de
+					// la iteracion
+					List<EntradaIngresoContable> entradasIngresosContablesXCCNotNUll = serviceEntradasIngresosContables
+							.buscarPorEmpresaCuentaContableBalanceContableNotNullMenorQueID(empresa,
+									entradaIngresoContableNull.getCuentaContable(), entradaIngresoContableNull.getId());
+					if (!entradasIngresosContablesXCCNotNUll.isEmpty()) {
+						for (EntradaIngresoContable entradaIngresoContableNotNull : entradasIngresosContablesXCCNotNUll) {
+							balanceContableTemp = entradaIngresoContableNotNull.getBalanceContable() == null ? 0
+									: entradaIngresoContableNotNull.getBalanceContable();
+							break;
+						}
+						entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+						entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+								+ entradaIngresoContableNull.getBalance());
+						serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+					} else {
+						entradaIngresoContableNull.setBalanceContableInicial(balanceContableTemp);
+						entradaIngresoContableNull.setBalanceContable(entradaIngresoContableNull.getBalanceContableInicial()
+								+ entradaIngresoContableNull.getBalance());
+						serviceEntradasIngresosContables.guardar(entradaIngresoContableNull);
+					}
+				}
+			}
+		}
+		
 		JasperExportManager.exportReportToPdfFile(jasperPrint,dataDirectory);
 	
-		 //If user is not authorized - he should be thrown out from here itself
-         
-        //Authorized user will download the file
-//        String dataDirectory = request.getServletContext().getRealPath("/WEB-INF/downloads/pdf/");
-		
-		//Descarga
-//        Path file = Paths.get(tempFolder, "abono"+abonoGuardado.getId()+".pdf");
-//        if (Files.exists(file)) 
-//        {
-//            response.setContentType("application/pdf");
-//            response.addHeader("Content-Disposition", "attachment; filename="+"abono"+abonoGuardado.getId()+".pdf");
-//            try
-//            {
-//                Files.copy(file, response.getOutputStream());
-//                response.getOutputStream().flush();
-//            } 
-//            catch (IOException ex) {
-//                ex.printStackTrace();
-//            }
-//        }
-        
 		//PreImpresion
         Path file = Paths.get(tempFolder, "abono"+abonoGuardado.getId()+".pdf");
         if (Files.exists(file)) 

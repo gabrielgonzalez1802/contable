@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="cuentasXCobrar">	
+	<div class="row">
+		<div class="col-md-12">
+			<div class="row">
+			   <div class="col-md-12">
+<!-- 					<div class="card-header"> -->
+<!-- 						<button class="btn btn-primary" id="comprasPorPagar">Cuentas x pagar</button> -->
+<!-- 						<button class="btn btn-primary" id="itbisPorPagar">Itbis</button> -->
+<!-- 						<button class="btn btn-primary" id="prestamosPorPagar">Prestamos x pagar</button> -->
+<!-- 					</div> -->
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="row">
+					<div class="card-header">
+						<div class="card-head-row">
+							<div class="row">
+								<div class="col-md-7">
+									<select class="form-control select2" id="selectClientesPrestamosXCobrar" style="border-radius: 10px;">
+										<option value="">Seleccione el cliente</option>
+										<option th:each="cliente : ${clientes}" 
+												th:value="${cliente.id}" 
+												th:text="${cliente.nombre}"></option>
+									</select>
+								</div>
+								<div class="col-md-1">
+								</div>
+								<div class="col-md-4">
+									<select class="form-control" id="selectPrestamoXCobrarMoneda">
+										<option value="peso">Pesos</option>
+										<option value="dolar">Dolar</option>
+									</select>
+ 								</div>
+<!-- 								<div class="col-md-4"> -->
+<!-- 									<input type="date" class="form-control" id="fechaDesdePrestamoXCobrar" style="border-radius: 10px;" th:value="${#dates.format(dateAcct, 'yyyy-MM-dd')}"> -->
+<!-- 								</div> -->
+<!-- 								<div class="col-md-4"> -->
+<!-- 									<input type="date" class="form-control" id="fechaHastaPrestamoXCobrar" style="border-radius: 10px;" th:value="${#dates.format(dateAcct, 'yyyy-MM-dd')}"> -->
+<!-- 								</div> -->
+							</div>
+						</div>
+					</div>
+				</div>	
+			</div>
+		</div>
+					
+<!-- 					<br> -->
+							<div class="card-body" style="padding-top: 0px;">
+								<div id="tablaPrestamosPorCobrar">
+									<div class="table-responsive">
+										<table class="table mg-b-0 text-md-nowrap">
+											<thead style="background-color: #e9ecef; height: 80px;">
+												<tr>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Fecha</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Cliente</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Codigo</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Tipo Prestamo</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Deuda Capital</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Deuda Interes</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Deuda Mora</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Deuda Adicionales</th>
+													<th style="background-color: #e9ecef; padding-top: 10px; position: static">Moneda</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="prestamoTotal : ${prestamosTotales}">
+													<td th:text="${#dates.format(prestamoTotal.prestamo.fecha, 'dd-MM-yyyy')}"></td>
+													<td th:text="${prestamoTotal.prestamo.cliente.nombre}"></td>
+													<td th:text="${prestamoTotal.prestamo.codigo}"></td>
+													<td th:if="${prestamoTotal.prestamo.tipo == '1'}" th:text="'Cuotas'"></td>
+													<td th:unless="${prestamoTotal.prestamo.tipo == '1'}" th:text="'Interes'"></td>
+													<td th:text="${prestamoTotal.capital}"></td>
+													<td th:text="${prestamoTotal.interes}"></td>
+													<td th:text="${prestamoTotal.mora}"></td>
+													<td th:text="${prestamoTotal.adicionales}"></td>
+													<td th:text="${prestamoTotal.moneda}"></td>
+												</tr>
+												<tr>
+													<td></td>	
+													<td></td>
+													<td></td>	
+													<td style="font-weight: bold;">Total</td>							
+													<td style="font-weight: bold;" th:text="${totalCapital}" id="totalDeudaCapital"></td>
+													<td style="font-weight: bold;" th:text="${totalInteres}" id="totalDeudaInteres"></td>
+													<td style="font-weight: bold;" th:text="${totalMora}" id="totalDeudaMora"></td>
+													<td style="font-weight: bold;" th:text="${totalAdicional}" id="totalDeudaAdicional"></td>
+													<td></td>
+												</tr>
+										</tbody>
+									</table>
+								
+<!-- 									<div style="float: right;color: blue;cursor: pointer;" id="verificarCuenta"> -->
+<!-- 										Verificar Cuenta <i class="fa fa-eye"></i> -->
+<!-- 									</div> -->
+								
+<!-- 								<nav th:if="${productos.totalPages > 0}" aria-label="Page navigation example" > -->
+<!-- 									<ul class="pagination"> -->
+<!-- 										<li class="page-item" th:if="${productos.hasPrevious()}"> -->
+<!-- 											<a class="page-link" style="cursor: pointer;" aria-label="Previous" th:onclick="'previousPageProduct(\'' + ${productos.number - 1} + '\');'"> -->
+<!-- 										        <span aria-hidden="true">&laquo;</span> -->
+<!-- 										        <span class="sr-only">Anterior</span> -->
+<!-- 										      </a> -->
+<!-- 										 </li>      -->
+<!-- 									<th:block th:each="i: ${#numbers.sequence(0, productos.totalPages - 1)}"> -->
+<!-- 								        <span th:if="${productos.number == i}" style="background-color: #c2c8d8;border: 1px solid #cdd7ef;"  -->
+<!-- 								        class="page-link selected">[[${i}+1]]</span> -->
+<!-- 								        <span th:unless="${productos.number == i}"> -->
+<!-- 								              <a class="page-link" style="cursor: pointer;" aria-label="Next" th:onclick="'nextPageProduct(\'' + ${i} + '\');'"> -->
+<!-- 										        <span aria-hidden="true">[[${i}+1]]</span> -->
+<!-- 										        <span class="sr-only">[[${i}+1]]</span> -->
+<!-- 										      </a> -->
+<!-- 								        </span> -->
+<!-- 								    </th:block> -->
+<!-- 										<li class="page-item" th:if="${productos.hasNext()}"> -->
+<!-- 											<a class="page-link" style="cursor: pointer;" aria-label="Next" th:onclick="'nextPageProduct(\'' + ${productos.number + 1} + '\');'"> -->
+<!-- 										        <span aria-hidden="true">&raquo;</span> -->
+<!-- 										        <span class="sr-only">Siguiente</span> -->
+<!-- 										      </a> -->
+<!-- 										</li> -->
+<!-- 									</ul> -->
+<!-- 								</nav> -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>		
+	</div>
+</body>
+</html>

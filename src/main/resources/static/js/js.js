@@ -504,16 +504,6 @@ function addEvents(){
 		});
 	});
 	
-	$("#moneda").change(function(e){
-		var moneda = $("#moneda").val();
-		$("#id_cuenta").load("/cuentas/listaPorMoneda",
-		 {
-			"moneda":moneda
-		 },function(data){
-			addEvents();
-		});
-	});
-	
 	$("#formImagenPrestamo").submit(function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
@@ -726,18 +716,7 @@ function addEvents(){
 			});
 		});
 	});
-	
-	$("#cancelarFormPrestamo").click(function(e){
-		e.preventDefault();
-		e.stopImmediatePropagation();
-		styleSeccionOriginal();
-			$("#contenido").load("/clientes/buscarCliente",function(data){
-					console.log("Lista de clientes");
-					addEvents();
-			});	
-			addEvents();
-	});
-	
+
 	$("input[name='tipoDocumentoBusquedaPrestamo']").change(function(){
 		 if($("#cedulaPrestamo").is(':checked')){
 	    	 $('#buscarPorDocumentoPrestamo').attr('maxlength', 13);
@@ -856,65 +835,7 @@ function addEvents(){
 		     }
 	     }
 	});
-	
-	$("#tipo_prestamo").change(function(e){
-		if($("#tipo_prestamo").val() == 2){
-			ocultarDetalleAmortizacion();
-			$("#divValorCuota").hide();
-			$("#divPlazos").hide();
-		}else{
-			mostrarDetalleAmortizacion();
-			$("#divValorCuota").show();
-			$("#divPlazos").show();
-		}
-	});
-	
-	$("#guardarPrestamo").on("click", (function(e){
-		 e.preventDefault();
-		 e.stopImmediatePropagation();
-		 var datos = $("#formulario_prestamo").serializeArray();
-		 var idClienteTemp = $("#idClientePrestamo").val();
-		 var idCarpetaTemp = $("#carpetaIdPrestamo").val();
-		 var idCuentaTemp =  $("#id_cuenta").val(); 
-		 var fecha = $("#fecha").val();
-		 var cantidad_pagos = $("#cantidad_pagos").val();
-		 var pagos = $("#pagos").val();
-		 var tipoPrestamo = $("#tipo_prestamo").val();
-		 
-		 if(tipoPrestamo != 2 && (parseFloat(cantidad_pagos) > parseFloat(pagos))){
-			 Swal.fire({
-					title : 'Advertencia!',
-					text : 'La cantidad de pagos no puede ser mayor al plazo',
-					position : 'top',
-					icon : 'warning',
-					confirmButtonText : 'Cool'
-				})
-		 }else{
-			 datos.push( {name:'idClienteTemp', value:idClienteTemp} );
-			 datos.push( {name:'idCarpetaTemp', value:idCarpetaTemp} );
-			 datos.push( {name:'idCuentaTemp', value:idCuentaTemp} ); 
-			 datos.push( {name:'fechaTemp', value:fecha} );
-			 $.post("/prestamos/guardar", datos,
-				function(data){
-					console.log("Guardar Prestamo");
-					 Swal.fire({
-					title : 'Muy Bien!',
-					text : 'Se genero el prestamo',
-					position : 'top',
-					icon : 'success',
-					confirmButtonText : 'Cool'
-				})
-				$("#contenido").load("/clientes/buscarCliente",function(data){
-					console.log("Lista de clientes");
-					ocultarDetalleAmortizacion();
-					addEvents();
-				});	
-			});
-			return false;
-			}
-		 }
-	));
-	
+
 	$("#aplicarCargos").click(function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
@@ -1525,6 +1446,114 @@ $("#contabilidad").click(function(e){
 	});
 });
 
+$("#fechaDesdePrestamoXCobrar").on('input', function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+//	var desde = $("#fechaDesdePrestamoXCobrar").val();
+//	var hasta = $("#fechaHastaPrestamoXCobrar").val();
+	var clienteId = $("#selectClientesPrestamosXCobrar").val();
+//	if(!desde || !hasta){
+//		Swal.fire({
+//			title : 'Alerta!',
+//			text : 'Las fechas son requeridas',
+//			position : 'top',
+//			icon : 'warning',
+//			confirmButtonText : 'Cool'
+//		})
+//	}else{
+		$("#tablaPrestamosPorCobrar").load("/contabilidad/buscarPrestamosXCobrar",
+		{
+			"clienteId":clienteId
+//			"desde":desde,
+//			"hasta":hasta
+		},function(data){
+			addEvents();
+		});
+//	}
+});
+
+$("#fechaHastaPrestamoXCobrar").on('input', function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+//	var desde = $("#fechaDesdePrestamoXCobrar").val();
+//	var hasta = $("#fechaHastaPrestamoXCobrar").val();
+	var clienteId = $("#selectClientesPrestamosXCobrar").val();
+//	if(!desde || !hasta){
+//		Swal.fire({
+//			title : 'Alerta!',
+//			text : 'Las fechas son requeridas',
+//			position : 'top',
+//			icon : 'warning',
+//			confirmButtonText : 'Cool'
+//		})
+//	}else{
+		$("#tablaPrestamosPorCobrar").load("/contabilidad/buscarPrestamosXCobrar",
+		{
+			"clienteId":clienteId
+//			"desde":desde,
+//			"hasta":hasta
+		},function(data){
+			addEvents();
+		});
+//	}
+});
+
+$("#selectClientesPrestamosXCobrar").on('change', function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+//	var desde = $("#fechaDesdePrestamoXCobrar").val();
+//	var hasta = $("#fechaHastaPrestamoXCobrar").val();
+	var clienteId = $("#selectClientesPrestamosXCobrar").val();
+	var moneda = $("#selectPrestamoXCobrarMoneda").val();
+//	if(!desde || !hasta){
+//		Swal.fire({
+//			title : 'Alerta!',
+//			text : 'Las fechas son requeridas',
+//			position : 'top',
+//			icon : 'warning',
+//			confirmButtonText : 'Cool'
+//		})
+//	}else{
+		$("#tablaPrestamosPorCobrar").load("/contabilidad/buscarPrestamosXCobrar",
+		{
+			"clienteId":clienteId,
+			"moneda":moneda
+//			"desde":desde,
+//			"hasta":hasta
+		},function(data){
+			addEvents();
+		});
+//	}
+});
+
+$("#selectPrestamoXCobrarMoneda").on('change', function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+//	var desde = $("#fechaDesdePrestamoXCobrar").val();
+//	var hasta = $("#fechaHastaPrestamoXCobrar").val();
+	var clienteId = $("#selectClientesPrestamosXCobrar").val();
+	var moneda = $("#selectPrestamoXCobrarMoneda").val();
+//	if(!desde || !hasta){
+//		Swal.fire({
+//			title : 'Alerta!',
+//			text : 'Las fechas son requeridas',
+//			position : 'top',
+//			icon : 'warning',
+//			confirmButtonText : 'Cool'
+//		})
+//	}else{
+		$("#tablaPrestamosPorCobrar").load("/contabilidad/buscarPrestamosXCobrar",
+		{
+			"clienteId":clienteId,
+			"moneda":moneda
+//			"desde":desde,
+//			"hasta":hasta
+		},function(data){
+			addEvents();
+		});
+//	}
+});
+
 $("#codigoCuentaContable").on('keyup', function(e) { 
 	e.stopImmediatePropagation();
 	
@@ -1575,6 +1604,247 @@ $("#tarjetaEnlaces").click(function(e){
 		console.log("Enlaces");
 		addEvents();
 	});
+});
+
+$("#tarjetaProcesosBancarios").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/contabilidad/procesosBancarios",function(data){
+		addEvents();
+	});
+});
+
+$('#cuentaContableAuxiliarPB').on("select2:select", function(e) { 
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var IdcuentaContableDesde = $("#cuentaContableAuxiliarPB").val();
+	var IdcuentaContableHasta = $("#cuentaContableAuxiliar2PB").val();
+	var monto = $("#montoProcesoBancario").val();
+	var tasa = $("#tasaProcesoBancario").val();
+	var total = $("#totalTempProcesoBancario").val();
+	
+	var txt = $('#cuentaContableAuxiliarPB option:selected').text();
+	var txt2 = $('#cuentaContableAuxiliar2PB option:selected').text();
+	
+	if((txt.includes("dolar") && txt2.includes("peso")) || (txt.includes("peso") && txt2.includes("dolar"))){
+		$("#tasaProcesoBancario").show();
+	}else{
+		$("#tasaProcesoBancario").hide();
+		tasa = 1;
+	}
+	
+	if(IdcuentaContableDesde != "" && IdcuentaContableHasta != "" && monto != ""){
+		if(IdcuentaContableDesde == IdcuentaContableHasta){
+			Swal.fire({
+				title : 'Alerta!',
+				text : 'Las cuentas no pueden ser iguales',
+				position : 'top',
+				icon : 'warning',
+				confirmButtonText : 'Cool'
+			})
+		}else{
+			$.post("/contabilidad/conversion",{
+				"desde":IdcuentaContableDesde,
+				"hasta":IdcuentaContableHasta,
+				"monto":monto,
+				"tasa":tasa
+			},function(response){
+				$("#totalTempProcesoBancario").val(response);
+			});
+		}
+	}else{
+		$("#totalTempProcesoBancario").val("");
+	}
+});
+
+$('#cuentaContableAuxiliar2PB').on("select2:select", function(e) { 
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var IdcuentaContableDesde = $("#cuentaContableAuxiliarPB").val();
+	var IdcuentaContableHasta = $("#cuentaContableAuxiliar2PB").val();
+	var monto = $("#montoProcesoBancario").val();
+	var tasa = $("#tasaProcesoBancario").val();
+	var total = $("#totalTempProcesoBancario").val();
+	
+	var txt = $('#cuentaContableAuxiliarPB option:selected').text();
+	var txt2 = $('#cuentaContableAuxiliar2PB option:selected').text();
+	
+	if((txt.includes("dolar") && txt2.includes("peso")) || (txt.includes("peso") && txt2.includes("dolar"))){
+		$("#tasaProcesoBancario").show();
+	}else{
+		$("#tasaProcesoBancario").hide();
+		tasa = 1;
+	}
+	
+	if(IdcuentaContableDesde != "" && IdcuentaContableHasta != "" && monto != ""){
+		if(IdcuentaContableDesde == IdcuentaContableHasta){
+			Swal.fire({
+				title : 'Alerta!',
+				text : 'Las cuentas no pueden ser iguales',
+				position : 'top',
+				icon : 'warning',
+				confirmButtonText : 'Cool'
+			})
+		}else{
+			$.post("/contabilidad/conversion",{
+				"desde":IdcuentaContableDesde,
+				"hasta":IdcuentaContableHasta,
+				"monto":monto,
+				"tasa":tasa
+			},function(response){
+				$("#totalTempProcesoBancario").val(response);
+			});
+		}
+	}else{
+		$("#totalTempProcesoBancario").val("");
+	}
+});
+
+$("#guardarProcesoBancario").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$.post("/contabilidad/guardarProcesoBancario", function(response){
+			if(response == 1){
+				Swal.fire({
+					title : 'Muy bien!',
+					text : 'Registros guardados',
+					position : 'top',
+					icon : 'success',
+					confirmButtonText : 'Cool'
+				})
+			}else if(response == 0){
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'No hay datos para guardar',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}else {
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'No se pudo guardar',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}
+			$("#contenido").load("/contabilidad/procesosBancarios",function(data){
+				addEvents();
+			});
+		});
+});
+
+$("#addProcesoBancarioTemp").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var IdcuentaContableDesde = $("#cuentaContableAuxiliarPB").val();
+	var IdcuentaContableHasta = $("#cuentaContableAuxiliar2PB").val();
+	var monto = $("#montoProcesoBancario").val();
+	var tasa = $("#tasaProcesoBancario").val();
+	var total = $("#totalTempProcesoBancario").val();
+	
+	if(tasa == "" || !tasa){
+		tasa = 1;
+	}
+	
+	if(IdcuentaContableDesde != "" && IdcuentaContableHasta != "" && monto != ""){
+		if(IdcuentaContableDesde == IdcuentaContableHasta){
+			Swal.fire({
+				title : 'Alerta!',
+				text : 'Las cuentas no pueden ser iguales',
+				position : 'top',
+				icon : 'warning',
+				confirmButtonText : 'Cool'
+			})
+		}else{
+			$("#tablaProcesosBancariosTemp").load("/contabilidad/guardarProcesoBancarioTemp",{
+				"desde":IdcuentaContableDesde,
+				"hasta":IdcuentaContableHasta,
+				"monto":monto,
+				"tasa":tasa,
+				"total":total
+			},function(response){
+				$("#montoProcesoBancario").val("");
+				$("#tasaProcesoBancario").val("");
+				$("#totalTempProcesoBancario").val("");
+				$("#cuentaContableAuxiliarPB option[value='']").attr("selected",true);
+				$("#cuentaContableAuxiliar2PB option[value='']").attr("selected",true);
+			});
+		}
+	}else{
+		$("#totalTempProcesoBancario").val("");
+	}
+});
+
+$("#montoProcesoBancario").on("keyup", function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var IdcuentaContableDesde = $("#cuentaContableAuxiliarPB").val();
+	var IdcuentaContableHasta = $("#cuentaContableAuxiliar2PB").val();
+	var monto = $("#montoProcesoBancario").val();
+	var tasa = $("#tasaProcesoBancario").val();
+	var total = $("#totalTempProcesoBancario").val();
+	
+	if(tasa == "" || !tasa){
+		tasa = 1;
+	}
+	
+	if(IdcuentaContableDesde != "" && IdcuentaContableHasta != "" && monto != ""){
+		if(IdcuentaContableDesde == IdcuentaContableHasta){
+			Swal.fire({
+				title : 'Alerta!',
+				text : 'Las cuentas no pueden ser iguales',
+				position : 'top',
+				icon : 'warning',
+				confirmButtonText : 'Cool'
+			})
+		}else{
+			$.post("/contabilidad/conversion",{
+				"desde":IdcuentaContableDesde,
+				"hasta":IdcuentaContableHasta,
+				"monto":monto,
+				"tasa":tasa
+			},function(response){
+				$("#totalTempProcesoBancario").val(response);
+			});
+		}
+	}else{
+		$("#totalTempProcesoBancario").val("");
+	}
+});
+
+$("#tasaProcesoBancario").on("keyup", function(e) {
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var IdcuentaContableDesde = $("#cuentaContableAuxiliarPB").val();
+	var IdcuentaContableHasta = $("#cuentaContableAuxiliar2PB").val();
+	var monto = $("#montoProcesoBancario").val();
+	var tasa = $("#tasaProcesoBancario").val();
+	var total = $("#totalTempProcesoBancario").val();
+	
+	if(IdcuentaContableDesde != "" && IdcuentaContableHasta != "" && monto != "" && tasa != ""){	
+		if(IdcuentaContableDesde == IdcuentaContableHasta){
+			Swal.fire({
+				title : 'Alerta!',
+				text : 'Las cuentas no pueden ser iguales',
+				position : 'top',
+				icon : 'warning',
+				confirmButtonText : 'Cool'
+			})
+		}else{
+			$.post("/contabilidad/conversion",{
+				"desde":IdcuentaContableDesde,
+				"hasta":IdcuentaContableHasta,
+				"monto":monto,
+				"tasa":tasa
+			},function(response){
+				$("#totalTempProcesoBancario").val(response);
+			});
+		}
+	}else{
+		$("#totalTempProcesoBancario").val("");
+	}
 });
 
 $("#tarjetaLibros").click(function(e){
@@ -1797,6 +2067,242 @@ $("#agregarEnlace").click(function(e){
 	}
 });
 
+$("#agregarEnlaceAdicionales").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var cuentaContable = $("#cuentaContableAuxiliarAdicional").val();
+	var tasaCambio = $("#tasaCambioAdicional").val();
+	
+	if(!tasaCambio || tasaCambio == ""){
+		Swal.fire({
+			title : 'Advertencia!',
+			text : 'Debe ingresar la tasa de cambio',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		if(cuentaContable!=""){
+			$.post("/contabilidad/agregarEnlace",
+				{
+					"cuentaContableId":cuentaContable,
+					"identificador": "enlaceAdicional",
+					"tasaCambio":tasaCambio
+				},function(data){
+					if(data == "1"){
+						$("#tablaEnlacesAdicionales").load("/contabilidad/mostrarEnlacesAdicionales",function(data){
+							addEvents();
+						});
+					}else if(data == "2"){
+						Swal.fire({
+							title : 'Advertencia!',
+							text : 'El enlace ya existe',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+						$("#tablaEnlacesAdicionales").load("/contabilidad/mostrarEnlacesAdicionales",function(data){
+							addEvents();
+						});
+					}else{
+						Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo crear el enlace',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+					}
+				});
+		}else{
+			Swal.fire({
+				title : 'Error!',
+				text : 'Debe seleccionar una cuenta contable',
+				position : 'top',
+				icon : 'error',
+				confirmButtonText : 'Cool'
+			})
+		}
+	}	
+});
+
+$("#agregarEnlaceMora").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var cuentaContable = $("#cuentaContableAuxiliarMora").val();
+	var tasaCambio = $("#tasaCambioMora").val();
+	
+	if(!tasaCambio || tasaCambio == ""){
+		Swal.fire({
+			title : 'Advertencia!',
+			text : 'Debe ingresar la tasa de cambio',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		if(cuentaContable!=""){
+			$.post("/contabilidad/agregarEnlace",
+				{
+					"cuentaContableId":cuentaContable,
+					"identificador": "enlaceMora",
+					"tasaCambio":tasaCambio
+				},function(data){
+					if(data == "1"){
+						$("#tablaEnlacesMoras").load("/contabilidad/mostrarEnlacesMoras",function(data){
+							addEvents();
+						});
+					}else if(data == "2"){
+						Swal.fire({
+							title : 'Advertencia!',
+							text : 'El enlace ya existe',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+						$("#tablaEnlacesMoras").load("/contabilidad/mostrarEnlacesMoras",function(data){
+							addEvents();
+						});
+					}else{
+						Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo crear el enlace',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+					}
+				});
+		}else{
+			Swal.fire({
+				title : 'Error!',
+				text : 'Debe seleccionar una cuenta contable',
+				position : 'top',
+				icon : 'error',
+				confirmButtonText : 'Cool'
+			})
+		}
+	}	
+});
+
+$("#agregarEnlaceInteres").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var cuentaContable = $("#cuentaContableAuxiliarInteres").val();
+	var tasaCambio = $("#tasaCambioInteres").val();
+	
+	if(!tasaCambio || tasaCambio == ""){
+		Swal.fire({
+			title : 'Advertencia!',
+			text : 'Debe ingresar la tasa de cambio',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		if(cuentaContable!=""){
+			$.post("/contabilidad/agregarEnlace",
+				{
+					"cuentaContableId":cuentaContable,
+					"identificador": "enlaceInteres",
+					"tasaCambio":tasaCambio
+				},function(data){
+					if(data == "1"){
+						$("#tablaEnlacesIntereses").load("/contabilidad/mostrarEnlacesIntereses",function(data){
+							addEvents();
+						});
+					}else if(data == "2"){
+						Swal.fire({
+							title : 'Advertencia!',
+							text : 'El enlace ya existe',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+						$("#tablaEnlacesIntereses").load("/contabilidad/mostrarEnlacesIntereses",function(data){
+							addEvents();
+						});
+					}else{
+						Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo crear el enlace',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+					}
+				});
+		}else{
+			Swal.fire({
+				title : 'Error!',
+				text : 'Debe seleccionar una cuenta contable',
+				position : 'top',
+				icon : 'error',
+				confirmButtonText : 'Cool'
+			})
+		}
+	}	
+});
+
+$("#agregarEnlaceCapital").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var cuentaContable = $("#cuentaContableCapital").val();
+	var tasaCambio = $("#tasaCambioCapital").val();
+		
+	if(!tasaCambio || tasaCambio == ""){
+		Swal.fire({
+			title : 'Advertencia!',
+			text : 'Debe ingresar la tasa de cambio',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		if(cuentaContable!=""){
+			$.post("/contabilidad/agregarEnlace",
+				{
+					"cuentaContableId":cuentaContable,
+					"identificador": "enlaceCapital",
+					"tasaCambio":tasaCambio
+				},function(data){
+					if(data == "1"){
+						$("#tablaEnlacesCapitales").load("/contabilidad/mostrarEnlacesCapitales",function(data){
+							addEvents();
+						});
+					}else if(data == "2"){
+						Swal.fire({
+							title : 'Advertencia!',
+							text : 'El enlace ya existe',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+						$("#tablaEnlacesCapitales").load("/contabilidad/mostrarEnlacesCapitales",function(data){
+							addEvents();
+						});
+					}else{
+						Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo crear el enlace',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+					}
+				});
+		}else{
+			Swal.fire({
+				title : 'Error!',
+				text : 'Debe seleccionar una cuenta contable',
+				position : 'top',
+				icon : 'error',
+				confirmButtonText : 'Cool'
+			})
+		}
+	}	
+});
+
 $("#agregarEnlaceItbis").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
@@ -1832,6 +2338,65 @@ $("#agregarEnlaceItbis").click(function(e){
 							confirmButtonText : 'Cool'
 						})
 						$("#tablaEnlacesItbis").load("/contabilidad/mostrarEnlacesItbis",function(data){
+							addEvents();
+						});
+					}else{
+						Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo crear el enlace',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+					}
+				});
+		}else{
+			Swal.fire({
+				title : 'Error!',
+				text : 'Debe seleccionar una cuenta contable',
+				position : 'top',
+				icon : 'error',
+				confirmButtonText : 'Cool'
+			})
+		}
+	}
+});
+
+$("#agregarEnlaceProcesosBancarios").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var cuentaContable = $("#cuentaContableProcesosBancarios").val();
+	var tasaCambio = $("#tasaCambio").val();
+	
+	if(!tasaCambio || tasaCambio == ""){
+		Swal.fire({
+			title : 'Advertencia!',
+			text : 'Debe ingresar la tasa de cambio',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		if(cuentaContable!=""){
+			$.post("/contabilidad/agregarEnlace",
+				{
+					"cuentaContableId":cuentaContable,
+					"identificador": "formaPago",
+					"tasaCambio":tasaCambio
+				},function(data){
+					if(data == "1"){
+						$("#tablaEnlacesProcesosBancarios").load("/contabilidad/mostrarEnlacesProcesosBancarios",function(data){
+							addEvents();
+						});
+					}else if(data == "2"){
+						Swal.fire({
+							title : 'Advertencia!',
+							text : 'El enlace ya existe',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+						$("#tablaEnlacesProcesosBancarios").load("/contabilidad/mostrarEnlacesProcesosBancarios",function(data){
 							addEvents();
 						});
 					}else{
@@ -5220,6 +5785,7 @@ $("#btnBuscarAbonosImpresion").click(function(e){
 	var desde = $("#AbonoDesdeImpresion").val();
 	var hasta = $("#AbonoHastaImpresion").val();
 	var idCliente = $("#clienteAbonoImpresion").val();
+	var moneda =  $("#monedaAbonoImpresion").val();
 	
 	if(!desde){
 		desde = "";
@@ -5234,7 +5800,8 @@ $("#btnBuscarAbonosImpresion").click(function(e){
 		{
 			'desde': desde,
 			'hasta': hasta,
-			'idCliente': idCliente
+			'idCliente': idCliente,
+			'moneda': moneda
 		},
 	function(elemento){
 		$("#encabezadoAbono").hide();
@@ -5377,6 +5944,7 @@ function amortizar(){
 }
 
 function calCuota(){
+		
 	var monto=$("#monto").val();
 	var pagos=$("#pagos").val();
 	var tasa=$("#tasa").val();
@@ -6070,11 +6638,19 @@ function eliminarEnlace(id){
 									}).then((result) => {
 									  if (result.isConfirmed) {
 										  $("#tablaEnlacesItbis").load("/contabilidad/mostrarEnlacesItbis",function(data){
-												$("#tablaEnlaces").load("/contabilidad/mostrarEnlaces",function(data){
-													$("#tablaEnlacesProcesos").load("/contabilidad/mostrarEnlacesProcesos",function(data){
-														$("#tablaEnlacesRetencion").load("/contabilidad/mostrarEnlacesRetencion",function(data){
-															$("#tablaEnlacesEntidadEnlace").load("/contabilidad/mostrarEnlacesEntidadEnlace",function(data){
-																addEvents();
+												$("#tablaEnlacesProcesos").load("/contabilidad/mostrarEnlacesProcesos",function(data){
+													$("#tablaEnlacesRetencion").load("/contabilidad/mostrarEnlacesRetencion",function(data){
+														$("#tablaEnlacesEntidadEnlace").load("/contabilidad/mostrarEnlacesEntidadEnlace",function(data){
+															$("#tablaEnlacesProcesosBancarios").load("/contabilidad/mostrarEnlacesProcesosBancarios",function(data){
+																$("#tablaEnlacesCapitales").load("/contabilidad/mostrarEnlacesCapitales",function(data){
+																	$("#tablaEnlacesIntereses").load("/contabilidad/mostrarEnlacesIntereses",function(data){
+																		$("#tablaEnlacesMoras").load("/contabilidad/mostrarEnlacesMoras",function(data){
+																			$("#tablaEnlacesAdicionales").load("/contabilidad/mostrarEnlacesAdicionales",function(data){
+																				addEvents();
+																			});
+																		});
+																	});
+																});
 															});
 														});
 													});
@@ -6093,6 +6669,151 @@ function eliminarEnlace(id){
 					});		
 		  }
 		})
+}
+
+function cambiarFormaPagoXMoneda(){
+	var moneda = $("#monedaDePago").val();
+	$("#formaPagoPrestamoFormaPago").load("/prestamos/listaPorMoneda",
+	 {
+		"moneda":moneda
+	 },function(data){
+		addEvents();
+	});
+}
+
+function eliminarProcesoBancarioTemp(id){
+	$("#tablaProcesosBancariosTemp").load("/contabilidad/eliminarProcesoBancarioTemporal/"+id,function(data){
+		addEvents();
+	});
+}
+
+function changeTipoPrestamo(){
+	if($("#tipo_prestamo").val() == 2){
+		ocultarDetalleAmortizacion();
+		$("#divValorCuota").hide();
+		$("#divPlazos").hide();
+	}else{
+		mostrarDetalleAmortizacion();
+		$("#divValorCuota").show();
+		$("#divPlazos").show();
+	}
+		
+	//cal cuota
+	calCuota();
+}
+
+function cancelarFormPrestamo(){
+	styleSeccionOriginal();
+	$("#contenido").load("/clientes/buscarCliente",function(data){
+		console.log("Lista de clientes");
+		addEvents();
+	});	
+	addEvents();
+}
+
+function guardarPrestamo(){
+		 var datos = $("#formulario_prestamo").serializeArray();
+		 var idClienteTemp = $("#idClientePrestamo").val();
+		 var idCarpetaTemp = $("#carpetaIdPrestamo").val();
+		 var idCuentaTemp =  $("#id_cuenta").val(); 
+		 var fecha = $("#fecha").val();
+		 var cantidad_pagos = $("#cantidad_pagos").val();
+		 var pagos = $("#pagos").val();
+		 var tipoPrestamo = $("#tipo_prestamo").val();
+		 var formaPagoBanco = $("#formaPagoPrestamoFormaPago").val();
+		 var gastos_cierre = $("#gastos_cierre").val();
+		 var monto = parseFloat($("#monto").val());
+		 
+		 if(monto == 0){
+			 Swal.fire({
+					title : 'Advertencia!',
+					text : 'El monto a prestar debe ser mayor a 0',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+		 }else{
+			 if(parseFloat(gastos_cierre) > 0){
+				 if(cantidad_pagos == 0){
+					 Swal.fire({
+							title : 'Advertencia!',
+							text : 'La cantidad de pagos no puede ser 0',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+				 }else{
+					 if(tipoPrestamo != 2 && (parseFloat(cantidad_pagos) > parseFloat(pagos))){
+						 Swal.fire({
+								title : 'Advertencia!',
+								text : 'La cantidad de pagos no puede ser mayor al plazo',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+					 }else{
+						 datos.push( {name:'idClienteTemp', value:idClienteTemp} );
+						 datos.push( {name:'idCarpetaTemp', value:idCarpetaTemp} );
+						 datos.push( {name:'idCuentaTemp', value:idCuentaTemp} ); 
+						 datos.push( {name:'fechaTemp', value:fecha} );
+						 datos.push( {name:'idCuentaBancoTemp', value:formaPagoBanco} );
+						 						 
+						 $.post("/prestamos/guardar", datos,
+							function(data){
+								console.log("Guardar Prestamo");
+								 Swal.fire({
+								title : 'Muy Bien!',
+								text : 'Se genero el prestamo',
+								position : 'top',
+								icon : 'success',
+								confirmButtonText : 'Cool'
+							})
+							$("#contenido").load("/clientes/buscarCliente",function(data){
+								console.log("Lista de clientes");
+								ocultarDetalleAmortizacion();
+								addEvents();
+							});	
+						});
+						return false;
+						}
+				 }
+			 }else{
+				 if(tipoPrestamo != 2 && (parseFloat(cantidad_pagos) > parseFloat(pagos))){
+					 Swal.fire({
+							title : 'Advertencia!',
+							text : 'La cantidad de pagos no puede ser mayor al plazo',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+				 }else{
+					 datos.push( {name:'idClienteTemp', value:idClienteTemp} );
+					 datos.push( {name:'idCarpetaTemp', value:idCarpetaTemp} );
+					 datos.push( {name:'idCuentaTemp', value:idCuentaTemp} ); 
+					 datos.push( {name:'fechaTemp', value:fecha} );
+					 datos.push( {name:'idCuentaBancoTemp', value:formaPagoBanco} );
+					 
+					 $.post("/prestamos/guardar", datos,
+						function(data){
+							console.log("Guardar Prestamo");
+							 Swal.fire({
+							title : 'Muy Bien!',
+							text : 'Se genero el prestamo',
+							position : 'top',
+							icon : 'success',
+							confirmButtonText : 'Cool'
+						})
+						$("#contenido").load("/clientes/buscarCliente",function(data){
+							console.log("Lista de clientes");
+							ocultarDetalleAmortizacion();
+							addEvents();
+						});	
+					});
+					return false;
+					}
+				 }
+		 }
+	 return false;	 
 }
 
 function previousPageProduct(item){

@@ -125,28 +125,6 @@ public class CuentasController {
 		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
 	}
 	
-	@PostMapping("/listaPorMoneda")
-	public String listaPorMoneda(String moneda, Model model, HttpSession session) {
-		Empresa empresa = (Empresa) session.getAttribute("empresa");
-		Carpeta carpeta = new Carpeta();
-		
-		if(session.getAttribute("carpeta") != null) {
-			carpeta = serviceCarpetas.buscarPorId((Integer) session.getAttribute("carpeta"));
-		}else {
-			carpeta = serviceCarpetas.buscarTipoCarpetaEmpresa(1, (Empresa) session.getAttribute("empresa")).get(0);
-		}
-		
-		List<Cuenta> cuentas = serviceCuentas.buscarPorCarpetaEmpresaMoneda(carpeta, empresa, moneda);
-		
-		for (Cuenta cuenta : cuentas) {
-			BigDecimal monto = new BigDecimal(formato2d(cuenta.getMonto())); 
-			cuenta.setBanco(cuenta.getBanco()+" - "+monto.toPlainString());
-		}
-		
-		model.addAttribute("cuentas", cuentas);
-		return "prestamos/form :: #id_cuenta";
-	}
-	
 	public double formato2d(double number) {
 		number = Math.round(number * 100);
 		number = number/100;

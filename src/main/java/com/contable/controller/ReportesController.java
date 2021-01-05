@@ -391,7 +391,7 @@ public class ReportesController {
 	
 	@PostMapping("/listaAbonos")
 	public String listaAbonos(Model model, HttpSession session, String desde,
-			String hasta, Integer idCliente) throws ParseException {
+			String hasta, Integer idCliente, String moneda) throws ParseException {
 		
 		Carpeta carpeta = null;
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
@@ -426,8 +426,16 @@ public class ReportesController {
 			abonos = new LinkedList<>();
 		}
 		
+		List<Abono> listaAbono = new LinkedList<>();
+		
+		for (Abono abono : abonos) {
+			if(abono.getPrestamo().getMoneda().equalsIgnoreCase(moneda)) {
+				listaAbono.add(abono);
+			}
+		}
+		
 		model.addAttribute("empresa", empresa);
-		model.addAttribute("abonos", abonos);
+		model.addAttribute("abonos", listaAbono);
 		return "impresiones/caja/listaAbonos :: #imprimirData";
 	}
 	

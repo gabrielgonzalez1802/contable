@@ -89,7 +89,7 @@
 								</div>
 								
 								<div class="col-md-3">
-									 <select th:field="*{tipo}" id="tipo_prestamo" class="form-control" style="font-size: 15px;" data-toggle="tooltip" title="Cuotas" onchange="javascript:calCuota()" required="required">
+									 <select th:field="*{tipo}" id="tipo_prestamo" class="form-control" style="font-size: 15px;" data-toggle="tooltip" title="Cuotas" onchange="javascript:changeTipoPrestamo()" required="required">
 										<option value="1">Cuotas Fijas</option>
 										 <option value="3">Cuotas Variables</option>
 										 <option value="2">Interes</option>
@@ -127,7 +127,7 @@
 									 <input type="number" th:field="*{dias_gracia}" class="form-control maximizedLow" min="0" placeholder="Dias Gracia" data-toggle="tooltip" title="Dias de gracia">
 								</div>
 								<div class="col-md-2">
-									 <select th:field="*{moneda}" class="form-control" data-toggle="tooltip" title="Moneda">
+									 <select th:field="*{moneda}" onchange="javascript:cambiarFormaPagoXMoneda()" id="monedaDePago" class="form-control" data-toggle="tooltip" title="Moneda">
 									 	<option value="pesos">Pesos RD$</value>
 									 	<option value="dolar">Dolar USD$</value>
 									 </select>
@@ -166,11 +166,19 @@
 							
 							<div class="row">
 								<div class="col-md-4">
-									 <select id="id_cuenta" class="form-control" data-toggle="tooltip" title="Cuenta">
-									 	<option style="font-size: 15px;" th:each="cuenta : ${cuentas}"
-									 			th:value="${cuenta.id}" th:text="${cuenta.banco}"></option>
+									 <select data-toggle="tooltip" title="Formas de Pago" class="form-control" id="formaPagoPrestamoFormaPago">
+									 	<option th:each="cuentaContableFormaPago : ${formasPagos}"
+												th:value="${cuentaContableFormaPago.cuentaContable.id}" 
+												th:text="${cuentaContableFormaPago.cuentaContable.codigo} + ' ' + ${cuentaContableFormaPago.cuentaContable.nombreCuenta}"></option>
 									 </select>
 								</div>
+								
+<!-- 								<div class="col-md-4"> -->
+<!-- 									 <select id="id_cuenta" class="form-control" data-toggle="tooltip" title="Cuenta"> -->
+<!-- 									 	<option style="font-size: 15px;" th:each="cuenta : ${cuentas}" -->
+<!-- 									 			th:value="${cuenta.id}" th:text="${cuenta.banco}"></option> -->
+<!-- 									 </select> -->
+<!-- 								</div> -->
 								<div class="col-md-4">
 									 <input type="text" th:field="*{observacion}" class="form-control" placeholder="Observacion" data-toggle="tooltip" title="Observacion">
 								</div>
@@ -183,16 +191,15 @@
 							</div>
 							
 							<br>
-							
-							<div class="row">
+						</form>
+						<div class="row">
 								<div class="col-md-12">
 									<div class="form-group pull-right">
-										<button class="btn btn-danger" id="cancelarFormPrestamo">Cancelar</button>
-										<button id="guardarPrestamo" value="Guardar" class="btn btn-primary">Guardar</button>
+										<button class="btn btn-danger" id="cancelarFormPrestamo" onclick="cancelarFormPrestamo()">Cancelar</button>
+										<button id="guardarPrestamo" onclick="guardarPrestamo()" value="Guardar" class="btn btn-primary">Guardar</button>
 									</div>
 								</div>
 							</div>
-						</form>
 					</div>
 				</div>
 			</div>

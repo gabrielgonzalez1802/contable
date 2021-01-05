@@ -26,6 +26,8 @@ public class EntradaIngresoContable {
 	private Double total = 0.0;
 	private Double balance = 0.0;
 	
+	private String tipo;
+	
 	@Column(name = "balance_contable")
 	private Double balanceContable;
 	
@@ -152,11 +154,20 @@ public class EntradaIngresoContable {
 		this.balanceContableInicial = balanceContableInicial;
 	}
 
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
 	@Override
 	public String toString() {
 		return "EntradaIngresoContable [id=" + id + ", fecha=" + fecha + ", info=" + info + ", cantidad=" + cantidad
-				+ ", costo=" + costo + ", total=" + total + ", balance=" + balance + ", balanceContable="
-				+ balanceContable + ", balanceContableInicial=" + balanceContableInicial + ", compra=" + compra
-				+ ", cuentaContable=" + cuentaContable + ", usuario=" + usuario + ", empresa=" + empresa + "]";
+				+ ", costo=" + costo + ", total=" + total + ", balance=" + balance + ", tipo=" + tipo
+				+ ", balanceContable=" + balanceContable + ", balanceContableInicial=" + balanceContableInicial
+				+ ", compra=" + compra + ", cuentaContable=" + cuentaContable + ", usuario=" + usuario + ", empresa="
+				+ empresa + "]";
 	}
 }
