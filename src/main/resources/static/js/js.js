@@ -1554,6 +1554,15 @@ $("#selectPrestamoXCobrarMoneda").on('change', function(e) {
 //	}
 });
 
+$("#btnGoLibroDiario").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#contenido").load("/contabilidad/libros",function(data){
+		console.log("libros");
+		addEvents();
+	});
+});
+
 $("#codigoCuentaContable").on('keyup', function(e) { 
 	e.stopImmediatePropagation();
 	
@@ -6814,6 +6823,13 @@ function guardarPrestamo(){
 				 }
 		 }
 	 return false;	 
+}
+
+function goCuentasContables(){
+	$("#contenido").load("/cuentasContables/listaCuentasContables",function(data){
+		console.log("Cuentas contables");
+		addEvents();
+	});
 }
 
 function previousPageProduct(item){

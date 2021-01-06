@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.contable.model.Amortizacion;
 import com.contable.model.Carpeta;
+import com.contable.model.Cliente;
 import com.contable.model.Empresa;
 import com.contable.model.EntradaIngresoContable;
 import com.contable.model.FormaPago;
@@ -60,7 +61,7 @@ public class PrestamosCron {
 	private final Integer VENCIDO = 2;
 	private final Integer LEGAL = 3;
 
-	@Scheduled(cron = "0 26 09 * * *")
+	@Scheduled(cron = "0 55 12 * * *")
 	public void calculoVencimientoCuota() throws ParseException {		
 		//Buscamos los detalles pendientes de los prestamos 
 		List<PrestamoDetalle> prestamoDetallesTemp = servicePrestamosDetalles.buscarPorEstado(0);
@@ -148,25 +149,12 @@ public class PrestamosCron {
  			List<FormaPago> formasPagoDolar = new LinkedList<>();
  			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
  				
- 			for (Empresa empresa : empresas) { 	
- 				
- 				double temporalSumaMoraPesos = 0;
- 				double temporalSumaMoraDolar = 0;
+ 			for (Empresa empresa : empresas) {
  				
  				List<EntradaIngresoContable> entradasIngresosContablesPeso = new LinkedList<>();
 
  				if(contMoraPeso.doubleValue()>0) {
- 					
- 	 				for (RegistroCron registroCron : registrosCron) {
- 	 					if(empresa.getId().intValue() == registroCron.getEmpresa().getId().intValue() && 
- 	 							registroCron.getMoneda().equalsIgnoreCase("pesos")) {
- 	 						temporalSumaMoraPesos+=formato2d(registroCron.getMora());
- 	 					}else if(empresa.getId().intValue() == registroCron.getEmpresa().getId().intValue() && 
- 	 							registroCron.getMoneda().equalsIgnoreCase("dolar")) {
- 	 						temporalSumaMoraDolar+=formato2d(registroCron.getMora());
- 	 					}
- 	 				}
- 					 	 				
+ 								
 	 				formasPagoPeso = serviceFormasPagos.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceMora", "peso");
 	 						 						
 	 	 			if(!formasPagoPeso.isEmpty()) {
@@ -186,12 +174,13 @@ public class PrestamosCron {
 		 	 			}else {
 		 	 				entradaIngresoContableMoraPeso.setCuentaContable(null);
 		 	 			}
-					
 		 	 			
+		 	 			Double montoAcumuladoMora = calculoTotalMoraAcumuladaXCobrar(empresa, "pesos");
+					
 		 	 			if(entradaContablePeso.getId()!=null) {
-		 	 				entradaIngresoContableMoraPeso.setTotal(formato2d(temporalSumaMoraPesos) - entradaContablePeso.getBalanceContable());
-		 	 				entradaIngresoContableMoraPeso.setBalance(formato2d(temporalSumaMoraPesos) - entradaContablePeso.getBalanceContable());
- 	 	 				}
+		 	 				entradaIngresoContableMoraPeso.setTotal(formato2d(montoAcumuladoMora) - entradaContablePeso.getBalanceContable());
+		 	 				entradaIngresoContableMoraPeso.setBalance(formato2d(montoAcumuladoMora) - entradaContablePeso.getBalanceContable());
+		 	 			}
 		 	 			
 		 	 			entradaIngresoContableMoraPeso.setEmpresa(empresa);
 		 	 			entradaIngresoContableMoraPeso.setFecha(new Date());
@@ -222,10 +211,12 @@ public class PrestamosCron {
  	 	 				}else {
  	 	 					entradaIngresoContableDolar.setCuentaContable(null);
  	 	 				}
+ 	 	 				
+ 	 	 				Double montoAcumuladoMora = calculoTotalMoraAcumuladaXCobrar(empresa, "dolar");
  	 	 					
  	 	 				if(entradaContableDolar.getId()!=null) {
- 	 	 	 				entradaIngresoContableDolar.setTotal(formato2d(temporalSumaMoraDolar) - formato2d(entradaContableDolar.getBalanceContable()));
- 	 	 	 				entradaIngresoContableDolar.setBalance(formato2d(temporalSumaMoraDolar) - formato2d(entradaContableDolar.getBalanceContable()));
+ 	 	 	 				entradaIngresoContableDolar.setTotal(formato2d(montoAcumuladoMora) - formato2d(entradaContableDolar.getBalanceContable()));
+ 	 	 	 				entradaIngresoContableDolar.setBalance(formato2d(montoAcumuladoMora) - formato2d(entradaContableDolar.getBalanceContable()));
  	 	 				}
  	 	 				
  	 	 				entradaIngresoContableDolar.setEmpresa(empresa);
@@ -275,6 +266,329 @@ public class PrestamosCron {
 		}
 	}
 	
+	private Double calculoTotalMoraAcumuladaXCobrar(Empresa empresa, String moneda) throws ParseException {
+				
+		double totalPesoAdicionales = 0;
+		double totalPesoCapital = 0;
+		double totalPesoInteres = 0;
+		double totalPesoMora = 0;
+		
+		double totalDolarAdicionales = 0;
+		double totalDolarCapital = 0;
+		double totalDolarInteres = 0;
+		double totalDolarMora = 0;
+		
+		double totalAdicionales = 0;
+		double totalCapital = 0;
+		double totalInteres = 0;
+		double totalMora = 0;
+		
+		List<PrestamoCalculoTotal> prestamosTotales = new LinkedList<>();
+		
+		List<Integer> estados = new LinkedList<>();
+		estados.add(1);
+		
+		List<Prestamo> prestamos = servicePrestamos.buscarPorEmpresaMonedaEstadoNotIn(empresa, moneda, estados);
+		
+		for (Prestamo prestamo : prestamos) {
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");  
+			List<Amortizacion> detalles = new LinkedList<>();
+			List<PrestamoInteresDetalle> prestamoInteresDetalles = servicePrestamosInteresesDetalles.buscarPorPrestamo(prestamo);
+			double totalPendiente = 0;
+			double sumaInteresGen = 0;
+			double sumaMora = 0;
+			double sumaCargo = 0;
+			double sumaAbono = 0;
+			double sumaBalance = 0;
+			
+			if(prestamo.getTipo().equals("2")) {
+				//Interes
+				int count = 0;
+				double mora = 0;
+				double interes = 0;
+				double capital = 0;
+				if(!prestamoInteresDetalles.isEmpty()) {
+					for (PrestamoInteresDetalle prestamoInteresDetalle : prestamoInteresDetalles) {
+						count++;
+						String estado = "Normal";
+						if(prestamoInteresDetalle.getEstado()==2) {
+							estado = "Atraso";
+						}else if(prestamoInteresDetalle.getEstado()==1) {
+							estado = "Saldo";
+						}else if(prestamoInteresDetalle.getEstado()==3) {
+							estado = "Legal";
+						}
+						
+						double cargoPagadoTemp = 0;
+						
+						Amortizacion amortizacion = new Amortizacion();
+						
+						double descuentoAdicionales = 0;
+						double descuentoCargo = 0;
+						
+						List<PrestamoAdicional> adicionales = servicePrestamosAdicionales.buscarPorPrestamoNumeroCuota(prestamoInteresDetalle.getPrestamo(), prestamoInteresDetalle.getNumero_cuota());
+						if(!adicionales.isEmpty()) {
+							double cargo = 0;
+							for (PrestamoAdicional adicionalTemp : adicionales) {
+								cargo+=adicionalTemp.getMonto()-adicionalTemp.getMonto_pagado();
+								cargoPagadoTemp+=adicionalTemp.getMonto_pagado();
+								descuentoAdicionales+=adicionalTemp.getDescuento_adicionales();
+							}
+							amortizacion.setCargo(cargo);
+							descuentoCargo = amortizacion.getCargo()-descuentoAdicionales;
+							amortizacion.setCargo(cargo-descuentoAdicionales);
+						}
+						
+						LocalDateTime fechaTemp = convertToLocalDateTimeViaInstant(prestamoInteresDetalle.getFecha_cuota()).minusMonths(1);
+						LocalDateTime dateAcct = LocalDateTime.now();
+						int vencidos = (int) diasVencidos(fechaTemp, dateAcct);
+						double interesXHoy = prestamoInteresDetalle.getInteres()/30.00*vencidos;
+						
+						if(interesXHoy>=prestamoInteresDetalle.getInteres()) {
+							interesXHoy = prestamoInteresDetalle.getInteres()-prestamoInteresDetalle.getInteres_pagado();
+						}
+						
+						double balance = (prestamoInteresDetalle.getInteres()-prestamoInteresDetalle.getInteres_pagado())+(prestamoInteresDetalle.getMora()-prestamoInteresDetalle.getMora_pagada()-prestamoInteresDetalle.getDescuento_mora())+(amortizacion.getCargo()==null?0:descuentoCargo);
+						double abono = prestamoInteresDetalle.getInteres_pagado()+prestamoInteresDetalle.getMora_pagada()+cargoPagadoTemp;
+						
+						amortizacion.setBalance(formato2d(balance));
+						amortizacion.setAbono(formato2d(abono));
+						amortizacion.setInteresXhoy(balance==0?0:formato2d(interesXHoy));
+						amortizacion.setNumero(count);
+						amortizacion.setFecha(sdf.format(prestamoInteresDetalle.getFecha_cuota()));
+						capital = prestamoInteresDetalle.getCapital();
+						capital-= prestamoInteresDetalle.getCapital_pagado();
+						amortizacion.setInteres(formato2d(prestamoInteresDetalle.getInteres()-prestamoInteresDetalle.getInteres_pagado()));
+						amortizacion.setTipo(2);
+						
+						mora = prestamoInteresDetalle.getMora()-prestamoInteresDetalle.getMora_pagada()-prestamoInteresDetalle.getDescuento_mora();
+
+						amortizacion.setMora(formato2d(mora));
+						amortizacion.setEstado(estado);
+						amortizacion.setAtraso(prestamoInteresDetalle.getDias_atraso());
+						
+						double descuentoAdicional = 0;
+						
+						List<PrestamoAdicional> adicionalTemp = servicePrestamosAdicionales
+								.buscarPorPrestamoNumeroCuota(prestamo, prestamoInteresDetalle.getNumero_cuota());
+						for (PrestamoAdicional adicional : adicionalTemp) {
+							descuentoAdicional += adicional.getDescuento_adicionales();
+						}
+
+						amortizacion.setDescuento(prestamoInteresDetalle.getDescuento_mora()+descuentoAdicional);
+						
+						amortizacion.setId(prestamoInteresDetalle.getId());
+						detalles.add(amortizacion);
+						mora+=prestamoInteresDetalle.getMora();
+						interes+=prestamoInteresDetalle.getInteres();
+						
+						sumaInteresGen+= amortizacion.getInteres();
+						sumaMora += amortizacion.getMora();
+						sumaAbono += amortizacion.getAbono();
+						sumaBalance += amortizacion.getBalance();
+											
+					}
+					detalles.get(0).setCuota(formato2d(mora+interes));
+					detalles.get(0).setCapital(formato2d(capital));
+				}
+				
+				List<PrestamoAdicional> pretamoAdicionalTemp = servicePrestamosAdicionales.buscarPorPrestamoEstado(prestamo, 0);
+				for (PrestamoAdicional prestamoAdicional : pretamoAdicionalTemp) {
+					sumaCargo+=prestamoAdicional.getMonto()-prestamoAdicional.getMonto_pagado()-prestamoAdicional.getDescuento_adicionales();
+				}
+				
+			}else {
+				//Cuotas
+				
+				int count = 0;
+				double mora = 0;
+				double interes = 0;
+				double capital = 0;
+
+				List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
+				
+				detalles = new LinkedList<>();
+				for (PrestamoDetalle prestamoDetalle : prestamoDetalles) {
+					
+					List<PrestamoAdicional> adicionales = servicePrestamosAdicionales.buscarPorPrestamoNumeroCuota(prestamoDetalle.getPrestamo(), prestamoDetalle.getNumero());
+
+					Amortizacion amortizacion = new Amortizacion();
+					
+					double cargo = 0;
+					
+					count++;
+					String estado = "Normal";
+					if(prestamoDetalle.getEstado()==2) {
+						estado = "Atraso";
+					}else if(prestamoDetalle.getEstado()==1) {
+						estado = "Saldo";
+					}
+					
+					double cargoPagadoTemp = 0;
+					double descuentoAdicionales = 0;
+					double descuentoCargo = 0;
+					
+					if(!adicionales.isEmpty()) {
+						for (PrestamoAdicional adicionalTemp : adicionales) {
+							cargo+=adicionalTemp.getMonto()-adicionalTemp.getMonto_pagado();
+							cargoPagadoTemp+=adicionalTemp.getMonto_pagado();
+							descuentoAdicionales+=adicionalTemp.getDescuento_adicionales();
+						}
+						amortizacion.setCargo(cargo);
+						descuentoCargo = amortizacion.getCargo()-descuentoAdicionales;
+						amortizacion.setCargo(formato2d(cargo-descuentoAdicionales));
+					}
+					
+					double abono = prestamoDetalle.getCapital_pagado()+prestamoDetalle.getInteres_pagado()+prestamoDetalle.getMora_pagada()+cargoPagadoTemp;
+					
+					double descuentoAdicional = 0;
+					
+					List<PrestamoAdicional> adicionalTemp = servicePrestamosAdicionales
+							.buscarPorPrestamoNumeroCuota(prestamo, prestamoDetalle.getNumero());
+					for (PrestamoAdicional adicional : adicionalTemp) {
+						descuentoAdicional += adicional.getDescuento_adicionales();
+					}
+
+					amortizacion.setDescuento(formato2d(prestamoDetalle.getDescuento_mora()+descuentoAdicional));
+					
+					amortizacion.setAbono(formato2d(abono));
+					amortizacion.setId(prestamoDetalle.getId());
+					amortizacion.setFecha(sdf.format(prestamoDetalle.getFechaGenerada()));
+					amortizacion.setCuota(prestamoDetalle.getCuota());
+					amortizacion.setTipo(Integer.parseInt(prestamoDetalle.getPrestamo().getTipo()));
+					amortizacion.setCapital(formato2d(prestamoDetalle.getCapital()-prestamoDetalle.getCapital_pagado()));
+					amortizacion.setInteres(formato2d(prestamoDetalle.getInteres()-prestamoDetalle.getInteres_pagado()));
+					amortizacion.setSaldo(formato2d(prestamoDetalle.getBalance()));
+					amortizacion.setNumero(prestamoDetalle.getNumero());
+					amortizacion.setMora(formato2d(formato2d(prestamoDetalle.getMora())-formato2d(prestamoDetalle.getMora_pagada())-formato2d(prestamoDetalle.getDescuento_mora())));
+					amortizacion.setEstado(prestamoDetalle.getEstado_cuota());
+					amortizacion.setAtraso(prestamoDetalle.getDias_atraso());
+					amortizacion.setBalance(formato2d((amortizacion.getCapital()==null?0:amortizacion.getCapital()) + (amortizacion.getInteres()==null?0:amortizacion.getInteres()) + (amortizacion.getMora()==null?0:amortizacion.getMora()) + (amortizacion.getCargo()==null?0:amortizacion.getCargo())));
+					detalles.add(amortizacion);
+				}
+			}
+
+			if(prestamo.getTipo().equals("2")) {
+				
+				if(formato2d(sumaCargo) > 0 || formato2d(prestamo.getBalance()) > 0 
+						|| formato2d(sumaInteresGen) > 0 || formato2d(sumaMora) > 0 ) {
+					
+					if(prestamo.getMoneda().equalsIgnoreCase("pesos")) {
+						PrestamoCalculoTotal prestamoCalculoTotal = new PrestamoCalculoTotal();
+						prestamoCalculoTotal.setAdicionales(formato2d(sumaCargo));
+						prestamoCalculoTotal.setCapital(formato2d(prestamo.getBalance()));
+						prestamoCalculoTotal.setInteres(formato2d(sumaInteresGen));
+						prestamoCalculoTotal.setMora(formato2d(sumaMora));
+						prestamoCalculoTotal.setPrestamo(prestamo);
+						prestamoCalculoTotal.setBalance(formato2d(sumaBalance));
+						prestamoCalculoTotal.setMoneda("pesos");
+						prestamosTotales.add(prestamoCalculoTotal);
+						
+						totalPesoAdicionales += formato2d(sumaCargo);
+						totalPesoCapital += formato2d(prestamo.getBalance());
+						totalPesoInteres += formato2d(sumaInteresGen);
+						totalPesoMora += formato2d(sumaMora);
+
+					}else if(prestamo.getMoneda().equalsIgnoreCase("dolar")) {
+						PrestamoCalculoTotal prestamoCalculoTotal = new PrestamoCalculoTotal();
+						prestamoCalculoTotal.setAdicionales(formato2d(sumaCargo));
+						prestamoCalculoTotal.setCapital(formato2d(prestamo.getBalance()));
+						prestamoCalculoTotal.setInteres(formato2d(sumaInteresGen));
+						prestamoCalculoTotal.setMora(formato2d(sumaMora));
+						prestamoCalculoTotal.setPrestamo(prestamo);
+						prestamoCalculoTotal.setBalance(formato2d(sumaBalance));
+						prestamoCalculoTotal.setMoneda("dolar");
+						prestamosTotales.add(prestamoCalculoTotal);
+						
+						totalDolarAdicionales += formato2d(sumaCargo);
+						totalDolarCapital += formato2d(prestamo.getBalance());
+						totalDolarInteres += formato2d(sumaInteresGen);
+						totalDolarMora += formato2d(sumaMora);
+					}
+					
+					totalAdicionales += formato2d(sumaCargo);
+					totalCapital += formato2d(prestamo.getBalance());
+					totalInteres += formato2d(sumaInteresGen);
+					totalMora += formato2d(sumaMora);
+				}
+			}
+
+			double sumaCapital = 0;
+			double montoCuota = 0;
+			double sumaMoraTemp = 0;
+			double sumaInteres = 0;
+			double sumaCargos = 0;
+			double sumaAbonoCuota = 0;
+			double sumaDescuento = 0;
+			double sumaTotales = 0;
+			
+			for (Amortizacion detalle : detalles) {
+				sumaCapital+=detalle.getCapital()==null?0:detalle.getCapital();
+				montoCuota+=detalle.getCuota()==null?0:detalle.getCuota();
+				sumaMoraTemp+=detalle.getMora()==null?0:detalle.getMora();
+				sumaInteres+=detalle.getInteres()==null?0:detalle.getInteres();
+				sumaCargos+=detalle.getCargo()==null?0:detalle.getCargo();
+				sumaAbonoCuota+=detalle.getAbono()==null?0:detalle.getAbono();
+				sumaDescuento+=detalle.getDescuento()==null?0:detalle.getDescuento();
+				sumaTotales+=detalle.getBalance()==null?0:detalle.getBalance();
+			}
+
+			if(!prestamo.getTipo().equals("2")) {
+				
+				if(formato2d(sumaCargos) > 0 || formato2d(sumaCapital) > 0 || 
+						formato2d(sumaInteres) > 0 || formato2d(sumaMoraTemp) > 0) {
+					if(prestamo.getMoneda().equalsIgnoreCase("pesos")) {	
+						PrestamoCalculoTotal prestamoCalculoTotal = new PrestamoCalculoTotal();
+						prestamoCalculoTotal.setAdicionales(formato2d(sumaCargos));
+						prestamoCalculoTotal.setCapital(formato2d(sumaCapital));
+						prestamoCalculoTotal.setInteres(formato2d(sumaInteres));
+						prestamoCalculoTotal.setMora(formato2d(sumaMoraTemp));
+						prestamoCalculoTotal.setPrestamo(prestamo);
+						prestamoCalculoTotal.setBalance(formato2d(sumaTotales));
+						prestamoCalculoTotal.setMoneda("pesos");
+						prestamosTotales.add(prestamoCalculoTotal);
+						
+						totalPesoAdicionales += formato2d(sumaCargos);
+						totalPesoCapital += formato2d(sumaCapital);
+						totalPesoInteres += formato2d(sumaInteres);
+						totalPesoMora += formato2d(sumaMoraTemp);
+		
+					}else if(prestamo.getMoneda().equalsIgnoreCase("dolar")) {
+						PrestamoCalculoTotal prestamoCalculoTotal = new PrestamoCalculoTotal();
+						prestamoCalculoTotal.setAdicionales(formato2d(sumaCargos));
+						prestamoCalculoTotal.setCapital(formato2d(sumaCapital));
+						prestamoCalculoTotal.setInteres(formato2d(sumaInteres));
+						prestamoCalculoTotal.setMora(formato2d(sumaMoraTemp));
+						prestamoCalculoTotal.setPrestamo(prestamo);
+						prestamoCalculoTotal.setBalance(formato2d(sumaTotales));
+						prestamoCalculoTotal.setMoneda("dolar");
+						prestamosTotales.add(prestamoCalculoTotal);
+						
+						totalDolarAdicionales += formato2d(sumaCargos);
+						totalDolarCapital += formato2d(sumaCapital);
+						totalDolarInteres += formato2d(sumaInteres);
+						totalDolarMora += formato2d(sumaMoraTemp);
+					}
+					
+					totalAdicionales += formato2d(sumaCargos);
+					totalCapital += formato2d(sumaCapital);
+					totalInteres += formato2d(sumaInteres);
+					totalMora += formato2d(sumaMoraTemp);
+				}
+			}
+		}
+		
+		double monto = 0;
+		
+		if(moneda.equalsIgnoreCase("pesos")) {
+			monto = formato2d(totalPesoMora);
+		}else if(moneda.equalsIgnoreCase("dolar")) {
+			monto = formato2d(totalDolarMora);
+		}
+
+		return monto;
+	}
+
 	@Scheduled(cron = "0 05 07 * * *")
 	public void generarPrestamoInteresDetalle() throws ParseException {
 		List<Prestamo> prestamos = servicePrestamos.buscarPorEstado(NORMAL);
@@ -541,10 +855,12 @@ public class PrestamosCron {
 					} else {
 						entradaIngresoContablePeso.setCuentaContable(null);
 					}
+					
+					Double montoAcumuladoMora = calculoTotalMoraAcumuladaXCobrar(empresa, "pesos");
 
 					if (entradaContablePeso.getId() != null) {
-						entradaIngresoContablePeso.setTotal(formato2d(temporalSumaMoraPesos) - formato2d(entradaContablePeso.getBalanceContable()));
-						entradaIngresoContablePeso.setBalance(formato2d(temporalSumaMoraPesos) - formato2d(entradaContablePeso.getBalanceContable()));
+						entradaIngresoContablePeso.setTotal(formato2d(montoAcumuladoMora) - formato2d(entradaContablePeso.getBalanceContable()));
+						entradaIngresoContablePeso.setBalance(formato2d(montoAcumuladoMora) - formato2d(entradaContablePeso.getBalanceContable()));
 					}
 					
 					entradaIngresoContablePeso.setEmpresa(empresa);
@@ -582,9 +898,11 @@ public class PrestamosCron {
 		 				entradaIngresoContableDolar.setCuentaContable(null);
 		 			}
 		 			
+		 			Double montoAcumuladoMora = calculoTotalMoraAcumuladaXCobrar(empresa, "dolar");
+		 			
 					if (entradaContableDolar.getId() != null) {
-						entradaIngresoContableDolar.setTotal(formato2d(temporalSumaMoraDolar) - formato2d(entradaContableDolar.getBalanceContable()));
-						entradaIngresoContableDolar.setBalance(formato2d(temporalSumaMoraDolar) - formato2d(entradaContableDolar.getBalanceContable()));
+						entradaIngresoContableDolar.setTotal(formato2d(montoAcumuladoMora) - formato2d(entradaContableDolar.getBalanceContable()));
+						entradaIngresoContableDolar.setBalance(formato2d(montoAcumuladoMora) - formato2d(entradaContableDolar.getBalanceContable()));
 					}
 		 					
 					entradaIngresoContableDolar.setEmpresa(empresa);

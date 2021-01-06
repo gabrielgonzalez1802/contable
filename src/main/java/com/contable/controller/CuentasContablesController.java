@@ -75,18 +75,8 @@ public class CuentasContablesController {
 		}
 		
 		List<CuentaContable> cuentasContables = serviceCuentasContables.buscarPorEmpresaOrderByCodigoDesc(empresa);
-		//String codigoPadre = "";
 
 		for (CuentaContable cuentaContable : cuentasContables) {
-//			if(cuentaContable.getCuentaControl()==null && cuentaContable.getTipo().equals("C")) {
-//				cuentaContable.setClase("padrecc ccpadre-"+cuentaContable.getCodigo()+" "+"cccode"+cuentaContable.getCodigo());
-//				codigoPadre = cuentaContable.getCodigo();
-//			}else if(cuentaContable.getCuentaControl()!=null && cuentaContable.getTipo().equals("C")) {
-//				cuentaContable.setClase("hijocc cchijo-"+cuentaContable.getCuentaControl()+" "+"cccode"+cuentaContable.getCodigo()+" "+"herencia-"+codigoPadre);
-//			}else if(cuentaContable.getCuentaControl()!=null && cuentaContable.getTipo().equals("A")) {
-//				cuentaContable.setClase("nietocc ccnieto-"+cuentaContable.getCuentaControl()+" "+"cccode"+cuentaContable.getCodigo()+" "+"herencia-"+codigoPadre);
-//			}
-			
 			List<EntradaDiario> entradasDiarios = serviceEntradasDiarios.buscarPorCuentaContableEmpresaCarpeta(cuentaContable, empresa, carpeta);
 			for (EntradaDiario entradaDiario : entradasDiarios) {
 				BigDecimal monto = entradaDiario.getCredito().subtract(entradaDiario.getDebito());
