@@ -44,51 +44,42 @@
 					<div class="row">
 						<div class="table-responsive">
 							<table class="table mg-b-0 text-md-nowrap" id="tablaListaPendientes">
-								<thead style="background-color: #0162e8;height: 80px;">
+								<thead style="background-color: #e9ecef; height: 80px;">
 									<tr>
-										<th style="padding-top: 10px;font-weight: bold;">Cliente</th>
-										<th style="padding-top: 10px;font-weight: bold;">Prestamo</th>
-										<th style="padding-top: 10px;font-weight: bold;">Monto</th>
-										<th style="padding-top: 10px;font-weight: bold;">Capital</th>
-										<th style="padding-top: 10px;font-weight: bold;">Interes</th>
-										<th style="padding-top: 10px;font-weight: bold;">Mora</th>
-										<th style="padding-top: 10px;font-weight: bold;">Adicionales</th>
+										<th style="background-color: #e9ecef; padding-top: 10px; position: static">Fecha</th>
+										<th style="background-color: #e9ecef; padding-top: 10px; position: static">Cliente</th>
+										<th style="background-color: #e9ecef; padding-top: 10px; position: static">Codigo</th>
+										<th style="background-color: #e9ecef; padding-top: 10px; position: static">Tipo Prestamo</th>
+										<th style="background-color: #e9ecef; padding-top: 10px; position: static">Deuda Capital</th>
+										<th style="background-color: #e9ecef; padding-top: 10px; position: static">Deuda Interes</th>
+										<th style="background-color: #e9ecef; padding-top: 10px; position: static">Deuda Mora</th>
+										<th style="background-color: #e9ecef; padding-top: 10px; position: static">Deuda Adicionales</th>
+										<th style="background-color: #e9ecef; padding-top: 10px; position: static">Moneda</th>
 									</tr>
 								</thead>
-									<tbody>
-									<tr th:each="pendiente : ${pendientes}">
-										<td th:text="${pendiente.prestamo.cliente.nombre}"></td>
-										<td th:text="${pendiente.prestamo.codigo}"></td>
-										<td th:text="${pendiente.montoPrestamo}"></td>
-										<td th:text="${pendiente.capitalPendiente}"></td>
-										<td th:text="${pendiente.interesPendiente}"></td>
-										<td th:text="${pendiente.MoraPendiente}"></td>
-										<td th:text="${pendiente.AdicionalPendiente}"></td>
+								<tbody>
+									<tr th:each="prestamoTotal : ${prestamosTotales}">
+										<td th:text="${#dates.format(prestamoTotal.prestamo.fecha, 'dd-MM-yyyy')}"></td>
+										<td th:text="${prestamoTotal.prestamo.cliente.nombre}"></td>
+										<td th:text="${prestamoTotal.prestamo.codigo}"></td>
+										<td th:if="${prestamoTotal.prestamo.tipo == '1'}" th:text="'Cuotas'"></td>
+										<td th:unless="${prestamoTotal.prestamo.tipo == '1'}" th:text="'Interes'"></td>
+										<td th:text="${prestamoTotal.capital}"></td>
+										<td th:text="${prestamoTotal.interes}"></td>
+										<td th:text="${prestamoTotal.mora}"></td>
+										<td th:text="${prestamoTotal.adicionales}"></td>
+										<td th:text="${prestamoTotal.moneda}"></td>
 									</tr>
 									<tr>
-										<td colspan="5"></td>
-										<td style="font-weight: bold;">Total Monto</td>
-										<td th:text="${totalMonto}" style="font-weight: bold;"></td>
-									</tr>
-									<tr>
-										<td colspan="5"></td>
-										<td style="font-weight: bold;">Total Capital</td>
-										<td th:text="${totalCapital}" style="font-weight: bold;"></td>
-									</tr>
-									<tr>
-										<td colspan="5"></td>
-										<td style="font-weight: bold;">Total Adicional</td>
-										<td th:text="${totalAdicional}" style="font-weight: bold;"></td>
-									</tr>
-									<tr>
-										<td colspan="5"></td>
-										<td style="font-weight: bold;">Total Interes</td>
-										<td th:text="${totalInteres}" style="font-weight: bold;"></td>
-									</tr>
-									<tr>
-										<td colspan="5"></td>
-										<td style="font-weight: bold;">Total Mora</td>
-										<td th:text="${totalMora}" style="font-weight: bold;"></td>
+										<td></td>	
+										<td></td>
+										<td></td>	
+										<td style="font-weight: bold;">Total</td>							
+										<td style="font-weight: bold;" th:text="${totalCapital}" id="totalDeudaCapital"></td>
+										<td style="font-weight: bold;" th:text="${totalInteres}" id="totalDeudaInteres"></td>
+										<td style="font-weight: bold;" th:text="${totalMora}" id="totalDeudaMora"></td>
+										<td style="font-weight: bold;" th:text="${totalAdicional}" id="totalDeudaAdicional"></td>
+										<td></td>
 									</tr>
 								</tbody>
 							</table>

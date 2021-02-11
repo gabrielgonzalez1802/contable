@@ -50,6 +50,50 @@
 		<div id="cuerpoImpresion">
 				
 		</div>
+				
+<!--  Modal Impresion Descuentos -->
+  <div class="modal" id="modalPorCobrar">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <div class="modal-header">
+          <h4 class="modal-title">Cuentas X Cobrar</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          	<div class="row">
+					<div class="col-md-4">
+					 	<div class="form-group">
+<!-- 					 		<label>Cliente <span style="color: red;">*</span> </label> -->
+					 		<select id="clienteXCobrar" class="form-control">
+					 			<option value="">Todos</option>
+					 			<option th:each="cliente : ${clientes}" 
+					 					th:value="${cliente.id}" 
+					 					th:text="${cliente.nombre}"></option>
+					 		</select>
+						 </div>
+					</div>
+					
+					<div class="col-md-4">
+					 	<div class="form-group">
+						    <select id="monedaXCobrar" class="form-control">
+					 			<option value="peso">Pesos</option>
+					 			<option value="dolar">Dolar</option>
+					 		</select>
+						 </div>
+					</div>
+					
+					<div class="col-md-4">
+					 	<div class="form-group">
+						  	 <button type="submit" class="btn btn-primary" id="btnBuscarXCobrar">Buscar</button>
+						 </div>
+					</div>
+			</div>
+        </div>
+      </div>
+    </div>
+  </div>
 		
 <!--  Modal Impresion Descuentos -->
   <div class="modal" id="modalImpresionDescuentos">

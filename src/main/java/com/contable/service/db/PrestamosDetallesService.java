@@ -59,4 +59,9 @@ public class PrestamosDetallesService implements IPrestamosDetallesService{
 		return repo.findByPrestamoAndEstado(prestamo, estado);
 	}
 
+	@Override
+	public List<PrestamoDetalle> buscarPorPrestamoOrderByIdDesc(Prestamo prestamo) {
+		return repo.findByPrestamoOrderByIdDesc(prestamo);
+	}
+
 }

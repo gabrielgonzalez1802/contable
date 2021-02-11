@@ -511,6 +511,7 @@ function addEvents(){
 		var idPrestamo = $("#prestamoAcct").val();
 		var fotos = $("#inputFotosPrestamos").val();
 		var formData = new FormData(this);
+		formData.append("idPrestamo",idPrestamo);
 		
 		if(!fotos){
 			$("#cargarImagenesPrestamoModal").modal("hide");
@@ -538,9 +539,38 @@ function addEvents(){
 		          cache: false,
 		          success: function (res) {
 			        addEvents();
+			        $("#cargarImagenesPrestamoModal").modal("hide");
+			        if(res == "1"){
+						Swal.fire({
+							  title: 'Muy bien!',
+							  text: "Registro Guardado",
+							  icon: 'success',
+							  position : 'top',
+							  showCancelButton: false,
+							  confirmButtonColor: '#3085d6',
+							  confirmButtonText: 'Ok!'
+							}).then((result) => {
+							  if (result.isConfirmed) {
+							  }
+							})
+			        }else if(res == "0"){
+			        	Swal.fire({
+							  title: 'Alerta!',
+							  text: "Ha ocurrido un error, intente mas tarde",
+							  icon: 'warning',
+							  position : 'top',
+							  showCancelButton: false,
+							  confirmButtonColor: '#3085d6',
+							  confirmButtonText: 'Ok!'
+							}).then((result) => {
+							  if (result.isConfirmed) {
+							  }
+							})
+			        }
 		          },
 		          error: function (err) {
 		              console.error(err);
+		              $("#cargarImagenesPrestamoModal").modal("hide");
 		              Swal.fire({
 							title : 'Error!',
 							text : 'No se pudo completar la operacion, intente mas tarde',
@@ -557,14 +587,18 @@ function addEvents(){
 		e.stopImmediatePropagation();
 		var idPrestamo = $("#prestamoAcct").val();
 		$("#cargarImagenesPrestamoModal").modal("show");
-//		$("#contenido").load("/clientes/buscarCliente",function(data){
-//			ocultarDetalleAmortizacion();
-//			console.log("Lista de clientes");
-//			addEvents();
-//		});
 	});
 
-	
+	$("#btnVerImagenesPrestamo").click(function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var idPrestamo = $("#prestamoAcct").val();
+		$("#verImagenesPrestamoModal").modal("show");
+		$("#imagenesPrestamo").load("/prestamos/verImagenes/"+idPrestamo,function(data){
+			addEvents();
+		});
+	});
+
 	$("#btnAddDataVehiculo").click(function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
@@ -5742,12 +5776,24 @@ $("#imprimirListaDescuentos").click(function(e){
 $("#btnMostrarPorCobrarImpresion").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
+	$("#modalPorCobrar").modal("show");
+	addEvents();
+});
 
-	$("#cuerpoImpresion").load("/reportes/porCobrar",function(data){
+$("#btnBuscarXCobrar").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	$("#modalPorCobrar").modal("hide");
+	var clienteId = $("#clienteXCobrar").val();
+	var moneda = $("#monedaXCobrar").val();
+	$("#cuerpoImpresion").load("/reportes/buscarPrestamosXCobrar",
+	{
+		"clienteId":clienteId,
+		"moneda":moneda
+	},function(data){
 		addEvents();
 	});
-
-});
+});		
 
 $("#imprimirListaPendientes").click(function(e){
 	e.preventDefault();

@@ -100,6 +100,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import sun.awt.image.ImageWatched.Link;
 
 @Controller
 @RequestMapping("/prestamos")
@@ -1279,9 +1280,49 @@ public class PrestamosController {
 	}
 
 	@PostMapping("/cargarImagenes")
-	public ResponseEntity<String> cargarImagenes(@RequestParam("files") MultipartFile[] files){
-		System.out.println("aqui");
-		return new ResponseEntity<String>("", HttpStatus.ACCEPTED);
+	public ResponseEntity<String> cargarImagenes(@RequestParam("files") MultipartFile[] files, @RequestParam("idPrestamo") Integer idPrestamo){
+		String response = "0";
+		try {
+			Prestamo prestamo = servicePrestamos.buscarPorId(idPrestamo);
+			LinkedList<String> imagenes = new LinkedList<>();
+			if(prestamo.getImagenes()!=null) {
+				 String[] imagenesTemp = prestamo.getImagenes().split(",");
+				 for (String img : imagenesTemp) {
+					 imagenes.add(img);
+				}
+			}
+			for (MultipartFile multipartFile : files) {
+				String nombreImagen= Utileria.guardarArchivo(multipartFile, ruta);
+				if(!nombreImagen.isEmpty()) {
+					imagenes.add(nombreImagen);
+				}
+			}
+			String imagenesData = "";
+			for (String imganes : imagenes) {
+				imagenesData+=imganes+",";
+			}
+			imagenesData=imagenesData.substring(0, imagenesData.length()-1);
+			prestamo.setImagenes(imagenesData);
+			servicePrestamos.guardar(prestamo);
+			response = "1";
+		}catch (Exception e) {
+			
+		}
+		return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
+	}
+	
+	@GetMapping("/verImagenes/{id}")
+	public String verImagenes(Model model, @PathVariable(name = "id") Integer id, HttpSession session) {
+		Prestamo prestamo = servicePrestamos.buscarPorId(id);
+		LinkedList<String> imagenes = new LinkedList<>();
+		if(prestamo.getImagenes()!=null) {
+			String[] imgTemp = prestamo.getImagenes().split(",");
+			for (String img : imgTemp) {
+				imagenes.add(img);
+			}
+		}
+		model.addAttribute("imagenes",imagenes);
+		return "clientes/infoCliente :: #imagenesPrestamo";
 	}
 	
 	@GetMapping("/detalleAmortizacion/{id}")
@@ -3046,7 +3087,6 @@ public class PrestamosController {
 						
 //						Pagamos el capital
 						double pagadoCapitalInicio = disponible;
-						//Pagamos el interes
 						if(disponible>0) {
 							if (prestamoDetalle.getCapital_pagado() < prestamoDetalle
 									.getCapital()) {
@@ -3085,6 +3125,305 @@ public class PrestamosController {
 							}
 						}
 						
+					}
+				}
+				
+				for (PrestamoDetalle prestamoDetalle : prestamoDetalles) {
+					if(
+						prestamoDetalle.getCapital_pagado().equals(prestamoDetalle.getCapital()) &&
+						prestamoDetalle.getInteres_pagado().equals(prestamoDetalle.getInteres()) && 
+						prestamoDetalle.getMora_pagada().doubleValue()+prestamoDetalle.getDescuento_mora().doubleValue() == formato2d(prestamoDetalle.getMora())) {
+						prestamoDetalle.setEstado(1);
+						prestamoDetalle.setEstado_cuota("Saldo");
+						prestamoDetalle.setDias_atraso(0);
+						servicePrestamosDetalles.guardar(prestamoDetalle);
+					}
+				}
+			}
+		}else if(tipoCuota == 2) {
+			
+			boolean irCuotasFinales = false;
+			
+			//Capital
+			if(prestamo.getTipo().equals("1")) { //Cuotas Fijas
+				Abono abono = new Abono(); 
+				List<Abono> abonos = serviceAbonos.buscarPorPrestamo(prestamo);
+				int numAbono = 1;
+				if(!abonos.isEmpty()) {
+					numAbono = abonos.get(abonos.size()-1).getNumero()+1;
+				}
+				
+				//Guardamos el abono en la tabla abonos
+				abono.setMonto(monto);
+				abono.setCliente(prestamo.getCliente());
+				abono.setEstado(0);
+				abono.setFecha(new Date());
+				abono.setNumero(numAbono);
+				abono.setPrestamo(prestamo);
+				abono.setUsuario(usuario);
+				abono.setEfectivo(abonoEfectivo);
+				abono.setCheque(abonoCheque);
+				abono.setTransferencia_deposito(abonoDeposito);
+				abono.setEmpresa((Empresa) session.getAttribute("empresa"));
+				abono.setCarpeta(carpeta);
+				if(imagenCheque!=null) {
+					abono.setImagen_cheque(imagenCheque);
+				}
+				if(imagenDepositoTransferencia!=null) {
+					abono.setImagen_deposito_transferencia(imagenDepositoTransferencia);
+				}
+				serviceAbonos.guardar(abono);
+				abonoGuardado = abono;
+				
+				List<PrestamoDetalle> prestamoDetalles = servicePrestamosDetalles
+						.buscarPorPrestamo(prestamo);
+
+				for (PrestamoDetalle prestamoDetalle : prestamoDetalles) {
+					if (prestamoDetalle.getEstado().doubleValue() != 1 && 
+							prestamoDetalle.getEstado_cuota().equalsIgnoreCase("Atraso") || prestamoDetalle.getEstado_cuota().equalsIgnoreCase("Legal")) {
+						// Pagamos los cargos que no esten pagados, en atraso o legal
+						List<PrestamoAdicional> prestamosAdicionales = servicePrestamosAdicionales
+								.buscarPorPrestamoNumeroCuota(prestamo, prestamoDetalle.getNumero())
+								.stream().filter(c -> c.getEstado() == 0).collect(Collectors.toList());
+						if (disponible > 0) {
+							if (!prestamosAdicionales.isEmpty()) {
+								for (PrestamoAdicional adicionales : prestamosAdicionales) {
+								  double pagadoCargoInicio = disponible;
+								  double tempMonto = adicionales.getMonto()-adicionales.getDescuento_adicionales();
+//								  pagadoCargoFin = tempMonto;
+								  if (disponible > 0) {
+										if (adicionales.getMonto_pagado() < tempMonto) {
+											if (disponible + adicionales.getMonto_pagado() >= tempMonto) {
+												if (disponible + adicionales.getMonto_pagado()
+														.doubleValue() == tempMonto) {
+													adicionales.setMonto_pagado(
+															disponible + adicionales.getMonto_pagado());
+													disponible = 0;
+												} else {
+													double montoTemp = tempMonto
+															- adicionales.getMonto_pagado();
+													adicionales.setMonto_pagado(tempMonto);
+													disponible -= montoTemp;
+												}
+											} else {
+												if (adicionales.getMonto_pagado().doubleValue() == tempMonto) {
+													adicionales.setEstado(1);
+													continue;
+												} else {
+													adicionales.setMonto_pagado(
+															adicionales.getMonto_pagado() + disponible);
+													disponible = 0;
+												}
+											}
+											if (adicionales.getMonto_pagado().doubleValue() == tempMonto) {
+												adicionales.setEstado(1);
+											}
+											double pagadoCargoFin = disponible;
+											servicePrestamosAdicionales.guardar(adicionales);
+											AbonoDetalle abonoDetalle = new AbonoDetalle();
+											abonoDetalle.setAbono(abono);
+											abonoDetalle.setConcepto("Cargo");
+											abonoDetalle.setDetalle(adicionales.getMotivo().getMotivo());
+											abonoDetalle.setMonto(pagadoCargoInicio-pagadoCargoFin);
+											abonoDetalle.setNumeroCuota(adicionales.getNumeroCuota());
+											serviceAbonosDetalles.guardar(abonoDetalle);
+										}
+									}
+								}
+							}
+						}
+						
+						double pagadoMoraInicio = disponible;
+						double tempMora = prestamoDetalle.getMora()-prestamoDetalle.getDescuento_mora();
+						//Pagamos las moras
+						if (disponible > 0) {
+							if (prestamoDetalle.getMora_pagada() < tempMora) {
+								if (disponible + prestamoDetalle.getMora_pagada() >= tempMora) {
+									if (disponible + prestamoDetalle.getMora_pagada().doubleValue() == tempMora) {
+										prestamoDetalle.setMora_pagada(disponible + prestamoDetalle.getMora_pagada());
+										disponible = 0;
+									} else {
+										double montoTemp = tempMora - prestamoDetalle.getMora_pagada();
+										prestamoDetalle.setMora_pagada(tempMora);
+										disponible -= montoTemp;
+									}
+								} else {
+									if (prestamoDetalle.getMora_pagada().doubleValue() == tempMora) {
+										continue;
+									} else {
+										prestamoDetalle.setMora_pagada(prestamoDetalle.getMora_pagada() + disponible);
+										disponible = 0;
+									}
+								}
+								if (prestamoDetalle.getMora_pagada().doubleValue() == tempMora) {
+								}
+								double pagadoMoraFin = disponible;
+								servicePrestamosDetalles.guardar(prestamoDetalle);
+								AbonoDetalle abonoDetalle = new AbonoDetalle();
+								abonoDetalle.setAbono(abono);
+								abonoDetalle.setConcepto("Mora");
+								abonoDetalle.setMonto(pagadoMoraInicio-pagadoMoraFin);
+								abonoDetalle.setNumeroCuota(prestamoDetalle.getNumero());
+								serviceAbonosDetalles.guardar(abonoDetalle);
+							}
+						}
+					
+						double pagadoInteresInicio = disponible;
+						//Pagamos el interes
+						if(disponible>0) {
+							if (prestamoDetalle.getInteres_pagado() < prestamoDetalle
+									.getInteres()) {
+								if (disponible + prestamoDetalle
+										.getInteres_pagado() >= prestamoDetalle.getInteres()) {
+									if (disponible + prestamoDetalle.getInteres_pagado()
+											.doubleValue() == prestamoDetalle.getInteres().doubleValue()) {
+										prestamoDetalle.setInteres_pagado(
+												disponible + prestamoDetalle.getInteres_pagado());
+										disponible = 0;
+									} else {
+										double interesTemp = prestamoDetalle.getInteres()
+												- prestamoDetalle.getInteres_pagado();
+										prestamoDetalle
+												.setInteres_pagado(prestamoDetalle.getInteres());
+										disponible -= interesTemp;
+									}
+								} else {
+									if (prestamoDetalle.getInteres_pagado()
+											.doubleValue() == prestamoDetalle.getInteres().doubleValue()) {
+										continue;
+									} else {
+										prestamoDetalle.setInteres_pagado(
+												prestamoDetalle.getInteres_pagado() + disponible);
+										disponible = 0;
+									}
+								}
+								servicePrestamosDetalles.guardar(prestamoDetalle);
+								double pagadoInteresFin = disponible;
+								AbonoDetalle abonoDetalle = new AbonoDetalle();
+								abonoDetalle.setAbono(abono);
+								abonoDetalle.setConcepto("Interes");
+								abonoDetalle.setMonto(pagadoInteresInicio-pagadoInteresFin);
+								abonoDetalle.setNumeroCuota(prestamoDetalle.getNumero());
+								serviceAbonosDetalles.guardar(abonoDetalle);
+							}
+						}
+						
+//						Pagamos el capital
+						double pagadoCapitalInicio = disponible;
+						//Pagamos el interes
+						if(disponible>0) {
+							if (prestamoDetalle.getCapital_pagado() < prestamoDetalle
+									.getCapital()) {
+								if (disponible + prestamoDetalle
+										.getCapital_pagado() >= prestamoDetalle.getCapital()) {
+									if (disponible + prestamoDetalle.getCapital_pagado()
+											.doubleValue() == prestamoDetalle.getCapital().doubleValue()) {
+										prestamoDetalle.setCapital_pagado(
+												disponible + prestamoDetalle.getCapital_pagado());
+										disponible = 0;
+									} else {
+										double capitalTemp = prestamoDetalle.getCapital()
+												- prestamoDetalle.getCapital_pagado();
+										prestamoDetalle
+												.setCapital_pagado(prestamoDetalle.getCapital());
+										disponible -= capitalTemp;
+									}
+								} else {
+									if (prestamoDetalle.getCapital_pagado()
+											.doubleValue() == prestamoDetalle.getCapital().doubleValue()) {
+										continue;
+									} else {
+										prestamoDetalle.setCapital_pagado(
+												prestamoDetalle.getCapital_pagado() + disponible);
+										disponible = 0;
+									}
+								}
+								servicePrestamosDetalles.guardar(prestamoDetalle);
+								double pagadoCapitalFin = disponible;
+								AbonoDetalle abonoDetalle = new AbonoDetalle();
+								abonoDetalle.setAbono(abono);
+								abonoDetalle.setConcepto("Capital");
+								abonoDetalle.setMonto(pagadoCapitalInicio-pagadoCapitalFin);
+								abonoDetalle.setNumeroCuota(prestamoDetalle.getNumero());
+								serviceAbonosDetalles.guardar(abonoDetalle);
+							}
+						}	
+						//Si saldamos los atrasos y aun queda disponible
+					}else if(disponible>0) {
+						irCuotasFinales = true;
+						break;
+					}
+				}
+				
+				List<PrestamoDetalle> prestamoDetallesDesc = servicePrestamosDetalles
+						.buscarPorPrestamoOrderByIdDesc(prestamo);
+				
+				if(irCuotasFinales && disponible > 0) {
+					for (PrestamoDetalle prestamoDetalleDesc : prestamoDetallesDesc) {
+						//Si cubrimos el capital, se perdona el interes
+//						Pagamos el capital
+						double pagadoCapitalInicio = disponible;
+						if(disponible>0) {
+							if (prestamoDetalleDesc.getCapital_pagado() < prestamoDetalleDesc
+									.getCapital()) {
+								if (disponible + prestamoDetalleDesc
+										.getCapital_pagado() >= prestamoDetalleDesc.getCapital()) {
+									if (disponible + prestamoDetalleDesc.getCapital_pagado()
+											.doubleValue() == prestamoDetalleDesc.getCapital().doubleValue()) {
+										prestamoDetalleDesc.setCapital_pagado(
+												disponible + prestamoDetalleDesc.getCapital_pagado());
+										disponible = 0;
+									} else {
+										double capitalTemp = prestamoDetalleDesc.getCapital()
+												- prestamoDetalleDesc.getCapital_pagado();
+										prestamoDetalleDesc
+												.setCapital_pagado(prestamoDetalleDesc.getCapital());
+										disponible -= capitalTemp;
+									}
+								} else {
+									if (prestamoDetalleDesc.getCapital_pagado()
+											.doubleValue() == prestamoDetalleDesc.getCapital().doubleValue()) {
+										continue;
+									} else {
+										prestamoDetalleDesc.setCapital_pagado(
+												prestamoDetalleDesc.getCapital_pagado() + disponible);
+										disponible = 0;
+									}
+								}
+								servicePrestamosDetalles.guardar(prestamoDetalleDesc);
+								double pagadoCapitalFin = disponible;
+								AbonoDetalle abonoDetalle = new AbonoDetalle();
+								abonoDetalle.setAbono(abono);
+								abonoDetalle.setConcepto("Capital");
+								abonoDetalle.setMonto(pagadoCapitalInicio-pagadoCapitalFin);
+								abonoDetalle.setNumeroCuota(prestamoDetalleDesc.getNumero());
+								serviceAbonosDetalles.guardar(abonoDetalle);
+								
+								//Si esta solvente en capital se le perdona el interes
+								if(formato2d(prestamoDetalleDesc.getCapital().doubleValue())-formato2d(prestamoDetalleDesc.getCapital_pagado().doubleValue()) == 0) {
+//									prestamoDetalleDesc.setInteres_pagado(prestamoDetalleDesc.getInteres()); //FIXME:GGONZALEZ REVISAR
+									
+									double tempInteres = prestamoDetalleDesc.getInteres();
+									
+									prestamoDetalleDesc.setInteres(0.0);
+									prestamoDetalleDesc.setInteres_pagado(0.0);
+									servicePrestamosDetalles.guardar(prestamoDetalleDesc);
+									
+									List<FormaPago> formasPagoInteres = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(abonoDetalle.getAbono().getEmpresa(), "enlaceInteres", abonoDetalle.getAbono().getPrestamo().getMoneda());
+									
+									//Creamos el movimiento contable del descuento en el interes
+									EntradaIngresoContable entradaIngresoContable = new EntradaIngresoContable();
+									entradaIngresoContable.setTotal(formato2d(tempInteres*-1.0));
+									entradaIngresoContable.setBalance(formato2d(tempInteres*-1.0));
+									entradaIngresoContable.setCuentaContable(formasPagoInteres.get(0).getCuentaContable());
+									entradaIngresoContable.setEmpresa(abonoDetalle.getAbono().getEmpresa());
+									entradaIngresoContable.setUsuario(usuario);
+									entradaIngresoContable.setFecha(new Date());
+									entradaIngresoContable.setInfo("descuento de interes del prestamo "+abonoDetalle.getAbono().getPrestamo().getCodigo()+ " - " + abonoDetalle.getAbono().getCliente().getNombre());
+									serviceEntradasIngresosContables.guardar(entradaIngresoContable);
+								}
+							}
+						}
 					}
 				}
 				

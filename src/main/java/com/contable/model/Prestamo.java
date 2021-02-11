@@ -44,6 +44,8 @@ public class Prestamo {
 	
 	private String tipo;
 	
+	private String imagenes;
+	
 	@OneToOne
 	@JoinColumn(name = "id_cuenta_contable_capital")
 	private CuentaContable cuentaContableCapital;
@@ -457,22 +459,30 @@ public class Prestamo {
 		this.idCuentaBancoTemp = idCuentaBancoTemp;
 	}
 
+	public String getImagenes() {
+		return imagenes;
+	}
+
+	public void setImagenes(String imagenes) {
+		this.imagenes = imagenes;
+	}
+
 	@Override
 	public String toString() {
 		return "Prestamo [id=" + id + ", fecha=" + fecha + ", cliente=" + cliente + ", empresa=" + empresa
 				+ ", idClienteTemp=" + idClienteTemp + ", idCarpetaTemp=" + idCarpetaTemp + ", idCuentaTemp="
-				+ idCuentaTemp + ", fechaTemp=" + fechaTemp + ", tipo=" + tipo + ", cuentaContableCapital="
-				+ cuentaContableCapital + ", cuentaContableInteres=" + cuentaContableInteres + ", cuentaContableMora="
-				+ cuentaContableMora + ", cuentaContableAdicional=" + cuentaContableAdicional
-				+ ", cuentaContableFormaPago=" + cuentaContableFormaPago + ", prestamoTipo=" + prestamoTipo
-				+ ", idCuentaBancoTemp=" + idCuentaBancoTemp + ", dias_gracia=" + dias_gracia + ", monto=" + monto
-				+ ", pagos=" + pagos + ", tasa=" + tasa + ", codigo=" + codigo + ", forma_pago=" + forma_pago
-				+ ", valor_cuota=" + valor_cuota + ", mora=" + mora + ", observacion=" + observacion + ", balance="
-				+ balance + ", valor_interes=" + valor_interes + ", ultimoPago=" + ultimoPago + ", fecha_cron="
-				+ fecha_cron + ", numeroNota=" + numeroNota + ", usuario=" + usuario + ", estado=" + estado
-				+ ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta + ", total_cuota=" + total_cuota
-				+ ", total_capital=" + total_capital + ", total_interes=" + total_interes + ", total_neto=" + total_neto
-				+ ", gastos_cierre=" + gastos_cierre + ", cantidad_pagos=" + cantidad_pagos + ", capitalPagado="
-				+ capitalPagado + "]";
+				+ idCuentaTemp + ", fechaTemp=" + fechaTemp + ", tipo=" + tipo + ", imagenes=" + imagenes
+				+ ", cuentaContableCapital=" + cuentaContableCapital + ", cuentaContableInteres="
+				+ cuentaContableInteres + ", cuentaContableMora=" + cuentaContableMora + ", cuentaContableAdicional="
+				+ cuentaContableAdicional + ", cuentaContableFormaPago=" + cuentaContableFormaPago + ", prestamoTipo="
+				+ prestamoTipo + ", idCuentaBancoTemp=" + idCuentaBancoTemp + ", dias_gracia=" + dias_gracia
+				+ ", monto=" + monto + ", pagos=" + pagos + ", tasa=" + tasa + ", codigo=" + codigo + ", forma_pago="
+				+ forma_pago + ", valor_cuota=" + valor_cuota + ", mora=" + mora + ", observacion=" + observacion
+				+ ", balance=" + balance + ", valor_interes=" + valor_interes + ", ultimoPago=" + ultimoPago
+				+ ", fecha_cron=" + fecha_cron + ", numeroNota=" + numeroNota + ", usuario=" + usuario + ", estado="
+				+ estado + ", moneda=" + moneda + ", carpeta=" + carpeta + ", cuenta=" + cuenta + ", total_cuota="
+				+ total_cuota + ", total_capital=" + total_capital + ", total_interes=" + total_interes
+				+ ", total_neto=" + total_neto + ", gastos_cierre=" + gastos_cierre + ", cantidad_pagos="
+				+ cantidad_pagos + ", capitalPagado=" + capitalPagado + "]";
 	}
 }
