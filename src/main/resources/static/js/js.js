@@ -2602,6 +2602,63 @@ $("#agregarEnlaceEntidadEnlace").click(function(e){
 	}
 });
 
+$("#agregarEnlaceIngreso").click(function(e){
+	e.preventDefault();
+	e.stopImmediatePropagation();
+	var cuentaContable = $("#cuentaContableAuxiliarIngreso").val();
+	
+	if(!tasaCambio || tasaCambio == ""){
+		Swal.fire({
+			title : 'Advertencia!',
+			text : 'Debe ingresar la tasa de cambio',
+			position : 'top',
+			icon : 'warning',
+			confirmButtonText : 'Cool'
+		})
+	}else{
+		if(cuentaContable!=""){
+			$.post("/contabilidad/agregarEnlace",
+				{
+					"cuentaContableId":cuentaContable,
+					"identificador": "enlaceIngreso"
+				},function(data){
+					if(data == "1"){
+						$("#tablaEnlacesIngresos").load("/contabilidad/mostrarEnlacesIngresos",function(data){
+							addEvents();
+						});
+					}else if(data == "2"){
+						Swal.fire({
+							title : 'Advertencia!',
+							text : 'El enlace ya existe',
+							position : 'top',
+							icon : 'warning',
+							confirmButtonText : 'Cool'
+						})
+						$("#tablaEnlacesIngresos").load("/contabilidad/mostrarEnlacesIngresos",function(data){
+							addEvents();
+						});
+					}else{
+						Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo crear el enlace',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+					}
+				});
+		}else{
+			Swal.fire({
+				title : 'Error!',
+				text : 'Debe seleccionar una cuenta contable',
+				position : 'top',
+				icon : 'error',
+				confirmButtonText : 'Cool'
+			})
+		}
+	}	
+});
+
 $("#agregarPagoCompraTemp").click(function(e){
 	e.preventDefault();
 	e.stopImmediatePropagation();
@@ -6701,7 +6758,9 @@ function eliminarEnlace(id){
 																	$("#tablaEnlacesIntereses").load("/contabilidad/mostrarEnlacesIntereses",function(data){
 																		$("#tablaEnlacesMoras").load("/contabilidad/mostrarEnlacesMoras",function(data){
 																			$("#tablaEnlacesAdicionales").load("/contabilidad/mostrarEnlacesAdicionales",function(data){
-																				addEvents();
+																				$("#tablaEnlacesIngresos").load("/contabilidad/mostrarEnlacesIngresos",function(data){
+																					addEvents();
+																				});
 																			});
 																		});
 																	});

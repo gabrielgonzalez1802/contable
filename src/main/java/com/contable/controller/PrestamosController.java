@@ -3584,6 +3584,7 @@ public class PrestamosController {
 		List<FormaPago> formasPagoInteres = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceInteres", moneda);
 		List<FormaPago> formasPagoMoras = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceMora", moneda);
 		List<FormaPago> formasPagoCargos = serviceFormasPago.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceAdicional", moneda);
+		List<FormaPago> formasPagoIngresos = serviceFormasPago.buscarPorEmpresaIdentificador(empresa, "enlaceIngreso");
 		
 		//Creamos los registros contables
 		for (DetalleReporteAbono detalleReporteAbono : detalleReporteAbonos) {
@@ -3612,6 +3613,23 @@ public class PrestamosController {
 					entradaIngresoContable.setFecha(new Date());
 					entradaIngresoContable.setInfo("abono adicionales del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
 					serviceEntradasIngresosContables.guardar(entradaIngresoContable);
+					
+					//Cuenta contable para ingreso
+					if(!formasPagoIngresos.isEmpty()) {
+						List<FormaPago> fPTemp =  formasPagoIngresos.stream().filter(c -> 
+							c.getCuentaContable().getNombreCuenta().toLowerCase().contains("otros")).collect(Collectors.toList());
+						if(!fPTemp.isEmpty()) {
+							EntradaIngresoContable entradaIngresoContable2 = new EntradaIngresoContable();
+							entradaIngresoContable2.setTotal(detalleReporteAbono.getPagoCargos());
+							entradaIngresoContable2.setBalance(detalleReporteAbono.getPagoCargos());
+							entradaIngresoContable2.setCuentaContable(fPTemp.get(0).getCuentaContable());
+							entradaIngresoContable2.setEmpresa(empresa);
+							entradaIngresoContable2.setUsuario(usuario);
+							entradaIngresoContable2.setFecha(new Date());
+							entradaIngresoContable2.setInfo("Ingresos por adicionales del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
+							serviceEntradasIngresosContables.guardar(entradaIngresoContable2);
+						}
+					}
 				}
 			}
 			
@@ -3627,6 +3645,23 @@ public class PrestamosController {
 					entradaIngresoContable.setInfo("abono a interes del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
 					serviceEntradasIngresosContables.guardar(entradaIngresoContable);
 				}
+				
+				//Cuenta contable para ingreso
+				if(!formasPagoIngresos.isEmpty()) {
+					List<FormaPago> fPTemp =  formasPagoIngresos.stream().filter(c -> 
+						c.getCuentaContable().getNombreCuenta().toLowerCase().contains("interes")).collect(Collectors.toList());
+					if(!fPTemp.isEmpty()) {
+						EntradaIngresoContable entradaIngresoContable2 = new EntradaIngresoContable();
+						entradaIngresoContable2.setTotal(detalleReporteAbono.getPagoInteres());
+						entradaIngresoContable2.setBalance(detalleReporteAbono.getPagoInteres());
+						entradaIngresoContable2.setCuentaContable(fPTemp.get(0).getCuentaContable());
+						entradaIngresoContable2.setEmpresa(empresa);
+						entradaIngresoContable2.setUsuario(usuario);
+						entradaIngresoContable2.setFecha(new Date());
+						entradaIngresoContable2.setInfo("Ingresos por interes del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
+						serviceEntradasIngresosContables.guardar(entradaIngresoContable2);
+					}
+				}
 			}
 			
 			if(detalleReporteAbono.getPagoMoras()>0) {
@@ -3640,6 +3675,23 @@ public class PrestamosController {
 					entradaIngresoContable.setFecha(new Date());
 					entradaIngresoContable.setInfo("abono a moras del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
 					serviceEntradasIngresosContables.guardar(entradaIngresoContable);
+				}
+				
+				//Cuenta contable para ingreso
+				if(!formasPagoIngresos.isEmpty()) {
+					List<FormaPago> fPTemp =  formasPagoIngresos.stream().filter(c -> 
+						c.getCuentaContable().getNombreCuenta().toLowerCase().contains("mora")).collect(Collectors.toList());
+					if(!fPTemp.isEmpty()) {
+						EntradaIngresoContable entradaIngresoContable2 = new EntradaIngresoContable();
+						entradaIngresoContable2.setTotal(detalleReporteAbono.getPagoInteres());
+						entradaIngresoContable2.setBalance(detalleReporteAbono.getPagoInteres());
+						entradaIngresoContable2.setCuentaContable(fPTemp.get(0).getCuentaContable());
+						entradaIngresoContable2.setEmpresa(empresa);
+						entradaIngresoContable2.setUsuario(usuario);
+						entradaIngresoContable2.setFecha(new Date());
+						entradaIngresoContable2.setInfo("Ingresos por mora del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
+						serviceEntradasIngresosContables.guardar(entradaIngresoContable2);
+					}
 				}
 			}
 			

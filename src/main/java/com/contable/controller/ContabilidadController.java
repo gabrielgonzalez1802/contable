@@ -736,6 +736,14 @@ public class ContabilidadController {
 		return "contabilidad/enlaces :: #tablaEnlacesMoras";
 	}
 	
+	@GetMapping("/mostrarEnlacesIngresos")
+	public String mostrarEnlacesIngresos(Model model, HttpSession session) {
+		Empresa empresa = (Empresa) session.getAttribute("empresa");
+		List<FormaPago> formasPagos = serviceFormasPagos.buscarPorEmpresaIdentificador(empresa, "enlaceIngreso");
+		model.addAttribute("formasPagos", formasPagos);
+		return "contabilidad/enlaces :: #tablaEnlacesIngresos";
+	}
+	
 	@GetMapping("/mostrarEnlacesIntereses")
 	public String mostrarEnlacesIntereses(Model model, HttpSession session) {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
