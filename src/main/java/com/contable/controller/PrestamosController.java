@@ -1232,7 +1232,10 @@ public class PrestamosController {
 		entradaIngresoContableAdicionalesIngreso.setBalance(prestamo.getGastos_cierre());
 		entradaIngresoContableAdicionalesIngreso.setUsuario(usuario);
 		entradaIngresoContableAdicionalesIngreso.setInfo("otros cargos por prestamo "+prestamo.getCodigo()+" - "+prestamo.getCliente().getNombre());
-		serviceEntradasIngresosContables.guardar(entradaIngresoContableAdicionalesIngreso);
+		if(entradaIngresoContableAdicionalesIngreso.getCuentaContable()!=null) {
+			serviceEntradasIngresosContables.guardar(entradaIngresoContableAdicionalesIngreso);
+
+		}
 
 		//Actualizacion contable
 		// Buscamos las entradas ingresos contables null ASCENDENTE
@@ -2548,7 +2551,9 @@ public class PrestamosController {
 			entradaIngresoContableAdicionalesIngreso.setBalance(monto);
 			entradaIngresoContableAdicionalesIngreso.setUsuario(usuario);
 			entradaIngresoContableAdicionalesIngreso.setInfo("otros cargos por prestamo "+prestamo.getCodigo()+" - "+prestamo.getCliente().getNombre());
-			serviceEntradasIngresosContables.guardar(entradaIngresoContableAdicionalesIngreso);
+			if(entradaIngresoContableAdicionalesIngreso.getCuentaContable()!=null) {
+				serviceEntradasIngresosContables.guardar(entradaIngresoContableAdicionalesIngreso);
+			}
 
 			//Actualizacion contable
 			// Buscamos las entradas ingresos contables null ASCENDENTE
@@ -2583,7 +2588,7 @@ public class PrestamosController {
 			}
 		}
 
-		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+ 		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
 	}
 	
 	@PostMapping("/infoAbonos/")

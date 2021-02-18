@@ -1020,37 +1020,48 @@ function addEvents(){
 				confirmButtonText : 'Cool'
 			})
 		}else{
-			 $.post("/prestamos/guardarCargoCuota/",{
-				 "idPrestamo":idPrestamo,
-				 "motivo":motivo,
-				 "monto":monto,
-				 "cuota":cuota,
-				 "nota":nota
-			 },function(data){
-					console.log("Guardado de cargo");
-					if(data == "1"){
-						 Swal.fire({
-								title : 'Muy bien!',
-								text : 'Se ha guardado el cargo',
-								position : 'top',
-								icon : 'success',
-								confirmButtonText : 'Cool'
-							})
-					}else{
-						 Swal.fire({
-								title : 'Alerta!',
-								text : 'No se guardo el cargo',
-								position : 'top',
-								icon : 'warning',
-								confirmButtonText : 'Cool'
-							})
-					}
-//					$("#motivoCargoCuota").val("");
-					$("#montoCargoCuota").val("");
-					$("#modalAplicarCargosCuotas").modal('hide');
-					addEvents();
-					cargarDetallePrestamo(idPrestamo);
-			 });
+			if(monto>0){
+				 $.post("/prestamos/guardarCargoCuota/",{
+					 "idPrestamo":idPrestamo,
+					 "motivo":motivo,
+					 "monto":monto,
+					 "cuota":cuota,
+					 "nota":nota
+				 },function(data){
+						console.log("Guardado de cargo");
+						if(data == "1"){
+							 Swal.fire({
+									title : 'Muy bien!',
+									text : 'Se ha guardado el cargo',
+									position : 'top',
+									icon : 'success',
+									confirmButtonText : 'Cool'
+								})
+						}else{
+							 Swal.fire({
+									title : 'Alerta!',
+									text : 'No se guardo el cargo',
+									position : 'top',
+									icon : 'warning',
+									confirmButtonText : 'Cool'
+								})
+						}
+//						$("#motivoCargoCuota").val("");
+						$("#montoCargoCuota").val("");
+						$("#modalAplicarCargosCuotas").modal('hide');
+						addEvents();
+						cargarDetallePrestamo(idPrestamo);
+				 });
+			}else{
+				$("#modalAplicarCargosCuotas").modal('hide');
+				Swal.fire({
+					title : 'Alerta!',
+					text : 'Debe ingresar un monto',
+					position : 'top',
+					icon : 'warning',
+					confirmButtonText : 'Cool'
+				})
+			}
 		}
 	});
 	
