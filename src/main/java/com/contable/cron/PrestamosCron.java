@@ -61,7 +61,7 @@ public class PrestamosCron {
 	private final Integer VENCIDO = 2;
 	private final Integer LEGAL = 3;
 
-	@Scheduled(cron = "0 29 12 * * *")
+	@Scheduled(cron = "0 19 08 * * *")
 	public void calculoVencimientoCuota() throws ParseException {		
 		//Buscamos los detalles pendientes de los prestamos 
 		List<PrestamoDetalle> prestamoDetallesTemp = servicePrestamosDetalles.buscarPorEstado(0);
@@ -168,24 +168,26 @@ public class PrestamosCron {
  	 					}
  	 					
 	 	 			    //Ingreso contable de mora pesos
-		 	 			EntradaIngresoContable entradaIngresoContableMoraPeso = new EntradaIngresoContable();
-		 	 			if(!formasPagoPeso.isEmpty()) {
-		 	 				entradaIngresoContableMoraPeso.setCuentaContable(formasPagoPeso.get(0).getCuentaContable());
-		 	 			}else {
-		 	 				entradaIngresoContableMoraPeso.setCuentaContable(null);
-		 	 			}
-		 	 			
-		 	 			Double montoAcumuladoMora = calculoTotalMoraAcumuladaXCobrar(empresa, "pesos");
-					
-		 	 			if(entradaContablePeso.getId()!=null) {
-		 	 				entradaIngresoContableMoraPeso.setTotal(formato2d(montoAcumuladoMora) - entradaContablePeso.getBalanceContable());
-		 	 				entradaIngresoContableMoraPeso.setBalance(formato2d(montoAcumuladoMora) - entradaContablePeso.getBalanceContable());
-		 	 			}
-		 	 			
-		 	 			entradaIngresoContableMoraPeso.setEmpresa(empresa);
-		 	 			entradaIngresoContableMoraPeso.setFecha(new Date());
-		 	 			entradaIngresoContableMoraPeso.setInfo("moras generadas a clientes de la fecha "+sdf.format(new Date()));
-	 	 	 			serviceEntradasIngresosContables.guardar(entradaIngresoContableMoraPeso);
+ 	 					if(formasPagoPeso.get(0).getCuentaContable()!=null) {
+ 			 	 			EntradaIngresoContable entradaIngresoContableMoraPeso = new EntradaIngresoContable();
+ 			 	 			if(!formasPagoPeso.isEmpty()) {
+ 			 	 				entradaIngresoContableMoraPeso.setCuentaContable(formasPagoPeso.get(0).getCuentaContable());
+ 			 	 			}else {
+ 			 	 				entradaIngresoContableMoraPeso.setCuentaContable(null);
+ 			 	 			}
+ 			 	 			
+ 			 	 			Double montoAcumuladoMora = calculoTotalMoraAcumuladaXCobrar(empresa, "pesos");
+ 						
+ 			 	 			if(entradaContablePeso.getId()!=null) {
+ 			 	 				entradaIngresoContableMoraPeso.setTotal(formato2d(montoAcumuladoMora) - entradaContablePeso.getBalanceContable());
+ 			 	 				entradaIngresoContableMoraPeso.setBalance(formato2d(montoAcumuladoMora) - entradaContablePeso.getBalanceContable());
+ 			 	 			}
+ 			 	 			
+ 			 	 			entradaIngresoContableMoraPeso.setEmpresa(empresa);
+ 			 	 			entradaIngresoContableMoraPeso.setFecha(new Date());
+ 			 	 			entradaIngresoContableMoraPeso.setInfo("moras generadas a clientes de la fecha "+sdf.format(new Date()));
+ 		 	 	 			serviceEntradasIngresosContables.guardar(entradaIngresoContableMoraPeso);
+ 	 					}
 	 	 			}
  	 			}
 
@@ -205,27 +207,29 @@ public class PrestamosCron {
  	 					}
  	 					
  	 	 				//Ingreso contable de mora dolar
- 	 	 				EntradaIngresoContable entradaIngresoContableDolar = new EntradaIngresoContable();
- 	 	 				if(!formasPagoPeso.isEmpty()) {
- 	 	 					entradaIngresoContableDolar.setCuentaContable(formasPagoDolar.get(0).getCuentaContable());
- 	 	 				}else {
- 	 	 					entradaIngresoContableDolar.setCuentaContable(null);
- 	 	 				}
- 	 	 				
- 	 	 				Double montoAcumuladoMora = calculoTotalMoraAcumuladaXCobrar(empresa, "dolar");
- 	 	 					
- 	 	 				if(entradaContableDolar.getId()!=null) {
- 	 	 	 				entradaIngresoContableDolar.setTotal(formato2d(montoAcumuladoMora) - formato2d(entradaContableDolar.getBalanceContable()));
- 	 	 	 				entradaIngresoContableDolar.setBalance(formato2d(montoAcumuladoMora) - formato2d(entradaContableDolar.getBalanceContable()));
- 	 	 				}
- 	 	 				
- 	 	 				entradaIngresoContableDolar.setEmpresa(empresa);
- 	 	 				entradaIngresoContableDolar.setFecha(new Date());
- 	 	 				entradaIngresoContableDolar.setInfo("moras generadas a clientes de la fecha "+sdf.format(new Date()));
- 	 	 					
- 	 	 				if(!formasPagoPeso.isEmpty()) {
- 	 	 	 				serviceEntradasIngresosContables.guardar(entradaIngresoContableDolar);
- 	 	 				}
+ 	 					if(formasPagoDolar.get(0).getCuentaContable()!=null) {
+ 		 	 				EntradaIngresoContable entradaIngresoContableDolar = new EntradaIngresoContable();
+ 	 	 	 				if(!formasPagoPeso.isEmpty()) {
+ 	 	 	 					entradaIngresoContableDolar.setCuentaContable(formasPagoDolar.get(0).getCuentaContable());
+ 	 	 	 				}else {
+ 	 	 	 					entradaIngresoContableDolar.setCuentaContable(null);
+ 	 	 	 				}
+ 	 	 	 				
+ 	 	 	 				Double montoAcumuladoMora = calculoTotalMoraAcumuladaXCobrar(empresa, "dolar");
+ 	 	 	 					
+ 	 	 	 				if(entradaContableDolar.getId()!=null) {
+ 	 	 	 	 				entradaIngresoContableDolar.setTotal(formato2d(montoAcumuladoMora) - formato2d(entradaContableDolar.getBalanceContable()));
+ 	 	 	 	 				entradaIngresoContableDolar.setBalance(formato2d(montoAcumuladoMora) - formato2d(entradaContableDolar.getBalanceContable()));
+ 	 	 	 				}
+ 	 	 	 				
+ 	 	 	 				entradaIngresoContableDolar.setEmpresa(empresa);
+ 	 	 	 				entradaIngresoContableDolar.setFecha(new Date());
+ 	 	 	 				entradaIngresoContableDolar.setInfo("moras generadas a clientes de la fecha "+sdf.format(new Date()));
+ 	 	 	 					
+ 	 	 	 				if(!formasPagoPeso.isEmpty()) {
+ 	 	 	 	 				serviceEntradasIngresosContables.guardar(entradaIngresoContableDolar);
+ 	 	 	 				}
+ 	 					}
  					}
  				}
  			}
@@ -589,7 +593,7 @@ public class PrestamosCron {
 		return monto;
 	}
 
-	@Scheduled(cron = "0 50 13 * * *")
+	@Scheduled(cron = "0 20 08 * * *")
 	public void generarPrestamoInteresDetalle() throws ParseException {
 		List<Prestamo> prestamos = servicePrestamos.buscarPorEstado(NORMAL);
 		LocalDateTime dateAcct =  LocalDateTime.now();
