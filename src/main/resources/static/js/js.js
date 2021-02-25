@@ -6126,17 +6126,46 @@ function eliminarCliente(id){
 		  cancelButtonText: 'Cancelar',
 		}).then((result) => {
 		  if (result.value) {
-		    Swal.fire({
-			  icon: 'success',
-			  title: 'Muy bien!',
-			  text: 'El registro se borrara.!',
-			  position: 'top'
-			})
-		    
-			$("#contenido").load("/clientes/eliminar/"+id,function(data){
-				console.log("Eliminar Cliente");
-				addEvents();
-			});
+			  
+			  $.ajax({
+		            url: "/clientes/eliminar/"+id,
+		            processData: false,
+		            contentType: false,
+		            cache: false,
+		            success: function (res) {
+			            if(res=="1"){
+							Swal.fire({
+								title : 'Muy bien!',
+								text : 'Registro eliminado',
+								position : 'top',
+								icon : 'success',
+								confirmButtonText : 'Cool'
+							})
+						}else{
+							Swal.fire({
+								title : 'Alerta!',
+								text : 'El registro no se puede eliminar, Tiene datos asociados',
+								position : 'top',
+								icon : 'warning',
+								confirmButtonText : 'Cool'
+							})
+						}
+			            $("#contenido").load("/clientes/",function(data){
+			            	console.log("Lista de clientes");
+			        		addEvents();
+			        	});
+		            },
+		            error: function (err) {
+		                console.error(err);
+		                Swal.fire({
+							title : 'Error!',
+							text : 'No se pudo completar la operacion, intente mas tarde',
+							position : 'top',
+							icon : 'error',
+							confirmButtonText : 'Cool'
+						})
+		            }
+		        });
 		  }
 		})
 }
@@ -6493,6 +6522,56 @@ function modificarCuenta(id){
 	});
 }
 
+function eliminarCuenta(id){
+	Swal.fire({
+		  title: 'Seguro de eliminar el registro?',
+		  icon: 'warning',
+		  showCancelButton: true,
+		  confirmButtonColor: '#3085d6',
+		  cancelButtonColor: '#d33',
+		  cancelButtonText: 'Cancelar',
+		  position : 'top',
+		  confirmButtonText: 'Si, Eliminar!'
+		}).then((result) => {
+		  if (result.isConfirmed) {
+				 $.get("/cuentas/eliminar/"+id,function(data){
+							 if(data == 1){
+									Swal.fire({
+									title: 'Muy bien!',
+									text: "Registro eliminado",
+									icon: 'success',
+									position : 'top',
+									showCancelButton: false,
+									 confirmButtonColor: '#3085d6',
+									  confirmButtonText: 'Ok!'
+									}).then((result) => {
+									  if (result.isConfirmed) {
+										  $("#contenido").load("/cuentas/listaCuentas",function(data){
+												ocultarDetalleAmortizacion();
+												console.log("Lista de cuentas");
+												addEvents();
+											});
+									  }
+									})
+							 }else{
+								Swal.fire({
+								title: 'Alerta!',
+								text: "No se pudo eliminar el registro, tiene datos asociados",
+								icon: 'warning',
+								position : 'top',
+								showCancelButton: false,
+								 confirmButtonColor: '#3085d6',
+								  confirmButtonText: 'Ok!'
+								}).then((result) => {
+//								  if (result.isConfirmed) {
+//								  }
+							})
+						 }
+				});
+		  }
+	})
+}
+
 function modificarCuentaContable(id){
 	$("#modalCuentas").modal('hide');
 	$("#editCuentaContable").load("/cuentasContables/modificarCuentaContable/"+id,function(data){
@@ -6730,6 +6809,150 @@ function eliminarProductoTemp(id){
 			$("#cuentasDelSuplidor").hide();
 		}
 	});
+}
+
+function eliminarUsuario(id){
+	Swal.fire({
+		  title: 'Seguro de eliminar el registro?',
+		  icon: 'warning',
+		  showCancelButton: true,
+		  confirmButtonColor: '#3085d6',
+		  cancelButtonColor: '#d33',
+		  cancelButtonText: 'Cancelar',
+		  position : 'top',
+		  confirmButtonText: 'Si, Eliminar!'
+		}).then((result) => {
+		  if (result.isConfirmed) {
+				 $.get("/usuarios/eliminar/"+id,function(data){
+							 if(data == 1){
+									Swal.fire({
+									title: 'Muy bien!',
+									text: "Registro eliminado",
+									icon: 'success',
+									position : 'top',
+									showCancelButton: false,
+									 confirmButtonColor: '#3085d6',
+									  confirmButtonText: 'Ok!'
+									}).then((result) => {
+									  if (result.isConfirmed) {
+										  $("#contenido").load("/usuarios/listaUsuarios",function(data){
+												console.log("Lista de usuarios");
+												addEvents();
+											});
+									  }
+									})
+							 }else{
+								Swal.fire({
+								title: 'Alerta!',
+								text: "No se pudo eliminar el registro, tiene datos asociados",
+								icon: 'warning',
+								position : 'top',
+								showCancelButton: false,
+								 confirmButtonColor: '#3085d6',
+								  confirmButtonText: 'Ok!'
+								}).then((result) => {
+//								  if (result.isConfirmed) {
+//								  }
+							})
+						 }
+				});
+		  }
+	})
+}
+
+function eliminarEmpleado(id){
+	Swal.fire({
+		  title: 'Seguro de eliminar el registro?',
+		  icon: 'warning',
+		  showCancelButton: true,
+		  confirmButtonColor: '#3085d6',
+		  cancelButtonColor: '#d33',
+		  cancelButtonText: 'Cancelar',
+		  position : 'top',
+		  confirmButtonText: 'Si, Eliminar!'
+		}).then((result) => {
+		  if (result.isConfirmed) {
+				 $.get("/empleados/eliminarEmpleado/"+id,function(data){
+							 if(data == 1){
+									Swal.fire({
+									title: 'Muy bien!',
+									text: "Registro eliminado",
+									icon: 'success',
+									position : 'top',
+									showCancelButton: false,
+									 confirmButtonColor: '#3085d6',
+									  confirmButtonText: 'Ok!'
+									}).then((result) => {
+									  if (result.isConfirmed) {
+										  $("#contenido").load("/empleados/listaEmpleados",function(data){
+												console.log("Lista de empleados");
+												addEvents();
+											});
+									  }
+									})
+							 }else{
+								Swal.fire({
+								title: 'Alerta!',
+								text: "No se pudo eliminar el registro, tiene datos asociados",
+								icon: 'warning',
+								position : 'top',
+								showCancelButton: false,
+								 confirmButtonColor: '#3085d6',
+								  confirmButtonText: 'Ok!'
+								}).then((result) => {
+//								  if (result.isConfirmed) {
+//								  }
+							})
+						 }
+				});
+		  }
+	})
+}
+
+function eliminarEmpresa(id){
+		Swal.fire({
+			  title: 'Seguro de eliminar el registro?',
+			  icon: 'warning',
+			  showCancelButton: true,
+			  confirmButtonColor: '#3085d6',
+			  cancelButtonColor: '#d33',
+			  cancelButtonText: 'Cancelar',
+			  position : 'top',
+			  confirmButtonText: 'Si, Eliminar!'
+			}).then((result) => {
+			  if (result.isConfirmed) {
+					 $.get("/empresas/eliminar/"+id,function(data){
+								 if(data == 1){
+										Swal.fire({
+										title: 'Muy bien!',
+										text: "Registro eliminado",
+										icon: 'success',
+										position : 'top',
+										showCancelButton: false,
+										 confirmButtonColor: '#3085d6',
+										  confirmButtonText: 'Ok!'
+										}).then((result) => {
+										  if (result.isConfirmed) {
+											  location.reload();
+										  }
+										})
+								 }else{
+									Swal.fire({
+									title: 'Alerta!',
+									text: "No se pudo eliminar el registro, tiene datos asociados",
+									icon: 'warning',
+									position : 'top',
+									showCancelButton: false,
+									 confirmButtonColor: '#3085d6',
+									  confirmButtonText: 'Ok!'
+									}).then((result) => {
+//									  if (result.isConfirmed) {
+//									  }
+								})
+							 }
+				});
+			 }
+	})
 }
 
 function eliminarEnlace(id){

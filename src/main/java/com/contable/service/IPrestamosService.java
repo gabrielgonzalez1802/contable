@@ -7,6 +7,7 @@ import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
 import com.contable.model.Empresa;
 import com.contable.model.Prestamo;
+import com.contable.model.Usuario;
 
 public interface IPrestamosService {
 	Prestamo buscarPorId(Integer id);
@@ -17,6 +18,7 @@ public interface IPrestamosService {
 	List<Prestamo> buscarPorEmpresaMonedaEstadoNotIn(Empresa empresa, String moneda, List<Integer> estados);
 	List<Prestamo> buscarPorCliente(Cliente cliente);
 	List<Prestamo> buscarPorCarpeta(Carpeta carpeta);
+	List<Prestamo> buscarPorUsuario(Usuario usuario);
 	List<Prestamo> buscarPorCarpetaEmpresa(Carpeta carpeta, Empresa empresa);
 	List<Prestamo> buscarPorCarpetaEmpresaEstado(Carpeta carpeta, Empresa empresa, Integer estado);
 	List<Prestamo> buscarPorCarpetaEmpresaMonedaEstadoNotIn(Carpeta carpeta, Empresa empresa, String moneda, List<Integer> estados);

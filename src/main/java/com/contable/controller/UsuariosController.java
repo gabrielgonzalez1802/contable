@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.contable.model.Perfil;
+import com.contable.model.Prestamo;
 import com.contable.model.Usuario;
 import com.contable.service.IPerfilesService;
+import com.contable.service.IPrestamosService;
 import com.contable.service.IUsuariosService;
 
 @Controller
@@ -36,6 +38,9 @@ public class UsuariosController {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private IPrestamosService servicePrestamos;
 
 	@GetMapping("/agregarUsuarios")
 	public String agregarUsuarios(Model model, HttpSession session) {
@@ -62,6 +67,21 @@ public class UsuariosController {
 		model.addAttribute("usuario", usuario);
 		model.addAttribute("perfiles", perfiles);
 		return "usuarios/modificarUsuario :: modificarUsuario";
+	}
+	
+	@GetMapping("/eliminar/{id}")
+	public ResponseEntity<Integer> eliminar(@PathVariable(name = "id") Integer id){
+		Integer response = 0;
+		Usuario usuario = serviceUsuarios.buscarPorId(id);
+		List<Prestamo> prestamos = servicePrestamos.buscarPorUsuario(usuario);
+		if(prestamos.isEmpty()) {
+			serviceUsuarios.eliminar(id);
+			Usuario usuarioTemp = serviceUsuarios.buscarPorId(id);
+			if(usuarioTemp==null) {
+				response = 1;
+			}
+		}
+		return new ResponseEntity<Integer>(response, HttpStatus.ACCEPTED);
 	}
 	
 	@GetMapping("/cambiarPassword/{id}")

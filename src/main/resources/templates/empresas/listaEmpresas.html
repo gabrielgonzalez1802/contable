@@ -45,7 +45,7 @@
 				        <td> <img th:src="@{/logos/{img} (img=${empresa.logo} )}"> </td>
 				        <td>
 				            <a style="color: #fff;cursor: pointer;" th:onclick="'modificarEmpresa(\'' + ${empresa.id} + '\');'" class="btn btn-primary btn-sm" role="button" title="Editar el registro."><i class="fa fa-edit" aria-hidden="true"></i></a>
-<!-- 							<a style="color: #fff;cursor: pointer;" th:onclick="'asignarDeduccion(\'' + ${empleado.id} + '\');'" class="btn btn-success btn-sm" role="button" title="Deduccion"><i class="fas fa-minus" aria-hidden="true"></i></a> -->
+							<a style="color: #fff;cursor: pointer;" th:onclick="'eliminarEmpresa(\'' + ${empresa.id} + '\');'" class="btn btn-danger btn-sm" role="button" title="Eliminar"><i class="fas fa-trash" aria-hidden="true"></i></a>
 				        </td>
 				      </tr>
 				    </tbody>

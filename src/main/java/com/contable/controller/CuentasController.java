@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.contable.model.Carpeta;
 import com.contable.model.Cuenta;
@@ -71,6 +72,19 @@ public class CuentasController {
 		cuenta.setMontoBigDecimal(bigDecimal);
 		model.addAttribute("cuenta", cuenta);
 		return "cuentas/formUpdateCuentas :: formUpdate";
+	}
+	
+	@GetMapping("/eliminar/{id}")
+	@ResponseBody
+	public ResponseEntity<Integer> eliminar(@PathVariable(name = "id") Integer id){
+		Integer response = 0;
+		Cuenta cuenta = serviceCuentas.buscarPorId(id);
+		serviceCuentas.eliminar(cuenta);
+		Cuenta cuentaTemp = serviceCuentas.buscarPorId(id);
+		if(cuentaTemp==null) {
+			response = 1;
+		}
+		return new ResponseEntity<Integer>(response, HttpStatus.ACCEPTED);
 	}
 	
 	@PostMapping("/crear")

@@ -66,6 +66,24 @@ public class EmpleadosController {
 		return "empleados/formEmpleados :: form";
 	}
 	
+	@GetMapping("/eliminarEmpleado/{id}")
+	@ResponseBody
+	public ResponseEntity<Integer> eliminarEmpleado(Model model, @PathVariable(name = "id") Integer id) {
+		Integer response = 0;
+		Empleado empleado = serviceEmpleados.buscarPorId(id);
+		//Verificamos si tiene deducciones o asignaciones
+		List<Deduccion> deducciones = serviceDeducciones.buscarPorEmpleado(empleado);
+		List<Asignacion> asignaciones = serviceAsignaciones.buscarPorEmpleado(empleado);
+		if(deducciones.isEmpty() && asignaciones.isEmpty()) {
+			serviceEmpleados.eliminar(empleado);
+			Empleado empTmp = serviceEmpleados.buscarPorId(id);
+			if(empTmp==null) {
+				response = 1;
+			}
+		}
+		return new ResponseEntity<Integer>(response, HttpStatus.ACCEPTED);
+	}
+	
 	@GetMapping("/listaAsignaciones/{id}")
 	public String listaAsignaciones(Model model, @PathVariable(name = "id") Integer idEmpleado) {
 		Empleado empleado = serviceEmpleados.buscarPorId(idEmpleado);

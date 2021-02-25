@@ -203,18 +203,21 @@ public class ClientesController {
 	}
 
 	@GetMapping("/eliminar/{id}")
-	public String eliminarCliente(Model model, @PathVariable(name = "id") Integer id, HttpSession session) {
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+	@ResponseBody
+	public ResponseEntity<Integer> eliminarCliente(Model model, @PathVariable(name = "id") Integer id, HttpSession session) {
 		Cliente cliente = serviceClientes.buscarPorId(id);
-		Empresa empresa = (Empresa) session.getAttribute("empresa");
-		cliente.setEliminado(new Date());
-		cliente.setEstado(0);
-		cliente.setUsuarioEliminado(usuario);
-		serviceClientes.guardar(cliente);
-		List<Cliente> listaClientes = serviceClientes.buscarPorEmpresa(empresa).stream().filter(e -> e.getEstado() == 1)
-				.collect(Collectors.toList());
-		model.addAttribute("listaClientes", listaClientes);
-		return "clientes/listaClientes :: listaCliente";
+		Integer response = 0;
+		//Verificamos si hay prestamos asociados al cliente
+		List<Prestamo> prestamos = servicePrestamos.buscarPorCliente(cliente);
+		if(prestamos.isEmpty()) {
+			serviceClientes.eliminar(cliente);
+			//Nos aseguramos que se elimino el cliente
+			Cliente clienteTemp = serviceClientes.buscarPorId(id);
+			if(clienteTemp==null) {
+				response = 1;
+			}
+		}
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@PostMapping("/guardar")

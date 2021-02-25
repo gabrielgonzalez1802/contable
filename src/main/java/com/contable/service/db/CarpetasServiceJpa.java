@@ -56,4 +56,9 @@ public class CarpetasServiceJpa implements ICarpetasService{
 		return repo.findByPrincipalAndEmpresa(id, empresa);
 	}
 
+	@Override
+	public List<Carpeta> buscarPorEmpresa(Empresa empresa) {
+		return repo.findByEmpresa(empresa);
+	}
+
 }

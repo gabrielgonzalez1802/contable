@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.contable.model.Carpeta;
 import com.contable.model.Empresa;
+import com.contable.service.ICarpetasService;
 import com.contable.service.IEmpresasService;
 import com.contable.util.Utileria;
 
@@ -26,6 +29,9 @@ public class EmpresasController {
 	
 	@Autowired
 	private IEmpresasService serviceEmpresas;
+	
+	@Autowired
+	private ICarpetasService serviceCarpetas;
 	
 	@Value("${contable.ruta.imagenes}")
 	private String ruta;
@@ -61,6 +67,7 @@ public class EmpresasController {
 	}
 	
 	@PostMapping("/modificar")
+	@ResponseBody
 	public ResponseEntity<String> modificar(Empresa empresa){
 		String response = "0";
 		
@@ -103,5 +110,21 @@ public class EmpresasController {
 		Empresa empresa = serviceEmpresas.buscarPorId(idEmpresa);
 		model.addAttribute("empresa", empresa);
 		return "empresas/formEmpresas :: formEdit";
+	}
+	
+	@GetMapping("/eliminar/{id}")
+	@ResponseBody
+	public ResponseEntity<Integer> eliminar(@PathVariable("id") Integer idEmpresa){
+		Integer response = 0;
+		Empresa empresa = serviceEmpresas.buscarPorId(idEmpresa);
+		List<Carpeta> carpetas = serviceCarpetas.buscarPorEmpresa(empresa);
+		if(carpetas.isEmpty()) {
+			serviceEmpresas.eliminar(empresa);
+			Empresa tmpEmpresa = serviceEmpresas.buscarPorId(idEmpresa);
+			if(tmpEmpresa==null) {
+				response = 1;
+			}
+		}
+		return new ResponseEntity<Integer>(response, HttpStatus.ACCEPTED);
 	}
 }

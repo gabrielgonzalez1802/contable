@@ -12,4 +12,5 @@ public interface CarpetasRepository extends JpaRepository<Carpeta, Integer> {
 	List<Carpeta> findByPrincipal(Integer principal);
 	Carpeta findByNombreAndEmpresa(String nombre, Empresa empresa);
 	List<Carpeta> findByPrincipalAndEmpresa(Integer principal, Empresa empresa);
+	List<Carpeta> findByEmpresa(Empresa empresa);
 }

@@ -11,6 +11,7 @@ import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
 import com.contable.model.Empresa;
 import com.contable.model.Prestamo;
+import com.contable.model.Usuario;
 import com.contable.repository.PrestamosRepository;
 import com.contable.service.IPrestamosService;
 
@@ -146,6 +147,11 @@ public class PrestamosServiceJpa implements IPrestamosService{
 	public List<Prestamo> buscarPorCarpetaEmpresaMonedaEstadoNotIn(Carpeta carpeta, Empresa empresa, String moneda,
 			List<Integer> estados) {
 		return repo.findByCarpetaAndEmpresaAndMonedaAndEstadoNotIn(carpeta, empresa, moneda, estados);
+	}
+
+	@Override
+	public List<Prestamo> buscarPorUsuario(Usuario usuario) {
+		return repo.findByUsuario(usuario);
 	}
 
 }

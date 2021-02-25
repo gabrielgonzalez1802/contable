@@ -9,8 +9,10 @@ import com.contable.model.Carpeta;
 import com.contable.model.Cliente;
 import com.contable.model.Empresa;
 import com.contable.model.Prestamo;
+import com.contable.model.Usuario;
 
 public interface PrestamosRepository extends JpaRepository<Prestamo, Integer>{
+	List<Prestamo> findByUsuario(Usuario usuario);
 	List<Prestamo> findByEmpresaAndEstado(Empresa empresa, Integer estado);
 	List<Prestamo> findByEstadoNotIn(List<Integer> estados);
 	List<Prestamo> findByEmpresaAndEstadoNotIn(Empresa empresa, List<Integer> estados);
