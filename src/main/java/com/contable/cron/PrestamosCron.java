@@ -61,7 +61,7 @@ public class PrestamosCron {
 	private final Integer VENCIDO = 2;
 	private final Integer LEGAL = 3;
 
-	@Scheduled(cron = "0 20 03 * * *")
+	@Scheduled(cron = "0 00 03 * * *")
 	public void calculoVencimientoCuota() throws ParseException {		
 		//Buscamos los detalles pendientes de los prestamos 
 		List<PrestamoDetalle> prestamoDetallesTemp = servicePrestamosDetalles.buscarPorEstado(0);
@@ -593,7 +593,7 @@ public class PrestamosCron {
 		return monto;
 	}
 
-	@Scheduled(cron = "0 00 03 * * *")
+	@Scheduled(cron = "0 10 03 * * *")
 	public void generarPrestamoInteresDetalle() throws ParseException {
 		List<Prestamo> prestamos = servicePrestamos.buscarPorEstado(NORMAL);
 		LocalDateTime dateAcct =  LocalDateTime.now();
@@ -641,7 +641,7 @@ public class PrestamosCron {
 						if(monto>0) {
 							if(prestamo.getMoneda().equalsIgnoreCase("pesos")) {
 								contInteresPeso += monto;
-							}else if(prestamoInteresDetalle.getPrestamo().getMoneda().equalsIgnoreCase("dolar")) {
+							}else if(prestamo.getMoneda().equalsIgnoreCase("dolar")) {
 								contInteresDolar += monto;
 							}
 							
@@ -842,7 +842,7 @@ public class PrestamosCron {
 					
 				if (!formasPagoPeso.isEmpty()) {
 					entradasIngresosContablesPeso = serviceEntradasIngresosContables
-							.buscarPorEmpresaCuentaContable(empresa, formasPagoDolar.get(0).getCuentaContable());
+							.buscarPorEmpresaCuentaContable(empresa, formasPagoPeso.get(0).getCuentaContable());
 					EntradaIngresoContable entradaContablePeso = new EntradaIngresoContable();
 
 					if (!entradasIngresosContablesPeso.isEmpty()) {
@@ -883,7 +883,7 @@ public class PrestamosCron {
 				
 				formasPagoDolar = serviceFormasPagos.buscarPorEmpresaIdentificadorTasaCambio(empresa, "enlaceMora", "dolar");
 						
-	 			if(!formasPagoPeso.isEmpty()) {
+	 			if(!formasPagoDolar.isEmpty()) {
 	 				//Ingreso contable de mora dolar
 	 				entradasIngresosContablesDolar = serviceEntradasIngresosContables
 							.buscarPorEmpresaCuentaContable(empresa, formasPagoDolar.get(0).getCuentaContable());
