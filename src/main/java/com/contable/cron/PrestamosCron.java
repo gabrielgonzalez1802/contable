@@ -61,7 +61,7 @@ public class PrestamosCron {
 	private final Integer VENCIDO = 2;
 	private final Integer LEGAL = 3;
 
-	@Scheduled(cron = "0 00 03 * * *")
+	@Scheduled(cron = "0 49 20 * * *")
 	public void calculoVencimientoCuota() throws ParseException {		
 		//Buscamos los detalles pendientes de los prestamos 
 		List<PrestamoDetalle> prestamoDetallesTemp = servicePrestamosDetalles.buscarPorEstado(0);
@@ -113,6 +113,10 @@ public class PrestamosCron {
 					double vencidos = diasVencidos(fecha, fechaAcct);
 					
 					Double mora = 0.0;
+					
+					if(prestamoDetalle.getInteres_mora()==null) {
+						prestamoDetalle.setInteres_mora(0.0);
+					}
 					
 					//Calculamos los dias vencidos despues de los dias de gracia
 					mora = ((prestamoDetalle.getCuota() * (prestamoDetalle.getInteres_mora()/100) ) / 30.00) * vencidos;
