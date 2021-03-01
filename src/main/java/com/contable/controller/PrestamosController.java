@@ -3626,6 +3626,7 @@ public class PrestamosController {
 						entradaIngresoContable.setEmpresa(empresa);
 						entradaIngresoContable.setUsuario(usuario);
 						entradaIngresoContable.setFecha(new Date());
+						entradaIngresoContable.setTipo("credito");
 						entradaIngresoContable.setInfo("abono a capital del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
 						serviceEntradasIngresosContables.guardar(entradaIngresoContable);
 					}
@@ -3660,6 +3661,7 @@ public class PrestamosController {
 							entradaIngresoContable2.setEmpresa(empresa);
 							entradaIngresoContable2.setUsuario(usuario);
 							entradaIngresoContable2.setFecha(new Date());
+							entradaIngresoContable2.setTipo("debito");
 							entradaIngresoContable2.setInfo("Ingresos por adicionales del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
 							serviceEntradasIngresosContables.guardar(entradaIngresoContable2);
 						}
@@ -3696,6 +3698,7 @@ public class PrestamosController {
 							entradaIngresoContable2.setEmpresa(empresa);
 							entradaIngresoContable2.setUsuario(usuario);
 							entradaIngresoContable2.setFecha(new Date());
+							entradaIngresoContable2.setTipo("debito");
 							entradaIngresoContable2.setInfo("Ingresos por interes del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
 							serviceEntradasIngresosContables.guardar(entradaIngresoContable2);
 						}
@@ -3731,6 +3734,7 @@ public class PrestamosController {
 							entradaIngresoContable2.setEmpresa(empresa);
 							entradaIngresoContable2.setUsuario(usuario);
 							entradaIngresoContable2.setFecha(new Date());
+							entradaIngresoContable2.setTipo("debito");
 							entradaIngresoContable2.setInfo("Ingresos por mora del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
 							serviceEntradasIngresosContables.guardar(entradaIngresoContable2);
 						}
@@ -3751,6 +3755,7 @@ public class PrestamosController {
 				entradaIngresoContableCajaGeneral.setEmpresa(empresa);
 				entradaIngresoContableCajaGeneral.setUsuario(usuario);
 				entradaIngresoContableCajaGeneral.setFecha(new Date());
+				entradaIngresoContableCajaGeneral.setTipo("debito");
 				entradaIngresoContableCajaGeneral.setInfo("Ingresos tipo debito a caja general del prestamo "+abonoGuardado.getPrestamo().getCodigo()+" - " + abonoGuardado.getPrestamo().getCliente().getNombre());
 				serviceEntradasIngresosContables.guardar(entradaIngresoContableCajaGeneral);
 			}
