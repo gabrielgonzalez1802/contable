@@ -53,7 +53,6 @@
 									<th style="color: #f3f3f3; padding-top: 10px;">Cuenta Contable</th>
 									<th style="color: #f3f3f3; padding-top: 10px;">Referencia</th>
 									<th style="color: #f3f3f3; padding-top: 10px;">Balance Inicial</th>
-								<!--	<th style="color: #f3f3f3; padding-top: 10px;">Transaccion</th> -->
 									<th style="color: #f3f3f3; padding-top: 10px;">Debito</th>
 									<th style="color: #f3f3f3; padding-top: 10px;">Credito</th>
 									<th style="color: #f3f3f3; padding-top: 10px;">Balance Final</th>
@@ -66,7 +65,6 @@
 									<td th:text="${entradaContable.cuentaContable.codigo + ' ' + entradaContable.cuentaContable.nombreCuenta}"></td>
 									<td th:text="${entradaContable.info}"></td>
 									<td th:text="${entradaContable.balanceContableInicial}"></td>
-									<!--  <td th:text="${entradaContable.balance}"></td> -->
 									<td th:if="${entradaContable.tipo == 'debito'}" th:text="${entradaContable.balance}"></td>
 									<td th:unless="${entradaContable.tipo == 'debito'}" th:text="''"></td>
 									<td th:if="${entradaContable.tipo == 'credito'}" th:text="${entradaContable.balance * -1.00}"></td>
@@ -74,14 +72,13 @@
 									<td th:text="${entradaContable.balanceContable}"></td>
 									<td th:if="${entradaContable.usuario != null}" th:text="${entradaContable.usuario.username}"></td>
 									<td th:unless="${entradaContable.usuario != null}" th:text="'Sistema'"></td>
-<!-- 									<td> -->
-<!-- 										<button -->
-<!-- 											th:onclick="'eliminarEntradaDiarioTemp(\'' + ${entradaTemp.id} + '\');'" -->
-<!-- 											class="btn btn-danger"> -->
-<!-- 											<i class="fas fa-trash"></i> -->
-<!-- 										</button> -->
-<!-- 									</td> -->
 								</tr>
+								<tr> 
+									<td colspan="4"></td>
+									<td style="font-weight: bold;" th:text="${totalDebito}"></td>
+									<td style="font-weight: bold;" th:text="${totalCredito}"></td>
+									<td></td>
+ 								</tr> 
 <!-- 								<tr> -->
 <!-- 									<td colspan="4"></td> -->
 <!-- 									<td th:text="'Total Debito: ' + ${totalDebitoTemp}"></td> -->

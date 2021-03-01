@@ -499,6 +499,23 @@ public class ContabilidadController {
 		model.addAttribute("entradasIngresosContables", entradasIngresosContables);
 		model.addAttribute("cuentasContables", cuentasContablesAuxiliares);
 		model.addAttribute("fecha", new Date());
+		Double totalDebito = 0.0;
+		Double totalCredito = 0.0;
+		if(!entradasIngresosContables.isEmpty()) {
+			for (EntradaIngresoContable entradaIngresoContable : entradasIngresosContables) {
+				if(entradaIngresoContable.getTipo()!=null) {
+					if(entradaIngresoContable.getTipo().equalsIgnoreCase("debito")) {
+						totalDebito+=entradaIngresoContable.getBalance();
+					}
+					if(entradaIngresoContable.getTipo().equalsIgnoreCase("credito")) {
+						totalCredito+=entradaIngresoContable.getBalance();
+					}
+				}
+			}
+		}
+		
+		model.addAttribute("totalDebito", totalDebito);
+		model.addAttribute("totalCredito", totalCredito);
 		return "contabilidad/libros :: libros";
 	}
 	
@@ -507,6 +524,8 @@ public class ContabilidadController {
 		Empresa empresa = (Empresa) session.getAttribute("empresa");
 		Date fechaDesde = formatter.parse(desde);
 		Date fechaHasta = formatter.parse(hasta);
+		Double totalDebito = 0.0;
+		Double totalCredito = 0.0;
 		List<EntradaIngresoContable> entradasIngresosContables = new LinkedList<>();
 		if(cuentaContableId == null || cuentaContableId.equals("")) {
 			entradasIngresosContables = serviceEntradasIngresosContables.buscarPorEmpresaFechaBetween(empresa, fechaDesde, fechaHasta);
@@ -515,6 +534,22 @@ public class ContabilidadController {
 			entradasIngresosContables = serviceEntradasIngresosContables.buscarPorEmpresaCuentaContableFechas(empresa, cuentaContable, fechaDesde, fechaHasta);
 		}
 		model.addAttribute("entradasIngresosContables", entradasIngresosContables);
+		
+		if(!entradasIngresosContables.isEmpty()) {
+			for (EntradaIngresoContable entradaIngresoContable : entradasIngresosContables) {
+				if(entradaIngresoContable.getTipo()!=null) {
+					if(entradaIngresoContable.getTipo().equalsIgnoreCase("debito")) {
+						totalDebito+=entradaIngresoContable.getBalance();
+					}
+					if(entradaIngresoContable.getTipo().equalsIgnoreCase("credito")) {
+						totalCredito+=entradaIngresoContable.getBalance();
+					}
+				}
+			}
+		}
+		
+		model.addAttribute("totalDebito", totalDebito);
+		model.addAttribute("totalCredito", totalCredito);
 		return "contabilidad/libros :: #tablaLibroDiario";
 	}
 	
