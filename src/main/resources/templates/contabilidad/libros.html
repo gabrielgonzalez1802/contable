@@ -62,14 +62,23 @@
 							<tbody>
 								<tr th:each="entradaContable : ${entradasIngresosContables}">
 									<td th:text="${#dates.format(entradaContable.fecha, 'dd-MM-yyyy')}"></td>
+									
 									<td th:text="${entradaContable.cuentaContable.codigo + ' ' + entradaContable.cuentaContable.nombreCuenta}"></td>
+									
 									<td th:text="${entradaContable.info}"></td>
+									
 									<td th:text="${entradaContable.balanceContableInicial}"></td>
-									<td th:if="${entradaContable.tipo == 'debito'}" th:text="${entradaContable.balance}"></td>
-									<td th:unless="${entradaContable.tipo == 'debito'}" th:text="''"></td>
-									<td th:if="${entradaContable.tipo == 'credito'}" th:text="${entradaContable.balance * -1.00}"></td>
-									<td th:unless="${entradaContable.tipo == 'credito'}" th:text="''"></td>
+									
+									<td th:if="${entradaContable.tipo == 'debito' and entradaContable.balance < 0}" th:text="${entradaContable.balance * -1.00}"></td>
+									<td th:if="${entradaContable.tipo == 'debito'and entradaContable.balance > 0}" th:text="${entradaContable.balance}"></td>
+									<td th:if="${entradaContable.tipo != 'debito'}" th:text="''"></td>
+								
+									<td th:if="${entradaContable.tipo == 'credito' and entradaContable.balance < 0}" th:text="${entradaContable.balance * -1.00}"></td>
+									<td th:if="${entradaContable.tipo == 'credito' and entradaContable.balance > 0}" th:text="${entradaContable.balance}"></td>
+									<td th:if="${entradaContable.tipo != 'credito'}" th:text="''"></td>
+									
 									<td th:text="${entradaContable.balanceContable}"></td>
+									
 									<td th:if="${entradaContable.usuario != null}" th:text="${entradaContable.usuario.username}"></td>
 									<td th:unless="${entradaContable.usuario != null}" th:text="'Sistema'"></td>
 								</tr>

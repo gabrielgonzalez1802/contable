@@ -505,17 +505,17 @@ public class ContabilidadController {
 			for (EntradaIngresoContable entradaIngresoContable : entradasIngresosContables) {
 				if(entradaIngresoContable.getTipo()!=null) {
 					if(entradaIngresoContable.getTipo().equalsIgnoreCase("debito")) {
-						totalDebito+=entradaIngresoContable.getBalance();
+						totalDebito+=entradaIngresoContable.getBalance()<0?entradaIngresoContable.getBalance()*-1.00:entradaIngresoContable.getBalance();
 					}
 					if(entradaIngresoContable.getTipo().equalsIgnoreCase("credito")) {
-						totalCredito+=entradaIngresoContable.getBalance();
+						totalCredito+=entradaIngresoContable.getBalance()<0?entradaIngresoContable.getBalance()*-1.00:entradaIngresoContable.getBalance();
 					}
 				}
 			}
 		}
 		
-		model.addAttribute("totalDebito", totalDebito);
-		model.addAttribute("totalCredito", totalCredito);
+		model.addAttribute("totalDebito", formato2d(totalDebito));
+		model.addAttribute("totalCredito", formato2d(totalCredito));
 		return "contabilidad/libros :: libros";
 	}
 	
@@ -539,17 +539,17 @@ public class ContabilidadController {
 			for (EntradaIngresoContable entradaIngresoContable : entradasIngresosContables) {
 				if(entradaIngresoContable.getTipo()!=null) {
 					if(entradaIngresoContable.getTipo().equalsIgnoreCase("debito")) {
-						totalDebito+=entradaIngresoContable.getBalance();
+						totalDebito+=entradaIngresoContable.getBalance()<0?entradaIngresoContable.getBalance()*-1.00:entradaIngresoContable.getBalance();
 					}
 					if(entradaIngresoContable.getTipo().equalsIgnoreCase("credito")) {
-						totalCredito+=entradaIngresoContable.getBalance();
+						totalCredito+=entradaIngresoContable.getBalance()<0?entradaIngresoContable.getBalance()*-1.00:entradaIngresoContable.getBalance();
 					}
 				}
 			}
 		}
 		
-		model.addAttribute("totalDebito", totalDebito);
-		model.addAttribute("totalCredito", totalCredito);
+		model.addAttribute("totalDebito", formato2d(totalDebito));
+		model.addAttribute("totalCredito", formato2d(totalCredito));
 		return "contabilidad/libros :: #tablaLibroDiario";
 	}
 	
