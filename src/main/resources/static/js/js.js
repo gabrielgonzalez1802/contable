@@ -1087,6 +1087,7 @@ function addEvents(){
 		$("#modalRecibirAbonoCuotas").modal('show');
 	});
 	
+	
 	$("#agregarAbonoCuota").click(function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
@@ -1141,7 +1142,7 @@ function addEvents(){
 										icon : 'success',
 										confirmButtonText : 'Cool'
 									})
-								imprimirAbonoDetalle(data);	
+								imprimirAbono(data);	
 							}else{
 								 Swal.fire({
 										title : 'Alerta!',
@@ -5928,7 +5929,7 @@ $("#btnBuscarAbonosImpresion").click(function(e){
 		},
 	function(elemento){
 		$("#encabezadoAbono").hide();
-		impresion(elemento);
+		impresionAbono(elemento);
 		addEvents();
 	});		
 });
@@ -6393,8 +6394,17 @@ function verInfoNotas(id){
 	});
 }
 
-function imprimirAbonoDetalle(id){
-	window.open("/prestamos/imprimirDetalleAbono/"+id);
+function imprimirAbono(id){
+	$.get("/prestamos/imprimirDetalleAbono/"+id,function(data){
+		impresion(data);
+	});
+}
+
+function imprimirDetalleAbono(id){
+	$.get("/prestamos/imprimirDetalleAbonoHtml/"+id,function(data){
+		impresion(data);
+		addEvents();
+	});
 }
 
 function verEmpleado(id){
@@ -7261,6 +7271,20 @@ function mostrarDetalleAmortizacion(){
 function ocultarDetalleAmortizacion(){
 	$("#cuerpoTabla").hide();
 }
+
+function impresionAbono(elemento){
+	 var ventimp = window.open(' ', "MsgWindow", "width=1000,height=800");
+	 ventimp.document.write('<html><head>');
+	 ventimp.document.write('<style>.accionesAbono{display:none;}</style>');
+	 ventimp.document.write('</head><body>');
+	 ventimp.document.write(elemento);
+	 ventimp.document.write('</body></html>');
+	 ventimp.document.close();
+	 ventimp.focus();
+	 setTimeout(function() {
+		 ventimp.print();
+		}, 1000);
+ }
 
 function impresion(elemento){
 	 var ventimp = window.open(' ', "MsgWindow", "width=1000,height=800");

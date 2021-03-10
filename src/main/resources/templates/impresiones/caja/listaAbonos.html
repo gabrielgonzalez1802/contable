@@ -54,6 +54,7 @@
 						          <th>Cliente</th>
 						          <th>Monto Pagado</th>
 						          <th>Usuario</th>
+						          <th class="accionesAbono"></th>
 						        </tr>
 						      </thead>
 						      <tbody>
@@ -64,6 +65,11 @@
 						          <td th:text="${abono.cliente.nombre}"></td>
 						          <td th:text="${abono.monto}"></td>
 						          <td th:text="${abono.usuario.username}"></td>
+						          <td class="accionesAbono">
+						          	<button class="btn btn-primary" th:onclick="'imprimirDetalleAbono(\'' + ${abono.id} + '\');'">
+						          		<i class="fa fa-search"></i>
+						          	</button>
+						          </td>
 						        </tr>
 						      </tbody>
 						    </table>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<div id="imprimirData">
+<style>
+.content { 
+  overflow:hidden; 
+  width: 100%; 
+} 
+
+.left{ 
+  width: 60%; 
+}  
+
+.right { 
+  width: 20%; 
+} 
+
+.left  { float:left;  }
+.right { float:right; } 
+
+.table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 16px 0 16px 0;
+}
+
+.table th {
+	border: 1px solid #ddd;
+	padding: 4px;
+	background-color: #d4eefd;
+	text-align: left;
+	font-size: 15px;
+}
+
+.table td {
+	border: 1px solid #ddd;
+	text-align: left;
+	padding: 6px;
+}
+</style>
+
+<div id="encabezadoAbono">
+   <center><img th:src="@{/logos/{img} (img=${empresa.logo} )}" style="max-width: 20%;"></center>
+   <center th:text="${empresa.direccion}"></center>
+   <center th:text="'TEL: ' + ${empresa.telefono}"></center>
+   <center th:text="'RNC: ' + ${empresa.rnc}"></center>
+  <hr>
+</div>
+
+<div class="content">
+  <div class="left">
+     HEMOS RECIBIDO DE: <span th:text="${parameters.cliente}"></span><br>
+	 CEDULA/RNC: <span th:text="${parameters.cedulaCliente}"></span><br>
+     LA SUMA DE: <span th:text="${parameters.monto}"></span>
+  </div>
+
+  <div class="right">
+     FECHA: <span th:text="${parameters.fecha}"></span><br>
+	RECIBO No: <span th:text="${parameters.numeroAbono}"></span><br>
+	PRESTAMO No: <span th:text="${parameters.prestamo}"></span>
+  </div>
+</div>
+
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="table-responsive">
+					<table class="table mg-b-0 text-md-nowrap" id="tablaDetallesAbono">
+						<thead style="background-color: #e9ecef; height: 80px;">
+							<tr>
+								<th style="background-color: #e9ecef; padding-top: 10px; position: static">CONCEPTO</th>
+								<th style="background-color: #e9ecef; padding-top: 10px; position: static">CUOTA</th>
+								<th style="background-color: #e9ecef; padding-top: 10px; position: static">PAGO CAPITAL</th>
+								<th style="background-color: #e9ecef; padding-top: 10px; position: static">PAGO INTERES</th>
+								<th style="background-color: #e9ecef; padding-top: 10px; position: static">PAGO MORAS</th>
+								<th style="background-color: #e9ecef; padding-top: 10px; position: static">PAGO CARGOS</th>
+								<th style="background-color: #e9ecef; padding-top: 10px; position: static">TOTAL</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="detalle : ${parameters.detalleReporteAbonos}">
+								<td th:text="${detalle.tipo}"></td>
+								<td th:text="${detalle.cuota}"></td>
+								<td th:text="${detalle.pagoCapital}"></td>
+								<td th:text="${detalle.pagoInteres}"></td>
+								<td th:text="${detalle.pagoMoras}"></td>
+								<td th:text="${detalle.pagoCargos}"></td>
+								<td th:text="${detalle.total}"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+<div class="content">
+  <div style="width: 60%;float:left">
+    
+  </div>
+
+  <div style="width: 20%;float:right;">
+     TOTAL PAGADO: <span th:text="${parameters.totalPagado}"></span>
+  </div>
+</div>
+
+<br>
+
+<div class="content">
+  <div style="width: 50%;float:left">
+    ___________________________________<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RECIBIDO POR: <span th:text="${parameters.nombreUsuario}"></span>
+  </div>
+
+  <div style="width: 30%;float:right;">
+      ___________________________________<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIRMA DEL CLIENTE
+  </div>
+</div>
+</div>	
+
+</body>
+</html>

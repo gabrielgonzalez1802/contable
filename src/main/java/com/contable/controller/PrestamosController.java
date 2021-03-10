@@ -3475,8 +3475,129 @@ public class PrestamosController {
 		return new ResponseEntity<>(abonoGuardado.getId().toString(), HttpStatus.OK);
 	}
 
+	@GetMapping("/imprimirDetalleAbonoHtml/{id}")
+	private String imprimirDetalleAbonoHtml(@PathVariable(name = "id") Integer id, Model model, HttpSession session, HttpServletRequest request,
+			HttpServletResponse response) throws JRException, SQLException {
+		
+		Abono abonoGuardado = serviceAbonos.buscarPorId(id);
+						
+		List<DetalleReporteAbono> detalleReporteAbonos = new LinkedList<>();
+		
+		double totalCapital = 0.0;
+
+		Empresa empresa = abonoGuardado.getEmpresa();
+		
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		
+		List<AbonoDetalle> abonosDetalles = serviceAbonosDetalles.buscarPorAbonoOrderByCuota(abonoGuardado);
+		
+		List<AbonoDetalle> abonosDetallesTemp = new LinkedList<>();
+		
+		List<DetalleReporteAbono> reporteAbonoCapital = new LinkedList<>();
+		
+		for (AbonoDetalle abonoDetalle : abonosDetalles) {
+			
+			double registroCapital = 0;
+			double registroInteres = 0;
+			double registroCargo = 0;
+			double registroMora = 0;
+			
+			if(abonosDetallesTemp.isEmpty()) {
+				abonosDetallesTemp.add(abonoDetalle);
+			}
+			
+			List<DetalleReporteAbono> detalleReporteAbonosTemp = detalleReporteAbonos.stream().
+										filter(d -> d.getCuota() == abonoDetalle.getNumeroCuota()).
+			collect(Collectors.toList());
+			
+			if(detalleReporteAbonosTemp.isEmpty()) {				
+				if(abonoDetalle.getConcepto().equalsIgnoreCase("Cargo")) {
+					registroCargo = abonoDetalle.getMonto();
+				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Mora")) {
+					registroMora = abonoDetalle.getMonto();
+				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Interes")) {
+					registroInteres = abonoDetalle.getMonto();
+				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Capital")) {
+					registroCapital = abonoDetalle.getMonto();
+				}
+								
+				DetalleReporteAbono detalleReporteAbono = new DetalleReporteAbono();
+				detalleReporteAbono.setPagoCargos(formato2d(registroCargo));
+				detalleReporteAbono.setPagoInteres(formato2d(registroInteres));
+				detalleReporteAbono.setPagoCapital(formato2d(registroCapital));
+				detalleReporteAbono.setPagoMoras(formato2d(registroMora));
+				detalleReporteAbono.setCuota(abonoDetalle.getNumeroCuota());
+				detalleReporteAbono.setId(detalleReporteAbono.getId());
+
+				detalleReporteAbonos.add(detalleReporteAbono);
+			}else {
+				//Si existe actualiza
+				if(abonoDetalle.getConcepto().equalsIgnoreCase("Cargo")) {
+					registroCargo = detalleReporteAbonosTemp.get(0).getPagoCargos().doubleValue() + abonoDetalle.getMonto().doubleValue();
+				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Mora")) {
+					registroMora = detalleReporteAbonosTemp.get(0).getPagoMoras().doubleValue() + abonoDetalle.getMonto().doubleValue();
+				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Interes")) {
+					registroInteres = detalleReporteAbonosTemp.get(0).getPagoInteres().doubleValue() + abonoDetalle.getMonto().doubleValue();
+				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Capital")) {
+					registroCapital =  formato2d(detalleReporteAbonosTemp.get(0).getPagoCapital().doubleValue() + abonoDetalle.getMonto());
+				}
+				
+				detalleReporteAbonosTemp.get(0).setPagoCapital(formato2d(detalleReporteAbonosTemp.get(0).getPagoCapital()+registroCapital));
+				detalleReporteAbonosTemp.get(0).setPagoCargos(formato2d(detalleReporteAbonosTemp.get(0).getPagoCargos() + registroCargo));
+				detalleReporteAbonosTemp.get(0).setPagoInteres(formato2d(detalleReporteAbonosTemp.get(0).getPagoInteres() + registroInteres));
+				detalleReporteAbonosTemp.get(0).setPagoMoras(formato2d(detalleReporteAbonosTemp.get(0).getPagoMoras() + registroMora));
+			}
+		}
+		
+		double balance = 0;
+		
+		for (DetalleReporteAbono abonoDetalle : detalleReporteAbonos) {
+			double total = formato2d(abonoDetalle.getPagoCapital()+abonoDetalle.getPagoCargos()+abonoDetalle.getPagoInteres()+abonoDetalle.getPagoMoras());
+			abonoDetalle.setTotal(total);
+			
+			if(abonoGuardado.getPrestamo().getTipo().equalsIgnoreCase("2")) {
+				reporteAbonoCapital = detalleReporteAbonos.stream().filter(a -> a.getPagoCapital().doubleValue()>0).collect(Collectors.toList());
+				detalleReporteAbonos = detalleReporteAbonos.stream().filter(a -> a.getPagoCapital().doubleValue()==0).collect(Collectors.toList());
+				for (DetalleReporteAbono detalleReporteAbono : reporteAbonoCapital) {
+					totalCapital+=detalleReporteAbono.getPagoCapital();
+				}
+				//Interes
+//				PrestamoInteresDetalle prestamoInteresDetalle = servicePrestamosInteresesDetalles.buscarPorPrestamo(abonoGuardado.getPrestamo()).stream().filter(p -> p.getNumero_cuota() == abonoDetalle.getCuota()).collect(Collectors.toList()).get(0);
+//				abonoDetalle.setTipo(prestamoInteresDetalle.getEstado()==1?"Saldo":"Abono");
+			}else {
+				//Cuotas
+				PrestamoDetalle prestamoDetalle = servicePrestamosDetalles.buscarPorPrestamo(abonoGuardado.getPrestamo()).stream().filter(p -> p.getNumero() == abonoDetalle.getCuota()).collect(Collectors.toList()).get(0);
+				abonoDetalle.setTipo(prestamoDetalle.getEstado_cuota().equalsIgnoreCase("Saldo")?"Saldo":"Abono");
+			}
+		}
+		
+		Map<String, Object> parameters = new HashMap<String, Object>();
+				
+		Numero_Letras numeroLetras = new Numero_Letras();
+		
+		parameters.put("idEmpresa", empresa.getId()); 
+		parameters.put("cliente", abonoGuardado.getCliente().getNombre()); 
+		parameters.put("direccionCliente", abonoGuardado.getCliente().getDireccion());
+		parameters.put("cedulaCliente", abonoGuardado.getCliente().getCedula());
+		parameters.put("fecha", formatter.format(abonoGuardado.getFecha()));
+		parameters.put("numeroAbono", abonoGuardado.getNumero().toString());
+		parameters.put("prestamo", abonoGuardado.getPrestamo().getCodigo().toString());
+		parameters.put("imagen", ruta+empresa.getLogo());
+		parameters.put("totalPagado", abonoGuardado.getMonto());
+		parameters.put("nombreUsuario", abonoGuardado.getUsuario().getNombre());
+		parameters.put("totalCapital", totalCapital);
+		parameters.put("balance", balance);
+		
+		parameters.put("monto", numeroLetras.Convertir(abonoGuardado.getMonto().toString(), true) + " " + abonoGuardado.getMonto());
+		parameters.put("detalleReporteAbonos", detalleReporteAbonos);
+
+		model.addAttribute("empresa", empresa);
+		model.addAttribute("parameters", parameters);
+		return "impresiones/abonos/abono :: #imprimirData";
+	}
+	
 	@GetMapping("/imprimirDetalleAbono/{id}")
-	private void imprimirDetalleAbono(@PathVariable(name = "id") Integer id, HttpSession session, HttpServletRequest request,
+	private String imprimirDetalleAbono(@PathVariable(name = "id") Integer id, Model model, HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) throws JRException, SQLException {
 		
 		Abono abonoGuardado = serviceAbonos.buscarPorId(id);
@@ -3594,11 +3715,12 @@ public class PrestamosController {
 		parameters.put("balance", balance);
 		
 		parameters.put("monto", numeroLetras.Convertir(abonoGuardado.getMonto().toString(), true) + " " + abonoGuardado.getMonto());
-		parameters.put("detalleReporteAbonos", itemsJRBean);
+//		parameters.put("detalleReporteAbonos", itemsJRBean);
+		parameters.put("detalleReporteAbonos", detalleReporteAbonos);
 		
-		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource.getConnection());
+//		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource.getConnection());
 		
-		String dataDirectory = tempFolder + pathSeparator + "abono"+abonoGuardado.getId()+".pdf";
+//		String dataDirectory = tempFolder + pathSeparator + "abono"+abonoGuardado.getId()+".pdf";
 		
 		tempFolder += pathSeparator;
 		
@@ -3792,28 +3914,30 @@ public class PrestamosController {
 			}
 		}
 		
-		JasperExportManager.exportReportToPdfFile(jasperPrint,dataDirectory);
-	
-		//PreImpresion
-        Path file = Paths.get(tempFolder, "abono"+abonoGuardado.getId()+".pdf");
-        if (Files.exists(file)) 
-        {
-            String mimeType = URLConnection.guessContentTypeFromName(tempFolder+"abono"+abonoGuardado.getId()+".pdf");
-            if (mimeType == null) mimeType = "application/octet-stream";
-            response.setContentType(mimeType);
-            response.setHeader("Content-Disposition", String.format("inline; filename=\"" + "abono"+abonoGuardado.getId()+".pdf" + "\""));
-            try
-            {
-                Files.copy(file, response.getOutputStream());
-                response.getOutputStream().flush();
-				Files.delete(file);
-            } 
-            catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
+//		JasperExportManager.exportReportToPdfFile(jasperPrint,dataDirectory);
+//	
+//		//PreImpresion
+//        Path file = Paths.get(tempFolder, "abono"+abonoGuardado.getId()+".pdf");
+//        if (Files.exists(file)) 
+//        {
+//            String mimeType = URLConnection.guessContentTypeFromName(tempFolder+"abono"+abonoGuardado.getId()+".pdf");
+//            if (mimeType == null) mimeType = "application/octet-stream";
+//            response.setContentType(mimeType);
+//            response.setHeader("Content-Disposition", String.format("inline; filename=\"" + "abono"+abonoGuardado.getId()+".pdf" + "\""));
+//            try
+//            {
+//                Files.copy(file, response.getOutputStream());
+//                response.getOutputStream().flush();
+//				Files.delete(file);
+//            } 
+//            catch (IOException ex) {
+//                ex.printStackTrace();
+//            }
+//        }
 		
-		
+		model.addAttribute("empresa", empresa);
+		model.addAttribute("parameters", parameters);
+		return "impresiones/abonos/abono :: #imprimirData";	
 	}
 
 	@GetMapping("/prestamosPendientes")
