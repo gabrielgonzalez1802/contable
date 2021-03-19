@@ -3575,6 +3575,28 @@ public class PrestamosController {
 				
 		Numero_Letras numeroLetras = new Numero_Letras();
 		
+		int cuotasAbonadas = 0;
+		double pagoCapital = 0;
+		double pagoCargos = 0;
+		double pagoInteres = 0;
+		double pagoMoras = 0;
+		
+		for (DetalleReporteAbono detalleReporteAbonoTmp : detalleReporteAbonos) {
+			cuotasAbonadas++;
+			if(detalleReporteAbonoTmp.getPagoCapital()>0) {
+				pagoCapital+=detalleReporteAbonoTmp.getPagoCapital();
+			}
+			if(detalleReporteAbonoTmp.getPagoCargos()>0) {
+				pagoCargos+=detalleReporteAbonoTmp.getPagoCargos();
+			}
+			if(detalleReporteAbonoTmp.getPagoInteres()>0) {
+				pagoInteres+=detalleReporteAbonoTmp.getPagoInteres();
+			}
+			if(detalleReporteAbonoTmp.getPagoMoras()>0) {
+				pagoMoras+=detalleReporteAbonoTmp.getPagoMoras();
+			}
+		}
+		
 		parameters.put("idEmpresa", empresa.getId()); 
 		parameters.put("cliente", abonoGuardado.getCliente().getNombre()); 
 		parameters.put("direccionCliente", abonoGuardado.getCliente().getDireccion());
@@ -3582,18 +3604,24 @@ public class PrestamosController {
 		parameters.put("fecha", formatter.format(abonoGuardado.getFecha()));
 		parameters.put("numeroAbono", abonoGuardado.getNumero().toString());
 		parameters.put("prestamo", abonoGuardado.getPrestamo().getCodigo().toString());
+		parameters.put("montoPrestamo", abonoGuardado.getPrestamo().getMonto());
 		parameters.put("imagen", ruta+empresa.getLogo());
 		parameters.put("totalPagado", abonoGuardado.getMonto());
 		parameters.put("nombreUsuario", abonoGuardado.getUsuario().getNombre());
 		parameters.put("totalCapital", totalCapital);
 		parameters.put("balance", balance);
+		parameters.put("cuotasAbonadas", cuotasAbonadas);
+		parameters.put("pagoCapital", pagoCapital);
+		parameters.put("pagoCargos", pagoCargos);
+		parameters.put("pagoInteres", pagoInteres);
+		parameters.put("pagoMoras", pagoMoras);
 		
 		parameters.put("monto", numeroLetras.Convertir(abonoGuardado.getMonto().toString(), true) + " " + abonoGuardado.getMonto());
 		parameters.put("detalleReporteAbonos", detalleReporteAbonos);
 
 		model.addAttribute("empresa", empresa);
 		model.addAttribute("parameters", parameters);
-		return "impresiones/abonos/abono :: #imprimirData";
+		return "impresiones/abonos/abonoGeneral :: #imprimirData";
 	}
 	
 	@GetMapping("/imprimirDetalleAbono/{id}")
@@ -3701,6 +3729,28 @@ public class PrestamosController {
 		
 		Numero_Letras numeroLetras = new Numero_Letras();
 		
+		int cuotasAbonadas = 0;
+		double pagoCapital = 0;
+		double pagoCargos = 0;
+		double pagoInteres = 0;
+		double pagoMoras = 0;
+		
+		for (DetalleReporteAbono detalleReporteAbonoTmp : detalleReporteAbonos) {
+			cuotasAbonadas++;
+			if(detalleReporteAbonoTmp.getPagoCapital()>0) {
+				pagoCapital+=detalleReporteAbonoTmp.getPagoCapital();
+			}
+			if(detalleReporteAbonoTmp.getPagoCargos()>0) {
+				pagoCargos+=detalleReporteAbonoTmp.getPagoCargos();
+			}
+			if(detalleReporteAbonoTmp.getPagoInteres()>0) {
+				pagoInteres+=detalleReporteAbonoTmp.getPagoInteres();
+			}
+			if(detalleReporteAbonoTmp.getPagoMoras()>0) {
+				pagoMoras+=detalleReporteAbonoTmp.getPagoMoras();
+			}
+		}
+		
 		parameters.put("idEmpresa", empresa.getId()); 
 		parameters.put("cliente", abonoGuardado.getCliente().getNombre()); 
 		parameters.put("direccionCliente", abonoGuardado.getCliente().getDireccion());
@@ -3708,14 +3758,19 @@ public class PrestamosController {
 		parameters.put("fecha", formatter.format(abonoGuardado.getFecha()));
 		parameters.put("numeroAbono", abonoGuardado.getNumero().toString());
 		parameters.put("prestamo", abonoGuardado.getPrestamo().getCodigo().toString());
+		parameters.put("montoPrestamo", abonoGuardado.getPrestamo().getMonto());
 		parameters.put("imagen", ruta+empresa.getLogo());
 		parameters.put("totalPagado", abonoGuardado.getMonto());
 		parameters.put("nombreUsuario", abonoGuardado.getUsuario().getNombre());
 		parameters.put("totalCapital", totalCapital);
 		parameters.put("balance", balance);
+		parameters.put("cuotasAbonadas", cuotasAbonadas);
+		parameters.put("pagoCapital", pagoCapital);
+		parameters.put("pagoCargos", pagoCargos);
+		parameters.put("pagoInteres", pagoInteres);
+		parameters.put("pagoMoras", pagoMoras);
 		
 		parameters.put("monto", numeroLetras.Convertir(abonoGuardado.getMonto().toString(), true) + " " + abonoGuardado.getMonto());
-//		parameters.put("detalleReporteAbonos", itemsJRBean);
 		parameters.put("detalleReporteAbonos", detalleReporteAbonos);
 		
 //		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource.getConnection());
@@ -3937,7 +3992,7 @@ public class PrestamosController {
 		
 		model.addAttribute("empresa", empresa);
 		model.addAttribute("parameters", parameters);
-		return "impresiones/abonos/abono :: #imprimirData";	
+		return "impresiones/abonos/abonoGeneral :: #imprimirData";	
 	}
 
 	@GetMapping("/prestamosPendientes")
