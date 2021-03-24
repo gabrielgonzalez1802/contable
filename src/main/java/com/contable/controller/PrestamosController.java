@@ -3556,11 +3556,11 @@ public class PrestamosController {
 			abonoDetalle.setTotal(total);
 			
 			if(abonoGuardado.getPrestamo().getTipo().equalsIgnoreCase("2")) {
-				reporteAbonoCapital = detalleReporteAbonos.stream().filter(a -> a.getPagoCapital().doubleValue()>0).collect(Collectors.toList());
-				detalleReporteAbonos = detalleReporteAbonos.stream().filter(a -> a.getPagoCapital().doubleValue()==0).collect(Collectors.toList());
-				for (DetalleReporteAbono detalleReporteAbono : reporteAbonoCapital) {
-					totalCapital+=detalleReporteAbono.getPagoCapital();
-				}
+//				reporteAbonoCapital = detalleReporteAbonos.stream().filter(a -> a.getPagoCapital().doubleValue()>0).collect(Collectors.toList());
+//				detalleReporteAbonos = detalleReporteAbonos.stream().filter(a -> a.getPagoCapital().doubleValue()==0).collect(Collectors.toList());
+//				for (DetalleReporteAbono detalleReporteAbono : reporteAbonoCapital) {
+//					totalCapital+=detalleReporteAbono.getPagoCapital();
+//				}
 				//Interes
 //				PrestamoInteresDetalle prestamoInteresDetalle = servicePrestamosInteresesDetalles.buscarPorPrestamo(abonoGuardado.getPrestamo()).stream().filter(p -> p.getNumero_cuota() == abonoDetalle.getCuota()).collect(Collectors.toList()).get(0);
 //				abonoDetalle.setTipo(prestamoInteresDetalle.getEstado()==1?"Saldo":"Abono");
@@ -3575,14 +3575,16 @@ public class PrestamosController {
 				
 		Numero_Letras numeroLetras = new Numero_Letras();
 		
-		int cuotasAbonadas = 0;
+		String cuotasAbonadas = "";
 		double pagoCapital = 0;
 		double pagoCargos = 0;
 		double pagoInteres = 0;
 		double pagoMoras = 0;
 		
 		for (DetalleReporteAbono detalleReporteAbonoTmp : detalleReporteAbonos) {
-			cuotasAbonadas++;
+			if(detalleReporteAbonoTmp.getCuota()!=null) {
+				cuotasAbonadas+=detalleReporteAbonoTmp.getCuota().toString()+",";
+			}
 			if(detalleReporteAbonoTmp.getPagoCapital()>0) {
 				pagoCapital+=detalleReporteAbonoTmp.getPagoCapital();
 			}
@@ -3595,6 +3597,10 @@ public class PrestamosController {
 			if(detalleReporteAbonoTmp.getPagoMoras()>0) {
 				pagoMoras+=detalleReporteAbonoTmp.getPagoMoras();
 			}
+		}
+		
+		if(cuotasAbonadas.contains(",")) {
+			cuotasAbonadas = cuotasAbonadas.substring(0,cuotasAbonadas.length()-1);
 		}
 		
 		parameters.put("idEmpresa", empresa.getId()); 
@@ -3629,7 +3635,9 @@ public class PrestamosController {
 			HttpServletResponse response) throws JRException, SQLException {
 		
 		Abono abonoGuardado = serviceAbonos.buscarPorId(id);
-				
+		
+		Prestamo prestamo = abonoGuardado.getPrestamo();
+		
 		JasperReport jasperReport = JasperCompileManager.compileReport(rutaJreportAbono);
 		
 		List<DetalleReporteAbono> detalleReporteAbonos = new LinkedList<>();
@@ -3729,14 +3737,16 @@ public class PrestamosController {
 		
 		Numero_Letras numeroLetras = new Numero_Letras();
 		
-		int cuotasAbonadas = 0;
+		String cuotasAbonadas = "";
 		double pagoCapital = 0;
 		double pagoCargos = 0;
 		double pagoInteres = 0;
 		double pagoMoras = 0;
 		
 		for (DetalleReporteAbono detalleReporteAbonoTmp : detalleReporteAbonos) {
-			cuotasAbonadas++;
+			if(detalleReporteAbonoTmp.getCuota()!=null) {
+				cuotasAbonadas+=detalleReporteAbonoTmp.getCuota().toString()+",";
+			}
 			if(detalleReporteAbonoTmp.getPagoCapital()>0) {
 				pagoCapital+=detalleReporteAbonoTmp.getPagoCapital();
 			}
@@ -3749,6 +3759,10 @@ public class PrestamosController {
 			if(detalleReporteAbonoTmp.getPagoMoras()>0) {
 				pagoMoras+=detalleReporteAbonoTmp.getPagoMoras();
 			}
+		}
+		
+		if(cuotasAbonadas.contains(",")) {
+			cuotasAbonadas = cuotasAbonadas.substring(0,cuotasAbonadas.length()-1);
 		}
 		
 		parameters.put("idEmpresa", empresa.getId()); 
@@ -3992,6 +4006,32 @@ public class PrestamosController {
 		
 		model.addAttribute("empresa", empresa);
 		model.addAttribute("parameters", parameters);
+		
+		//verificamos si el prestamo queda pago
+		if(prestamo!=null && prestamo.getTipo().equalsIgnoreCase("2")) {
+			//Intereses
+			double capitalPagado = 0;
+			capitalPagado = prestamo.getTotal_capital()-prestamo.getCapitalPagado();
+			capitalPagado = prestamo.getTotal_capital() - capitalPagado;
+			if(formato2d(capitalPagado) == 0 || formato2d(capitalPagado) < 0) {
+				prestamo.setEstado(1);
+				servicePrestamos.guardar(prestamo);
+			}
+		}else if(prestamo!=null && !prestamo.getTipo().equalsIgnoreCase("2")) {
+			//Cuotas
+			//verificamos las cuotas
+			double capitalPagado = 0;
+			List<PrestamoDetalle> detallesPrestamo = servicePrestamosDetalles.buscarPorPrestamo(prestamo);
+			for (PrestamoDetalle prestamoDetalle : detallesPrestamo) {
+				capitalPagado+=prestamoDetalle.getCapital_pagado();
+			}
+			capitalPagado = prestamo.getTotal_capital() - capitalPagado;
+			if(formato2d(capitalPagado) == 0 || formato2d(capitalPagado) < 0) {
+				prestamo.setEstado(1);
+				servicePrestamos.guardar(prestamo);
+			}
+		}
+		
 		return "impresiones/abonos/abonoGeneral :: #imprimirData";	
 	}
 
