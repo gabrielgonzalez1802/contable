@@ -3505,48 +3505,26 @@ public class PrestamosController {
 			if(abonosDetallesTemp.isEmpty()) {
 				abonosDetallesTemp.add(abonoDetalle);
 			}
-			
-			List<DetalleReporteAbono> detalleReporteAbonosTemp = detalleReporteAbonos.stream().
-										filter(d -> d.getCuota() == abonoDetalle.getNumeroCuota()).
-			collect(Collectors.toList());
-			
-			if(detalleReporteAbonosTemp.isEmpty()) {				
-				if(abonoDetalle.getConcepto().equalsIgnoreCase("Cargo")) {
-					registroCargo = abonoDetalle.getMonto();
-				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Mora")) {
-					registroMora = abonoDetalle.getMonto();
-				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Interes")) {
-					registroInteres = abonoDetalle.getMonto();
-				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Capital")) {
-					registroCapital = abonoDetalle.getMonto();
-				}
-								
-				DetalleReporteAbono detalleReporteAbono = new DetalleReporteAbono();
-				detalleReporteAbono.setPagoCargos(formato2d(registroCargo));
-				detalleReporteAbono.setPagoInteres(formato2d(registroInteres));
-				detalleReporteAbono.setPagoCapital(formato2d(registroCapital));
-				detalleReporteAbono.setPagoMoras(formato2d(registroMora));
-				detalleReporteAbono.setCuota(abonoDetalle.getNumeroCuota());
-				detalleReporteAbono.setId(detalleReporteAbono.getId());
 
-				detalleReporteAbonos.add(detalleReporteAbono);
-			}else {
-				//Si existe actualiza
-				if(abonoDetalle.getConcepto().equalsIgnoreCase("Cargo")) {
-					registroCargo = detalleReporteAbonosTemp.get(0).getPagoCargos().doubleValue() + abonoDetalle.getMonto().doubleValue();
-				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Mora")) {
-					registroMora = detalleReporteAbonosTemp.get(0).getPagoMoras().doubleValue() + abonoDetalle.getMonto().doubleValue();
-				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Interes")) {
-					registroInteres = detalleReporteAbonosTemp.get(0).getPagoInteres().doubleValue() + abonoDetalle.getMonto().doubleValue();
-				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Capital")) {
-					registroCapital =  formato2d(detalleReporteAbonosTemp.get(0).getPagoCapital().doubleValue() + abonoDetalle.getMonto());
-				}
-				
-				detalleReporteAbonosTemp.get(0).setPagoCapital(formato2d(detalleReporteAbonosTemp.get(0).getPagoCapital()+registroCapital));
-				detalleReporteAbonosTemp.get(0).setPagoCargos(formato2d(detalleReporteAbonosTemp.get(0).getPagoCargos() + registroCargo));
-				detalleReporteAbonosTemp.get(0).setPagoInteres(formato2d(detalleReporteAbonosTemp.get(0).getPagoInteres() + registroInteres));
-				detalleReporteAbonosTemp.get(0).setPagoMoras(formato2d(detalleReporteAbonosTemp.get(0).getPagoMoras() + registroMora));
+			if (abonoDetalle.getConcepto().equalsIgnoreCase("Cargo")) {
+				registroCargo = abonoDetalle.getMonto();
+			} else if (abonoDetalle.getConcepto().equalsIgnoreCase("Mora")) {
+				registroMora = abonoDetalle.getMonto();
+			} else if (abonoDetalle.getConcepto().equalsIgnoreCase("Interes")) {
+				registroInteres = abonoDetalle.getMonto();
+			} else if (abonoDetalle.getConcepto().equalsIgnoreCase("Capital")) {
+				registroCapital = abonoDetalle.getMonto();
 			}
+
+			DetalleReporteAbono detalleReporteAbono = new DetalleReporteAbono();
+			detalleReporteAbono.setPagoCargos(formato2d(registroCargo));
+			detalleReporteAbono.setPagoInteres(formato2d(registroInteres));
+			detalleReporteAbono.setPagoCapital(formato2d(registroCapital));
+			detalleReporteAbono.setPagoMoras(formato2d(registroMora));
+			detalleReporteAbono.setCuota(abonoDetalle.getNumeroCuota());
+			detalleReporteAbono.setId(detalleReporteAbono.getId());
+
+			detalleReporteAbonos.add(detalleReporteAbono);
 		}
 		
 		double balance = 0;
@@ -3556,14 +3534,10 @@ public class PrestamosController {
 			abonoDetalle.setTotal(total);
 			
 			if(abonoGuardado.getPrestamo().getTipo().equalsIgnoreCase("2")) {
-//				reporteAbonoCapital = detalleReporteAbonos.stream().filter(a -> a.getPagoCapital().doubleValue()>0).collect(Collectors.toList());
-//				detalleReporteAbonos = detalleReporteAbonos.stream().filter(a -> a.getPagoCapital().doubleValue()==0).collect(Collectors.toList());
-//				for (DetalleReporteAbono detalleReporteAbono : reporteAbonoCapital) {
-//					totalCapital+=detalleReporteAbono.getPagoCapital();
-//				}
-				//Interes
-//				PrestamoInteresDetalle prestamoInteresDetalle = servicePrestamosInteresesDetalles.buscarPorPrestamo(abonoGuardado.getPrestamo()).stream().filter(p -> p.getNumero_cuota() == abonoDetalle.getCuota()).collect(Collectors.toList()).get(0);
-//				abonoDetalle.setTipo(prestamoInteresDetalle.getEstado()==1?"Saldo":"Abono");
+				reporteAbonoCapital = detalleReporteAbonos.stream().filter(a -> a.getPagoCapital().doubleValue()>0).collect(Collectors.toList());
+				for (DetalleReporteAbono detalleReporteAbono : reporteAbonoCapital) {
+					totalCapital+=detalleReporteAbono.getPagoCapital();
+				}
 			}else {
 				//Cuotas
 				PrestamoDetalle prestamoDetalle = servicePrestamosDetalles.buscarPorPrestamo(abonoGuardado.getPrestamo()).stream().filter(p -> p.getNumero() == abonoDetalle.getCuota()).collect(Collectors.toList()).get(0);
@@ -3581,9 +3555,14 @@ public class PrestamosController {
 		double pagoInteres = 0;
 		double pagoMoras = 0;
 		
+		String cuotaTemp = "0";
+		
 		for (DetalleReporteAbono detalleReporteAbonoTmp : detalleReporteAbonos) {
 			if(detalleReporteAbonoTmp.getCuota()!=null) {
-				cuotasAbonadas+=detalleReporteAbonoTmp.getCuota().toString()+",";
+				if(!cuotaTemp.equals(detalleReporteAbonoTmp.getCuota().toString())) {
+					cuotasAbonadas+=detalleReporteAbonoTmp.getCuota().toString()+",";
+					cuotaTemp = detalleReporteAbonoTmp.getCuota().toString();
+				}
 			}
 			if(detalleReporteAbonoTmp.getPagoCapital()>0) {
 				pagoCapital+=detalleReporteAbonoTmp.getPagoCapital();
@@ -3617,10 +3596,10 @@ public class PrestamosController {
 		parameters.put("totalCapital", totalCapital);
 		parameters.put("balance", balance);
 		parameters.put("cuotasAbonadas", cuotasAbonadas);
-		parameters.put("pagoCapital", pagoCapital);
-		parameters.put("pagoCargos", pagoCargos);
-		parameters.put("pagoInteres", pagoInteres);
-		parameters.put("pagoMoras", pagoMoras);
+		parameters.put("pagoCapital", formato2d(pagoCapital));
+		parameters.put("pagoCargos", formato2d(pagoCargos));
+		parameters.put("pagoInteres", formato2d(pagoInteres));
+		parameters.put("pagoMoras", formato2d(pagoMoras));
 		
 		parameters.put("monto", numeroLetras.Convertir(abonoGuardado.getMonto().toString(), true) + " " + abonoGuardado.getMonto());
 		parameters.put("detalleReporteAbonos", detalleReporteAbonos);
@@ -3638,7 +3617,7 @@ public class PrestamosController {
 		
 		Prestamo prestamo = abonoGuardado.getPrestamo();
 		
-		JasperReport jasperReport = JasperCompileManager.compileReport(rutaJreportAbono);
+//		JasperReport jasperReport = JasperCompileManager.compileReport(rutaJreportAbono);
 		
 		List<DetalleReporteAbono> detalleReporteAbonos = new LinkedList<>();
 		
@@ -3665,47 +3644,25 @@ public class PrestamosController {
 				abonosDetallesTemp.add(abonoDetalle);
 			}
 			
-			List<DetalleReporteAbono> detalleReporteAbonosTemp = detalleReporteAbonos.stream().
-										filter(d -> d.getCuota() == abonoDetalle.getNumeroCuota()).
-			collect(Collectors.toList());
-			
-			if(detalleReporteAbonosTemp.isEmpty()) {				
-				if(abonoDetalle.getConcepto().equalsIgnoreCase("Cargo")) {
-					registroCargo = abonoDetalle.getMonto();
-				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Mora")) {
-					registroMora = abonoDetalle.getMonto();
-				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Interes")) {
-					registroInteres = abonoDetalle.getMonto();
-				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Capital")) {
-					registroCapital = abonoDetalle.getMonto();
-				}
-								
-				DetalleReporteAbono detalleReporteAbono = new DetalleReporteAbono();
-				detalleReporteAbono.setPagoCargos(formato2d(registroCargo));
-				detalleReporteAbono.setPagoInteres(formato2d(registroInteres));
-				detalleReporteAbono.setPagoCapital(formato2d(registroCapital));
-				detalleReporteAbono.setPagoMoras(formato2d(registroMora));
-				detalleReporteAbono.setCuota(abonoDetalle.getNumeroCuota());
-				detalleReporteAbono.setId(detalleReporteAbono.getId());
-
-				detalleReporteAbonos.add(detalleReporteAbono);
-			}else {
-				//Si existe actualiza
-				if(abonoDetalle.getConcepto().equalsIgnoreCase("Cargo")) {
-					registroCargo = detalleReporteAbonosTemp.get(0).getPagoCargos().doubleValue() + abonoDetalle.getMonto().doubleValue();
-				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Mora")) {
-					registroMora = detalleReporteAbonosTemp.get(0).getPagoMoras().doubleValue() + abonoDetalle.getMonto().doubleValue();
-				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Interes")) {
-					registroInteres = detalleReporteAbonosTemp.get(0).getPagoInteres().doubleValue() + abonoDetalle.getMonto().doubleValue();
-				}else if(abonoDetalle.getConcepto().equalsIgnoreCase("Capital")) {
-					registroCapital =  formato2d(detalleReporteAbonosTemp.get(0).getPagoCapital().doubleValue() + abonoDetalle.getMonto());
-				}
-				
-				detalleReporteAbonosTemp.get(0).setPagoCapital(formato2d(detalleReporteAbonosTemp.get(0).getPagoCapital()+registroCapital));
-				detalleReporteAbonosTemp.get(0).setPagoCargos(formato2d(detalleReporteAbonosTemp.get(0).getPagoCargos() + registroCargo));
-				detalleReporteAbonosTemp.get(0).setPagoInteres(formato2d(detalleReporteAbonosTemp.get(0).getPagoInteres() + registroInteres));
-				detalleReporteAbonosTemp.get(0).setPagoMoras(formato2d(detalleReporteAbonosTemp.get(0).getPagoMoras() + registroMora));
+			if (abonoDetalle.getConcepto().equalsIgnoreCase("Cargo")) {
+				registroCargo = abonoDetalle.getMonto();
+			} else if (abonoDetalle.getConcepto().equalsIgnoreCase("Mora")) {
+				registroMora = abonoDetalle.getMonto();
+			} else if (abonoDetalle.getConcepto().equalsIgnoreCase("Interes")) {
+				registroInteres = abonoDetalle.getMonto();
+			} else if (abonoDetalle.getConcepto().equalsIgnoreCase("Capital")) {
+				registroCapital = abonoDetalle.getMonto();
 			}
+
+			DetalleReporteAbono detalleReporteAbono = new DetalleReporteAbono();
+			detalleReporteAbono.setPagoCargos(formato2d(registroCargo));
+			detalleReporteAbono.setPagoInteres(formato2d(registroInteres));
+			detalleReporteAbono.setPagoCapital(formato2d(registroCapital));
+			detalleReporteAbono.setPagoMoras(formato2d(registroMora));
+			detalleReporteAbono.setCuota(abonoDetalle.getNumeroCuota());
+			detalleReporteAbono.setId(detalleReporteAbono.getId());
+
+			detalleReporteAbonos.add(detalleReporteAbono);
 		}
 		
 		double balance = 0;
@@ -3716,13 +3673,10 @@ public class PrestamosController {
 			
 			if(abonoGuardado.getPrestamo().getTipo().equalsIgnoreCase("2")) {
 				reporteAbonoCapital = detalleReporteAbonos.stream().filter(a -> a.getPagoCapital().doubleValue()>0).collect(Collectors.toList());
-				detalleReporteAbonos = detalleReporteAbonos.stream().filter(a -> a.getPagoCapital().doubleValue()==0).collect(Collectors.toList());
+//				detalleReporteAbonos = detalleReporteAbonos.stream().filter(a -> a.getPagoCapital().doubleValue()==0).collect(Collectors.toList());
 				for (DetalleReporteAbono detalleReporteAbono : reporteAbonoCapital) {
 					totalCapital+=detalleReporteAbono.getPagoCapital();
 				}
-				//Interes
-//				PrestamoInteresDetalle prestamoInteresDetalle = servicePrestamosInteresesDetalles.buscarPorPrestamo(abonoGuardado.getPrestamo()).stream().filter(p -> p.getNumero_cuota() == abonoDetalle.getCuota()).collect(Collectors.toList()).get(0);
-//				abonoDetalle.setTipo(prestamoInteresDetalle.getEstado()==1?"Saldo":"Abono");
 			}else {
 				//Cuotas
 				PrestamoDetalle prestamoDetalle = servicePrestamosDetalles.buscarPorPrestamo(abonoGuardado.getPrestamo()).stream().filter(p -> p.getNumero() == abonoDetalle.getCuota()).collect(Collectors.toList()).get(0);
@@ -3733,7 +3687,7 @@ public class PrestamosController {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		
 		//convertimos la lista a JRBeanCollectionDataSource
-		JRBeanCollectionDataSource itemsJRBean = new JRBeanCollectionDataSource(detalleReporteAbonos);
+//		JRBeanCollectionDataSource itemsJRBean = new JRBeanCollectionDataSource(detalleReporteAbonos);
 		
 		Numero_Letras numeroLetras = new Numero_Letras();
 		
@@ -3743,9 +3697,14 @@ public class PrestamosController {
 		double pagoInteres = 0;
 		double pagoMoras = 0;
 		
+		String cuotaTemp = "0";
+		
 		for (DetalleReporteAbono detalleReporteAbonoTmp : detalleReporteAbonos) {
 			if(detalleReporteAbonoTmp.getCuota()!=null) {
-				cuotasAbonadas+=detalleReporteAbonoTmp.getCuota().toString()+",";
+				if(!cuotaTemp.equals(detalleReporteAbonoTmp.getCuota().toString())) {
+					cuotasAbonadas+=detalleReporteAbonoTmp.getCuota().toString()+",";
+					cuotaTemp = detalleReporteAbonoTmp.getCuota().toString();
+				}
 			}
 			if(detalleReporteAbonoTmp.getPagoCapital()>0) {
 				pagoCapital+=detalleReporteAbonoTmp.getPagoCapital();
@@ -3779,10 +3738,10 @@ public class PrestamosController {
 		parameters.put("totalCapital", totalCapital);
 		parameters.put("balance", balance);
 		parameters.put("cuotasAbonadas", cuotasAbonadas);
-		parameters.put("pagoCapital", pagoCapital);
-		parameters.put("pagoCargos", pagoCargos);
-		parameters.put("pagoInteres", pagoInteres);
-		parameters.put("pagoMoras", pagoMoras);
+		parameters.put("pagoCapital", formato2d(pagoCapital));
+		parameters.put("pagoCargos", formato2d(pagoCargos));
+		parameters.put("pagoInteres", formato2d(pagoInteres));
+		parameters.put("pagoMoras", formato2d(pagoMoras));
 		
 		parameters.put("monto", numeroLetras.Convertir(abonoGuardado.getMonto().toString(), true) + " " + abonoGuardado.getMonto());
 		parameters.put("detalleReporteAbonos", detalleReporteAbonos);
